@@ -53,7 +53,7 @@ Respond ONLY with valid JSON (no markdown, no explanation) in exactly this struc
         "X-Title": "Spiritual AI Compatibility",
       },
       body: JSON.stringify({
-        model: "mistralai/mistral-7b-instruct",
+        model: "google/gemma-4-31b-it:free",
         max_tokens: 1200,
         messages: [{ role: "user", content: prompt }],
       }),

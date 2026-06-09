@@ -6,6 +6,7 @@ import axios from 'axios';
 import interpretationRoutes from './routes/interpretationRoutes';
 import compatibilityRoutes from './routes/compatibilityRoutes';
 import birthChartRoutes from './routes/birthChartRoutes';
+import innerVoiceRoutes from './routes/innerVoiceRoutes';
 
 dotenv.config();
 
@@ -16,17 +17,13 @@ const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/astrol
 // Middleware
 app.use(cors({
   origin: (origin, callback) => {
-    const allowedOrigins = [
-      'http://localhost:8080',
-      'http://localhost:8081',
-      'http://localhost:5173',
-      'http://localhost:3000'
-    ];
-    if (!origin || allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      callback(new Error('Not allowed by CORS'));
+    // Allow requests with no origin (server-to-server proxy, curl, mobile)
+    if (!origin) return callback(null, true);
+    // Allow any localhost or 127.0.0.1 on any port during development
+    if (/^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(origin)) {
+      return callback(null, true);
     }
+    callback(new Error('Not allowed by CORS'));
   },
   credentials: true,
 }));
@@ -96,6 +93,7 @@ app.post('/api/contact/send', (req: Request, res: Response) => {
 app.use('/api/interpretation', interpretationRoutes);
 app.use('/api/compatibility', compatibilityRoutes);
 app.use('/api/birthchart', birthChartRoutes);
+app.use('/api/inner-voice', innerVoiceRoutes);
 
 // ── Palm Reading ────────────────────────────────────────────────────────────
 app.post('/api/palm-reading', async (req: Request, res: Response) => {

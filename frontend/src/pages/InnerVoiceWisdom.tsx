@@ -1,0 +1,391 @@
+import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
+
+const fl = document.createElement("link"); fl.rel = "stylesheet";
+fl.href = "https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Space+Mono:wght@400;700&display=swap";
+if (!document.head.querySelector("link[href*='Cinzel']")) document.head.appendChild(fl);
+
+const GROQ_API_KEY = import.meta.env.VITE_GROQ_API_KEY;
+const GROQ_URL = "https://api.groq.com/openai/v1/chat/completions";
+
+const SYSTEM_PROMPT = `You are a Vedic scripture scholar. When given a situation, find the most relevant verse.
+Return ONLY a JSON object with exactly these keys (all required, no nulls):
+{
+  "source": "Bhagavad Gita",
+  "chapter": "Chapter 2, Verse 47",
+  "devanagari": "कर्मण्येवाधिकारस्ते...",
+  "transliteration": "karmany-evadhikaras te...",
+  "wordByWord": "karma = action | phala = fruit | adhikara = right",
+  "meaning": "Plain English translation of the verse",
+  "application": "How this specifically applies to the person's situation (3 sentences)",
+  "deeperWisdom": "The deeper philosophical meaning",
+  "action": "One concrete action to take today",
+  "mantra": "Short key phrase to repeat",
+  "mantraCount": "108 times daily for 21 days"
+}`;
+
+async function callAI(userMsg) {
+  const res = await fetch(GROQ_URL, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", "Authorization": `Bearer ${GROQ_API_KEY}` },
+    body: JSON.stringify({
+      model: "llama-3.3-70b-versatile",
+      temperature: 0.7,
+      max_tokens: 1500,
+      response_format: { type: "json_object" },
+      messages: [
+        { role: "system", content: SYSTEM_PROMPT },
+        { role: "user", content: userMsg }
+      ]
+    }),
+  });
+  const data = await res.json();
+  if (data.error) throw new Error(data.error.message);
+  const raw = data.choices?.[0]?.message?.content || "{}";
+  try { return JSON.parse(raw); } catch { return {}; }
+}
+
+const CSS = `
+*{box-sizing:border-box;}
+.ivw-app{min-height:100vh;background:#03010a;color:#e8e0f0;font-family:'Cormorant Garamond',serif;overflow-x:hidden;position:relative;}
+.ivw-stars{position:fixed;inset:0;pointer-events:none;z-index:0;}
+.ivw-star{position:absolute;border-radius:50%;background:#fff;animation:twk var(--d,3s) ease-in-out infinite var(--dl,0s);opacity:var(--op,.4);}
+@keyframes twk{0%,100%{opacity:var(--op);transform:scale(1);}50%{opacity:.05;transform:scale(.2);}}
+.ivw-nb{position:fixed;border-radius:50%;filter:blur(120px);pointer-events:none;z-index:0;}
+.ivw-wrap{position:relative;z-index:1;max-width:860px;margin:0 auto;padding:70px 24px 100px;}
+
+/* Back */
+.ivw-back{display:inline-flex;align-items:center;gap:6px;font-family:'Space Mono',monospace;font-size:11px;letter-spacing:2px;color:rgba(245,197,24,.5);text-transform:uppercase;text-decoration:none;margin-bottom:32px;transition:color .3s;}
+.ivw-back:hover{color:#f5c518;}
+
+/* Header */
+.ivw-hdr{text-align:center;margin-bottom:40px;}
+.ivw-eyebrow{font-family:'Space Mono',monospace;font-size:11px;letter-spacing:5px;color:#ffaa00;text-transform:uppercase;margin-bottom:14px;}
+.ivw-h1{font-family:'Cinzel Decorative',serif;font-size:clamp(32px,6vw,56px);color:#f5c518;line-height:1.1;margin-bottom:14px;text-shadow:0 0 60px rgba(245,197,24,.4);}
+.ivw-hsub{color:rgba(232,224,240,.5);font-style:italic;font-size:20px;line-height:1.7;}
+
+/* Scripture pills */
+.ivw-pills{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-bottom:28px;}
+.ivw-pill{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:50px;padding:8px 20px;font-family:'Space Mono',monospace;font-size:11px;letter-spacing:2px;color:rgba(232,224,240,.5);text-transform:uppercase;cursor:pointer;transition:all .3s;}
+.ivw-pill:hover{border-color:rgba(245,197,24,.4);}
+.ivw-pill.on{background:rgba(245,197,24,.14);border-color:rgba(245,197,24,.5);color:#f5c518;}
+
+/* Form card */
+.ivw-form{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:24px;padding:32px;}
+.ivw-flabel{font-family:'Space Mono',monospace;font-size:11px;letter-spacing:3px;color:rgba(232,224,240,.4);text-transform:uppercase;display:block;margin-bottom:12px;}
+.ivw-ta{width:100%;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:18px;color:#e8e0f0;font-family:'Cormorant Garamond',serif;font-size:20px;line-height:1.7;resize:vertical;min-height:130px;outline:none;transition:border .3s;margin-bottom:20px;}
+.ivw-ta:focus{border-color:#f5c518;box-shadow:0 0 0 3px rgba(245,197,24,.1);}
+.ivw-ta::placeholder{color:rgba(232,224,240,.22);font-size:18px;}
+
+/* Quick prompts */
+.ivw-qps{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:22px;}
+.ivw-qp{background:rgba(255,170,0,.07);border:1px solid rgba(255,170,0,.2);border-radius:50px;padding:8px 16px;font-family:'Cormorant Garamond',serif;font-style:italic;font-size:16px;color:rgba(232,224,240,.65);cursor:pointer;transition:all .3s;}
+.ivw-qp:hover{background:rgba(255,170,0,.16);color:#e8e0f0;border-color:rgba(255,170,0,.4);}
+
+.ivw-btn{width:100%;background:linear-gradient(135deg,#f5c518,#f5a623);color:#03010a;border:none;border-radius:14px;padding:18px;font-family:'Space Mono',monospace;font-size:12px;letter-spacing:3px;text-transform:uppercase;cursor:pointer;font-weight:700;transition:all .3s;}
+.ivw-btn:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 12px 40px rgba(245,197,24,.4);}
+.ivw-btn:disabled{opacity:.4;cursor:not-allowed;}
+.ivw-err{background:rgba(255,45,120,.08);border:1px solid rgba(255,45,120,.25);border-radius:12px;padding:16px;color:#ff6b9d;font-family:'Space Mono',monospace;font-size:12px;text-align:center;margin-top:16px;}
+
+/* Loading */
+.ivw-loader-wrap{text-align:center;padding:50px 0;}
+.ivw-spin{width:56px;height:56px;border:2px solid rgba(255,170,0,.15);border-top-color:#ffaa00;border-radius:50%;animation:spin 1s linear infinite;margin:0 auto 18px;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.ivw-ltxt{font-family:'Space Mono',monospace;font-size:11px;letter-spacing:3px;color:rgba(255,170,0,.6);text-transform:uppercase;}
+
+/* Result */
+.ivw-result{animation:fadein .8s ease-out;}
+@keyframes fadein{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}
+
+/* Source header */
+.ivw-src-row{display:flex;align-items:center;justify-content:center;flex-direction:column;gap:8px;margin-bottom:28px;text-align:center;}
+.ivw-src-badge{display:inline-block;background:rgba(255,170,0,.14);border:1px solid rgba(255,170,0,.4);border-radius:50px;padding:8px 24px;font-family:'Space Mono',monospace;font-size:12px;letter-spacing:3px;color:#ffaa00;text-transform:uppercase;}
+.ivw-src-chapter{font-family:'Space Mono',monospace;font-size:12px;color:rgba(232,224,240,.4);letter-spacing:2px;}
+
+/* Shloka display */
+.ivw-shloka{background:linear-gradient(160deg,rgba(245,197,24,.08),rgba(123,47,255,.06));border:1px solid rgba(245,197,24,.25);border-radius:24px;padding:48px 36px;text-align:center;margin-bottom:20px;position:relative;}
+.ivw-shloka-deco{position:absolute;font-family:'Cinzel Decorative',serif;font-size:28px;color:rgba(245,197,24,.15);}
+.ivw-shloka-deco.tl{top:16px;left:24px;}
+.ivw-shloka-deco.br{bottom:16px;right:24px;}
+.ivw-dev{font-size:clamp(22px,3.5vw,30px);line-height:2.1;color:#f5c518;margin-bottom:22px;font-weight:400;letter-spacing:.8px;}
+.ivw-roman{font-style:italic;font-size:clamp(17px,2vw,20px);line-height:2;color:rgba(245,197,24,.6);margin-bottom:18px;}
+.ivw-wbw-divider{width:60px;height:1px;background:rgba(245,197,24,.2);margin:18px auto;}
+.ivw-wbw{font-family:'Space Mono',monospace;font-size:12px;color:rgba(232,224,240,.45);line-height:2;}
+
+/* Info sections */
+.ivw-sections{display:flex;flex-direction:column;gap:16px;margin-bottom:20px;}
+
+.ivw-sec{border-radius:18px;padding:28px 30px;}
+.ivw-sec.meaning{background:rgba(245,197,24,.05);border:1px solid rgba(245,197,24,.2);}
+.ivw-sec.application{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);}
+.ivw-sec.wisdom{background:rgba(123,47,255,.07);border:1px solid rgba(123,47,255,.22);}
+.ivw-sec.action{background:rgba(0,229,255,.05);border:1px solid rgba(0,229,255,.2);}
+.ivw-sec.related{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);}
+
+.ivw-sec-icon{font-size:28px;margin-bottom:10px;display:block;}
+.ivw-sec-lbl{font-family:'Space Mono',monospace;font-size:11px;letter-spacing:3px;text-transform:uppercase;margin-bottom:14px;display:block;}
+.lbl-meaning{color:rgba(245,197,24,.7);}
+.lbl-app{color:rgba(232,224,240,.45);}
+.lbl-wisdom{color:rgba(123,47,255,.8);}
+.lbl-action{color:rgba(0,229,255,.7);}
+.lbl-related{color:rgba(232,224,240,.35);}
+
+.ivw-sec-text{font-size:clamp(18px,2.2vw,21px);line-height:1.85;color:#e8e0f0;}
+.ivw-sec-text.gold{color:#f5d060;}
+.ivw-sec-text.italic{font-style:italic;color:rgba(232,224,240,.85);}
+.ivw-sec-text.small{font-size:17px;color:rgba(232,224,240,.6);font-style:italic;}
+
+/* Mantra box */
+.ivw-mantra{background:linear-gradient(135deg,rgba(123,47,255,.15),rgba(245,197,24,.08));border:1px solid rgba(123,47,255,.35);border-radius:18px;padding:32px;text-align:center;margin-bottom:20px;}
+.ivw-mantra-lbl{font-family:'Space Mono',monospace;font-size:11px;letter-spacing:3px;color:rgba(123,47,255,.8);text-transform:uppercase;margin-bottom:14px;display:block;}
+.ivw-mantra-txt{font-family:'Cinzel Decorative',serif;font-size:clamp(18px,2.5vw,24px);color:#f5c518;letter-spacing:3px;line-height:1.8;margin-bottom:10px;}
+.ivw-mantra-count{font-family:'Space Mono',monospace;font-size:11px;color:rgba(123,47,255,.6);}
+
+/* Buttons */
+.ivw-btns{display:flex;gap:12px;margin-top:8px;}
+.ivw-save{flex:1;background:rgba(0,255,170,.08);border:1px solid rgba(0,255,170,.3);border-radius:12px;padding:16px;color:#00ffaa;font-family:'Space Mono',monospace;font-size:11px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;transition:all .3s;}
+.ivw-save:hover{background:rgba(0,255,170,.16);}
+.ivw-again{flex:1;background:transparent;border:1px solid rgba(245,197,24,.25);border-radius:12px;padding:16px;color:rgba(245,197,24,.7);font-family:'Space Mono',monospace;font-size:11px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;transition:all .3s;}
+.ivw-again:hover{background:rgba(245,197,24,.07);color:#f5c518;}
+
+/* Saved */
+.ivw-saved-hdr{font-family:'Space Mono',monospace;font-size:11px;letter-spacing:3px;color:rgba(232,224,240,.35);text-transform:uppercase;margin:32px 0 14px;}
+.ivw-saved-card{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:14px;padding:16px 20px;margin-bottom:10px;cursor:pointer;transition:border .3s;}
+.ivw-saved-card:hover{border-color:rgba(245,197,24,.25);}
+.ivw-saved-src{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:2px;color:#ffaa00;margin-bottom:5px;}
+.ivw-saved-prev{font-size:16px;color:rgba(232,224,240,.55);font-style:italic;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+`;
+
+const SCRIPTURES = ["Bhagavad Gita","Upanishads","Ramayana","Mahabharata","Vedas","Puranas"];
+const QUICK_PROMPTS = [
+  "I keep failing despite working hard",
+  "My relationship is breaking apart",
+  "I can't control my anger",
+  "I feel lost and have no purpose",
+  "I fear death and the unknown",
+  "I'm jealous of others' success",
+  "How do I find inner peace?",
+  "I feel God has abandoned me",
+];
+
+function Stars() {
+  return (
+    <div className="ivw-stars">
+      {Array.from({ length: 80 }).map((_, i) => (
+        <div key={i} className="ivw-star" style={{
+          width: `${Math.random()*2+1}px`, height: `${Math.random()*2+1}px`,
+          left: `${Math.random()*100}%`, top: `${Math.random()*100}%`,
+          "--d": `${2+Math.random()*5}s`, "--dl": `${Math.random()*5}s`,
+          "--op": `${0.1+Math.random()*0.5}`,
+        }} />
+      ))}
+      <div className="ivw-nb" style={{ width:500, height:500, right:"-10%", top:"5%", background:"rgba(255,170,0,.08)" }} />
+      <div className="ivw-nb" style={{ width:400, height:400, left:"-8%", bottom:"15%", background:"rgba(123,47,255,.1)" }} />
+    </div>
+  );
+}
+
+function Field({ icon, label, labelClass, text, textClass, children }) {
+  const content = text || children;
+  if (!content) return null;
+  return (
+    <div>
+      {icon && <span className="ivw-sec-icon">{icon}</span>}
+      <span className={`ivw-sec-lbl ${labelClass}`}>{label}</span>
+      <div className={`ivw-sec-text ${textClass || ""}`}>{content}</div>
+    </div>
+  );
+}
+
+export default function InnerVoiceWisdom() {
+  const [situation, setSituation] = useState("");
+  const [scripture, setScripture] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [result, setResult] = useState(null);
+  const [error, setError] = useState("");
+  const [savedShlokas, setSavedShlokas] = useState(() => {
+    try { return JSON.parse(localStorage.getItem("iv_shlokas") || "[]"); } catch { return []; }
+  });
+  const [viewingSaved, setViewingSaved] = useState(null);
+
+  useEffect(() => {
+    const s = document.createElement("style");
+    s.textContent = CSS;
+    document.head.appendChild(s);
+    return () => document.head.removeChild(s);
+  }, []);
+
+  const fetchWisdom = async (sit) => {
+    const q = (sit || situation).trim();
+    if (!q) return;
+    if (sit) setSituation(sit);
+    setLoading(true); setError(""); setResult(null); setViewingSaved(null);
+    try {
+      const msg = scripture
+        ? `Scripture preference: ${scripture}\n\nMy situation: ${q}`
+        : `My situation: ${q}`;
+      const data = await callAI(msg);
+      if (!data || Object.keys(data).length === 0) throw new Error("Empty response from AI");
+      setResult(data);
+    } catch(e) {
+      setError(e.message || "Could not retrieve wisdom. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const saveShloka = () => {
+    if (!result) return;
+    const entry = { id: Date.now(), source: result.source, chapter: result.chapter, situation: situation.slice(0,80), result };
+    const updated = [entry, ...savedShlokas].slice(0, 20);
+    setSavedShlokas(updated);
+    localStorage.setItem("iv_shlokas", JSON.stringify(updated));
+  };
+
+  const display = viewingSaved?.result || result;
+
+  return (
+    <div className="ivw-app">
+      <style>{CSS}</style>
+      <Stars />
+      <div className="ivw-wrap">
+        <Link to="/inner-voice" className="ivw-back">← Inner Voice</Link>
+
+        <div className="ivw-hdr">
+          <div className="ivw-eyebrow">Ancient Vedic Scripture</div>
+          <h1 className="ivw-h1">Shloka Oracle</h1>
+          <p className="ivw-hsub">The exact verse that speaks to your situation — not a random quote</p>
+        </div>
+
+        {!display ? (
+          <>
+            {/* Scripture filter */}
+            <div className="ivw-pills">
+              <div className={`ivw-pill${scripture===""?" on":""}`} onClick={()=>setScripture("")}>Any Scripture</div>
+              {SCRIPTURES.map(s=>(
+                <div key={s} className={`ivw-pill${scripture===s?" on":""}`} onClick={()=>setScripture(s)}>{s}</div>
+              ))}
+            </div>
+
+            <div className="ivw-form">
+              <label className="ivw-flabel">What are you going through?</label>
+              <textarea
+                className="ivw-ta"
+                placeholder={`Describe your situation honestly and specifically...\n\nExample: "I worked hard for 2 years on my startup. It failed. I feel God doesn't reward honest effort."`}
+                value={situation}
+                onChange={e=>setSituation(e.target.value)}
+              />
+
+              <label className="ivw-flabel">Or pick a quick situation</label>
+              <div className="ivw-qps">
+                {QUICK_PROMPTS.map(p=>(
+                  <button key={p} className="ivw-qp" onClick={()=>fetchWisdom(p)}>{p}</button>
+                ))}
+              </div>
+
+              {loading ? (
+                <div className="ivw-loader-wrap">
+                  <div className="ivw-spin" />
+                  <div className="ivw-ltxt">Searching the scriptures...</div>
+                </div>
+              ) : (
+                <button className="ivw-btn" onClick={()=>fetchWisdom()} disabled={situation.trim().length < 8}>
+                  🕉 &nbsp; Receive the Verse
+                </button>
+              )}
+              {error && <div className="ivw-err">⚠ {error}</div>}
+            </div>
+
+            {/* Saved shlokas */}
+            {savedShlokas.length > 0 && (
+              <>
+                <div className="ivw-saved-hdr">📿 Your Saved Shlokas ({savedShlokas.length})</div>
+                {savedShlokas.map(s=>(
+                  <div key={s.id} className="ivw-saved-card" onClick={()=>setViewingSaved(s)}>
+                    <div className="ivw-saved-src">{s.source} · {s.chapter}</div>
+                    <div className="ivw-saved-prev">{s.situation}...</div>
+                  </div>
+                ))}
+              </>
+            )}
+          </>
+        ) : (
+          <div className="ivw-result">
+
+            {/* Source header */}
+            <div className="ivw-src-row">
+              <span className="ivw-src-badge">{display.source || "Vedic Scripture"}</span>
+              {display.chapter && <span className="ivw-src-chapter">{display.chapter}</span>}
+            </div>
+
+            {/* The Shloka */}
+            <div className="ivw-shloka">
+              <span className="ivw-shloka-deco tl">॥</span>
+              <span className="ivw-shloka-deco br">॥</span>
+              {display.devanagari && <div className="ivw-dev">{display.devanagari}</div>}
+              {display.transliteration && <div className="ivw-roman">{display.transliteration}</div>}
+              {display.wordByWord && (
+                <>
+                  <div className="ivw-wbw-divider" />
+                  <div className="ivw-wbw">{display.wordByWord}</div>
+                </>
+              )}
+            </div>
+
+            {/* Content sections */}
+            <div className="ivw-sections">
+
+              {display.meaning && (
+                <div className="ivw-sec meaning">
+                  <Field icon="📖" label="Meaning" labelClass="lbl-meaning" text={display.meaning} textClass="gold" />
+                </div>
+              )}
+
+              {display.application && (
+                <div className="ivw-sec application">
+                  <Field icon="🎯" label="How This Speaks to Your Situation" labelClass="lbl-app" text={display.application} />
+                </div>
+              )}
+
+              {display.deeperWisdom && (
+                <div className="ivw-sec wisdom">
+                  <Field icon="🔮" label="Deeper Wisdom" labelClass="lbl-wisdom" text={display.deeperWisdom} textClass="italic" />
+                </div>
+              )}
+
+              {display.action && (
+                <div className="ivw-sec action">
+                  <Field icon="⚡" label="Your Action Today" labelClass="lbl-action" text={display.action} />
+                </div>
+              )}
+
+              {display.relatedVerse && (
+                <div className="ivw-sec related">
+                  <Field icon="🔗" label="Also See" labelClass="lbl-related" text={display.relatedVerse} textClass="small" />
+                </div>
+              )}
+
+            </div>
+
+            {/* Mantra */}
+            {display.mantra && (
+              <div className="ivw-mantra">
+                <span className="ivw-mantra-lbl">🕉 Daily Contemplation Mantra</span>
+                <div className="ivw-mantra-txt">"{display.mantra}"</div>
+                {display.mantraCount && <div className="ivw-mantra-count">↳ {display.mantraCount}</div>}
+              </div>
+            )}
+
+            <div className="ivw-btns">
+              <button className="ivw-save" onClick={saveShloka}>✦ Save Shloka</button>
+              <button className="ivw-again" onClick={()=>{ setResult(null); setViewingSaved(null); setSituation(""); }}>
+                ↩ Seek Another
+              </button>
+            </div>
+
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}

@@ -81,7 +81,7 @@ Respond ONLY with valid JSON (no markdown, no code fences) in EXACTLY this struc
         "X-Title": "Spiritual AI Birth Chart",
       },
       body: JSON.stringify({
-        model: "mistralai/mistral-7b-instruct",
+        model: "google/gemma-4-31b-it:free",
         max_tokens: 1800,
         messages: [{ role: "user", content: prompt }],
       }),
@@ -137,7 +137,7 @@ Question: "${question}"`;
         "X-Title": "Spiritual AI Chart Chat",
       },
       body: JSON.stringify({
-        model: "mistralai/mistral-7b-instruct",
+        model: "google/gemma-4-31b-it:free",
         max_tokens: 400,
         messages: [{ role: "user", content: prompt }],
       }),

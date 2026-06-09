@@ -16,6 +16,11 @@ import Blog from "./pages/Blog";
 import About from "./pages/About";
 import Contact from "./pages/Contact";
 import PalmReading from "./pages/PalmReading";
+import InnerVoice from "./pages/InnerVoice";
+import InnerVoiceChat from "./pages/InnerVoiceChat";
+import InnerVoiceDashboard from "./pages/InnerVoiceDashboard";
+import InnerVoiceJournal from "./pages/InnerVoiceJournal";
+import InnerVoiceWisdom from "./pages/InnerVoiceWisdom";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -103,6 +108,46 @@ const AnimatedRoutes = () => {
           element={
             <PageTransition>
               <PalmReading />
+            </PageTransition>
+          }
+        />
+        <Route
+          path="/inner-voice"
+          element={
+            <PageTransition>
+              <InnerVoice />
+            </PageTransition>
+          }
+        />
+        <Route
+          path="/inner-voice/chat"
+          element={
+            <PageTransition>
+              <InnerVoiceChat />
+            </PageTransition>
+          }
+        />
+        <Route
+          path="/inner-voice/dashboard"
+          element={
+            <PageTransition>
+              <InnerVoiceDashboard />
+            </PageTransition>
+          }
+        />
+        <Route
+          path="/inner-voice/journal"
+          element={
+            <PageTransition>
+              <InnerVoiceJournal />
+            </PageTransition>
+          }
+        />
+        <Route
+          path="/inner-voice/wisdom"
+          element={
+            <PageTransition>
+              <InnerVoiceWisdom />
             </PageTransition>
           }
         />
