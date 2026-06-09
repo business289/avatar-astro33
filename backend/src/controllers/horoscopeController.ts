@@ -105,3 +105,39 @@ export const getAllDailyHoroscopes = async (req: Request, res: Response): Promis
     });
   }
 };
+
+export const getHoroscopeBySign = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { sign } = req.params;
+
+    if (!sign) {
+      res.status(400).json({ error: 'Zodiac sign is required' });
+      return;
+    }
+
+    const horoscope = await astroApiService.getDailyHoroscope(sign);
+
+    res.status(200).json({
+      success: true,
+      data: horoscope,
+    });
+  } catch (error: any) {
+    console.error('Error fetching horoscope by sign:', error);
+    res.status(500).json({
+      success: false,
+      error: error.message || 'Failed to fetch horoscope',
+    });
+  }
+};
+
+export const createHoroscope = async (req: Request, res: Response): Promise<void> => {
+  try {
+    res.status(501).json({ success: false, error: 'Not implemented' });
+  } catch (error: any) {
+    console.error('Error creating horoscope:', error);
+    res.status(500).json({
+      success: false,
+      error: error.message || 'Failed to create horoscope',
+    });
+  }
+};

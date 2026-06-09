@@ -59,7 +59,7 @@ Respond ONLY with valid JSON (no markdown, no explanation) in exactly this struc
       }),
     });
 
-    const data = await response.json();
+    const data = await response.json() as any;
 
     if (data.error) {
       return res.status(500).json({ error: data.error.message });

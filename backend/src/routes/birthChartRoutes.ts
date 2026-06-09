@@ -87,7 +87,7 @@ Respond ONLY with valid JSON (no markdown, no code fences) in EXACTLY this struc
       }),
     });
 
-    const data = await response.json();
+    const data = await response.json() as any;
     if (data.error) return res.status(500).json({ error: data.error.message });
 
     const raw = data.choices?.[0]?.message?.content || "";
@@ -143,7 +143,7 @@ Question: "${question}"`;
       }),
     });
 
-    const data = await response.json();
+    const data = await response.json() as any;
     if (data.error) return res.status(500).json({ error: data.error.message });
 
     const answer = data.choices?.[0]?.message?.content || "";
