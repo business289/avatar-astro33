@@ -2,384 +2,1332 @@ import { useState, useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
 
 const fl = document.createElement("link"); fl.rel = "stylesheet";
-fl.href = "https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Space+Mono:wght@400;700&display=swap";
+fl.href = "https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Inter:wght@300;400;500;600&family=Space+Mono:wght@400;700&display=swap";
 if (!document.head.querySelector("link[href*='Cinzel']")) document.head.appendChild(fl);
-
 
 const GROQ_API_KEY = import.meta.env.VITE_GROQ_API_KEY;
 const GROQ_URL = "https://api.groq.com/openai/v1/chat/completions";
 
-async function callAI(systemPrompt, userMsg) {
+const PANDIT_CONSULTATION_SYSTEM = `You are Pandit Rameshwar Ji, a revered Vedic astrologer and spiritual guide with 40 years of Jyotish experience. You speak warmly, like a wise elder — caring, patient, never preachy.
+
+YOUR JOB IN CONSULTATION MODE:
+- Have a natural, empathetic conversation to understand the user's problem deeply
+- Ask ONE focused follow-up question at a time to gather more context
+- Do NOT give remedies or mantras yet — just listen, understand, and ask
+- After 3-5 exchanges about a real problem, include "readyForDiagnosis": true
+
+RESPONSE FORMAT — always return valid JSON:
+
+If user sends a greeting or casual message (hello, hi, namaste, how are you, etc.):
+{"type":"greeting","message":"Namaste! I am Pandit Rameshwar Ji. It is my honour to guide you. Please share what troubles your heart — whether it is career, relationships, health, finances, or spiritual matters — and I will listen carefully."}
+
+If user shares a life problem (gather more info):
+{"type":"gathering","message":"Your warm empathetic response. Acknowledge what they shared, then ask ONE specific follow-up question.","progress":30,"readyForDiagnosis":false}
+
+After enough context (3-5 exchanges about the same problem):
+{"type":"gathering","message":"Your warm response showing full understanding.","progress":85,"readyForDiagnosis":true}
+
+Always respond in the same language as the user (Hindi/English/Hinglish). Keep messages warm and human. No jargon.`;
+
+const PANDIT_DIAGNOSIS_SYSTEM = `You are Pandit Rameshwar Ji, a revered Vedic astrologer with 40 years of Jyotish experience. Generate a complete spiritual diagnosis report from the consultation. Return ONLY valid JSON with this exact structure:
+{
+  "diagnosis": {
+    "rootCause": "1-2 sentence astrological root cause",
+    "planetaryInfluence": "Which planets and how they affect the person",
+    "karmicPattern": "The karmic pattern or past-life influence",
+    "lifeAreaAffected": ["Career","Confidence","Financial Stability"],
+    "severityScore": 7,
+    "summary": "2-3 sentence overall diagnosis",
+    "saturnScore": 78,
+    "whyThisDiagnosis": ["Saturn transiting 6th from Moon","Saturn aspecting natal Mars","Weak Jupiter support","Current Dasha: Saturn-Mercury"],
+    "areaScores": {"Career":8,"Health":6,"Finances":4,"Relationships":3},
+    "confidenceLevels": {"Career":"High","Health":"Medium","Relationships":"Low"}
+  },
+  "forecast": {
+    "currentPhase": "Challenging",
+    "currentPeriod": "Jun 2025 - Aug 2025",
+    "reliefFrom": "Sep 2025 onwards",
+    "bestMonths": ["Oct 2025","Nov 2025","Jan 2026"],
+    "favorableDates": ["18 Jun","22 Jun","29 Jun"],
+    "avoidDates": ["15 Jun","21 Jun"]
+  },
+  "spiritualInsight": {
+    "soulLesson": "Key lesson the soul is learning",
+    "currentPhase": "Name of current life phase",
+    "phaseDescription": "2-3 sentences describing this phase",
+    "growthOpportunity": "How this challenge is an opportunity"
+  },
+  "remedies": [
+    {"name":"Remedy name","description":"What to do exactly","duration":"21 Days","benefit":"Expected benefit","icon":"🪔","cost":"Free","effort":"Low","effectiveness":90}
+  ],
+  "mantra": {
+    "sanskrit":"Mantra in Devanagari","transliteration":"Phonetic romanized with hyphens",
+    "translation":"Literal word-by-word meaning","meaning":"Full spiritual significance",
+    "purpose":"Health / Wealth / Peace / Protection / Career","deity":"Deity invoked",
+    "source":"Scriptural source","count":"108","duration":"40",
+    "bestTime":"Brahma Muhurta (4:30-6 AM)","precautions":"Specific precautions or None",
+    "repetitionSymbolism":"Why this specific count"
+  },
+  "puja": {
+    "name":"Puja name","procedure":"Step by step procedure",
+    "estimatedCost":"Rs. 500 - Rs. 1000","duration":"1-2 hours",
+    "materials":["Item 1","Item 2","Item 3"],"benefits":"Expected spiritual benefits"
+  },
+  "gemstone": {
+    "name":"Gemstone name","benefits":"Specific benefits","wearingFinger":"Index Finger",
+    "wearingDay":"Thursday","metal":"Gold","weight":"3-5 carats"
+  },
+  "donations": {
+    "items":["Black sesame","Blankets","Food to laborers","Feeding stray dogs"],
+    "bestDay":"Saturday","significance":"Why these donations help"
+  },
+  "practicalGuidance": [
+    "Maintain a strict daily schedule",
+    "Avoid unnecessary debt this period",
+    "Focus on long-term goals over quick wins",
+    "Prioritize health checkups"
+  ],
+  "dailyActions": [
+    {"task":"Chant mantra 108 times","done":false},
+    {"task":"Offer mustard oil lamp","done":false},
+    {"task":"Read Hanuman Chalisa","done":false},
+    {"task":"Donate black sesame","done":false},
+    {"task":"Practice patience in conflicts","done":false}
+  ],
+  "planetDashboard": [
+    {"planet":"Sun","score":85,"icon":"☀️"},
+    {"planet":"Moon","score":62,"icon":"🌙"},
+    {"planet":"Mars","score":70,"icon":"🔴"},
+    {"planet":"Mercury","score":91,"icon":"💚"},
+    {"planet":"Jupiter","score":55,"icon":"🟡"},
+    {"planet":"Venus","score":80,"icon":"🤍"},
+    {"planet":"Saturn","score":28,"icon":"⚫"}
+  ],
+  "dailyPractices": [
+    {"name":"Morning Meditation","duration":"10 mins","icon":"🧘","benefit":"Mental clarity"},
+    {"name":"Gratitude Journal","duration":"5 mins","icon":"📝","benefit":"Positive mindset"},
+    {"name":"Mantra Chanting","duration":"20 mins","icon":"📿","benefit":"Spiritual protection"}
+  ],
+  "karmaScore": {
+    "current": 15,
+    "positive":["Consistent effort","Helping others"],
+    "negative":["Impatience","Self-doubt"],
+    "improvements":["Daily gratitude","Acts of charity"],
+    "completedDays": 3,
+    "completedPujas": 1,
+    "progressToNeutral": 72
+  },
+  "timeline": [
+    {"week":1,"title":"Mental Calmness","description":"You will notice reduced anxiety and better sleep"},
+    {"week":2,"title":"Reduced Stress","description":"Challenging situations will feel more manageable"},
+    {"week":3,"title":"Improved Confidence","description":"You will make decisions with more clarity"},
+    {"week":4,"title":"Positive Opportunities","description":"New doors will begin to open"}
+  ],
+  "followUpPrompts": [
+    "Why is Saturn affecting me?",
+    "Will this impact my career?",
+    "Which remedy is most important?",
+    "What should I avoid this month?"
+  ],
+  "guidance": "Warm personalized message from Pandit Ji. 3-4 sentences. Start with My child, end with encouragement."
+}`;
+
+async function callConsultation(messages) {
   const res = await fetch(GROQ_URL, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "Authorization": `Bearer ${GROQ_API_KEY}`
-    },
+    headers: { "Content-Type": "application/json", "Authorization": `Bearer ${GROQ_API_KEY}` },
+    body: JSON.stringify({ model: "llama-3.3-70b-versatile", temperature: 0.7, max_tokens: 1000, response_format: { type: "json_object" }, messages }),
+  });
+  const data = await res.json();
+  if (data.error) throw new Error(data.error.message);
+  try { return JSON.parse(data.choices?.[0]?.message?.content || "{}"); }
+  catch { return { type: "greeting", message: "Namaste! Please share what is troubling you, my child." }; }
+}
+
+async function callDiagnosis(conversationHistory) {
+  const summary = conversationHistory
+    .map(m => `${m.role === "user" ? "Seeker" : "Pandit Ji"}: ${typeof m.content === "string" ? m.content : m.content?.message || ""}`)
+    .join("\n");
+  const res = await fetch(GROQ_URL, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", "Authorization": `Bearer ${GROQ_API_KEY}` },
     body: JSON.stringify({
-      model: "llama-3.3-70b-versatile",
-      temperature: 0.7,
-      max_tokens: 1200,
+      model: "llama-3.3-70b-versatile", temperature: 0.6, max_tokens: 4000,
       response_format: { type: "json_object" },
       messages: [
-        { role: "system", content: systemPrompt },
-        { role: "user", content: userMsg }
-      ]
+        { role: "system", content: PANDIT_DIAGNOSIS_SYSTEM },
+        { role: "user", content: `Based on this consultation, generate the complete diagnosis report:\n\n${summary}` },
+      ],
     }),
   });
   const data = await res.json();
-  if (data.error) throw new Error(`API error: ${data.error.message}`);
-  const raw = data.choices?.[0]?.message?.content || "{}";
-  try { return JSON.parse(raw); } catch(e) { const m = raw.match(/[\s\S]*}/); return m ? JSON.parse(m[0]) : {}; }
+  if (data.error) throw new Error(data.error.message);
+  try { return JSON.parse(data.choices?.[0]?.message?.content || "{}"); }
+  catch { return null; }
 }
 
+function loadJsPDF() {
+  return new Promise((resolve, reject) => {
+    if (window.jspdf) { resolve(window.jspdf); return; }
+    const s = document.createElement("script");
+    s.src = "https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js";
+    s.onload = () => resolve(window.jspdf);
+    s.onerror = reject;
+    document.head.appendChild(s);
+  });
+}
+
+async function downloadReportPDF(report, userName) {
+  const { jsPDF } = await loadJsPDF();
+  const doc = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
+  const PW = 210, PH = 297, M = 18, CW = PW - M * 2;
+  let y = 0;
+  const GOLD = [212,175,55], WHITE = [236,236,236], DARK = [14,14,24], MID = [40,40,60], LIGHT = [160,160,180];
+
+  const ensurePage = (need=20) => { if (y+need>PH-15) { doc.addPage(); y=M; } };
+  const sectionHeader = (icon, title, color=GOLD) => {
+    ensurePage(18);
+    doc.setFillColor(20,20,35); doc.roundedRect(M,y,CW,11,2,2,"F");
+    doc.setFont("helvetica","bold"); doc.setFontSize(10); doc.setTextColor(...color);
+    doc.text(`${icon}  ${title.toUpperCase()}`,M+4,y+7.5); y+=15;
+  };
+  const body = (txt, color=WHITE, indent=0) => {
+    if (!txt) return;
+    doc.setFont("helvetica","normal"); doc.setFontSize(9.5); doc.setTextColor(...color);
+    const lines = doc.splitTextToSize(String(txt),CW-indent);
+    lines.forEach(line => { ensurePage(6); doc.text(line,M+indent,y); y+=5.5; }); y+=1;
+  };
+  const label = (txt) => { doc.setFont("helvetica","bold"); doc.setFontSize(7.5); doc.setTextColor(...LIGHT); doc.text(txt.toUpperCase(),M,y); y+=4; };
+  const progressBar = (lbl, pct, color=GOLD) => {
+    ensurePage(14);
+    doc.setFont("helvetica","normal"); doc.setFontSize(8.5); doc.setTextColor(...WHITE); doc.text(lbl,M,y);
+    doc.setTextColor(...color); doc.text(`${pct}%`,PW-M-8,y); y+=4;
+    doc.setFillColor(30,30,50); doc.roundedRect(M,y,CW,4,1,1,"F");
+    doc.setFillColor(...color); doc.roundedRect(M,y,(CW*Math.min(pct,100))/100,4,1,1,"F"); y+=8;
+  };
+
+  // Cover
+  doc.setFillColor(...DARK); doc.rect(0,0,PW,PH,"F");
+  doc.setFillColor(...GOLD); doc.rect(0,0,PW,3,"F");
+  doc.setFont("helvetica","bold"); doc.setFontSize(22); doc.setTextColor(...GOLD);
+  doc.text("AI GURU",PW/2,45,{align:"center"});
+  doc.setFont("helvetica","normal"); doc.setFontSize(11); doc.setTextColor(...LIGHT);
+  doc.text("Pandit Rameshwar Ji — Vedic Spiritual Diagnosis",PW/2,55,{align:"center"});
+  doc.setFontSize(28); doc.setTextColor(...GOLD);
+  doc.text("Diagnosis & Remedy Report",PW/2,80,{align:"center"});
+  doc.setDrawColor(...GOLD); doc.setLineWidth(0.5); doc.line(M+20,86,PW-M-20,86);
+  doc.setFont("helvetica","normal"); doc.setFontSize(10); doc.setTextColor(...WHITE);
+  doc.text(`Prepared for: ${userName||"Seeker"}`,PW/2,96,{align:"center"});
+  doc.text(`Generated: ${new Date().toLocaleDateString("en-IN",{day:"numeric",month:"long",year:"numeric"})}`,PW/2,104,{align:"center"});
+  if (report.diagnosis?.summary) {
+    doc.setFillColor(20,20,40); doc.roundedRect(M+10,116,CW-20,40,3,3,"F");
+    doc.setTextColor(...LIGHT); doc.setFontSize(8.5);
+    const sumLines = doc.splitTextToSize(report.diagnosis.summary,CW-40);
+    sumLines.forEach((l,i) => doc.text(l,PW/2,128+i*6,{align:"center"}));
+  }
+  if (report.diagnosis?.severityScore) {
+    const sc = report.diagnosis.severityScore;
+    const col = sc>=8?[239,68,68]:sc>=6?[245,158,11]:[34,197,94];
+    doc.setFillColor(...col); doc.roundedRect(PW/2-25,166,50,14,3,3,"F");
+    doc.setFont("helvetica","bold"); doc.setFontSize(9); doc.setTextColor(255,255,255);
+    doc.text(`${sc>=8?"HIGH":sc>=6?"MODERATE":"MANAGEABLE"}  ${sc}/10`,PW/2,175,{align:"center"});
+  }
+  doc.setFont("helvetica","italic"); doc.setFontSize(8); doc.setTextColor(...LIGHT);
+  doc.text("This report is for spiritual guidance only.",PW/2,PH-20,{align:"center"});
+  doc.setFillColor(...GOLD); doc.rect(0,PH-3,PW,3,"F");
+
+  // Page 2: Diagnosis
+  doc.addPage(); doc.setFillColor(...DARK); doc.rect(0,0,PW,PH,"F"); y=M;
+  sectionHeader("🔭","Astrological Diagnosis",[110,231,249]);
+  if (report.diagnosis?.rootCause) { label("Root Cause"); body(report.diagnosis.rootCause); }
+  if (report.diagnosis?.planetaryInfluence) { label("Planetary Influence"); body(report.diagnosis.planetaryInfluence); }
+  if (report.diagnosis?.karmicPattern) { label("Karmic Pattern"); body(report.diagnosis.karmicPattern); }
+  if (report.diagnosis?.saturnScore!==undefined) progressBar("Saturn Influence",(report.diagnosis.saturnScore||0),[239,68,68]);
+  if (report.diagnosis?.areaScores) {
+    label("Impact by Life Area");
+    Object.entries(report.diagnosis.areaScores).forEach(([area,score]) => progressBar(area,(score/10)*100,score>=7?[239,68,68]:score>=5?[245,158,11]:[34,197,94]));
+  }
+  if (report.diagnosis?.whyThisDiagnosis?.length) {
+    sectionHeader("🔍","Why This Diagnosis?",[196,181,253]);
+    report.diagnosis.whyThisDiagnosis.forEach(r => { ensurePage(8); doc.setFontSize(9); doc.setTextColor(134,239,172); doc.text("✓",M,y); doc.setTextColor(...WHITE); doc.text(r,M+6,y); y+=6; });
+  }
+
+  // Page 3: Forecast
+  if (report.forecast) {
+    doc.addPage(); doc.setFillColor(...DARK); doc.rect(0,0,PW,PH,"F"); y=M;
+    sectionHeader("🗓️","Forecast & Timeline",[110,231,249]);
+    if (report.forecast.currentPhase) { label("Current Phase"); body(report.forecast.currentPhase,[239,68,68]); }
+    if (report.forecast.reliefFrom) { label("Relief Expected"); body(report.forecast.reliefFrom,[134,239,172]); }
+    if (report.forecast.bestMonths?.length) { label("Best Months"); report.forecast.bestMonths.forEach(m_ => { doc.setFontSize(9); doc.setTextColor(134,239,172); doc.text(`✓  ${m_}`,M+4,y); y+=6; }); }
+    if (report.forecast.favorableDates?.length) { label("Favorable Dates"); report.forecast.favorableDates.forEach(d => { doc.setFontSize(9); doc.setTextColor(134,239,172); doc.text(`✓  ${d}`,M+4,y); y+=6; }); }
+    if (report.forecast.avoidDates?.length) { label("Avoid"); report.forecast.avoidDates.forEach(d => { doc.setFontSize(9); doc.setTextColor(239,68,68); doc.text(`⚠  ${d}`,M+4,y); y+=6; }); }
+  }
+
+  // Page 4: Remedies + Planets
+  doc.addPage(); doc.setFillColor(...DARK); doc.rect(0,0,PW,PH,"F"); y=M;
+  if (report.remedies?.length) {
+    sectionHeader("🌿","Prescribed Remedies",[253,164,175]);
+    report.remedies.forEach(r => {
+      ensurePage(28); doc.setFillColor(20,20,38); doc.roundedRect(M,y,CW,24,2,2,"F");
+      doc.setFont("helvetica","bold"); doc.setFontSize(10); doc.setTextColor(...GOLD);
+      doc.text(`${r.icon||"•"}  ${r.name}`,M+4,y+7);
+      doc.setFont("helvetica","normal"); doc.setFontSize(8.5); doc.setTextColor(...WHITE);
+      const dLines = doc.splitTextToSize(r.description||"",CW-12);
+      dLines.slice(0,2).forEach((l,j) => doc.text(l,M+4,y+13+j*5));
+      if (r.effectiveness!==undefined) { y+=26; progressBar(`${r.name} Effectiveness`,r.effectiveness,GOLD); y-=4; }
+      else y+=28;
+    });
+  }
+  if (report.planetDashboard?.length) {
+    ensurePage(60); sectionHeader("🪐","Planet Dashboard",GOLD);
+    report.planetDashboard.forEach(p => { const col=p.score>=70?[34,197,94]:p.score>=50?[245,158,11]:[239,68,68]; progressBar(`${p.icon}  ${p.planet}`,p.score,col); });
+  }
+
+  // Page 5: Mantra + Puja
+  doc.addPage(); doc.setFillColor(...DARK); doc.rect(0,0,PW,PH,"F"); y=M;
+  if (report.mantra) {
+    sectionHeader("📿","Mantra Recommendation",[196,181,253]);
+    if (report.mantra.sanskrit) { label("Mantra"); body(report.mantra.sanskrit,GOLD); }
+    if (report.mantra.transliteration) body(report.mantra.transliteration,[196,181,253]);
+    if (report.mantra.translation) { label("Translation"); body(report.mantra.translation,[212,175,55]); }
+    if (report.mantra.meaning) { label("Meaning"); body(report.mantra.meaning); }
+    [report.mantra.count&&`Count: ${report.mantra.count}×`,report.mantra.duration&&`Duration: ${report.mantra.duration} days`,report.mantra.bestTime&&`Best Time: ${report.mantra.bestTime}`].filter(Boolean)
+      .forEach(c => { doc.setFontSize(8.5); doc.setTextColor(0,255,170); doc.text(`• ${c}`,M,y); y+=5.5; });
+  }
+  if (report.puja) {
+    ensurePage(50); sectionHeader("🪔","Puja Recommendation",[251,191,36]);
+    body(report.puja.name,[251,191,36]);
+    if (report.puja.procedure) { label("Procedure"); body(report.puja.procedure); }
+    if (report.puja.materials?.length) { label("Materials"); report.puja.materials.forEach(mat => { doc.setFontSize(9); doc.setTextColor(...WHITE); doc.text(`• ${mat}`,M+4,y); y+=5.5; }); }
+    if (report.puja.benefits) { label("Benefits"); body(report.puja.benefits,[134,239,172]); }
+  }
+
+  // Page 6: Daily plan + Karma + Practical
+  doc.addPage(); doc.setFillColor(...DARK); doc.rect(0,0,PW,PH,"F"); y=M;
+  if (report.dailyActions?.length) {
+    sectionHeader("✅","Today's Action Plan",[134,239,172]);
+    report.dailyActions.forEach(a => { ensurePage(8); doc.setFontSize(9.5); doc.setTextColor(...WHITE); doc.setFillColor(30,30,50); doc.roundedRect(M,y-4,CW,7,1,1,"F"); doc.text(`☐  ${a.task}`,M+4,y); y+=9; });
+  }
+  if (report.karmaScore) {
+    ensurePage(40); sectionHeader("⚡","Karma & Spiritual Progress",GOLD);
+    doc.setFont("helvetica","bold"); doc.setFontSize(24); doc.setTextColor(...GOLD);
+    doc.text((report.karmaScore.current>0?`+${report.karmaScore.current}`:String(report.karmaScore.current)),PW/2,y+10,{align:"center"}); y+=16;
+    if (report.karmaScore.progressToNeutral) progressBar("Progress to Neutral",report.karmaScore.progressToNeutral,GOLD);
+  }
+  if (report.practicalGuidance?.length) {
+    ensurePage(40); sectionHeader("💡","Practical Guidance",[249,168,212]);
+    report.practicalGuidance.forEach(g => { ensurePage(8); doc.setFontSize(9.5); doc.setTextColor(...WHITE); doc.text(`• ${g}`,M+4,y); y+=6; });
+  }
+
+  // Last page: Gemstone + Guidance
+  doc.addPage(); doc.setFillColor(...DARK); doc.rect(0,0,PW,PH,"F"); y=M;
+  if (report.gemstone) {
+    sectionHeader("💎","Gemstone Recommendation",[134,239,172]);
+    body(report.gemstone.name,[134,239,172]);
+    [["Benefits",report.gemstone.benefits],["Wearing Finger",report.gemstone.wearingFinger],["Best Day",report.gemstone.wearingDay],["Metal",report.gemstone.metal],["Weight",report.gemstone.weight]]
+      .forEach(([l,v]) => { if(v){label(l);body(v);} });
+  }
+  if (report.spiritualInsight) {
+    ensurePage(50); sectionHeader("✨","Spiritual Insight",[196,181,253]);
+    if (report.spiritualInsight.currentPhase) { label("Current Phase"); body(report.spiritualInsight.currentPhase,[196,181,253]); }
+    if (report.spiritualInsight.soulLesson) { label("Soul Lesson"); body(report.spiritualInsight.soulLesson,[212,175,55]); }
+    if (report.spiritualInsight.growthOpportunity) { label("Growth Opportunity"); body(report.spiritualInsight.growthOpportunity); }
+  }
+  if (report.guidance) {
+    ensurePage(40); sectionHeader("🧘","Personal Guidance from Pandit Ji",GOLD);
+    body(report.guidance,[253,230,138]);
+    doc.setFont("helvetica","italic"); doc.setFontSize(9); doc.setTextColor(...LIGHT);
+    doc.text("— Pandit Rameshwar Ji",PW-M,y,{align:"right"}); y+=8;
+  }
+
+  // Footer on all pages
+  const totalPages = doc.getNumberOfPages();
+  for (let i=1;i<=totalPages;i++) {
+    doc.setPage(i);
+    doc.setFillColor(14,14,24); doc.rect(0,PH-10,PW,10,"F");
+    doc.setFillColor(...GOLD); doc.rect(0,PH-1,PW,1,"F");
+    doc.setFont("helvetica","normal"); doc.setFontSize(7.5); doc.setTextColor(...LIGHT);
+    doc.text("AI Guru — Pandit Rameshwar Ji — Vedic Spiritual Diagnosis",M,PH-4);
+    doc.text(`Page ${i} of ${totalPages}`,PW-M,PH-4,{align:"right"});
+  }
+  const name = (userName||"Seeker").replace(/\s+/g,"_");
+  doc.save(`AI_Guru_Report_${name}_${new Date().toISOString().slice(0,10)}.pdf`);
+}
 
 const CSS = `
-.ivc-app{min-height:100vh;background:#03010a;color:#e8e0f0;font-family:'Cormorant Garamond',serif;font-size:18px;overflow-x:hidden;position:relative;}
-.ivc-stars{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden;}
-.ivc-star{position:absolute;border-radius:50%;background:#fff;animation:ivc-twk var(--d,3s) ease-in-out infinite;animation-delay:var(--dl,0s);opacity:var(--op,.5);}
-@keyframes ivc-twk{0%,100%{opacity:var(--op,.5);transform:scale(1);}50%{opacity:.05;transform:scale(.3);}}
-.ivc-nb{position:fixed;border-radius:50%;filter:blur(110px);pointer-events:none;z-index:0;}
-.ivc-content{position:relative;z-index:1;display:flex;flex-direction:column;min-height:100vh;}
-
-/* Header */
-.ivc-header{padding:70px 20px 20px;text-align:center;}
-.ivc-back{display:inline-flex;align-items:center;gap:6px;font-family:'Space Mono',monospace;font-size:8px;letter-spacing:3px;color:rgba(245,197,24,.5);text-transform:uppercase;text-decoration:none;transition:color .3s;margin-bottom:18px;}
-.ivc-back:hover{color:#f5c518;}
-.ivc-avatar-ring{width:76px;height:76px;border-radius:50%;background:linear-gradient(135deg,rgba(123,47,255,.5),rgba(245,197,24,.3));border:2px solid rgba(245,197,24,.4);display:flex;align-items:center;justify-content:center;font-size:34px;margin:0 auto 12px;box-shadow:0 0 40px rgba(123,47,255,.35);}
-.ivc-eyebrow{font-family:'Space Mono',monospace;font-size:8px;letter-spacing:5px;color:rgba(123,47,255,.8);text-transform:uppercase;margin-bottom:6px;}
-.ivc-hdr-title{font-family:'Cinzel Decorative',serif;font-size:clamp(20px,3.5vw,34px);color:#f5c518;margin-bottom:4px;}
-.ivc-hdr-sub{color:rgba(232,224,240,.4);font-style:italic;font-size:14px;margin-bottom:16px;}
-
-/* Online indicator */
-.ivc-status{display:inline-flex;align-items:center;gap:7px;font-family:'Space Mono',monospace;font-size:9px;letter-spacing:2px;color:rgba(0,255,170,.7);}
-.ivc-status-dot{width:8px;height:8px;border-radius:50%;background:#00ffaa;box-shadow:0 0 8px #00ffaa;animation:ivc-blink 2s ease-in-out infinite;}
-@keyframes ivc-blink{0%,100%{opacity:1;}50%{opacity:.3;}}
-
-/* Chat area */
-.ivc-chat{flex:1;max-width:800px;width:100%;margin:0 auto;padding:20px 20px 170px;display:flex;flex-direction:column;gap:18px;}
-
-/* Messages */
-.ivc-msg{display:flex;gap:10px;animation:ivc-fadein .4s ease-out;}
-@keyframes ivc-fadein{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;overflow:hidden;}
+.ivc-app{height:100vh;background:#0a0a0f;color:#ececec;font-family:'Inter',sans-serif;overflow:hidden;position:relative;}
+.ivc-canvas{position:fixed;inset:0;z-index:0;pointer-events:none;}
+.ivc-layout{position:relative;z-index:1;display:flex;height:100vh;overflow:hidden;}
+.ivc-sb{width:260px;min-width:260px;background:rgba(12,12,20,.97);border-right:1px solid rgba(255,255,255,.08);display:flex;flex-direction:column;height:100vh;overflow:hidden;flex-shrink:0;}
+@media(max-width:768px){.ivc-sb{position:fixed;left:0;top:0;bottom:0;z-index:100;transform:translateX(-100%);transition:transform .3s;}}
+@media(max-width:768px){.ivc-sb.open{transform:translateX(0);}}
+.ivc-sb-head{padding:16px 14px 12px;border-bottom:1px solid rgba(255,255,255,.07);flex-shrink:0;}
+.ivc-sb-back{display:flex;align-items:center;gap:8px;font-size:13px;color:rgba(255,255,255,.5);text-decoration:none;padding:7px 10px;border-radius:8px;transition:all .2s;margin-bottom:10px;}
+.ivc-sb-back:hover{background:rgba(255,255,255,.07);color:#fff;}
+.ivc-new-btn{display:flex;align-items:center;gap:10px;width:100%;padding:10px 14px;background:rgba(212,175,55,.12);border:1px solid rgba(212,175,55,.25);border-radius:10px;color:#D4AF37;font-size:14px;font-weight:500;cursor:pointer;transition:all .2s;font-family:'Inter',sans-serif;}
+.ivc-new-btn:hover{background:rgba(212,175,55,.22);}
+.ivc-sb-scroll{flex:1;overflow-y:auto;padding:8px;}
+.ivc-sb-scroll::-webkit-scrollbar{width:3px;}
+.ivc-sb-scroll::-webkit-scrollbar-thumb{background:rgba(255,255,255,.1);border-radius:2px;}
+.ivc-sb-section{padding:12px 8px 6px;font-size:10px;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,.28);font-family:'Space Mono',monospace;}
+.ivc-sb-item{display:flex;align-items:center;gap:10px;padding:10px;border-radius:9px;cursor:pointer;transition:all .2s;margin-bottom:2px;border:1px solid transparent;}
+.ivc-sb-item:hover{background:rgba(255,255,255,.07);}
+.ivc-sb-item.active{background:rgba(212,175,55,.1);border-color:rgba(212,175,55,.2);}
+.ivc-sb-item-icon{font-size:16px;flex-shrink:0;width:22px;text-align:center;}
+.ivc-sb-item-txt{font-size:14px;color:rgba(255,255,255,.72);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1;}
+.ivc-sb-item.active .ivc-sb-item-txt{color:#D4AF37;}
+.ivc-mantras-panel{background:rgba(139,92,246,.06);border:1px solid rgba(139,92,246,.15);border-radius:10px;margin:6px 8px;padding:10px 12px;display:none;}
+.ivc-mantras-panel.visible{display:block;}
+.ivc-mantra-saved-item{display:flex;align-items:flex-start;gap:8px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.05);}
+.ivc-mantra-saved-item:last-child{border-bottom:none;}
+.ivc-msi-name{font-size:13px;color:rgba(255,255,255,.75);line-height:1.4;}
+.ivc-msi-meta{font-size:11px;color:rgba(255,255,255,.35);margin-top:2px;}
+.ivc-no-saved{font-size:13px;color:rgba(255,255,255,.35);font-style:italic;text-align:center;padding:12px 0;}
+.ivc-recent-panel{margin:4px 8px;display:none;}
+.ivc-recent-panel.visible{display:block;}
+.ivc-recent-item{display:flex;align-items:center;gap:8px;padding:9px 10px;border-radius:8px;cursor:pointer;transition:all .2s;margin-bottom:2px;}
+.ivc-recent-item:hover{background:rgba(255,255,255,.06);}
+.ivc-recent-txt{font-size:13px;color:rgba(255,255,255,.65);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.ivc-sb-foot{padding:12px 14px;border-top:1px solid rgba(255,255,255,.07);flex-shrink:0;background:rgba(12,12,20,.97);}
+.ivc-profile{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:10px;cursor:pointer;transition:all .2s;}
+.ivc-profile:hover{background:rgba(255,255,255,.07);}
+.ivc-profile-av{width:36px;height:36px;min-width:36px;border-radius:50%;background:linear-gradient(135deg,#8B5CF6,#D4AF37);display:flex;align-items:center;justify-content:center;font-size:17px;}
+.ivc-profile-name{font-size:14px;color:rgba(255,255,255,.88);font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.ivc-profile-sub{font-size:11px;color:rgba(255,255,255,.38);margin-top:1px;}
+.ivc-main{flex:1;display:flex;flex-direction:column;min-width:0;height:100vh;overflow:hidden;}
+.ivc-header{padding:14px 24px;border-bottom:1px solid rgba(255,255,255,.07);display:flex;align-items:center;gap:14px;flex-shrink:0;background:rgba(10,10,15,.9);backdrop-filter:blur(10px);}
+.ivc-mob-menu{display:none;background:transparent;border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:7px 10px;color:rgba(255,255,255,.6);cursor:pointer;font-size:16px;}
+@media(max-width:768px){.ivc-mob-menu{display:flex;align-items:center;}}
+.ivc-hdr-av{width:38px;height:38px;min-width:38px;border-radius:50%;background:linear-gradient(135deg,rgba(139,92,246,.5),rgba(212,175,55,.35));border:1.5px solid rgba(212,175,55,.4);display:flex;align-items:center;justify-content:center;font-size:20px;}
+.ivc-hdr-name{font-family:'Cinzel Decorative',serif;font-size:17px;color:#D4AF37;line-height:1.2;}
+.ivc-hdr-sub{font-size:12px;color:rgba(255,255,255,.4);margin-top:2px;}
+.ivc-online{display:flex;align-items:center;gap:6px;font-size:12px;color:#00ffaa;margin-left:auto;}
+.ivc-online-dot{width:8px;height:8px;border-radius:50%;background:#00ffaa;animation:blink 2s ease-in-out infinite;}
+@keyframes blink{0%,100%{opacity:1;}50%{opacity:.2;}}
+.ivc-tabs{display:flex;padding:0 24px;border-bottom:1px solid rgba(255,255,255,.07);background:rgba(10,10,15,.85);flex-shrink:0;gap:4px;}
+.ivc-tab{padding:12px 18px;font-size:13px;font-weight:500;color:rgba(255,255,255,.45);cursor:pointer;border-bottom:2px solid transparent;transition:all .2s;display:flex;align-items:center;gap:8px;white-space:nowrap;}
+.ivc-tab:hover{color:rgba(255,255,255,.75);}
+.ivc-tab.active{color:#D4AF37;border-bottom-color:#D4AF37;}
+.ivc-tab-badge{background:rgba(212,175,55,.2);border:1px solid rgba(212,175,55,.35);border-radius:50px;padding:1px 7px;font-size:10px;font-family:'Space Mono',monospace;color:#D4AF37;}
+.ivc-progress-bar-wrap{padding:10px 24px;background:rgba(10,10,15,.7);border-bottom:1px solid rgba(255,255,255,.05);flex-shrink:0;}
+.ivc-progress-label{display:flex;justify-content:space-between;align-items:center;margin-bottom:7px;}
+.ivc-progress-title{font-size:11px;letter-spacing:2px;text-transform:uppercase;font-family:'Space Mono',monospace;color:rgba(255,255,255,.4);}
+.ivc-progress-pct{font-size:12px;font-family:'Space Mono',monospace;color:#D4AF37;}
+.ivc-progress-track{height:4px;background:rgba(255,255,255,.07);border-radius:2px;overflow:hidden;}
+.ivc-progress-fill{height:100%;background:linear-gradient(90deg,#8B5CF6,#D4AF37);border-radius:2px;transition:width .6s ease;}
+.ivc-gen-report-btn{margin-top:10px;width:100%;padding:10px;background:linear-gradient(135deg,rgba(212,175,55,.18),rgba(139,92,246,.12));border:1px solid rgba(212,175,55,.4);border-radius:10px;color:#D4AF37;font-size:13px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;letter-spacing:.5px;transition:all .25s;display:flex;align-items:center;justify-content:center;gap:8px;}
+.ivc-gen-report-btn:hover{background:linear-gradient(135deg,rgba(212,175,55,.28),rgba(139,92,246,.2));box-shadow:0 4px 20px rgba(212,175,55,.2);}
+.ivc-chat{flex:1;overflow-y:auto;padding:28px 28px 20px;display:flex;flex-direction:column;gap:22px;}
+.ivc-chat::-webkit-scrollbar{width:4px;}
+.ivc-chat::-webkit-scrollbar-thumb{background:rgba(255,255,255,.1);border-radius:2px;}
+.ivc-welcome{text-align:center;padding:32px 20px;max-width:620px;margin:0 auto;}
+.ivc-w-om{font-size:50px;margin-bottom:18px;filter:drop-shadow(0 0 20px rgba(212,175,55,.5));}
+.ivc-w-title{font-family:'Cinzel Decorative',serif;font-size:clamp(22px,4vw,34px);color:#D4AF37;margin-bottom:12px;}
+.ivc-w-sub{font-size:16px;color:rgba(255,255,255,.58);line-height:1.75;margin-bottom:28px;}
+.ivc-w-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;text-align:left;}
+@media(max-width:480px){.ivc-w-grid{grid-template-columns:1fr;}}
+.ivc-suggest{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:14px 16px;cursor:pointer;transition:all .25s;}
+.ivc-suggest:hover{background:rgba(212,175,55,.08);border-color:rgba(212,175,55,.35);}
+.ivc-sug-title{font-size:14px;color:#fff;font-weight:500;margin-bottom:4px;}
+.ivc-sug-sub{font-size:13px;color:rgba(255,255,255,.42);}
+.ivc-msg{display:flex;gap:12px;animation:msg-in .35s ease-out;}
+@keyframes msg-in{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
 .ivc-msg.user{flex-direction:row-reverse;}
-.ivc-av{width:36px;height:36px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:15px;}
-.ivc-av.guru{background:linear-gradient(135deg,rgba(123,47,255,.4),rgba(245,197,24,.2));border:1px solid rgba(245,197,24,.3);}
-.ivc-av.user{background:rgba(0,229,255,.12);border:1px solid rgba(0,229,255,.28);}
-.ivc-bubble{max-width:88%;}
-.ivc-user-bubble{background:rgba(0,229,255,.06);border:1px solid rgba(0,229,255,.17);border-radius:18px 18px 4px 18px;padding:16px 20px;}
-.ivc-user-text{font-size:16px;line-height:1.7;color:#e8e0f0;}
-
-/* Structured guru response */
-.ivc-guru-bubble{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:18px 18px 18px 4px;overflow:hidden;}
-.ivc-response-block{padding:14px 20px;border-bottom:1px solid rgba(255,255,255,.05);}
-.ivc-response-block:last-child{border-bottom:none;}
-.ivc-rblock-lbl{font-family:'Space Mono',monospace;font-size:8px;letter-spacing:3px;text-transform:uppercase;margin-bottom:7px;display:flex;align-items:center;gap:6px;}
-.rbl-diagnosis{color:rgba(245,197,24,.75);}
-.rbl-remedy{color:rgba(255,107,157,.8);}
-.rbl-mantra{color:rgba(123,47,255,.85);}
-.rbl-pooja{color:rgba(255,170,0,.85);}
-.rbl-guidance{color:rgba(0,229,255,.75);}
-.rbl-question{color:rgba(232,224,240,.45);}
-.ivc-rblock-text{font-size:15px;line-height:1.75;color:#e8e0f0;}
-.ivc-mantra-text{font-family:'Cinzel Decorative',serif;font-size:14px;letter-spacing:2px;color:#b57fff;line-height:1.9;}
-.ivc-mantra-count{font-family:'Space Mono',monospace;font-size:9px;color:rgba(123,47,255,.6);margin-top:6px;}
-.ivc-pooja-box{background:rgba(255,170,0,.06);border:1px solid rgba(255,170,0,.2);border-radius:10px;padding:14px;}
-.ivc-pooja-name{font-family:'Cinzel Decorative',serif;font-size:13px;color:#ffaa00;margin-bottom:5px;}
-.ivc-pooja-detail{font-size:13px;color:rgba(232,224,240,.65);line-height:1.6;}
-.ivc-question-text{font-size:15px;font-style:italic;color:rgba(232,224,240,.6);line-height:1.7;}
-.ivc-karma-tag{display:inline-flex;align-items:center;gap:5px;background:rgba(245,197,24,.1);border:1px solid rgba(245,197,24,.25);border-radius:50px;padding:3px 12px;font-family:'Space Mono',monospace;font-size:8px;letter-spacing:2px;color:rgba(245,197,24,.8);margin-top:8px;}
-
-/* Preset prompts */
-.ivc-presets{max-width:800px;margin:0 auto;padding:0 20px 14px;display:flex;flex-wrap:wrap;gap:8px;}
-.ivc-preset{background:rgba(123,47,255,.1);border:1px solid rgba(123,47,255,.25);border-radius:50px;padding:7px 16px;font-family:'Cormorant Garamond',serif;font-style:italic;font-size:14px;color:rgba(232,224,240,.65);cursor:pointer;transition:all .3s;white-space:nowrap;}
-.ivc-preset:hover{background:rgba(123,47,255,.22);color:#e8e0f0;border-color:rgba(123,47,255,.5);}
-
-/* Welcome */
-.ivc-welcome{background:rgba(123,47,255,.07);border:1px solid rgba(123,47,255,.2);border-radius:18px;padding:26px;text-align:center;}
-.ivc-welcome p{font-style:italic;font-size:17px;line-height:1.85;color:rgba(232,224,240,.75);margin:0;}
-
-/* Typing */
-.ivc-typing{display:flex;gap:5px;padding:12px 20px;align-items:center;}
-.ivc-dot{width:7px;height:7px;border-radius:50%;background:#f5c518;opacity:.4;animation:ivc-bounce .9s ease-in-out infinite;}
-.ivc-dot:nth-child(2){animation-delay:.2s;}
-.ivc-dot:nth-child(3){animation-delay:.4s;}
-@keyframes ivc-bounce{0%,60%,100%{transform:translateY(0);opacity:.4;}30%{transform:translateY(-7px);opacity:1;}}
-
-/* Input */
-.ivc-input-area{position:fixed;bottom:0;left:0;right:0;z-index:10;background:linear-gradient(to top,#03010a 65%,transparent);padding:14px 20px 22px;}
-.ivc-input-inner{max-width:800px;margin:0 auto;display:flex;gap:10px;align-items:flex-end;}
-.ivc-input-box{flex:1;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);border-radius:14px;padding:13px 17px;color:#e8e0f0;font-family:'Cormorant Garamond',serif;font-size:17px;resize:none;outline:none;transition:border .3s;min-height:50px;max-height:110px;}
-.ivc-input-box:focus{border-color:rgba(245,197,24,.45);box-shadow:0 0 0 2px rgba(245,197,24,.08);}
-.ivc-input-box::placeholder{color:rgba(232,224,240,.22);}
-.ivc-send-btn{background:linear-gradient(135deg,#f5c518,#f5a623);border:none;border-radius:13px;width:50px;height:50px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .3s;flex-shrink:0;font-size:18px;color:#03010a;}
-.ivc-send-btn:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 6px 22px rgba(245,197,24,.38);}
-.ivc-send-btn:disabled{opacity:.35;cursor:not-allowed;}
+.ivc-av{width:34px;height:34px;min-width:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;margin-top:2px;}
+.ivc-av.guru{background:linear-gradient(135deg,rgba(139,92,246,.45),rgba(212,175,55,.2));border:1.5px solid rgba(212,175,55,.3);}
+.ivc-av.user{background:rgba(255,255,255,.1);border:1.5px solid rgba(255,255,255,.14);}
+.ivc-bwrap{flex:1;max-width:88%;}
+.ivc-msg.user .ivc-bwrap{display:flex;justify-content:flex-end;}
+.ivc-user-bbl{background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.13);border-radius:18px 18px 4px 18px;padding:13px 17px;display:inline-block;}
+.ivc-user-txt{font-size:16px;line-height:1.72;color:#fff;}
+.ivc-guru-bbl{background:#14141c;border:1px solid rgba(255,255,255,.08);border-radius:4px 18px 18px 18px;padding:16px 20px;}
+.ivc-guru-txt{font-size:16px;line-height:1.82;color:#e8e8e8;}
+.ivc-typing{display:flex;gap:12px;align-items:flex-start;}
+.ivc-typing-bbl{background:#14141c;border:1px solid rgba(255,255,255,.08);border-radius:4px 18px 18px 18px;padding:14px 18px;}
+.ivc-dots{display:flex;gap:5px;}
+.ivc-dot{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.28);animation:db .9s ease-in-out infinite;}
+.ivc-dot:nth-child(2){animation-delay:.18s;}.ivc-dot:nth-child(3){animation-delay:.36s;}
+@keyframes db{0%,60%,100%{transform:translateY(0);opacity:.28;}30%{transform:translateY(-7px);opacity:1;}}
+.ivc-inp-area{padding:14px 24px 18px;background:rgba(10,10,15,.95);border-top:1px solid rgba(255,255,255,.07);flex-shrink:0;}
+.ivc-inp-wrap{max-width:780px;margin:0 auto;background:#1c1c26;border:1px solid rgba(255,255,255,.11);border-radius:16px;display:flex;align-items:flex-end;transition:border .2s;}
+.ivc-inp-wrap:focus-within{border-color:rgba(212,175,55,.4);}
+.ivc-inp-box{flex:1;background:transparent;border:none;padding:15px 16px;color:#fff;font-family:'Inter',sans-serif;font-size:16px;resize:none;outline:none;min-height:52px;max-height:140px;line-height:1.6;}
+.ivc-inp-box::placeholder{color:rgba(255,255,255,.26);}
+.ivc-inp-btns{display:flex;align-items:flex-end;gap:6px;padding:9px 10px;}
+.ivc-voice-inp-btn{width:36px;height:36px;background:rgba(110,231,249,.1);border:1px solid rgba(110,231,249,.22);border-radius:9px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .2s;font-size:15px;color:#6EE7F9;}
+.ivc-voice-inp-btn:hover{background:rgba(110,231,249,.2);}
+.ivc-voice-inp-btn.listening{background:rgba(251,113,133,.15);border-color:rgba(251,113,133,.4);color:#fda4af;animation:pulse-v 1s ease-in-out infinite;}
+@keyframes pulse-v{0%,100%{opacity:1;}50%{opacity:.4;}}
+.ivc-send-btn{width:36px;height:36px;background:linear-gradient(135deg,#D4AF37,#A8832A);border:none;border-radius:9px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .2s;color:#050510;font-size:17px;font-weight:600;}
+.ivc-send-btn:hover:not(:disabled){transform:scale(1.08);box-shadow:0 4px 14px rgba(212,175,55,.4);}
+.ivc-send-btn:disabled{opacity:.28;cursor:not-allowed;}
+.ivc-inp-hint{text-align:center;font-size:11px;color:rgba(255,255,255,.22);margin-top:8px;max-width:780px;margin-left:auto;margin-right:auto;}
+.ivc-report{flex:1;overflow-y:auto;padding:28px;}
+.ivc-report::-webkit-scrollbar{width:4px;}
+.ivc-report::-webkit-scrollbar-thumb{background:rgba(255,255,255,.1);border-radius:2px;}
+.ivc-report-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;text-align:center;padding:40px 20px;}
+.ivc-report-empty-icon{font-size:64px;margin-bottom:24px;}
+.ivc-report-empty-title{font-family:'Cinzel Decorative',serif;font-size:24px;color:#D4AF37;margin-bottom:12px;}
+.ivc-report-empty-sub{font-size:16px;color:rgba(255,255,255,.45);line-height:1.75;max-width:460px;margin-bottom:28px;}
+.ivc-report-start-btn{padding:12px 28px;background:linear-gradient(135deg,rgba(212,175,55,.18),rgba(139,92,246,.12));border:1px solid rgba(212,175,55,.4);border-radius:12px;color:#D4AF37;font-size:14px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;transition:all .25s;}
+.ivc-report-start-btn:hover{background:linear-gradient(135deg,rgba(212,175,55,.28),rgba(139,92,246,.2));}
+.ivc-report-generating{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:20px;}
+.ivc-gen-spinner{width:60px;height:60px;border-radius:50%;border:3px solid rgba(212,175,55,.15);border-top-color:#D4AF37;animation:spin 1s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.ivc-gen-txt{font-family:'Cinzel Decorative',serif;font-size:18px;color:#D4AF37;text-align:center;}
+.ivc-gen-sub{font-size:14px;color:rgba(255,255,255,.4);text-align:center;}
+.ivc-dl-pdf-btn{display:flex;align-items:center;gap:10px;padding:13px 24px;background:linear-gradient(135deg,rgba(212,175,55,.2),rgba(139,92,246,.14));border:1px solid rgba(212,175,55,.45);border-radius:12px;color:#D4AF37;font-size:14px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;transition:all .25s;letter-spacing:.5px;}
+.ivc-dl-pdf-btn:hover{background:linear-gradient(135deg,rgba(212,175,55,.32),rgba(139,92,246,.24));box-shadow:0 6px 24px rgba(212,175,55,.25);transform:translateY(-1px);}
+.ivc-dl-pdf-btn:disabled{opacity:.4;cursor:not-allowed;transform:none;}
+.ivc-report-topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;flex-wrap:wrap;gap:12px;}
+.ivc-report-topbar-title{font-family:'Cinzel Decorative',serif;font-size:20px;color:#D4AF37;}
+.ivc-report-topbar-date{font-size:12px;font-family:'Space Mono',monospace;color:rgba(255,255,255,.35);}
+.ivc-rcard{background:#0e0e18;border:1px solid rgba(255,255,255,.08);border-radius:16px;overflow:hidden;margin-bottom:20px;}
+.ivc-rcard-header{padding:16px 22px;border-bottom:1px solid rgba(255,255,255,.06);display:flex;align-items:center;justify-content:space-between;cursor:pointer;transition:background .2s;}
+.ivc-rcard-header:hover{background:rgba(255,255,255,.03);}
+.ivc-rcard-title{display:flex;align-items:center;gap:10px;}
+.ivc-rcard-icon{font-size:20px;}
+.ivc-rcard-label{font-family:'Space Mono',monospace;font-size:11px;letter-spacing:3px;text-transform:uppercase;}
+.ivc-rcard-body{padding:20px 22px;}
+.c-astro .ivc-rcard-label{color:#6EE7F9;}
+.c-spirit .ivc-rcard-label{color:#c4b5fd;}
+.c-remedy .ivc-rcard-label{color:#fda4af;}
+.c-mantra .ivc-rcard-label{color:#c4b5fd;}
+.c-puja .ivc-rcard-label{color:#fbbf24;}
+.c-gem .ivc-rcard-label{color:#86efac;}
+.c-habits .ivc-rcard-label{color:#f9a8d4;}
+.c-karma .ivc-rcard-label{color:#D4AF37;}
+.c-timeline .ivc-rcard-label{color:#6EE7F9;}
+.c-guidance .ivc-rcard-label{color:#D4AF37;}
+.c-forecast .ivc-rcard-label{color:#6EE7F9;}
+.c-planet .ivc-rcard-label{color:#fbbf24;}
+.c-daily .ivc-rcard-label{color:#86efac;}
+.c-donate .ivc-rcard-label{color:#86efac;}
+.c-practical .ivc-rcard-label{color:#f9a8d4;}
+.c-followup .ivc-rcard-label{color:#c4b5fd;}
+.ivc-diag-summary{font-size:16px;line-height:1.8;color:#e8e8e8;margin-bottom:18px;}
+.ivc-diag-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;}
+@media(max-width:600px){.ivc-diag-grid{grid-template-columns:1fr;}}
+.ivc-diag-item{background:rgba(110,231,249,.04);border:1px solid rgba(110,231,249,.1);border-radius:10px;padding:12px 14px;}
+.ivc-diag-item-lbl{font-size:10px;letter-spacing:2px;text-transform:uppercase;font-family:'Space Mono',monospace;color:rgba(110,231,249,.6);margin-bottom:6px;}
+.ivc-diag-item-val{font-size:15px;color:#e8e8e8;line-height:1.5;}
+.ivc-affected-tags{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px;}
+.ivc-affected-tag{background:rgba(251,113,133,.08);border:1px solid rgba(251,113,133,.2);border-radius:50px;padding:4px 12px;font-size:13px;color:#fda4af;}
+.ivc-severity-row{display:flex;align-items:center;gap:14px;margin-bottom:16px;}
+.ivc-severity-lbl{font-size:12px;font-family:'Space Mono',monospace;color:rgba(255,255,255,.38);text-transform:uppercase;letter-spacing:1px;white-space:nowrap;}
+.ivc-severity-track{flex:1;height:8px;background:rgba(255,255,255,.07);border-radius:4px;overflow:hidden;}
+.ivc-severity-fill{height:100%;border-radius:4px;background:linear-gradient(90deg,#22c55e,#f59e0b,#ef4444);transition:width 1s ease;}
+.ivc-severity-score{font-size:14px;font-family:'Space Mono',monospace;color:#D4AF37;font-weight:700;white-space:nowrap;}
+.ivc-saturn-row{display:flex;align-items:center;gap:16px;background:rgba(239,68,68,.06);border:1px solid rgba(239,68,68,.15);border-radius:10px;padding:12px 16px;margin-bottom:14px;}
+.ivc-saturn-score{font-family:'Space Mono',monospace;font-size:26px;font-weight:700;color:#ef4444;white-space:nowrap;}
+.ivc-saturn-label{font-size:12px;color:rgba(255,255,255,.45);}
+.ivc-saturn-bar-wrap{flex:1;}
+.ivc-why-list{display:flex;flex-direction:column;gap:8px;}
+.ivc-why-item{display:flex;align-items:flex-start;gap:10px;padding:9px 12px;background:rgba(134,239,172,.04);border:1px solid rgba(134,239,172,.12);border-radius:8px;}
+.ivc-why-check{color:#86efac;font-size:14px;flex-shrink:0;margin-top:1px;}
+.ivc-why-txt{font-size:14px;color:#e8e8e8;line-height:1.5;}
+.ivc-area-scores{display:flex;flex-direction:column;gap:8px;margin-bottom:16px;}
+.ivc-area-row{display:flex;align-items:center;gap:12px;}
+.ivc-area-name{font-size:13px;color:rgba(255,255,255,.7);width:120px;flex-shrink:0;font-family:'Space Mono',monospace;}
+.ivc-area-track{flex:1;height:8px;background:rgba(255,255,255,.07);border-radius:4px;overflow:hidden;}
+.ivc-area-fill{height:100%;border-radius:4px;transition:width 1.2s ease;}
+.ivc-area-score{font-size:13px;font-family:'Space Mono',monospace;color:#D4AF37;width:32px;text-align:right;flex-shrink:0;}
+.ivc-confidence-row{display:flex;flex-wrap:wrap;gap:10px;}
+.ivc-conf-badge{padding:6px 14px;border-radius:50px;font-size:12px;font-family:'Space Mono',monospace;}
+.conf-High{background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.3);color:#86efac;}
+.conf-Medium{background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.3);color:#fbbf24;}
+.conf-Low{background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.2);color:#fda4af;}
+.ivc-forecast-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;}
+@media(max-width:600px){.ivc-forecast-grid{grid-template-columns:1fr;}}
+.ivc-forecast-item{border-radius:10px;padding:12px 14px;}
+.fi-red{background:rgba(239,68,68,.06);border:1px solid rgba(239,68,68,.15);}
+.fi-green{background:rgba(134,239,172,.05);border:1px solid rgba(134,239,172,.15);}
+.fi-gold{background:rgba(212,175,55,.06);border:1px solid rgba(212,175,55,.15);}
+.ivc-fi-lbl{font-size:10px;letter-spacing:2px;text-transform:uppercase;font-family:'Space Mono',monospace;margin-bottom:6px;}
+.fi-red .ivc-fi-lbl{color:rgba(239,68,68,.7);}
+.fi-green .ivc-fi-lbl{color:rgba(134,239,172,.7);}
+.fi-gold .ivc-fi-lbl{color:rgba(212,175,55,.7);}
+.ivc-fi-val{font-size:14px;color:#e8e8e8;line-height:1.5;}
+.ivc-date-tags{display:flex;flex-wrap:wrap;gap:8px;}
+.ivc-fav-date{background:rgba(134,239,172,.08);border:1px solid rgba(134,239,172,.2);border-radius:6px;padding:4px 10px;font-size:12px;color:#86efac;font-family:'Space Mono',monospace;}
+.ivc-avoid-date{background:rgba(239,68,68,.07);border:1px solid rgba(239,68,68,.18);border-radius:6px;padding:4px 10px;font-size:12px;color:#fda4af;font-family:'Space Mono',monospace;}
+.ivc-planet-grid{display:flex;flex-direction:column;gap:10px;}
+.ivc-planet-row{display:flex;align-items:center;gap:12px;}
+.ivc-planet-icon{font-size:20px;width:28px;text-align:center;flex-shrink:0;}
+.ivc-planet-name{font-size:13px;color:rgba(255,255,255,.7);width:80px;flex-shrink:0;}
+.ivc-planet-bar{flex:1;height:10px;background:rgba(255,255,255,.07);border-radius:5px;overflow:hidden;}
+.ivc-planet-fill{height:100%;border-radius:5px;transition:width 1.2s ease;}
+.ivc-planet-score{font-size:13px;font-family:'Space Mono',monospace;width:36px;text-align:right;flex-shrink:0;}
+.ivc-remedy-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+@media(max-width:600px){.ivc-remedy-grid{grid-template-columns:1fr;}}
+.ivc-remedy-card{background:rgba(253,164,175,.04);border:1px solid rgba(253,164,175,.12);border-radius:12px;padding:16px;}
+.ivc-remedy-icon{font-size:24px;margin-bottom:10px;}
+.ivc-remedy-name{font-size:15px;font-weight:600;color:#fff;margin-bottom:6px;}
+.ivc-remedy-desc{font-size:14px;color:rgba(255,255,255,.65);line-height:1.65;margin-bottom:10px;}
+.ivc-remedy-chips{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;}
+.ivc-remedy-chip{font-size:11px;font-family:'Space Mono',monospace;border-radius:50px;padding:3px 9px;}
+.rc-dur{background:rgba(0,255,170,.07);border:1px solid rgba(0,255,170,.2);color:#00ffaa;}
+.rc-cost{background:rgba(134,239,172,.06);border:1px solid rgba(134,239,172,.18);color:#86efac;}
+.rc-effort{background:rgba(196,181,253,.06);border:1px solid rgba(196,181,253,.18);color:#c4b5fd;}
+.ivc-eff-bar-wrap{margin-top:6px;}
+.ivc-eff-label{font-size:10px;font-family:'Space Mono',monospace;color:rgba(255,255,255,.35);margin-bottom:4px;letter-spacing:1px;text-transform:uppercase;}
+.ivc-eff-track{height:6px;background:rgba(255,255,255,.07);border-radius:3px;overflow:hidden;}
+.ivc-eff-fill{height:100%;background:linear-gradient(90deg,#8B5CF6,#D4AF37);border-radius:3px;transition:width 1.4s ease;}
+.ivc-mc{background:linear-gradient(135deg,rgba(139,92,246,.08),rgba(212,175,55,.04));border:1px solid rgba(139,92,246,.2);border-radius:14px;overflow:hidden;}
+.ivc-mc-top{padding:18px 20px;border-bottom:1px solid rgba(139,92,246,.12);}
+.ivc-mc-san{font-family:'Cormorant Garamond',serif;font-size:clamp(18px,3vw,26px);color:#D4AF37;line-height:2;letter-spacing:.5px;margin-bottom:8px;}
+.ivc-mc-rom{font-family:'Space Mono',monospace;font-size:13px;color:rgba(255,255,255,.62);line-height:1.9;letter-spacing:.5px;}
+.ivc-audio-row{display:flex;gap:7px;align-items:center;padding:10px 20px;background:rgba(0,0,0,.25);border-bottom:1px solid rgba(139,92,246,.1);flex-wrap:wrap;}
+.ivc-audio-lbl{font-size:10px;font-family:'Space Mono',monospace;letter-spacing:2px;color:rgba(255,255,255,.35);text-transform:uppercase;}
+.ivc-abtn{display:flex;align-items:center;gap:5px;background:rgba(139,92,246,.13);border:1px solid rgba(139,92,246,.28);border-radius:7px;padding:6px 12px;font-size:12px;color:#c4b5fd;cursor:pointer;transition:all .2s;font-family:'Inter',sans-serif;}
+.ivc-abtn:hover{background:rgba(139,92,246,.26);}
+.ivc-abtn.on{background:rgba(212,175,55,.14);border-color:rgba(212,175,55,.32);color:#D4AF37;}
+.ivc-astop{background:rgba(251,113,133,.1);border:1px solid rgba(251,113,133,.22);border-radius:7px;padding:6px 10px;font-size:12px;color:#fda4af;cursor:pointer;font-family:'Inter',sans-serif;}
+.ivc-chant-row{display:flex;align-items:center;gap:10px;padding:10px 20px;background:rgba(139,92,246,.05);border-bottom:1px solid rgba(139,92,246,.1);flex-wrap:wrap;}
+.ivc-chant-btn{background:rgba(212,175,55,.15);border:1px solid rgba(212,175,55,.35);border-radius:8px;padding:6px 14px;font-size:13px;color:#D4AF37;cursor:pointer;font-family:'Inter',sans-serif;font-weight:600;}
+.ivc-chant-count{font-family:'Space Mono',monospace;font-size:20px;color:#D4AF37;min-width:40px;text-align:center;}
+.ivc-chant-target{font-size:12px;color:rgba(255,255,255,.35);font-family:'Space Mono',monospace;}
+.ivc-chant-reset{background:transparent;border:1px solid rgba(255,255,255,.12);border-radius:7px;padding:5px 10px;font-size:11px;color:rgba(255,255,255,.35);cursor:pointer;font-family:'Inter',sans-serif;}
+.ivc-chips{display:flex;gap:7px;flex-wrap:wrap;padding:10px 20px;}
+.ivc-chip{display:inline-flex;align-items:center;gap:4px;border-radius:50px;padding:5px 12px;font-size:11px;font-family:'Space Mono',monospace;}
+.c-count{background:rgba(212,175,55,.1);border:1px solid rgba(212,175,55,.25);color:#D4AF37;}
+.c-dur{background:rgba(0,255,170,.07);border:1px solid rgba(0,255,170,.2);color:#00ffaa;}
+.c-time{background:rgba(110,231,249,.07);border:1px solid rgba(110,231,249,.2);color:#6EE7F9;}
+.c-purp{background:rgba(139,92,246,.09);border:1px solid rgba(139,92,246,.25);color:#c4b5fd;}
+.ivc-mc-body{padding:12px 20px 14px;}
+.ivc-dl{margin-bottom:14px;}
+.ivc-dl-lbl{font-size:10px;font-family:'Space Mono',monospace;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.32);margin-bottom:5px;}
+.ivc-dl-val{font-size:15px;line-height:1.65;color:#e8e8e8;}
+.ivc-dl-val.gold{color:#D4AF37;font-weight:500;}
+.ivc-expand-btn{width:100%;background:transparent;border:none;border-top:1px solid rgba(139,92,246,.1);padding:9px 20px;font-size:12px;color:rgba(255,255,255,.38);cursor:pointer;text-align:left;font-family:'Inter',sans-serif;transition:color .2s;}
+.ivc-expand-btn:hover{color:rgba(255,255,255,.7);}
+.ivc-expandable{padding:12px 20px 14px;display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+@media(max-width:480px){.ivc-expandable{grid-template-columns:1fr;}}
+.ivc-exp-full{grid-column:1/-1;}
+.ivc-mantra-save-row{padding:10px 20px;border-top:1px solid rgba(139,92,246,.1);display:flex;gap:8px;}
+.ivc-msave-btn{flex:1;padding:8px;background:rgba(0,255,170,.07);border:1px solid rgba(0,255,170,.2);border-radius:8px;color:#00ffaa;font-size:13px;cursor:pointer;font-family:'Inter',sans-serif;transition:all .2s;}
+.ivc-mcopy-btn{flex:1;padding:8px;background:rgba(139,92,246,.08);border:1px solid rgba(139,92,246,.2);border-radius:8px;color:#c4b5fd;font-size:13px;cursor:pointer;font-family:'Inter',sans-serif;transition:all .2s;}
+.ivc-msave-btn:hover{background:rgba(0,255,170,.14);}
+.ivc-mcopy-btn:hover{background:rgba(139,92,246,.18);}
+.ivc-puja-name{font-family:'Cinzel Decorative',serif;font-size:18px;color:#fbbf24;margin-bottom:12px;}
+.ivc-puja-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;}
+@media(max-width:600px){.ivc-puja-grid{grid-template-columns:1fr;}}
+.ivc-puja-item{background:rgba(251,191,36,.04);border:1px solid rgba(251,191,36,.1);border-radius:8px;padding:10px 12px;}
+.ivc-puja-item-lbl{font-size:10px;letter-spacing:2px;text-transform:uppercase;font-family:'Space Mono',monospace;color:rgba(251,191,36,.6);margin-bottom:4px;}
+.ivc-puja-item-val{font-size:14px;color:#e8e8e8;}
+.ivc-puja-materials{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:14px;}
+.ivc-mat-tag{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:6px;padding:4px 10px;font-size:13px;color:rgba(255,255,255,.7);}
+.ivc-puja-procedure{font-size:15px;line-height:1.78;color:rgba(255,255,255,.7);margin-bottom:14px;}
+.ivc-puja-benefit{background:rgba(134,239,172,.05);border:1px solid rgba(134,239,172,.15);border-radius:10px;padding:12px 14px;font-size:15px;color:#86efac;line-height:1.65;margin-bottom:14px;}
+.ivc-book-puja-btn{width:100%;padding:11px;background:linear-gradient(135deg,rgba(251,191,36,.15),rgba(212,175,55,.08));border:1px solid rgba(251,191,36,.35);border-radius:10px;color:#fbbf24;font-size:14px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;transition:all .25s;}
+.ivc-book-puja-btn:hover{background:linear-gradient(135deg,rgba(251,191,36,.25),rgba(212,175,55,.15));}
+.ivc-gem-name{font-family:'Cinzel Decorative',serif;font-size:20px;color:#86efac;margin-bottom:14px;}
+.ivc-gem-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+@media(max-width:600px){.ivc-gem-grid{grid-template-columns:1fr;}}
+.ivc-gem-item{background:rgba(134,239,172,.04);border:1px solid rgba(134,239,172,.12);border-radius:8px;padding:10px 12px;}
+.ivc-gem-item-lbl{font-size:10px;letter-spacing:2px;text-transform:uppercase;font-family:'Space Mono',monospace;color:rgba(134,239,172,.55);margin-bottom:4px;}
+.ivc-gem-item-val{font-size:14px;color:#e8e8e8;}
+.ivc-action-list{display:flex;flex-direction:column;gap:8px;}
+.ivc-action-item{display:flex;align-items:center;gap:12px;padding:11px 14px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:10px;cursor:pointer;transition:all .2s;}
+.ivc-action-item.done{background:rgba(0,255,170,.05);border-color:rgba(0,255,170,.2);}
+.ivc-action-check{width:22px;height:22px;min-width:22px;border-radius:50%;border:2px solid rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-size:12px;transition:all .2s;flex-shrink:0;}
+.ivc-action-item.done .ivc-action-check{background:#00ffaa;border-color:#00ffaa;color:#000;}
+.ivc-action-txt{font-size:14px;color:#e8e8e8;}
+.ivc-action-item.done .ivc-action-txt{color:rgba(255,255,255,.5);text-decoration:line-through;}
+.ivc-habits-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+@media(max-width:600px){.ivc-habits-grid{grid-template-columns:1fr;}}
+.ivc-habit-card{background:rgba(249,168,212,.04);border:1px solid rgba(249,168,212,.12);border-radius:12px;padding:14px;display:flex;align-items:flex-start;gap:12px;cursor:pointer;transition:all .2s;}
+.ivc-habit-card.done{background:rgba(0,255,170,.06);border-color:rgba(0,255,170,.2);}
+.ivc-habit-icon{font-size:24px;line-height:1;}
+.ivc-habit-name{font-size:14px;font-weight:600;color:#fff;margin-bottom:3px;}
+.ivc-habit-dur{font-size:12px;color:rgba(255,255,255,.45);}
+.ivc-habit-ben{font-size:12px;color:rgba(249,168,212,.7);margin-top:4px;}
+.ivc-habit-check{width:20px;height:20px;min-width:20px;border-radius:50%;border:2px solid rgba(255,255,255,.2);margin-left:auto;display:flex;align-items:center;justify-content:center;font-size:11px;}
+.ivc-habit-card.done .ivc-habit-check{background:#00ffaa;border-color:#00ffaa;color:#000;}
+.ivc-karma-score-big{font-family:'Cinzel Decorative',serif;font-size:48px;color:#D4AF37;text-align:center;margin-bottom:8px;}
+.ivc-karma-sub{text-align:center;font-size:13px;color:rgba(255,255,255,.38);margin-bottom:16px;}
+.ivc-karma-progress-wrap{margin-bottom:20px;}
+.ivc-karma-progress-label{display:flex;justify-content:space-between;margin-bottom:6px;font-size:12px;font-family:'Space Mono',monospace;}
+.ivc-karma-progress-lbl{color:rgba(255,255,255,.4);}
+.ivc-karma-progress-pct{color:#D4AF37;}
+.ivc-karma-meter{height:10px;background:rgba(255,255,255,.07);border-radius:5px;overflow:hidden;margin-bottom:14px;}
+.ivc-karma-fill{height:100%;border-radius:5px;background:linear-gradient(90deg,#ef4444,#f59e0b,#22c55e);transition:width 1.2s ease;}
+.ivc-karma-completed{display:flex;flex-direction:column;gap:6px;margin-bottom:16px;}
+.ivc-karma-done{display:flex;align-items:center;gap:8px;font-size:14px;color:rgba(255,255,255,.7);}
+.ivc-karma-done-check{color:#00ffaa;font-size:15px;}
+.ivc-karma-cols{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+@media(max-width:600px){.ivc-karma-cols{grid-template-columns:1fr;}}
+.ivc-karma-col-title{font-size:11px;letter-spacing:2px;text-transform:uppercase;font-family:'Space Mono',monospace;margin-bottom:10px;}
+.ivc-karma-col-title.pos{color:#86efac;}.ivc-karma-col-title.neg{color:#fda4af;}
+.ivc-karma-item{display:flex;align-items:center;gap:8px;padding:8px 10px;background:rgba(255,255,255,.03);border-radius:8px;margin-bottom:6px;font-size:14px;color:rgba(255,255,255,.7);}
+.ivc-karma-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.dot-pos{background:#86efac;}.dot-neg{background:#fda4af;}
+.ivc-calendar{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:18px;}
+.ivc-cal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;}
+.ivc-cal-title{font-family:'Cinzel Decorative',serif;font-size:15px;color:#D4AF37;}
+.ivc-cal-streak{background:rgba(212,175,55,.12);border:1px solid rgba(212,175,55,.25);border-radius:50px;padding:4px 12px;font-size:11px;font-family:'Space Mono',monospace;color:#D4AF37;}
+.ivc-cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;text-align:center;}
+.ivc-cal-dow{font-size:10px;font-family:'Space Mono',monospace;color:rgba(255,255,255,.3);padding-bottom:4px;}
+.ivc-cal-day{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;cursor:pointer;transition:all .2s;margin:0 auto;}
+.ivc-cal-day.done{background:linear-gradient(135deg,#D4AF37,#8B5CF6);color:#fff;font-weight:700;}
+.ivc-cal-day.today{border:2px solid rgba(212,175,55,.5);color:#D4AF37;}
+.ivc-cal-day.empty{opacity:0;}
+.ivc-cal-day:not(.done):not(.empty){background:rgba(255,255,255,.05);color:rgba(255,255,255,.5);}
+.ivc-timeline{position:relative;padding-left:30px;}
+.ivc-timeline::before{content:'';position:absolute;left:10px;top:0;bottom:0;width:1px;background:linear-gradient(180deg,rgba(212,175,55,.5),rgba(139,92,246,.3),rgba(212,175,55,.1));}
+.ivc-tl-item{position:relative;margin-bottom:24px;}
+.ivc-tl-dot{position:absolute;left:-24px;top:4px;width:12px;height:12px;border-radius:50%;background:linear-gradient(135deg,#D4AF37,#8B5CF6);border:2px solid #0e0e18;box-shadow:0 0 10px rgba(212,175,55,.4);}
+.ivc-tl-week{font-size:10px;letter-spacing:2px;text-transform:uppercase;font-family:'Space Mono',monospace;color:#D4AF37;margin-bottom:4px;}
+.ivc-tl-title{font-size:15px;font-weight:600;color:#fff;margin-bottom:4px;}
+.ivc-tl-desc{font-size:14px;color:rgba(255,255,255,.55);line-height:1.6;}
+.ivc-guidance-box{background:linear-gradient(135deg,rgba(212,175,55,.06),rgba(139,92,246,.04));border:1px solid rgba(212,175,55,.2);border-radius:14px;padding:22px 24px;position:relative;overflow:hidden;}
+.ivc-guidance-box::before{content:'"';position:absolute;top:-20px;left:10px;font-family:'Cormorant Garamond',serif;font-size:120px;color:rgba(212,175,55,.06);line-height:1;}
+.ivc-guidance-txt{font-family:'Cormorant Garamond',serif;font-size:18px;line-height:1.9;color:#e8e8e8;font-style:italic;position:relative;}
+.ivc-guidance-sig{margin-top:14px;font-size:13px;color:rgba(212,175,55,.7);font-family:'Space Mono',monospace;text-align:right;}
+.ivc-insight-phase{font-family:'Cinzel Decorative',serif;font-size:18px;color:#c4b5fd;margin-bottom:12px;}
+.ivc-insight-desc{font-size:16px;line-height:1.8;color:#e8e8e8;margin-bottom:14px;}
+.ivc-insight-items{display:grid;grid-template-columns:1fr;gap:10px;}
+.ivc-insight-item{background:rgba(139,92,246,.05);border:1px solid rgba(139,92,246,.15);border-radius:10px;padding:12px 14px;}
+.ivc-insight-item-lbl{font-size:10px;letter-spacing:2px;text-transform:uppercase;font-family:'Space Mono',monospace;color:rgba(196,181,253,.55);margin-bottom:5px;}
+.ivc-insight-item-val{font-size:15px;color:#e8e8e8;line-height:1.55;}
+.ivc-donate-list{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px;}
+.ivc-donate-item{background:rgba(134,239,172,.06);border:1px solid rgba(134,239,172,.15);border-radius:8px;padding:6px 14px;font-size:14px;color:#86efac;}
+.ivc-donate-day{background:rgba(212,175,55,.1);border:1px solid rgba(212,175,55,.25);border-radius:50px;padding:5px 14px;font-family:'Space Mono',monospace;font-size:12px;color:#D4AF37;display:inline-block;}
+.ivc-practical-list{display:flex;flex-direction:column;gap:8px;}
+.ivc-practical-item{display:flex;align-items:flex-start;gap:10px;padding:10px 14px;background:rgba(249,168,212,.04);border:1px solid rgba(249,168,212,.1);border-radius:10px;}
+.ivc-practical-dot{width:8px;height:8px;min-width:8px;border-radius:50%;background:#f9a8d4;margin-top:5px;}
+.ivc-practical-txt{font-size:14px;color:#e8e8e8;line-height:1.6;}
+.ivc-followup-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+@media(max-width:600px){.ivc-followup-grid{grid-template-columns:1fr;}}
+.ivc-followup-btn{background:rgba(139,92,246,.07);border:1px solid rgba(139,92,246,.18);border-radius:10px;padding:12px 14px;font-size:14px;color:rgba(255,255,255,.75);cursor:pointer;text-align:left;font-family:'Inter',sans-serif;transition:all .2s;line-height:1.4;}
+.ivc-followup-btn:hover{background:rgba(139,92,246,.14);border-color:rgba(139,92,246,.35);color:#fff;}
+body > [class*="planet-widget"],body > [class*="mercury-widget"],body > canvas:not(.ivc-canvas)[id*="constellation"],body > div[class*="constellation"]{display:none!important;}
 `;
 
-const PANDIT_SYSTEM = `You are Pandit Rameshwar Ji, a revered Vedic astrologer and karma guru with 40 years of experience. You have deep knowledge of Jyotish, Ayurveda, Sanskrit shlokas, all 18 Puranas, Bhagavad Gita, Vedic remedies, and Hindu rituals.
-
-Your role: Guide the seeker with actionable Vedic wisdom. When someone shares their problem:
-1. DIAGNOSE the karmic/astrological root cause (which planet, house, dasha period)
-2. PRESCRIBE specific remedies: exact poojas, mantras with recitation counts, fasting days, charity items
-3. SHARE relevant shlokas or wisdom from Gita/Puranas
-4. ASK one follow-up question to deepen understanding
-
-IMPORTANT TONE: Speak as a real pandit would — with authority, warmth, and Vedic vocabulary. Use occasional Sanskrit terms (with meaning). Be specific, not vague. Never say "it depends" without explaining exactly what it depends on.
-
-Respond ONLY with this JSON structure, no extra text:
-{
-  "diagnosis": "Your astrological diagnosis — which planet/dasha/house is responsible and why. Be specific.",
-  "remedy": "The primary remedy — exact steps, timing, duration (e.g., 'Perform Rudrabhishek on 3 consecutive Mondays during Brahma muhurta — 4:30 AM to 6 AM. Offer milk, honey, and bilva leaves on Shivling.')",
-  "mantra": "The exact mantra to chant (in Sanskrit/Devanagari if possible)",
-  "mantraCount": "Number of repetitions and frequency (e.g., '108 times daily for 40 days')",
-  "pooja": {
-    "name": "Name of the specific pooja",
-    "detail": "What materials needed, which day to perform, who should perform it, estimated cost range"
-  },
-  "guidance": "The dharmic wisdom and life guidance — the deeper lesson and path forward",
-  "karmaPoints": "+5 / -3 / +0 (karma score impact if remedy is followed)",
-  "question": "One specific follow-up question to understand their situation better"
-}
-
-If the person asks a general question (not a problem), skip remedy/pooja and focus on guidance and question.
-Always respond in the same language the user writes in (Hindi, English, or Hinglish).`;
-
-
-const PRESETS = [
-  "Meri job nahi lag rahi — 3 saal ho gaye",
-  "My marriage has been delayed for years",
-  "Ghar mein baar baar bimari ho rahi hai",
-  "I keep failing despite hard work — why?",
-  "Which pooja should I do for financial growth?",
-  "I have Mangal Dosha — what are the remedies?",
+const SUGGESTIONS = [
+  { title: "Career & Finance", sub: "I am facing problems in my career and financial life" },
+  { title: "Relationships", sub: "I am having problems in my relationship or marriage" },
+  { title: "Health & Wellness", sub: "I am dealing with recurring health issues" },
+  { title: "Spiritual Growth", sub: "I want to find my life purpose and inner peace" },
 ];
 
-function Stars() {
-  return (
-    <div className="ivc-stars">
-      {Array.from({ length: 65 }).map((_, i) => (
-        <div key={i} className="ivc-star" style={{
-          width: `${Math.random() * 2 + 1}px`, height: `${Math.random() * 2 + 1}px`,
-          left: `${Math.random() * 100}%`, top: `${Math.random() * 100}%`,
-          "--d": `${2 + Math.random() * 5}s`, "--dl": `${Math.random() * 5}s`,
-          "--op": `${0.12 + Math.random() * 0.5}`,
-        }} />
-      ))}
-      <div className="ivc-nb" style={{ width: 500, height: 500, left: "-15%", top: "5%", background: "rgba(123,47,255,.1)" }} />
-      <div className="ivc-nb" style={{ width: 380, height: 380, right: "-5%", bottom: "15%", background: "rgba(245,197,24,.07)" }} />
-    </div>
-  );
-}
-
-function GurBubble({ resp }) {
-  if (!resp) return null;
-  return (
-    <div className="ivc-guru-bubble">
-      {resp.diagnosis && (
-        <div className="ivc-response-block">
-          <div className="ivc-rblock-lbl rbl-diagnosis">🔭 Astrological Diagnosis</div>
-          <div className="ivc-rblock-text">{resp.diagnosis}</div>
-        </div>
-      )}
-      {resp.remedy && (
-        <div className="ivc-response-block">
-          <div className="ivc-rblock-lbl rbl-remedy">🌿 Prescribed Remedy</div>
-          <div className="ivc-rblock-text">{resp.remedy}</div>
-        </div>
-      )}
-      {resp.mantra && (
-        <div className="ivc-response-block">
-          <div className="ivc-rblock-lbl rbl-mantra">📿 Mantra</div>
-          <div className="ivc-mantra-text">{resp.mantra}</div>
-          {resp.mantraCount && <div className="ivc-mantra-count">↳ {resp.mantraCount}</div>}
-        </div>
-      )}
-      {resp.pooja?.name && (
-        <div className="ivc-response-block">
-          <div className="ivc-rblock-lbl rbl-pooja">🪔 Prescribed Pooja</div>
-          <div className="ivc-pooja-box">
-            <div className="ivc-pooja-name">{resp.pooja.name}</div>
-            <div className="ivc-pooja-detail">{resp.pooja.detail}</div>
-          </div>
-        </div>
-      )}
-      {resp.guidance && (
-        <div className="ivc-response-block">
-          <div className="ivc-rblock-lbl rbl-guidance">🧘 Dharmic Guidance</div>
-          <div className="ivc-rblock-text">{resp.guidance}</div>
-          {resp.karmaPoints && (
-            <div className="ivc-karma-tag">⚡ Karma Impact: {resp.karmaPoints}</div>
-          )}
-        </div>
-      )}
-      {resp.question && (
-        <div className="ivc-response-block">
-          <div className="ivc-rblock-lbl rbl-question">❓ Pandit Ji asks</div>
-          <div className="ivc-question-text">{resp.question}</div>
-        </div>
-      )}
-    </div>
-  );
-}
-
-export default function InnerVoiceChat() {
-  const [messages, setMessages] = useState([]);
-  const [input, setInput] = useState("");
-  const [loading, setLoading] = useState(false);
-  const bottomRef = useRef(null);
-  const textareaRef = useRef(null);
-
+function StarCanvas() {
+  const canvasRef = useRef(null);
   useEffect(() => {
-    const s = document.createElement("style");
-    s.textContent = CSS;
-    document.head.appendChild(s);
-    return () => document.head.removeChild(s);
-  }, []);
-
-  useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages, loading]);
-
-  const buildHistory = () =>
-    messages.map(m => ({
-      role: m.role === "user" ? "user" : "assistant",
-      content: typeof m.content === "string" ? m.content : `[Pandit response about: ${m.userMsg || "previous topic"}]`,
-    }));
-
-  const send = async (text) => {
-    const msg = text.trim();
-    if (!msg || loading) return;
-    setInput("");
-    setMessages(prev => [...prev, { role: "user", content: msg }]);
-    setLoading(true);
-
-    try {
-      const history = buildHistory();
-      const res = await fetch(GROQ_URL, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${GROQ_API_KEY}`
-        },
-        body: JSON.stringify({
-          model: "llama-3.3-70b-versatile",
-          temperature: 0.7,
-          max_tokens: 1200,
-          response_format: { type: "json_object" },
-          messages: [
-            { role: "system", content: PANDIT_SYSTEM },
-            ...history.map(m => ({ role: m.role === "user" ? "user" : "assistant", content: m.content })),
-            { role: "user", content: msg }
-          ]
-        }),
+    const canvas = canvasRef.current; if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    let W = window.innerWidth, H = window.innerHeight;
+    canvas.width = W; canvas.height = H;
+    let mx = W/2, my = H/2, isMoving = false, moveTimer = null;
+    const stars = Array.from({length:200},()=>({ x:Math.random()*W, y:Math.random()*H, vx:(Math.random()-.5)*0.12, vy:(Math.random()-.5)*0.12, r:Math.random()*1.4+0.2, opacity:Math.random()*0.5+0.1, baseOpacity:0, phase:Math.random()*Math.PI*2 }));
+    stars.forEach(s=>{s.baseOpacity=s.opacity;});
+    const shoots=[]; const spawnShoot=(sx,sy,forced)=>{ const angle=forced?Math.atan2(sy-H/2,sx-W/2)+(Math.random()-.5)*0.8:Math.PI/5+Math.random()*0.4; shoots.push({x:forced?sx:Math.random()*W*0.8,y:forced?sy:Math.random()*H*0.35,len:Math.random()*180+80,speed:forced?Math.random()*8+5:Math.random()*3+2,angle,life:1}); };
+    let t=0,shootTimer=0,raf;
+    const frame=()=>{
+      ctx.clearRect(0,0,W,H); t+=0.016; shootTimer+=0.016;
+      if(shootTimer>(isMoving?1.2:3.5)+Math.random()*2){spawnShoot(mx,my,isMoving);shootTimer=0;}
+      stars.forEach(s=>{
+        if(isMoving){const dx=mx-s.x,dy=my-s.y,dist=Math.sqrt(dx*dx+dy*dy),force=Math.min(80/dist,1.5);s.vx+=(dx/dist)*force*0.015;s.vy+=(dy/dist)*force*0.015;}
+        s.vx*=0.97;s.vy*=0.97;s.vx+=(Math.random()-.5)*0.008;s.vy+=(Math.random()-.5)*0.008;
+        s.x+=s.vx;s.y+=s.vy;
+        if(s.x<0)s.x=W;if(s.x>W)s.x=0;if(s.y<0)s.y=H;if(s.y>H)s.y=0;
+        const op=s.baseOpacity*(0.6+0.4*Math.sin(t*30*s.vx+s.phase));
+        ctx.beginPath();ctx.arc(s.x,s.y,s.r,0,Math.PI*2);ctx.fillStyle=`rgba(255,255,255,${Math.max(0.05,Math.min(0.8,op))})`;ctx.fill();
       });
-      const data = await res.json();
-      if (data.error) throw new Error(`API error: ${data.error.message}`);
-      const raw = data.choices?.[0]?.message?.content || "{}";
-      const parsed = JSON.parse(raw);
-      setMessages(prev => [...prev, { role: "guru", content: parsed, userMsg: msg }]);
-    } catch {
-      setMessages(prev => [...prev, {
-        role: "guru",
-        content: {
-          guidance: "Mera connection thoda weak hai abhi. Thodi der mein dobara poochiye. (My connection is weak — please try again in a moment.)",
-          question: "Can you repeat your question?",
-        },
-        userMsg: msg,
-      }]);
-    } finally {
-      setLoading(false);
-    }
-  };
+      for(let i=shoots.length-1;i>=0;i--){
+        const s=shoots[i];s.x+=Math.cos(s.angle)*s.speed;s.y+=Math.sin(s.angle)*s.speed;s.life-=s.speed>4?0.018:0.008;
+        if(s.life<=0){shoots.splice(i,1);continue;}
+        const tx=s.x-Math.cos(s.angle)*s.len,ty=s.y-Math.sin(s.angle)*s.len;
+        const g=ctx.createLinearGradient(tx,ty,s.x,s.y);
+        g.addColorStop(0,`rgba(212,175,55,0)`);g.addColorStop(0.5,`rgba(212,175,55,${s.life*0.55})`);g.addColorStop(1,`rgba(255,255,255,${s.life*0.95})`);
+        ctx.beginPath();ctx.moveTo(tx,ty);ctx.lineTo(s.x,s.y);ctx.strokeStyle=g;ctx.lineWidth=s.speed>4?2:1.5;ctx.stroke();
+        ctx.beginPath();ctx.arc(s.x,s.y,s.speed>4?3:2,0,Math.PI*2);ctx.fillStyle=`rgba(255,255,255,${s.life*0.85})`;ctx.fill();
+      }
+      raf=requestAnimationFrame(frame);
+    };
+    raf=requestAnimationFrame(frame);
+    const onMouseMove=(e)=>{mx=e.clientX;my=e.clientY;isMoving=true;clearTimeout(moveTimer);moveTimer=setTimeout(()=>isMoving=false,200);};
+    const onTouchMove=(e)=>{mx=e.touches[0].clientX;my=e.touches[0].clientY;isMoving=true;clearTimeout(moveTimer);moveTimer=setTimeout(()=>isMoving=false,300);};
+    const resize=()=>{W=window.innerWidth;H=window.innerHeight;canvas.width=W;canvas.height=H;};
+    window.addEventListener("mousemove",onMouseMove);window.addEventListener("touchmove",onTouchMove,{passive:true});window.addEventListener("resize",resize);
+    return()=>{cancelAnimationFrame(raf);window.removeEventListener("mousemove",onMouseMove);window.removeEventListener("touchmove",onTouchMove);window.removeEventListener("resize",resize);};
+  },[]);
+  return <canvas ref={canvasRef} className="ivc-canvas"/>;
+}
 
-  const onKeyDown = (e) => {
-    if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(input); }
+function MantraCard({m,onSave}){
+  const [playing,setPlaying]=useState(false);
+  const [expanded,setExpanded]=useState(false);
+  const [chantCount,setChantCount]=useState(0);
+  if(!m) return null;
+  const target=parseInt(m.count)||108;
+  const speak=(rate)=>{
+    const text=m.transliteration||m.sanskrit||"";if(!text)return;
+    window.speechSynthesis?.cancel();
+    const utt=new SpeechSynthesisUtterance(text);
+    utt.rate=rate;utt.pitch=0.85;utt.volume=1;
+    const voices=window.speechSynthesis?.getVoices()||[];
+    const hi=voices.find(v=>v.lang.startsWith("hi")||v.lang.includes("IN")||v.lang.startsWith("sa"));
+    if(hi)utt.voice=hi;
+    utt.onend=()=>setPlaying(false);utt.onerror=()=>setPlaying(false);
+    window.speechSynthesis?.speak(utt);setPlaying(true);
   };
-
-  return (
-    <div className="ivc-app">
-      <style>{CSS}</style>
-      <Stars />
-      <div className="ivc-content">
-        <div className="ivc-header">
-          <Link to="/inner-voice" className="ivc-back">← Inner Voice</Link>
-          <div className="ivc-avatar-ring">🧘</div>
-          <div className="ivc-eyebrow">Vedic Pandit Intelligence</div>
-          <h1 className="ivc-hdr-title">AI Guru</h1>
-          <p className="ivc-hdr-sub">Pandit Rameshwar Ji · 40 years of Jyotish experience</p>
-          <div className="ivc-status">
-            <span className="ivc-status-dot" />
-            Available · Responds in Hindi & English
-          </div>
+  const stop=()=>{window.speechSynthesis?.cancel();setPlaying(false);};
+  const copyMantra=()=>{navigator.clipboard?.writeText(`${m.sanskrit}\n${m.transliteration}`);};
+  const pct=Math.min(100,(chantCount/target)*100);
+  return(
+    <div className="ivc-mc">
+      <div className="ivc-mc-top">
+        {m.sanskrit&&<div className="ivc-mc-san">{m.sanskrit}</div>}
+        {m.transliteration&&<div className="ivc-mc-rom">{m.transliteration}</div>}
+      </div>
+      <div className="ivc-audio-row">
+        <span className="ivc-audio-lbl">🔊</span>
+        <button className={`ivc-abtn${playing?" on":""}`} onClick={()=>speak(0.6)}>🐢 Slow</button>
+        <button className={`ivc-abtn${playing?" on":""}`} onClick={()=>speak(1)}>▶ Normal</button>
+        <button className="ivc-abtn" onClick={()=>speak(1.25)}>⏩ Fast</button>
+        {playing&&<button className="ivc-astop" onClick={stop}>⏹ Stop</button>}
+      </div>
+      <div className="ivc-chant-row">
+        <span style={{fontSize:13,color:"rgba(255,255,255,.45)",fontFamily:"'Space Mono',monospace"}}>📿 Chant Counter</span>
+        <button className="ivc-chant-btn" onClick={()=>setChantCount(c=>Math.min(c+1,target))}>+1</button>
+        <span className="ivc-chant-count" style={{color:chantCount>=target?"#00ffaa":"#D4AF37"}}>{chantCount}</span>
+        <span className="ivc-chant-target">/ {target}</span>
+        <div style={{flex:1,height:6,background:"rgba(255,255,255,.07)",borderRadius:3,overflow:"hidden"}}>
+          <div style={{height:"100%",width:`${pct}%`,background:chantCount>=target?"#00ffaa":"linear-gradient(90deg,#8B5CF6,#D4AF37)",borderRadius:3,transition:"width .3s"}}/>
         </div>
+        {chantCount>=target&&<span style={{fontSize:12,color:"#00ffaa"}}>✓ Done!</span>}
+        <button className="ivc-chant-reset" onClick={()=>setChantCount(0)}>Reset</button>
+      </div>
+      <div className="ivc-chips">
+        {m.count&&<span className="ivc-chip c-count">📿 {m.count}×</span>}
+        {m.duration&&<span className="ivc-chip c-dur">📅 {m.duration} days</span>}
+        {m.bestTime&&<span className="ivc-chip c-time">⏰ {m.bestTime}</span>}
+        {m.purpose&&<span className="ivc-chip c-purp">🎯 {m.purpose}</span>}
+      </div>
+      <div className="ivc-mc-body">
+        {m.translation&&<div className="ivc-dl"><div className="ivc-dl-lbl">Translation</div><div className="ivc-dl-val gold">{m.translation}</div></div>}
+        {m.meaning&&<div className="ivc-dl"><div className="ivc-dl-lbl">Meaning & Significance</div><div className="ivc-dl-val">{m.meaning}</div></div>}
+      </div>
+      <button className="ivc-expand-btn" onClick={()=>setExpanded(!expanded)}>
+        {expanded?"▲ Hide details":"▼ Deity · Source · Symbolism · Precautions"}
+      </button>
+      {expanded&&(
+        <div className="ivc-expandable">
+          {m.deity&&<div className="ivc-dl"><div className="ivc-dl-lbl">Deity</div><div className="ivc-dl-val" style={{color:"#c4b5fd"}}>{m.deity}</div></div>}
+          {m.source&&<div className="ivc-dl"><div className="ivc-dl-lbl">Source</div><div className="ivc-dl-val">{m.source}</div></div>}
+          {m.repetitionSymbolism&&<div className="ivc-dl ivc-exp-full"><div className="ivc-dl-lbl">Why this count?</div><div className="ivc-dl-val">{m.repetitionSymbolism}</div></div>}
+          {m.precautions&&m.precautions!=="None"&&<div className="ivc-dl ivc-exp-full"><div className="ivc-dl-lbl">Precautions</div><div className="ivc-dl-val" style={{color:"#fda4af"}}>{m.precautions}</div></div>}
+        </div>
+      )}
+      <div className="ivc-mantra-save-row">
+        <button className="ivc-msave-btn" onClick={()=>onSave&&onSave(m)}>🔖 Save Mantra</button>
+        <button className="ivc-mcopy-btn" onClick={copyMantra}>📋 Copy</button>
+      </div>
+    </div>
+  );
+}
 
-        {messages.length === 0 && (
-          <div className="ivc-presets">
-            {PRESETS.map(p => (
-              <button key={p} className="ivc-preset" onClick={() => send(p)}>{p}</button>
-            ))}
-          </div>
-        )}
+function ReportCard({color,icon,label,children,defaultOpen=true}){
+  const [open,setOpen]=useState(defaultOpen);
+  return(
+    <div className={`ivc-rcard ${color}`}>
+      <div className="ivc-rcard-header" onClick={()=>setOpen(o=>!o)}>
+        <div className="ivc-rcard-title"><span className="ivc-rcard-icon">{icon}</span><span className="ivc-rcard-label">{label}</span></div>
+        <span style={{fontSize:12,color:"rgba(255,255,255,.3)"}}>{open?"▲":"▼"}</span>
+      </div>
+      {open&&<div className="ivc-rcard-body">{children}</div>}
+    </div>
+  );
+}
 
-        <div className="ivc-chat">
-          {messages.length === 0 && (
-            <div className="ivc-welcome">
-              <p>
-                "Namaste, seeker. I am here to read your karma and guide your path.
-                Whatever trouble weighs on your soul — career, marriage, health, finance, family — 
-                speak openly. I will diagnose the planetary root cause and prescribe the exact remedy.
-                There is no problem that Vedic wisdom cannot illuminate."
-              </p>
+function ProgressBar({value,max=100,color="#D4AF37",height=8}){
+  const pct=Math.min(100,(value/max)*100);
+  return(<div style={{height,background:"rgba(255,255,255,.07)",borderRadius:height/2,overflow:"hidden"}}><div style={{height:"100%",width:`${pct}%`,background:color,borderRadius:height/2,transition:"width 1.2s ease"}}/></div>);
+}
+
+function ProgressCalendar(){
+  const [checked,setChecked]=useState(()=>{try{return JSON.parse(localStorage.getItem("iv_cal_checked")||"{}");}catch{return{};}});
+  const now=new Date(),year=now.getFullYear(),month=now.getMonth();
+  const monthName=now.toLocaleString("default",{month:"long",year:"numeric"});
+  const firstDay=new Date(year,month,1).getDay();
+  const daysInMonth=new Date(year,month+1,0).getDate();
+  const today=now.getDate();
+  const streak=(()=>{let s=0;for(let d=today;d>=1;d--){if(checked[`${year}-${month}-${d}`])s++;else break;}return s;})();
+  const toggle=(d)=>{const key=`${year}-${month}-${d}`;const updated={...checked,[key]:!checked[key]};setChecked(updated);localStorage.setItem("iv_cal_checked",JSON.stringify(updated));};
+  const DOWS=["M","T","W","T","F","S","S"];
+  return(
+    <div className="ivc-calendar">
+      <div className="ivc-cal-header"><div className="ivc-cal-title">{monthName}</div><div className="ivc-cal-streak">🔥 {streak} day streak</div></div>
+      <div className="ivc-cal-grid">
+        {DOWS.map((d,i)=><div key={i} className="ivc-cal-dow">{d}</div>)}
+        {Array.from({length:(firstDay+6)%7},(_,i)=><div key={`e${i}`} className="ivc-cal-day empty"/>)}
+        {Array.from({length:daysInMonth},(_,i)=>{
+          const d=i+1,key=`${year}-${month}-${d}`,isDone=!!checked[key],isToday=d===today;
+          return(<div key={d} className={`ivc-cal-day${isDone?" done":""}${isToday&&!isDone?" today":""}`} onClick={()=>toggle(d)}>{isDone?"✓":d}</div>);
+        })}
+      </div>
+    </div>
+  );
+}
+
+function DiagnosisReport({report,onSaveMantra,onBookPuja,userName,onAskFollowUp,onDownload,downloading}){
+  const [actions,setActions]=useState({});
+  const [habits,setHabits]=useState({});
+  if(!report) return null;
+  const toggleAction=(i)=>setActions(a=>({...a,[i]:!a[i]}));
+  const toggleHabit=(i)=>setHabits(h=>({...h,[i]:!h[i]}));
+  const planetColor=(s)=>s>=70?"#22c55e":s>=50?"#f59e0b":"#ef4444";
+  const areaColor=(s)=>s>=7?"#ef4444":s>=5?"#f59e0b":"#22c55e";
+  const severityPct=(report.diagnosis?.severityScore||0)*10;
+  const generatedDate=new Date().toLocaleDateString("en-IN",{day:"numeric",month:"long",year:"numeric"});
+  return(
+    <div style={{maxWidth:860,margin:"0 auto"}}>
+      <div className="ivc-report-topbar">
+        <div><div className="ivc-report-topbar-title">Diagnosis & Remedy Report</div><div className="ivc-report-topbar-date">Generated: {generatedDate} · Pandit Rameshwar Ji</div></div>
+        <button className="ivc-dl-pdf-btn" onClick={onDownload} disabled={downloading}>{downloading?"⏳ Preparing PDF...":"⬇ Download PDF Report"}</button>
+      </div>
+
+      {report.diagnosis&&(
+        <ReportCard color="c-astro" icon="🔭" label="Astrological Diagnosis">
+          <p className="ivc-diag-summary">{report.diagnosis.summary}</p>
+          {report.diagnosis.saturnScore!==undefined&&(
+            <div className="ivc-saturn-row">
+              <div><div className="ivc-saturn-score">{report.diagnosis.saturnScore}<span style={{fontSize:14,color:"rgba(255,255,255,.4)"}}>/100</span></div><div className="ivc-saturn-label">Saturn Influence Score</div></div>
+              <div className="ivc-saturn-bar-wrap"><ProgressBar value={report.diagnosis.saturnScore} color={report.diagnosis.saturnScore>=70?"#ef4444":"#f59e0b"} height={10}/></div>
             </div>
           )}
+          {report.diagnosis.areaScores&&(
+            <div style={{marginBottom:18}}>
+              <div style={{fontSize:10,letterSpacing:2,textTransform:"uppercase",fontFamily:"'Space Mono',monospace",color:"rgba(110,231,249,.6)",marginBottom:12}}>Severity by Life Area</div>
+              <div className="ivc-area-scores">{Object.entries(report.diagnosis.areaScores).map(([area,score])=>(
+                <div key={area} className="ivc-area-row"><span className="ivc-area-name">{area}</span><div className="ivc-area-track"><div className="ivc-area-fill" style={{width:`${(score/10)*100}%`,background:areaColor(score)}}/></div><span className="ivc-area-score">{score}/10</span></div>
+              ))}</div>
+            </div>
+          )}
+          <div className="ivc-diag-grid">
+            {report.diagnosis.rootCause&&<div className="ivc-diag-item"><div className="ivc-diag-item-lbl">Root Cause</div><div className="ivc-diag-item-val">{report.diagnosis.rootCause}</div></div>}
+            {report.diagnosis.planetaryInfluence&&<div className="ivc-diag-item"><div className="ivc-diag-item-lbl">Planetary Influence</div><div className="ivc-diag-item-val">{report.diagnosis.planetaryInfluence}</div></div>}
+            {report.diagnosis.karmicPattern&&<div className="ivc-diag-item" style={{gridColumn:"1/-1"}}><div className="ivc-diag-item-lbl">Karmic Pattern</div><div className="ivc-diag-item-val">{report.diagnosis.karmicPattern}</div></div>}
+          </div>
+          {report.diagnosis.lifeAreaAffected?.length>0&&<div className="ivc-affected-tags">{report.diagnosis.lifeAreaAffected.map((a,i)=><span key={i} className="ivc-affected-tag">{a}</span>)}</div>}
+          <div className="ivc-severity-row"><span className="ivc-severity-lbl">Severity</span><div className="ivc-severity-track"><div className="ivc-severity-fill" style={{width:`${severityPct}%`}}/></div><span className="ivc-severity-score">{report.diagnosis.severityScore}/10</span></div>
+          {report.diagnosis.whyThisDiagnosis?.length>0&&(
+            <div style={{marginTop:16}}>
+              <div style={{fontSize:10,letterSpacing:2,textTransform:"uppercase",fontFamily:"'Space Mono',monospace",color:"rgba(134,239,172,.7)",marginBottom:10}}>Why This Diagnosis?</div>
+              <div className="ivc-why-list">{report.diagnosis.whyThisDiagnosis.map((r,i)=><div key={i} className="ivc-why-item"><span className="ivc-why-check">✓</span><span className="ivc-why-txt">{r}</span></div>)}</div>
+            </div>
+          )}
+          {report.diagnosis.confidenceLevels&&(
+            <div style={{marginTop:16}}>
+              <div style={{fontSize:10,letterSpacing:2,textTransform:"uppercase",fontFamily:"'Space Mono',monospace",color:"rgba(249,168,212,.7)",marginBottom:10}}>Prediction Confidence</div>
+              <div className="ivc-confidence-row">{Object.entries(report.diagnosis.confidenceLevels).map(([area,level])=><span key={area} className={`ivc-conf-badge conf-${level}`}>{area}: {level}</span>)}</div>
+            </div>
+          )}
+        </ReportCard>
+      )}
 
-          {messages.map((msg, i) => (
-            <div key={i} className={`ivc-msg${msg.role === "user" ? " user" : ""}`}>
-              <div className={`ivc-av ${msg.role === "user" ? "user" : "guru"}`}>
-                {msg.role === "user" ? "🙏" : "🧘"}
+      {report.forecast&&(
+        <ReportCard color="c-forecast" icon="🗓️" label="Forecast & Auspicious Dates">
+          <div className="ivc-forecast-grid">
+            {report.forecast.currentPhase&&<div className="ivc-forecast-item fi-red"><div className="ivc-fi-lbl">Current Phase</div><div className="ivc-fi-val" style={{color:"#ef4444",fontWeight:600}}>{report.forecast.currentPhase}</div>{report.forecast.currentPeriod&&<div className="ivc-fi-val" style={{marginTop:4,fontSize:13}}>{report.forecast.currentPeriod}</div>}</div>}
+            {report.forecast.reliefFrom&&<div className="ivc-forecast-item fi-green"><div className="ivc-fi-lbl">Relief Expected</div><div className="ivc-fi-val" style={{color:"#86efac",fontWeight:600}}>{report.forecast.reliefFrom}</div></div>}
+            {report.forecast.bestMonths?.length>0&&<div className="ivc-forecast-item fi-gold" style={{gridColumn:"1/-1"}}><div className="ivc-fi-lbl">Best Months Ahead</div><div style={{display:"flex",flexWrap:"wrap",gap:8,marginTop:6}}>{report.forecast.bestMonths.map((m,i)=><span key={i} className="ivc-fav-date">✓ {m}</span>)}</div></div>}
+          </div>
+          {(report.forecast.favorableDates?.length>0||report.forecast.avoidDates?.length>0)&&(
+            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:16}}>
+              {report.forecast.favorableDates?.length>0&&<div><div style={{fontSize:10,letterSpacing:2,textTransform:"uppercase",fontFamily:"'Space Mono',monospace",color:"rgba(134,239,172,.6)",marginBottom:8}}>✓ Favorable Days</div><div className="ivc-date-tags">{report.forecast.favorableDates.map((d,i)=><span key={i} className="ivc-fav-date">{d}</span>)}</div></div>}
+              {report.forecast.avoidDates?.length>0&&<div><div style={{fontSize:10,letterSpacing:2,textTransform:"uppercase",fontFamily:"'Space Mono',monospace",color:"rgba(239,68,68,.6)",marginBottom:8}}>⚠ Avoid Decisions</div><div className="ivc-date-tags">{report.forecast.avoidDates.map((d,i)=><span key={i} className="ivc-avoid-date">{d}</span>)}</div></div>}
+            </div>
+          )}
+        </ReportCard>
+      )}
+
+      {report.planetDashboard?.length>0&&(
+        <ReportCard color="c-planet" icon="🪐" label="Planet Health Dashboard">
+          <div className="ivc-planet-grid">{report.planetDashboard.map((p,i)=>(
+            <div key={i} className="ivc-planet-row"><span className="ivc-planet-icon">{p.icon}</span><span className="ivc-planet-name">{p.planet}</span><div className="ivc-planet-bar"><div className="ivc-planet-fill" style={{width:`${p.score}%`,background:planetColor(p.score)}}/></div><span className="ivc-planet-score" style={{color:planetColor(p.score)}}>{p.score}%</span></div>
+          ))}</div>
+        </ReportCard>
+      )}
+
+      {report.spiritualInsight&&(
+        <ReportCard color="c-spirit" icon="✨" label="Spiritual Insight">
+          {report.spiritualInsight.currentPhase&&<div className="ivc-insight-phase">{report.spiritualInsight.currentPhase}</div>}
+          {report.spiritualInsight.phaseDescription&&<p className="ivc-insight-desc">{report.spiritualInsight.phaseDescription}</p>}
+          <div className="ivc-insight-items">
+            {report.spiritualInsight.soulLesson&&<div className="ivc-insight-item"><div className="ivc-insight-item-lbl">Soul Lesson</div><div className="ivc-insight-item-val">{report.spiritualInsight.soulLesson}</div></div>}
+            {report.spiritualInsight.growthOpportunity&&<div className="ivc-insight-item"><div className="ivc-insight-item-lbl">Growth Opportunity</div><div className="ivc-insight-item-val">{report.spiritualInsight.growthOpportunity}</div></div>}
+          </div>
+        </ReportCard>
+      )}
+
+      {report.remedies?.length>0&&(
+        <ReportCard color="c-remedy" icon="🌿" label="Prescribed Remedies">
+          <div className="ivc-remedy-grid">{report.remedies.map((r,i)=>(
+            <div key={i} className="ivc-remedy-card">
+              <div className="ivc-remedy-icon">{r.icon||"🪔"}</div>
+              <div className="ivc-remedy-name">{r.name}</div>
+              <div className="ivc-remedy-desc">{r.description}</div>
+              <div className="ivc-remedy-chips">
+                {r.duration&&<span className="ivc-remedy-chip rc-dur">📅 {r.duration}</span>}
+                {r.cost!==undefined&&<span className="ivc-remedy-chip rc-cost">💰 {r.cost}</span>}
+                {r.effort&&<span className="ivc-remedy-chip rc-effort">⚡ {r.effort} effort</span>}
               </div>
-              {msg.role === "user" ? (
-                <div className="ivc-user-bubble">
-                  <div className="ivc-user-text">{msg.content}</div>
+              {r.effectiveness!==undefined&&<div className="ivc-eff-bar-wrap"><div className="ivc-eff-label">Effectiveness · {r.effectiveness}%</div><div className="ivc-eff-track"><div className="ivc-eff-fill" style={{width:`${r.effectiveness}%`}}/></div></div>}
+            </div>
+          ))}</div>
+        </ReportCard>
+      )}
+
+      {report.dailyActions?.length>0&&(
+        <ReportCard color="c-daily" icon="✅" label="Today's Action Plan">
+          <div className="ivc-action-list">{report.dailyActions.map((a,i)=>(
+            <div key={i} className={`ivc-action-item${actions[i]?" done":""}`} onClick={()=>toggleAction(i)}>
+              <div className="ivc-action-check">{actions[i]?"✓":""}</div>
+              <span className="ivc-action-txt">{a.task}</span>
+            </div>
+          ))}</div>
+          <div style={{marginTop:14,fontSize:12,color:"rgba(255,255,255,.3)",fontFamily:"'Space Mono',monospace"}}>{Object.values(actions).filter(Boolean).length}/{report.dailyActions.length} completed today</div>
+        </ReportCard>
+      )}
+
+      {report.mantra&&(<ReportCard color="c-mantra" icon="📿" label="Mantra Recommendation"><MantraCard m={report.mantra} onSave={onSaveMantra}/></ReportCard>)}
+
+      {report.puja&&(
+        <ReportCard color="c-puja" icon="🪔" label="Puja Recommendation">
+          <div className="ivc-puja-name">{report.puja.name}</div>
+          <div className="ivc-puja-grid">
+            {report.puja.estimatedCost&&<div className="ivc-puja-item"><div className="ivc-puja-item-lbl">Estimated Cost</div><div className="ivc-puja-item-val">{report.puja.estimatedCost}</div></div>}
+            {report.puja.duration&&<div className="ivc-puja-item"><div className="ivc-puja-item-lbl">Duration</div><div className="ivc-puja-item-val">{report.puja.duration}</div></div>}
+          </div>
+          {report.puja.materials?.length>0&&<div className="ivc-puja-materials">{report.puja.materials.map((m,i)=><span key={i} className="ivc-mat-tag">🌸 {m}</span>)}</div>}
+          {report.puja.procedure&&<div className="ivc-puja-procedure">{report.puja.procedure}</div>}
+          {report.puja.benefits&&<div className="ivc-puja-benefit">✨ {report.puja.benefits}</div>}
+          <button className="ivc-book-puja-btn" onClick={onBookPuja}>🙏 Book This Puja</button>
+        </ReportCard>
+      )}
+
+      {report.gemstone&&(
+        <ReportCard color="c-gem" icon="💎" label="Gemstone Recommendation">
+          <div className="ivc-gem-name">{report.gemstone.name}</div>
+          <div className="ivc-gem-grid">
+            {report.gemstone.benefits&&<div className="ivc-gem-item" style={{gridColumn:"1/-1"}}><div className="ivc-gem-item-lbl">Benefits</div><div className="ivc-gem-item-val">{report.gemstone.benefits}</div></div>}
+            {[["Wearing Finger",report.gemstone.wearingFinger],["Best Day",report.gemstone.wearingDay],["Metal",report.gemstone.metal],["Weight",report.gemstone.weight]].map(([l,v])=>v&&(<div key={l} className="ivc-gem-item"><div className="ivc-gem-item-lbl">{l}</div><div className="ivc-gem-item-val">{v}</div></div>))}
+          </div>
+        </ReportCard>
+      )}
+
+      {report.donations&&(
+        <ReportCard color="c-donate" icon="🤲" label="Personalized Donation Suggestions">
+          <div className="ivc-donate-list">{report.donations.items?.map((d,i)=><span key={i} className="ivc-donate-item">• {d}</span>)}</div>
+          {report.donations.bestDay&&<div style={{marginBottom:10}}><span style={{fontSize:13,color:"rgba(255,255,255,.45)",fontFamily:"'Space Mono',monospace",marginRight:8}}>Best Day:</span><span className="ivc-donate-day">{report.donations.bestDay}</span></div>}
+          {report.donations.significance&&<div style={{fontSize:14,color:"rgba(255,255,255,.6)",lineHeight:1.65}}>{report.donations.significance}</div>}
+        </ReportCard>
+      )}
+
+      {report.dailyPractices?.length>0&&(
+        <ReportCard color="c-habits" icon="🌅" label="Daily Spiritual Practices">
+          <div className="ivc-habits-grid">{report.dailyPractices.map((p,i)=>(
+            <div key={i} className={`ivc-habit-card${habits[i]?" done":""}`} onClick={()=>toggleHabit(i)}>
+              <span className="ivc-habit-icon">{p.icon||"⭐"}</span>
+              <div style={{flex:1}}><div className="ivc-habit-name">{p.name}</div><div className="ivc-habit-dur">{p.duration}</div><div className="ivc-habit-ben">{p.benefit}</div></div>
+              <div className="ivc-habit-check">{habits[i]?"✓":""}</div>
+            </div>
+          ))}</div>
+        </ReportCard>
+      )}
+
+      {report.karmaScore&&(
+        <ReportCard color="c-karma" icon="⚡" label="Karma & Spiritual Progress">
+          <div className="ivc-karma-score-big">{report.karmaScore.current>0?`+${report.karmaScore.current}`:report.karmaScore.current}</div>
+          <div className="ivc-karma-sub">Current Karma Score</div>
+          {report.karmaScore.progressToNeutral!==undefined&&(
+            <div className="ivc-karma-progress-wrap">
+              <div className="ivc-karma-progress-label"><span className="ivc-karma-progress-lbl">Progress to Neutral Karma</span><span className="ivc-karma-progress-pct">{report.karmaScore.progressToNeutral}%</span></div>
+              <div className="ivc-karma-meter"><div className="ivc-karma-fill" style={{width:`${report.karmaScore.progressToNeutral}%`}}/></div>
+            </div>
+          )}
+          {(report.karmaScore.completedDays!==undefined||report.karmaScore.completedPujas!==undefined)&&(
+            <div className="ivc-karma-completed">
+              {report.karmaScore.completedDays!==undefined&&<div className="ivc-karma-done"><span className="ivc-karma-done-check">✓</span>{report.karmaScore.completedDays} days of mantra completed</div>}
+              {report.karmaScore.completedPujas!==undefined&&<div className="ivc-karma-done"><span className="ivc-karma-done-check">✓</span>{report.karmaScore.completedPujas} Hanuman puja completed</div>}
+            </div>
+          )}
+          <div className="ivc-karma-cols">
+            <div><div className="ivc-karma-col-title pos">✅ Positive Influences</div>{report.karmaScore.positive?.map((p,i)=><div key={i} className="ivc-karma-item"><span className="ivc-karma-dot dot-pos"/>{p}</div>)}</div>
+            <div><div className="ivc-karma-col-title neg">⚠️ Areas to Improve</div>{report.karmaScore.negative?.map((n,i)=><div key={i} className="ivc-karma-item"><span className="ivc-karma-dot dot-neg"/>{n}</div>)}</div>
+          </div>
+        </ReportCard>
+      )}
+
+      <ReportCard color="c-karma" icon="📅" label="Progress Calendar" defaultOpen={true}><ProgressCalendar/></ReportCard>
+
+      {report.timeline?.length>0&&(
+        <ReportCard color="c-timeline" icon="🗺️" label="Spiritual Progress Timeline">
+          <div className="ivc-timeline">{report.timeline.map((t,i)=>(
+            <div key={i} className="ivc-tl-item"><div className="ivc-tl-dot"/><div className="ivc-tl-week">Week {t.week}</div><div className="ivc-tl-title">{t.title}</div><div className="ivc-tl-desc">{t.description}</div></div>
+          ))}</div>
+        </ReportCard>
+      )}
+
+      {report.practicalGuidance?.length>0&&(
+        <ReportCard color="c-practical" icon="💡" label="Practical Guidance">
+          <div className="ivc-practical-list">{report.practicalGuidance.map((g,i)=><div key={i} className="ivc-practical-item"><span className="ivc-practical-dot"/><span className="ivc-practical-txt">{g}</span></div>)}</div>
+        </ReportCard>
+      )}
+
+      {report.guidance&&(
+        <ReportCard color="c-guidance" icon="🧘" label="Personal Guidance from Pandit Ji">
+          <div className="ivc-guidance-box"><div className="ivc-guidance-txt">{report.guidance}</div><div className="ivc-guidance-sig">— Pandit Rameshwar Ji</div></div>
+        </ReportCard>
+      )}
+
+      {report.followUpPrompts?.length>0&&(
+        <ReportCard color="c-followup" icon="💬" label="Ask About This Diagnosis">
+          <div style={{fontSize:14,color:"rgba(255,255,255,.45)",marginBottom:14}}>One-tap questions about your report:</div>
+          <div className="ivc-followup-grid">{report.followUpPrompts.map((p,i)=><button key={i} className="ivc-followup-btn" onClick={()=>onAskFollowUp&&onAskFollowUp(p)}>💬 {p}</button>)}</div>
+        </ReportCard>
+      )}
+
+      <div style={{textAlign:"center",padding:"20px 0 40px"}}>
+        <button className="ivc-dl-pdf-btn" style={{margin:"0 auto"}} onClick={onDownload} disabled={downloading}>{downloading?"⏳ Preparing PDF...":"⬇ Download Full PDF Report"}</button>
+      </div>
+    </div>
+  );
+}
+
+export default function InnerVoiceChat(){
+  const [activeTab,setActiveTab]=useState("consultation");
+  const [messages,setMessages]=useState([]);
+  const [input,setInput]=useState("");
+  const [loading,setLoading]=useState(false);
+  const [listening,setListening]=useState(false);
+  const [progress,setProgress]=useState(0);
+  const [readyForDiagnosis,setReadyForDiagnosis]=useState(false);
+  const [generatingReport,setGeneratingReport]=useState(false);
+  const [report,setReport]=useState(null);
+  const [downloading,setDownloading]=useState(false);
+  const [activePanel,setActivePanel]=useState(null);
+  const [sidebarOpen,setSidebarOpen]=useState(false);
+  const [savedMantras,setSavedMantras]=useState(()=>{try{return JSON.parse(localStorage.getItem("iv_saved_mantras")||"[]");}catch{return [];}});
+  const [chatSessions,setChatSessions]=useState(()=>{try{return JSON.parse(localStorage.getItem("iv_chat_sessions")||"[]");}catch{return [];}});
+  const bottomRef=useRef(null),textareaRef=useRef(null),recognitionRef=useRef(null);
+  const profile=(()=>{try{return JSON.parse(localStorage.getItem("iv_profile")||"null");}catch{return null;}})();
+
+  useEffect(()=>{const s=document.createElement("style");s.textContent=CSS;document.head.appendChild(s);return()=>document.head.removeChild(s);},[]);
+  useEffect(()=>{bottomRef.current?.scrollIntoView({behavior:"smooth"});},[messages,loading]);
+
+  useEffect(()=>{
+    const SELECTORS=["footer","[class*='footer' i]","[class*='Footer']","[id*='footer' i]","[class*='navbar' i]","[class*='NavBar']","[class*='nav-bar' i]","[id*='navbar' i]","nav:not(.ivc-sb nav)"];
+    const hidden=[];
+    SELECTORS.forEach(sel=>{try{document.querySelectorAll(sel).forEach(el=>{if(!el.closest(".ivc-app")){hidden.push({el,prev:el.style.display});el.style.setProperty("display","none","important");}});}catch{}});
+    const prevOverflow=document.body.style.overflow;
+    document.body.style.overflow="hidden";
+    return()=>{hidden.forEach(({el,prev})=>el.style.display=prev);document.body.style.overflow=prevOverflow;};
+  },[]);
+
+  useEffect(()=>{
+    if(messages.length>0){
+      const firstUserMsg=messages.find(m=>m.role==="user");
+      if(firstUserMsg){
+        const session={id:Date.now(),text:firstUserMsg.content.slice(0,40)+"...",date:new Date().toLocaleDateString("en-IN")};
+        const updated=[session,...chatSessions.filter(s=>s.text!==session.text)].slice(0,10);
+        setChatSessions(updated);localStorage.setItem("iv_chat_sessions",JSON.stringify(updated));
+      }
+    }
+  },[messages.length]);
+
+  const saveMantra=(m)=>{
+    const entry={id:Date.now(),sanskrit:m.sanskrit,transliteration:m.transliteration,purpose:m.purpose,date:new Date().toLocaleDateString("en-IN"),mantra:m};
+    const updated=[entry,...savedMantras].slice(0,20);
+    setSavedMantras(updated);localStorage.setItem("iv_saved_mantras",JSON.stringify(updated));
+  };
+
+  const autoResize=()=>{const ta=textareaRef.current;if(!ta)return;ta.style.height="auto";ta.style.height=Math.min(ta.scrollHeight,140)+"px";};
+  const buildHistory=()=>messages.map(m=>({role:m.role==="user"?"user":"assistant",content:typeof m.content==="string"?m.content:(m.content?.message||"[response]")}));
+
+  const send=async(text)=>{
+    const msg=text.trim();if(!msg||loading)return;
+    setInput("");if(textareaRef.current)textareaRef.current.style.height="52px";
+    setMessages(prev=>[...prev,{role:"user",content:msg}]);
+    setLoading(true);
+    try{
+      const history=buildHistory();
+      const data=await callConsultation([{role:"system",content:PANDIT_CONSULTATION_SYSTEM},...history,{role:"user",content:msg}]);
+      setMessages(prev=>[...prev,{role:"guru",content:data}]);
+      if(data.progress)setProgress(data.progress);
+      if(data.readyForDiagnosis)setReadyForDiagnosis(true);
+    }catch(e){
+      setMessages(prev=>[...prev,{role:"guru",content:{type:"gathering",message:`I encountered an error: ${e.message}. Please try again.`}}]);
+    }finally{setLoading(false);}
+  };
+
+  const generateReport=async()=>{
+    setGeneratingReport(true);setActiveTab("report");
+    try{const data=await callDiagnosis(messages);setReport(data);}
+    catch(e){console.error("Diagnosis error:",e);}
+    finally{setGeneratingReport(false);}
+  };
+
+  const handleDownloadPDF=async()=>{
+    if(!report)return;
+    setDownloading(true);
+    try{await downloadReportPDF(report,profile?.name||"Seeker");}
+    catch(e){console.error("PDF error:",e);alert("PDF download failed. Please try again.");}
+    finally{setDownloading(false);}
+  };
+
+  const handleFollowUp=(prompt)=>{setActiveTab("consultation");setTimeout(()=>send(prompt),100);};
+  const onKeyDown=(e)=>{if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();send(input);}};
+
+  const toggleVoice=()=>{
+    const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+    if(!SR){alert("Voice input requires Chrome or Edge browser.");return;}
+    if(listening){recognitionRef.current?.stop();setListening(false);return;}
+    const rec=new SR();
+    rec.continuous=true;rec.interimResults=true;rec.lang="hi-IN";
+    rec.onresult=(e)=>{const transcript=Array.from(e.results).map(r=>r[0].transcript).join(" ");setInput(transcript);setTimeout(autoResize,10);};
+    rec.onerror=()=>setListening(false);rec.onend=()=>setListening(false);
+    rec.start();recognitionRef.current=rec;setListening(true);
+  };
+
+  const togglePanel=(name)=>setActivePanel(prev=>prev===name?null:name);
+  const newConversation=()=>{setMessages([]);setProgress(0);setReadyForDiagnosis(false);setReport(null);setActiveTab("consultation");setSidebarOpen(false);};
+
+  return(
+    <div className="ivc-app">
+      <style>{CSS}</style>
+      <StarCanvas/>
+      <div className="ivc-layout">
+        <aside className={`ivc-sb${sidebarOpen?" open":""}`}>
+          <div className="ivc-sb-head">
+            <Link to="/inner-voice" className="ivc-sb-back">← Inner Voice</Link>
+            <button className="ivc-new-btn" onClick={newConversation}>✦ New Conversation</button>
+          </div>
+          <div className="ivc-sb-scroll">
+            <div className="ivc-sb-section">Navigation</div>
+            <div className="ivc-sb-item" onClick={newConversation}><span className="ivc-sb-item-icon">💬</span><span className="ivc-sb-item-txt">New Conversation</span></div>
+            <div className={`ivc-sb-item${activePanel==="saved"?" active":""}`} onClick={()=>togglePanel("saved")}><span className="ivc-sb-item-icon">📿</span><span className="ivc-sb-item-txt">Saved Mantras {savedMantras.length>0?`(${savedMantras.length})`:""}</span></div>
+            <div className={`ivc-mantras-panel${activePanel==="saved"?" visible":""}`}>
+              {savedMantras.length===0?<div className="ivc-no-saved">No saved mantras yet.<br/>Tap 🔖 Save on any mantra.</div>
+                :savedMantras.map(m=><div key={m.id} className="ivc-mantra-saved-item"><span style={{fontSize:16}}>📿</span><div><div className="ivc-msi-name">{m.transliteration||m.sanskrit||"Mantra"}</div><div className="ivc-msi-meta">{m.purpose||""} · {m.date}</div></div></div>)}
+            </div>
+            <div className={`ivc-sb-item${activePanel==="recent"?" active":""}`} onClick={()=>togglePanel("recent")}><span className="ivc-sb-item-icon">🕐</span><span className="ivc-sb-item-txt">Recent Chats</span></div>
+            <div className={`ivc-recent-panel${activePanel==="recent"?" visible":""}`}>
+              {chatSessions.length===0?<div className="ivc-no-saved">No recent chats yet.</div>
+                :chatSessions.map(s=><div key={s.id} className="ivc-recent-item"><span style={{fontSize:14}}>🕐</span><span className="ivc-recent-txt">{s.text}</span></div>)}
+            </div>
+            <div className="ivc-sb-item" onClick={()=>alert("Settings coming soon")}><span className="ivc-sb-item-icon">⚙️</span><span className="ivc-sb-item-txt">Settings</span></div>
+          </div>
+          <div className="ivc-sb-foot">
+            <div className="ivc-profile">
+              <div className="ivc-profile-av">🙏</div>
+              <div style={{minWidth:0}}><div className="ivc-profile-name">{profile?.name||"Seeker"}</div><div className="ivc-profile-sub">{profile?.sign||"Vedic Guidance"}</div></div>
+            </div>
+          </div>
+        </aside>
+
+        {sidebarOpen&&<div style={{position:"fixed",inset:0,zIndex:99,background:"rgba(0,0,0,.5)"}} onClick={()=>setSidebarOpen(false)}/>}
+
+        <main className="ivc-main">
+          <header className="ivc-header">
+            <button className="ivc-mob-menu" onClick={()=>setSidebarOpen(!sidebarOpen)}>☰</button>
+            <div className="ivc-hdr-av">🧘</div>
+            <div style={{flex:1}}><div className="ivc-hdr-name">AI Guru</div><div className="ivc-hdr-sub">Pandit Rameshwar Ji · 40 years of Jyotish experience</div></div>
+            <div className="ivc-online"><span className="ivc-online-dot"/>Online</div>
+          </header>
+
+          <div className="ivc-tabs">
+            <div className={`ivc-tab${activeTab==="consultation"?" active":""}`} onClick={()=>setActiveTab("consultation")}>💬 Consultation Mode</div>
+            <div className={`ivc-tab${activeTab==="report"?" active":""}`} onClick={()=>{
+              setActiveTab("report");
+              // Auto-generate if we have messages but no report yet
+              // Only auto-generate if Pandit Ji determined the consultation is ready
+              if(!report && !generatingReport && readyForDiagnosis){
+                generateReport();
+              }
+            }}>
+              📋 Diagnosis & Remedy Report
+              {report&&<span className="ivc-tab-badge">Ready</span>}
+              {generatingReport&&<span className="ivc-tab-badge" style={{background:"rgba(110,231,249,.2)",borderColor:"rgba(110,231,249,.35)",color:"#6EE7F9"}}>Generating...</span>}
+            </div>
+          </div>
+
+          {activeTab==="consultation"&&(
+            <>
+              {progress>0&&(
+                <div className="ivc-progress-bar-wrap">
+                  <div className="ivc-progress-label"><span className="ivc-progress-title">Spiritual Assessment Progress</span><span className="ivc-progress-pct">{progress}% Complete</span></div>
+                  <div className="ivc-progress-track"><div className="ivc-progress-fill" style={{width:`${progress}%`}}/></div>
+                  {readyForDiagnosis&&<button className="ivc-gen-report-btn" onClick={generateReport}>✨ Generate Diagnosis Report</button>}
                 </div>
-              ) : (
-                <div className="ivc-bubble">
-                  <GurBubble resp={msg.content} />
+              )}
+              <div className="ivc-chat">
+                {messages.length===0&&(
+                  <div className="ivc-welcome">
+                    <div className="ivc-w-om">🕉</div>
+                    <h2 className="ivc-w-title">Namaste, {profile?.name||"Seeker"}</h2>
+                    <p className="ivc-w-sub">Whatever trouble weighs on your soul — speak openly. Pandit Ji will understand your situation fully before prescribing the right path.</p>
+                    <div className="ivc-w-grid">
+                      {SUGGESTIONS.map((s,i)=><div key={i} className="ivc-suggest" onClick={()=>send(s.sub)}><div className="ivc-sug-title">{s.title}</div><div className="ivc-sug-sub">{s.sub}</div></div>)}
+                    </div>
+                  </div>
+                )}
+                {messages.map((msg,i)=>(
+                  <div key={i} className={`ivc-msg${msg.role==="user"?" user":""}`}>
+                    <div className={`ivc-av ${msg.role==="user"?"user":"guru"}`}>{msg.role==="user"?"🙏":"🧘"}</div>
+                    <div className="ivc-bwrap">
+                      {msg.role==="user"
+                        ?<div className="ivc-user-bbl"><div className="ivc-user-txt">{msg.content}</div></div>
+                        :<div className="ivc-guru-bbl"><div className="ivc-guru-txt">{msg.content?.message||msg.content?.guidance||"..."}</div></div>}
+                    </div>
+                  </div>
+                ))}
+                {loading&&<div className="ivc-typing"><div className="ivc-av guru">🧘</div><div className="ivc-typing-bbl"><div className="ivc-dots"><div className="ivc-dot"/><div className="ivc-dot"/><div className="ivc-dot"/></div></div></div>}
+                <div ref={bottomRef}/>
+              </div>
+              <div className="ivc-inp-area">
+                <div className="ivc-inp-wrap">
+                  <textarea ref={textareaRef} className="ivc-inp-box"
+                    placeholder={listening?"Listening... speak now":"Tell Pandit Ji what is troubling you — Hindi, English, or Hinglish"}
+                    value={input} onChange={e=>{setInput(e.target.value);autoResize();}} onKeyDown={onKeyDown} rows={1}/>
+                  <div className="ivc-inp-btns">
+                    <button className={`ivc-voice-inp-btn${listening?" listening":""}`} onClick={toggleVoice}>{listening?"🔴":"🎙️"}</button>
+                    <button className="ivc-send-btn" onClick={()=>send(input)} disabled={!input.trim()||loading}>{loading?"⏳":"↑"}</button>
+                  </div>
+                </div>
+                <div className="ivc-inp-hint">Enter to send · Shift+Enter for new line · 🎙️ for voice</div>
+              </div>
+            </>
+          )}
+
+          {activeTab==="report"&&(
+            <div className="ivc-report">
+              {generatingReport?(
+                <div className="ivc-report-generating">
+                  <div className="ivc-gen-spinner"/>
+                  <div className="ivc-gen-txt">Preparing Your Diagnosis</div>
+                  <div className="ivc-gen-sub">Analysing planetary influences, karmic patterns, and prescribing remedies...</div>
+                </div>
+              ):report?(
+                <DiagnosisReport report={report} onSaveMantra={saveMantra} onBookPuja={()=>alert("Puja booking coming soon!")} userName={profile?.name} onAskFollowUp={handleFollowUp} onDownload={handleDownloadPDF} downloading={downloading}/>
+              ):(
+                <div className="ivc-report-empty">
+                  <div className="ivc-report-empty-icon" style={{fontSize:72,marginBottom:20,filter:"drop-shadow(0 0 30px rgba(212,175,55,.4))"}}>🕉</div>
+                  <div className="ivc-report-empty-title">Begin Your Consultation</div>
+                  <div className="ivc-report-empty-sub">Share your life challenge with Pandit Ji in the Consultation tab. After a few exchanges, your complete Vedic Diagnosis Report — with remedies, mantras, planetary analysis, and a PDF — will be generated automatically.</div>
+                  <div style={{display:"flex",gap:12,flexWrap:"wrap",justifyContent:"center",marginTop:8}}>
+                    <button className="ivc-report-start-btn" onClick={()=>setActiveTab("consultation")}>💬 Start Consultation</button>
+                    {readyForDiagnosis&&<button className="ivc-report-start-btn" style={{background:"linear-gradient(135deg,rgba(212,175,55,.25),rgba(139,92,246,.18))",borderColor:"rgba(212,175,55,.5)"}} onClick={generateReport}>✨ Generate Report Now</button>}
+                  </div>
                 </div>
               )}
             </div>
-          ))}
-
-          {loading && (
-            <div className="ivc-msg">
-              <div className="ivc-av guru">🧘</div>
-              <div className="ivc-guru-bubble">
-                <div className="ivc-typing">
-                  <div className="ivc-dot" /><div className="ivc-dot" /><div className="ivc-dot" />
-                </div>
-              </div>
-            </div>
           )}
-          <div ref={bottomRef} />
-        </div>
-
-        <div className="ivc-input-area">
-          <div className="ivc-input-inner">
-            <textarea
-              ref={textareaRef}
-              className="ivc-input-box"
-              placeholder="Pandit Ji se kuch bhi poochiye... Ask anything in Hindi or English"
-              value={input}
-              onChange={e => setInput(e.target.value)}
-              onKeyDown={onKeyDown}
-              rows={1}
-            />
-            <button className="ivc-send-btn" onClick={() => send(input)} disabled={!input.trim() || loading}>
-              ✦
-            </button>
-          </div>
-        </div>
+        </main>
       </div>
     </div>
   );

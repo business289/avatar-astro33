@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 
 const fl = document.createElement("link"); fl.rel = "stylesheet";
@@ -47,7 +47,7 @@ async function callAI(userMsg) {
 
 const CSS = `
 *{box-sizing:border-box;}
-.ivw-app{min-height:100vh;background:#03010a;color:#e8e0f0;font-family:'Cormorant Garamond',serif;overflow-x:hidden;position:relative;}
+.ivw-app{min-height:100vh;background:#050510;color:#fff;font-family:'Cormorant Garamond',serif;overflow-x:hidden;position:relative;}
 .ivw-stars{position:fixed;inset:0;pointer-events:none;z-index:0;}
 .ivw-star{position:absolute;border-radius:50%;background:#fff;animation:twk var(--d,3s) ease-in-out infinite var(--dl,0s);opacity:var(--op,.4);}
 @keyframes twk{0%,100%{opacity:var(--op);transform:scale(1);}50%{opacity:.05;transform:scale(.2);}}
@@ -55,43 +55,43 @@ const CSS = `
 .ivw-wrap{position:relative;z-index:1;max-width:860px;margin:0 auto;padding:70px 24px 100px;}
 
 /* Back */
-.ivw-back{display:inline-flex;align-items:center;gap:6px;font-family:'Space Mono',monospace;font-size:11px;letter-spacing:2px;color:rgba(245,197,24,.5);text-transform:uppercase;text-decoration:none;margin-bottom:32px;transition:color .3s;}
-.ivw-back:hover{color:#f5c518;}
+.ivw-back{display:inline-flex;align-items:center;gap:6px;font-family:'Space Mono',monospace;font-size:10px;letter-spacing:2px;color:rgba(212,175,55,.5);text-transform:uppercase;text-decoration:none;margin-bottom:32px;transition:color .3s;}
+.ivw-back:hover{color:#D4AF37;}
 
 /* Header */
 .ivw-hdr{text-align:center;margin-bottom:40px;}
-.ivw-eyebrow{font-family:'Space Mono',monospace;font-size:11px;letter-spacing:5px;color:#ffaa00;text-transform:uppercase;margin-bottom:14px;}
-.ivw-h1{font-family:'Cinzel Decorative',serif;font-size:clamp(32px,6vw,56px);color:#f5c518;line-height:1.1;margin-bottom:14px;text-shadow:0 0 60px rgba(245,197,24,.4);}
-.ivw-hsub{color:rgba(232,224,240,.5);font-style:italic;font-size:20px;line-height:1.7;}
+.ivw-eyebrow{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:5px;color:#D4AF37;text-transform:uppercase;margin-bottom:14px;}
+.ivw-h1{font-family:'Cinzel Decorative',serif;font-size:clamp(24px,6vw,56px);color:#D4AF37;line-height:1.1;margin-bottom:14px;text-shadow:0 0 60px rgba(212,175,55,.4);}
+.ivw-hsub{color:rgba(255,255,255,.55);font-style:italic;font-size:16px;line-height:1.7;}
 
 /* Scripture pills */
 .ivw-pills{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-bottom:28px;}
-.ivw-pill{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:50px;padding:8px 20px;font-family:'Space Mono',monospace;font-size:11px;letter-spacing:2px;color:rgba(232,224,240,.5);text-transform:uppercase;cursor:pointer;transition:all .3s;}
-.ivw-pill:hover{border-color:rgba(245,197,24,.4);}
-.ivw-pill.on{background:rgba(245,197,24,.14);border-color:rgba(245,197,24,.5);color:#f5c518;}
+.ivw-pill{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:50px;padding:8px 20px;font-family:'Space Mono',monospace;font-size:10px;letter-spacing:2px;color:rgba(255,255,255,.55);text-transform:uppercase;cursor:pointer;transition:all .3s;}
+.ivw-pill:hover{border-color:rgba(212,175,55,.4);}
+.ivw-pill.on{background:rgba(212,175,55,.14);border-color:rgba(212,175,55,.5);color:#D4AF37;}
 
 /* Form card */
 .ivw-form{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:24px;padding:32px;}
-.ivw-flabel{font-family:'Space Mono',monospace;font-size:11px;letter-spacing:3px;color:rgba(232,224,240,.4);text-transform:uppercase;display:block;margin-bottom:12px;}
-.ivw-ta{width:100%;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:18px;color:#e8e0f0;font-family:'Cormorant Garamond',serif;font-size:20px;line-height:1.7;resize:vertical;min-height:130px;outline:none;transition:border .3s;margin-bottom:20px;}
-.ivw-ta:focus{border-color:#f5c518;box-shadow:0 0 0 3px rgba(245,197,24,.1);}
-.ivw-ta::placeholder{color:rgba(232,224,240,.22);font-size:18px;}
+.ivw-flabel{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:3px;color:rgba(255,255,255,.48);text-transform:uppercase;display:block;margin-bottom:12px;}
+.ivw-ta{width:100%;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:18px;color:#fff;font-family:'Cormorant Garamond',serif;font-size:16px;line-height:1.7;resize:vertical;min-height:130px;outline:none;transition:border .3s;margin-bottom:20px;}
+.ivw-ta:focus{border-color:#D4AF37;box-shadow:0 0 0 3px rgba(212,175,55,.1);}
+.ivw-ta::placeholder{color:rgba(232,224,240,.22);font-size:14px;}
 
 /* Quick prompts */
 .ivw-qps{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:22px;}
-.ivw-qp{background:rgba(255,170,0,.07);border:1px solid rgba(255,170,0,.2);border-radius:50px;padding:8px 16px;font-family:'Cormorant Garamond',serif;font-style:italic;font-size:16px;color:rgba(232,224,240,.65);cursor:pointer;transition:all .3s;}
-.ivw-qp:hover{background:rgba(255,170,0,.16);color:#e8e0f0;border-color:rgba(255,170,0,.4);}
+.ivw-qp{background:rgba(255,170,0,.07);border:1px solid rgba(255,170,0,.2);border-radius:50px;padding:8px 16px;font-family:'Cormorant Garamond',serif;font-style:italic;font-size:15px;color:rgba(255,255,255,.68);cursor:pointer;transition:all .3s;}
+.ivw-qp:hover{background:rgba(255,170,0,.16);color:#fff;border-color:rgba(255,170,0,.4);}
 
-.ivw-btn{width:100%;background:linear-gradient(135deg,#f5c518,#f5a623);color:#03010a;border:none;border-radius:14px;padding:18px;font-family:'Space Mono',monospace;font-size:12px;letter-spacing:3px;text-transform:uppercase;cursor:pointer;font-weight:700;transition:all .3s;}
-.ivw-btn:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 12px 40px rgba(245,197,24,.4);}
+.ivw-btn{width:100%;background:linear-gradient(135deg,#D4AF37,#A8832A);color:#03010a;border:none;border-radius:14px;padding:18px;font-family:'Space Mono',monospace;font-size:10px;letter-spacing:3px;text-transform:uppercase;cursor:pointer;font-weight:700;transition:all .3s;}
+.ivw-btn:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 12px 40px rgba(212,175,55,.4);}
 .ivw-btn:disabled{opacity:.4;cursor:not-allowed;}
-.ivw-err{background:rgba(255,45,120,.08);border:1px solid rgba(255,45,120,.25);border-radius:12px;padding:16px;color:#ff6b9d;font-family:'Space Mono',monospace;font-size:12px;text-align:center;margin-top:16px;}
+.ivw-err{background:rgba(255,45,120,.08);border:1px solid rgba(255,45,120,.25);border-radius:12px;padding:16px;color:#ff6b9d;font-family:'Space Mono',monospace;font-size:10px;text-align:center;margin-top:16px;}
 
 /* Loading */
 .ivw-loader-wrap{text-align:center;padding:50px 0;}
-.ivw-spin{width:56px;height:56px;border:2px solid rgba(255,170,0,.15);border-top-color:#ffaa00;border-radius:50%;animation:spin 1s linear infinite;margin:0 auto 18px;}
+.ivw-spin{width:56px;height:56px;border:2px solid rgba(255,170,0,.15);border-top-color:#D4AF37;border-radius:50%;animation:spin 1s linear infinite;margin:0 auto 18px;}
 @keyframes spin{to{transform:rotate(360deg);}}
-.ivw-ltxt{font-family:'Space Mono',monospace;font-size:11px;letter-spacing:3px;color:rgba(255,170,0,.6);text-transform:uppercase;}
+.ivw-ltxt{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:3px;color:rgba(255,170,0,.6);text-transform:uppercase;}
 
 /* Result */
 .ivw-result{animation:fadein .8s ease-out;}
@@ -99,61 +99,61 @@ const CSS = `
 
 /* Source header */
 .ivw-src-row{display:flex;align-items:center;justify-content:center;flex-direction:column;gap:8px;margin-bottom:28px;text-align:center;}
-.ivw-src-badge{display:inline-block;background:rgba(255,170,0,.14);border:1px solid rgba(255,170,0,.4);border-radius:50px;padding:8px 24px;font-family:'Space Mono',monospace;font-size:12px;letter-spacing:3px;color:#ffaa00;text-transform:uppercase;}
-.ivw-src-chapter{font-family:'Space Mono',monospace;font-size:12px;color:rgba(232,224,240,.4);letter-spacing:2px;}
+.ivw-src-badge{display:inline-block;background:rgba(255,170,0,.14);border:1px solid rgba(255,170,0,.4);border-radius:50px;padding:8px 24px;font-family:'Space Mono',monospace;font-size:10px;letter-spacing:3px;color:#D4AF37;text-transform:uppercase;}
+.ivw-src-chapter{font-family:'Space Mono',monospace;font-size:10px;color:rgba(255,255,255,.48);letter-spacing:2px;}
 
 /* Shloka display */
-.ivw-shloka{background:linear-gradient(160deg,rgba(245,197,24,.08),rgba(123,47,255,.06));border:1px solid rgba(245,197,24,.25);border-radius:24px;padding:48px 36px;text-align:center;margin-bottom:20px;position:relative;}
-.ivw-shloka-deco{position:absolute;font-family:'Cinzel Decorative',serif;font-size:28px;color:rgba(245,197,24,.15);}
+.ivw-shloka{background:linear-gradient(160deg,rgba(212,175,55,.08),rgba(123,47,255,.06));border:1px solid rgba(212,175,55,.25);border-radius:24px;padding:48px 36px;text-align:center;margin-bottom:20px;position:relative;}
+.ivw-shloka-deco{position:absolute;font-family:'Cinzel Decorative',serif;font-size:22px;color:rgba(212,175,55,.15);}
 .ivw-shloka-deco.tl{top:16px;left:24px;}
 .ivw-shloka-deco.br{bottom:16px;right:24px;}
-.ivw-dev{font-size:clamp(22px,3.5vw,30px);line-height:2.1;color:#f5c518;margin-bottom:22px;font-weight:400;letter-spacing:.8px;}
-.ivw-roman{font-style:italic;font-size:clamp(17px,2vw,20px);line-height:2;color:rgba(245,197,24,.6);margin-bottom:18px;}
-.ivw-wbw-divider{width:60px;height:1px;background:rgba(245,197,24,.2);margin:18px auto;}
-.ivw-wbw{font-family:'Space Mono',monospace;font-size:12px;color:rgba(232,224,240,.45);line-height:2;}
+.ivw-dev{font-size:clamp(14px,3.5vw,30px);line-height:2.1;color:#D4AF37;margin-bottom:22px;font-weight:400;letter-spacing:.8px;}
+.ivw-roman{font-style:italic;font-size:clamp(14px,2vw,20px);line-height:2;color:rgba(212,175,55,.6);margin-bottom:18px;}
+.ivw-wbw-divider{width:60px;height:1px;background:rgba(212,175,55,.2);margin:18px auto;}
+.ivw-wbw{font-family:'Space Mono',monospace;font-size:10px;color:rgba(255,255,255,.5);line-height:2;}
 
 /* Info sections */
 .ivw-sections{display:flex;flex-direction:column;gap:16px;margin-bottom:20px;}
 
 .ivw-sec{border-radius:18px;padding:28px 30px;}
-.ivw-sec.meaning{background:rgba(245,197,24,.05);border:1px solid rgba(245,197,24,.2);}
+.ivw-sec.meaning{background:rgba(212,175,55,.05);border:1px solid rgba(212,175,55,.2);}
 .ivw-sec.application{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);}
 .ivw-sec.wisdom{background:rgba(123,47,255,.07);border:1px solid rgba(123,47,255,.22);}
 .ivw-sec.action{background:rgba(0,229,255,.05);border:1px solid rgba(0,229,255,.2);}
 .ivw-sec.related{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);}
 
-.ivw-sec-icon{font-size:28px;margin-bottom:10px;display:block;}
-.ivw-sec-lbl{font-family:'Space Mono',monospace;font-size:11px;letter-spacing:3px;text-transform:uppercase;margin-bottom:14px;display:block;}
-.lbl-meaning{color:rgba(245,197,24,.7);}
-.lbl-app{color:rgba(232,224,240,.45);}
+.ivw-sec-icon{font-size:22px;margin-bottom:10px;display:block;}
+.ivw-sec-lbl{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:3px;text-transform:uppercase;margin-bottom:14px;display:block;}
+.lbl-meaning{color:rgba(212,175,55,.7);}
+.lbl-app{color:rgba(255,255,255,.5);}
 .lbl-wisdom{color:rgba(123,47,255,.8);}
 .lbl-action{color:rgba(0,229,255,.7);}
-.lbl-related{color:rgba(232,224,240,.35);}
+.lbl-related{color:rgba(255,255,255,.42);}
 
-.ivw-sec-text{font-size:clamp(18px,2.2vw,21px);line-height:1.85;color:#e8e0f0;}
-.ivw-sec-text.gold{color:#f5d060;}
-.ivw-sec-text.italic{font-style:italic;color:rgba(232,224,240,.85);}
-.ivw-sec-text.small{font-size:17px;color:rgba(232,224,240,.6);font-style:italic;}
+.ivw-sec-text{font-size:clamp(14px,2.2vw,21px);line-height:1.85;color:#fff;}
+.ivw-sec-text.gold{color:#FAE27C;}
+.ivw-sec-text.italic{font-style:italic;color:rgba(255,255,255,.88);}
+.ivw-sec-text.small{font-size:16px;color:rgba(255,255,255,.62);font-style:italic;}
 
 /* Mantra box */
-.ivw-mantra{background:linear-gradient(135deg,rgba(123,47,255,.15),rgba(245,197,24,.08));border:1px solid rgba(123,47,255,.35);border-radius:18px;padding:32px;text-align:center;margin-bottom:20px;}
-.ivw-mantra-lbl{font-family:'Space Mono',monospace;font-size:11px;letter-spacing:3px;color:rgba(123,47,255,.8);text-transform:uppercase;margin-bottom:14px;display:block;}
-.ivw-mantra-txt{font-family:'Cinzel Decorative',serif;font-size:clamp(18px,2.5vw,24px);color:#f5c518;letter-spacing:3px;line-height:1.8;margin-bottom:10px;}
-.ivw-mantra-count{font-family:'Space Mono',monospace;font-size:11px;color:rgba(123,47,255,.6);}
+.ivw-mantra{background:linear-gradient(135deg,rgba(123,47,255,.15),rgba(212,175,55,.08));border:1px solid rgba(123,47,255,.35);border-radius:18px;padding:32px;text-align:center;margin-bottom:20px;}
+.ivw-mantra-lbl{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:3px;color:rgba(123,47,255,.8);text-transform:uppercase;margin-bottom:14px;display:block;}
+.ivw-mantra-txt{font-family:'Cinzel Decorative',serif;font-size:clamp(14px,2.5vw,24px);color:#D4AF37;letter-spacing:3px;line-height:1.8;margin-bottom:10px;}
+.ivw-mantra-count{font-family:'Space Mono',monospace;font-size:10px;color:rgba(123,47,255,.6);}
 
 /* Buttons */
 .ivw-btns{display:flex;gap:12px;margin-top:8px;}
-.ivw-save{flex:1;background:rgba(0,255,170,.08);border:1px solid rgba(0,255,170,.3);border-radius:12px;padding:16px;color:#00ffaa;font-family:'Space Mono',monospace;font-size:11px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;transition:all .3s;}
+.ivw-save{flex:1;background:rgba(0,255,170,.08);border:1px solid rgba(0,255,170,.3);border-radius:12px;padding:16px;color:#00ffaa;font-family:'Space Mono',monospace;font-size:10px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;transition:all .3s;}
 .ivw-save:hover{background:rgba(0,255,170,.16);}
-.ivw-again{flex:1;background:transparent;border:1px solid rgba(245,197,24,.25);border-radius:12px;padding:16px;color:rgba(245,197,24,.7);font-family:'Space Mono',monospace;font-size:11px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;transition:all .3s;}
-.ivw-again:hover{background:rgba(245,197,24,.07);color:#f5c518;}
+.ivw-again{flex:1;background:transparent;border:1px solid rgba(212,175,55,.25);border-radius:12px;padding:16px;color:rgba(212,175,55,.7);font-family:'Space Mono',monospace;font-size:10px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;transition:all .3s;}
+.ivw-again:hover{background:rgba(212,175,55,.07);color:#D4AF37;}
 
 /* Saved */
-.ivw-saved-hdr{font-family:'Space Mono',monospace;font-size:11px;letter-spacing:3px;color:rgba(232,224,240,.35);text-transform:uppercase;margin:32px 0 14px;}
+.ivw-saved-hdr{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:3px;color:rgba(255,255,255,.42);text-transform:uppercase;margin:32px 0 14px;}
 .ivw-saved-card{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:14px;padding:16px 20px;margin-bottom:10px;cursor:pointer;transition:border .3s;}
-.ivw-saved-card:hover{border-color:rgba(245,197,24,.25);}
-.ivw-saved-src{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:2px;color:#ffaa00;margin-bottom:5px;}
-.ivw-saved-prev{font-size:16px;color:rgba(232,224,240,.55);font-style:italic;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.ivw-saved-card:hover{border-color:rgba(212,175,55,.25);}
+.ivw-saved-src{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:2px;color:#D4AF37;margin-bottom:5px;}
+.ivw-saved-prev{font-size:15px;color:rgba(255,255,255,.58);font-style:italic;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 `;
 
 const SCRIPTURES = ["Bhagavad Gita","Upanishads","Ramayana","Mahabharata","Vedas","Puranas"];
@@ -168,21 +168,26 @@ const QUICK_PROMPTS = [
   "I feel God has abandoned me",
 ];
 
-function Stars() {
-  return (
-    <div className="ivw-stars">
-      {Array.from({ length: 80 }).map((_, i) => (
-        <div key={i} className="ivw-star" style={{
-          width: `${Math.random()*2+1}px`, height: `${Math.random()*2+1}px`,
-          left: `${Math.random()*100}%`, top: `${Math.random()*100}%`,
-          "--d": `${2+Math.random()*5}s`, "--dl": `${Math.random()*5}s`,
-          "--op": `${0.1+Math.random()*0.5}`,
-        }} />
-      ))}
-      <div className="ivw-nb" style={{ width:500, height:500, right:"-10%", top:"5%", background:"rgba(255,170,0,.08)" }} />
-      <div className="ivw-nb" style={{ width:400, height:400, left:"-8%", bottom:"15%", background:"rgba(123,47,255,.1)" }} />
-    </div>
-  );
+function StarCanvas() {
+  const canvasRef = useRef(null);
+  useEffect(() => {
+    const canvas = canvasRef.current; if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    let W=window.innerWidth, H=window.innerHeight; canvas.width=W; canvas.height=H;
+    const stars = Array.from({length:180},()=>({ x:Math.random()*W, y:Math.random()*H, r:Math.random()*1.4+0.2, opacity:Math.random()*0.5+0.1, speed:Math.random()*0.001+0.0005, phase:Math.random()*Math.PI*2 }));
+    const shoots=[]; const spawnShoot=()=>shoots.push({ x:Math.random()*W*0.8, y:Math.random()*H*0.4, len:Math.random()*160+80, speed:Math.random()*3+2, angle:Math.PI/5+Math.random()*0.3, life:1 });
+    let t=0,shootTimer=0,raf;
+    const frame=()=>{ ctx.clearRect(0,0,W,H); t+=0.016; shootTimer+=0.016;
+      if(shootTimer>3.5+Math.random()*3){spawnShoot();shootTimer=0;}
+      stars.forEach(s=>{ const op=s.opacity*(0.6+0.4*Math.sin(t*s.speed*60+s.phase)); ctx.beginPath(); ctx.arc(s.x,s.y,s.r,0,Math.PI*2); ctx.fillStyle=`rgba(255,255,255,${op})`; ctx.fill(); });
+      for(let i=shoots.length-1;i>=0;i--){ const s=shoots[i]; s.x+=Math.cos(s.angle)*s.speed; s.y+=Math.sin(s.angle)*s.speed; s.life-=0.008; if(s.life<=0){shoots.splice(i,1);continue;} const tx=s.x-Math.cos(s.angle)*s.len,ty=s.y-Math.sin(s.angle)*s.len; const g=ctx.createLinearGradient(tx,ty,s.x,s.y); g.addColorStop(0,`rgba(212,175,55,0)`); g.addColorStop(0.6,`rgba(212,175,55,${s.life*0.5})`); g.addColorStop(1,`rgba(255,255,255,${s.life*0.9})`); ctx.beginPath(); ctx.moveTo(tx,ty); ctx.lineTo(s.x,s.y); ctx.strokeStyle=g; ctx.lineWidth=1.5; ctx.stroke(); ctx.beginPath(); ctx.arc(s.x,s.y,2.5,0,Math.PI*2); ctx.fillStyle=`rgba(255,255,255,${s.life*0.8})`; ctx.fill(); }
+      raf=requestAnimationFrame(frame); };
+    raf=requestAnimationFrame(frame);
+    const resize=()=>{W=window.innerWidth;H=window.innerHeight;canvas.width=W;canvas.height=H;};
+    window.addEventListener("resize",resize);
+    return ()=>{cancelAnimationFrame(raf);window.removeEventListener("resize",resize);};
+  },[]);
+  return <canvas ref={canvasRef} style={{position:"fixed",inset:0,zIndex:0,pointerEvents:"none"}} />;
 }
 
 function Field({ icon, label, labelClass, text, textClass, children }) {
@@ -247,7 +252,7 @@ export default function InnerVoiceWisdom() {
   return (
     <div className="ivw-app">
       <style>{CSS}</style>
-      <Stars />
+      <StarCanvas />
       <div className="ivw-wrap">
         <Link to="/inner-voice" className="ivw-back">← Inner Voice</Link>
 
