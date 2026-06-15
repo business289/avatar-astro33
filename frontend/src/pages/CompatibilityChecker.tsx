@@ -1,12 +1,10 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 
-// ── Fonts via Google Fonts (injected once) ──────────────────────────────────
 const fontLink = document.createElement("link");
 fontLink.rel = "stylesheet";
 fontLink.href = "https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Space+Mono:wght@400;700&display=swap";
 document.head.appendChild(fontLink);
 
-// ── CSS ─────────────────────────────────────────────────────────────────────
 const css = `
   :root {
     --void: #03010a;
@@ -23,764 +21,312 @@ const css = `
     --font-body: 'Cormorant Garamond', serif;
     --font-mono: 'Space Mono', monospace;
   }
-
   * { box-sizing: border-box; margin: 0; padding: 0; }
-
   .universe-app {
-    min-height: 100vh;
-    background: var(--void);
-    color: #e8e0f0;
-    font-family: var(--font-body);
-    font-size: 18px;
-    overflow-x: hidden;
-    position: relative;
+    min-height: 100vh; background: var(--void); color: #e8e0f0;
+    font-family: var(--font-body); font-size: 18px; overflow-x: hidden; position: relative;
   }
-
-  /* ── Starfield ── */
-  .starfield {
-    position: fixed;
-    inset: 0;
-    pointer-events: none;
-    z-index: 0;
-    overflow: hidden;
-  }
-  .star {
-    position: absolute;
-    border-radius: 50%;
-    background: white;
-    animation: twinkle var(--d, 3s) ease-in-out infinite;
-    animation-delay: var(--delay, 0s);
-    opacity: var(--op, 0.6);
-  }
-  @keyframes twinkle {
-    0%, 100% { opacity: var(--op, 0.6); transform: scale(1); }
-    50% { opacity: 0.1; transform: scale(0.5); }
-  }
-
-  /* ── Nebula blobs ── */
-  .nebula-blob {
-    position: fixed;
-    border-radius: 50%;
-    filter: blur(80px);
-    pointer-events: none;
-    z-index: 0;
-    animation: drift 20s ease-in-out infinite alternate;
-  }
-  @keyframes drift {
-    from { transform: translate(0, 0) scale(1); }
-    to { transform: translate(40px, 30px) scale(1.1); }
-  }
-
-  /* ── Layout ── */
+  .starfield { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
+  .star { position: absolute; border-radius: 50%; background: white; animation: twinkle var(--d,3s) ease-in-out infinite; animation-delay: var(--delay,0s); opacity: var(--op,0.6); }
+  @keyframes twinkle { 0%,100%{opacity:var(--op,0.6);transform:scale(1);}50%{opacity:0.1;transform:scale(0.5);} }
+  .nebula-blob { position: fixed; border-radius: 50%; filter: blur(80px); pointer-events: none; z-index: 0; animation: drift 20s ease-in-out infinite alternate; }
+  @keyframes drift { from{transform:translate(0,0) scale(1);}to{transform:translate(40px,30px) scale(1.1);} }
   .content { position: relative; z-index: 1; }
-
-  /* ── Header ── */
-  .header {
-    text-align: center;
-    padding: 60px 20px 40px;
-  }
-  .header-tag {
-    font-family: var(--font-mono);
-    font-size: 11px;
-    letter-spacing: 6px;
-    color: var(--aurora-3);
-    text-transform: uppercase;
-    margin-bottom: 16px;
-    opacity: 0.8;
-  }
-  .header h1 {
-    font-family: var(--font-display);
-    font-size: clamp(22px, 4vw, 44px);
-    font-weight: 900;
-    background: linear-gradient(135deg, var(--gold) 0%, var(--aurora-2) 40%, var(--aurora-1) 80%, var(--aurora-3) 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    line-height: 1.2;
-    margin-bottom: 12px;
-  }
-  .header p {
-    color: rgba(232,224,240,0.55);
-    font-size: 17px;
-    font-style: italic;
-    letter-spacing: 0.5px;
-  }
-
-  /* api-bar removed — key is hardcoded server-side */
-
-  /* ── Form container ── */
-  .form-container {
-    max-width: 900px;
-    margin: 0 auto;
-    padding: 0 20px 60px;
-  }
-  .persons-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 24px;
-    margin-bottom: 32px;
-  }
-  @media (max-width: 680px) {
-    .persons-grid { grid-template-columns: 1fr; }
-  }
-
-  /* ── Person Card ── */
-  .person-card {
-    background: var(--glass);
-    border: 1px solid var(--glass-border);
-    border-radius: 20px;
-    padding: 28px 24px;
-    backdrop-filter: blur(16px);
-    position: relative;
-    overflow: hidden;
-    transition: border-color 0.3s, box-shadow 0.3s;
-  }
-  .person-card::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: var(--grad);
-    opacity: 0.04;
-    pointer-events: none;
-  }
-  .person-card:hover {
-    border-color: rgba(255,255,255,0.22);
-    box-shadow: 0 0 40px rgba(123,47,255,0.15);
-  }
-  .card-title {
-    font-family: var(--font-display);
-    font-size: 13px;
-    letter-spacing: 2px;
-    margin-bottom: 20px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
+  .header { text-align: center; padding: 60px 20px 40px; }
+  .header-tag { font-family: var(--font-mono); font-size: 11px; letter-spacing: 6px; color: var(--aurora-3); text-transform: uppercase; margin-bottom: 16px; opacity: 0.8; }
+  .header h1 { font-family: var(--font-display); font-size: clamp(22px,4vw,44px); font-weight: 900; background: linear-gradient(135deg,var(--gold) 0%,var(--aurora-2) 40%,var(--aurora-1) 80%,var(--aurora-3) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; line-height: 1.2; margin-bottom: 12px; }
+  .header p { color: rgba(255,255,255,0.72); font-size: 17px; font-style: italic; letter-spacing: 0.5px; }
+  .form-container { max-width: 900px; margin: 0 auto; padding: 0 20px 60px; }
+  .persons-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 32px; }
+  @media(max-width:680px){.persons-grid{grid-template-columns:1fr;}}
+  .person-card { background: var(--glass); border: 1px solid var(--glass-border); border-radius: 20px; padding: 28px 24px; backdrop-filter: blur(16px); position: relative; overflow: hidden; transition: border-color 0.3s, box-shadow 0.3s; }
+  .person-card::before { content:''; position:absolute; inset:0; background:var(--grad); opacity:0.04; pointer-events:none; }
+  .person-card:hover { border-color: rgba(255,255,255,0.22); box-shadow: 0 0 40px rgba(123,47,255,0.15); }
+  .card-title { font-family: var(--font-display); font-size: 13px; letter-spacing: 2px; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
   .card-icon { font-size: 20px; }
-
-  /* ── Field ── */
   .field { margin-bottom: 16px; }
-  .field label {
-    font-family: var(--font-mono);
-    font-size: 10px;
-    letter-spacing: 3px;
-    color: rgba(232,224,240,0.5);
-    text-transform: uppercase;
-    display: block;
-    margin-bottom: 6px;
-  }
-  .field input, .field select {
-    width: 100%;
-    background: rgba(255,255,255,0.04);
-    border: 1px solid rgba(255,255,255,0.1);
-    border-radius: 10px;
-    padding: 11px 14px;
-    color: #e8e0f0;
-    font-family: var(--font-body);
-    font-size: 16px;
-    outline: none;
-    transition: border 0.3s, box-shadow 0.3s;
-    -webkit-appearance: none;
-  }
-  .field input:focus, .field select:focus {
-    border-color: var(--aurora-1);
-    box-shadow: 0 0 0 3px rgba(123,47,255,0.15);
-  }
-  .field input::placeholder { color: rgba(232,224,240,0.25); }
-  .field select option { background: #1a0a2e; }
+  .field label { font-family: var(--font-mono); font-size: 10px; letter-spacing: 3px; color: rgba(255,255,255,0.75); text-transform: uppercase; display: block; margin-bottom: 6px; }
+  .field input,.field select { width:100%; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.1); border-radius:10px; padding:11px 14px; color:#e8e0f0; font-family:var(--font-body); font-size:16px; outline:none; transition:border 0.3s,box-shadow 0.3s; -webkit-appearance:none; }
+  .field input:focus,.field select:focus { border-color:var(--aurora-1); box-shadow:0 0 0 3px rgba(123,47,255,0.15); }
+  .field input::placeholder { color:rgba(232,224,240,0.25); }
+  .field select option { background:#1a0a2e; }
+  .date-row { display:grid; grid-template-columns:2fr 2fr 3fr; gap:8px; }
+  .time-row { display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; }
+  .place-wrap { position:relative; }
+  .place-dropdown { position:absolute; top:calc(100% + 6px); left:0; right:0; background:#1a0a2e; border:1px solid rgba(123,47,255,0.4); border-radius:10px; z-index:100; overflow:hidden; box-shadow:0 20px 60px rgba(0,0,0,0.6); }
+  .place-item { padding:10px 14px; cursor:pointer; font-size:15px; color:rgba(255,255,255,0.9); transition:background 0.2s; border-bottom:1px solid rgba(255,255,255,0.05); }
+  .place-item:hover { background:rgba(123,47,255,0.2); }
+  .place-item small { display:block; font-size:12px; color:rgba(255,255,255,0.5); margin-top:2px; font-family:var(--font-mono); }
+  .submit-btn { display:block; width:100%; max-width:400px; margin:0 auto; padding:18px 40px; background:linear-gradient(135deg,var(--aurora-1),var(--aurora-2)); border:none; border-radius:50px; color:white; font-family:var(--font-display); font-size:14px; letter-spacing:2px; cursor:pointer; position:relative; overflow:hidden; transition:transform 0.2s,box-shadow 0.3s; text-transform:uppercase; }
+  .submit-btn:hover { transform:translateY(-2px); box-shadow:0 20px 60px rgba(255,45,120,0.4); }
+  .submit-btn:active { transform:translateY(0); }
+  .submit-btn:disabled { opacity:0.5; cursor:not-allowed; transform:none; }
+  .loading-screen { position:fixed; inset:0; background:var(--void); z-index:200; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:32px; }
+  .loading-cosmos { width:180px; height:180px; position:relative; }
+  .orbit-ring { position:absolute; border-radius:50%; border:1px solid transparent; animation:orbit-spin linear infinite; }
+  .orbit-ring:nth-child(1){inset:0;border-color:rgba(123,47,255,0.5);animation-duration:4s;}
+  .orbit-ring:nth-child(2){inset:20px;border-color:rgba(255,45,120,0.5);animation-duration:3s;animation-direction:reverse;}
+  .orbit-ring:nth-child(3){inset:40px;border-color:rgba(0,229,255,0.5);animation-duration:5s;}
+  .orbit-dot { position:absolute; width:8px; height:8px; border-radius:50%; top:-4px; left:50%; transform:translateX(-50%); }
+  @keyframes orbit-spin{from{transform:rotate(0deg);}to{transform:rotate(360deg);}}
+  .orbit-center { position:absolute; inset:60px; border-radius:50%; background:radial-gradient(circle,var(--aurora-1),var(--aurora-2)); display:flex; align-items:center; justify-content:center; font-size:24px; animation:pulse-glow 2s ease-in-out infinite; }
+  @keyframes pulse-glow{0%,100%{box-shadow:0 0 20px rgba(123,47,255,0.5);}50%{box-shadow:0 0 60px rgba(255,45,120,0.8),0 0 100px rgba(123,47,255,0.4);}}
+  .loading-steps { display:flex; flex-direction:column; gap:10px; text-align:center; }
+  .loading-step { font-family:var(--font-mono); font-size:12px; letter-spacing:2px; color:rgba(255,255,255,0.65); transition:color 0.5s,opacity 0.5s; display:flex; align-items:center; gap:10px; justify-content:center; }
+  .loading-step.active { color:var(--aurora-3); text-shadow:0 0 20px var(--aurora-3); }
+  .loading-step.done { color:var(--gold); }
+  .step-dot { width:6px; height:6px; border-radius:50%; background:currentColor; flex-shrink:0; }
+  .results { max-width: 1000px; margin: 0 auto; padding: 20px 20px 80px; }
 
-  /* ── Date row ── */
-  .date-row { display: grid; grid-template-columns: 2fr 2fr 3fr; gap: 8px; }
-
-  /* ── Time row ── */
-  .time-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
-
-  /* ── Place autocomplete ── */
-  .place-wrap { position: relative; }
-  .place-dropdown {
-    position: absolute;
-    top: calc(100% + 6px);
-    left: 0; right: 0;
-    background: #1a0a2e;
-    border: 1px solid rgba(123,47,255,0.4);
-    border-radius: 10px;
-    z-index: 100;
-    overflow: hidden;
-    box-shadow: 0 20px 60px rgba(0,0,0,0.6);
-  }
-  .place-item {
-    padding: 10px 14px;
-    cursor: pointer;
-    font-size: 15px;
-    transition: background 0.2s;
-    border-bottom: 1px solid rgba(255,255,255,0.05);
-  }
-  .place-item:hover { background: rgba(123,47,255,0.2); }
-  .place-item small {
-    display: block;
-    font-size: 12px;
-    color: rgba(232,224,240,0.45);
-    margin-top: 2px;
-    font-family: var(--font-mono);
-  }
-
-  /* ── Submit button ── */
-  .submit-btn {
-    display: block;
-    width: 100%;
-    max-width: 400px;
-    margin: 0 auto;
-    padding: 18px 40px;
-    background: linear-gradient(135deg, var(--aurora-1), var(--aurora-2));
-    border: none;
-    border-radius: 50px;
-    color: white;
-    font-family: var(--font-display);
-    font-size: 14px;
-    letter-spacing: 2px;
-    cursor: pointer;
-    position: relative;
-    overflow: hidden;
-    transition: transform 0.2s, box-shadow 0.3s;
-    text-transform: uppercase;
-  }
-  .submit-btn::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: rgba(255,255,255,0);
-    transition: background 0.3s;
-  }
-  .submit-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 20px 60px rgba(255,45,120,0.4);
-  }
-  .submit-btn:active { transform: translateY(0); }
-  .submit-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
-
-  /* ── LOADING ── */
-  .loading-screen {
-    position: fixed;
-    inset: 0;
-    background: var(--void);
-    z-index: 200;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 32px;
-  }
-  .loading-cosmos {
-    width: 180px;
-    height: 180px;
-    position: relative;
-  }
-  .orbit-ring {
-    position: absolute;
-    border-radius: 50%;
-    border: 1px solid transparent;
-    animation: orbit-spin linear infinite;
-  }
-  .orbit-ring:nth-child(1) {
-    inset: 0;
-    border-color: rgba(123,47,255,0.5);
-    animation-duration: 4s;
-  }
-  .orbit-ring:nth-child(2) {
-    inset: 20px;
-    border-color: rgba(255,45,120,0.5);
-    animation-duration: 3s;
-    animation-direction: reverse;
-  }
-  .orbit-ring:nth-child(3) {
-    inset: 40px;
-    border-color: rgba(0,229,255,0.5);
-    animation-duration: 5s;
-  }
-  .orbit-dot {
-    position: absolute;
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    top: -4px;
-    left: 50%;
-    transform: translateX(-50%);
-  }
-  @keyframes orbit-spin {
-    from { transform: rotate(0deg); }
-    to { transform: rotate(360deg); }
-  }
-  .orbit-center {
-    position: absolute;
-    inset: 60px;
-    border-radius: 50%;
-    background: radial-gradient(circle, var(--aurora-1), var(--aurora-2));
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 24px;
-    animation: pulse-glow 2s ease-in-out infinite;
-  }
-  @keyframes pulse-glow {
-    0%, 100% { box-shadow: 0 0 20px rgba(123,47,255,0.5); }
-    50% { box-shadow: 0 0 60px rgba(255,45,120,0.8), 0 0 100px rgba(123,47,255,0.4); }
-  }
-  .loading-steps {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    text-align: center;
-  }
-  .loading-step {
-    font-family: var(--font-mono);
-    font-size: 12px;
-    letter-spacing: 2px;
-    color: rgba(232,224,240,0.3);
-    transition: color 0.5s, opacity 0.5s;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    justify-content: center;
-  }
-  .loading-step.active {
-    color: var(--aurora-3);
-    text-shadow: 0 0 20px var(--aurora-3);
-  }
-  .loading-step.done { color: var(--gold); }
-  .step-dot {
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    background: currentColor;
-    flex-shrink: 0;
-  }
-
-  /* ── RESULTS ── */
-  .results {
-    max-width: 1000px;
-    margin: 0 auto;
-    padding: 20px 20px 80px;
-  }
-
-  /* ── Couple header ── */
-  .couple-header {
-    text-align: center;
-    padding: 50px 20px 40px;
-  }
+  /* ── COUPLE HEADER — LARGE VISIBLE NAMES ── */
+  .couple-header { text-align:center; padding:50px 20px 44px; }
   .couple-names {
     font-family: var(--font-display);
-    font-size: clamp(16px, 3vw, 28px);
-    background: linear-gradient(135deg, var(--aurora-2), var(--gold));
+    font-size: clamp(16px, 3.5vw, 48px);
+    background: linear-gradient(135deg,var(--gold) 0%,var(--aurora-2) 45%,var(--aurora-1) 80%,var(--aurora-3) 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
-    margin-bottom: 8px;
+    margin-bottom: 16px;
+    display: block;
+    filter: drop-shadow(0 0 28px rgba(255,45,120,0.5));
+    line-height: 1.3;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
   }
-  .couple-sub {
-    font-family: var(--font-mono);
-    font-size: 11px;
-    letter-spacing: 4px;
-    color: rgba(232,224,240,0.4);
-    text-transform: uppercase;
-  }
+  .couple-sub { font-family:var(--font-mono); font-size:12px; letter-spacing:4px; color:rgba(255,255,255,0.65); text-transform:uppercase; display:block; }
 
-  /* ── Overall score ── */
-  .score-hero {
-    display: flex;
-    justify-content: center;
-    margin-bottom: 48px;
-  }
-  .score-circle-wrap {
-    text-align: center;
-  }
-  .score-circle {
-    width: 200px;
-    height: 200px;
-    display: grid;
-    place-items: center;
-    margin: 0 auto 16px;
-  }
-  .score-svg {
-    width: 200px;
-    height: 200px;
-    transform: rotate(-90deg);
-    grid-area: 1/1;
-  }
-  .score-track { fill: none; stroke: rgba(255,255,255,0.08); stroke-width: 10; }
-  .score-fill {
-    fill: none;
-    stroke-width: 10;
-    stroke-linecap: round;
-    stroke: url(#scoreGrad);
-    transition: stroke-dashoffset 2s cubic-bezier(0.4,0,0.2,1);
-  }
-  .score-inner {
-    grid-area: 1/1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    pointer-events: none;
-    z-index: 10; 
-  }
-  .score-num {
-  font-family: var(--font-display);
-  font-size: 48px;
-  font-weight: 900;
-  color: #f5c842;
-  line-height: 1;
-  position: relative;
-  z-index: 10;
-}
-  .score-pct {
-  font-family: var(--font-mono);
-  font-size: 16px;
-  color: rgba(232,224,240,0.7);
-  position: relative;
-  z-index: 10;
-}
-  .score-label {
-    font-family: var(--font-display);
-    font-size: 15px;
-    letter-spacing: 2px;
-    color: var(--gold);
-    margin-bottom: 4px;
-  }
-  .score-tag {
-    font-family: var(--font-mono);
-    font-size: 11px;
-    letter-spacing: 3px;
-    color: rgba(232,224,240,0.4);
-    text-transform: uppercase;
-  }
+  /* ── SCORE CIRCLE ── */
+  .score-hero { display:flex; justify-content:center; margin-bottom:48px; }
+  .score-circle-wrap { text-align:center; }
+  .score-circle { width:200px; height:200px; display:grid; place-items:center; margin:0 auto 16px; position:relative; }
+  .score-svg { width:200px; height:200px; transform:rotate(-90deg); position:absolute; top:0; left:0; }
+  .score-track { fill:none; stroke:rgba(255,255,255,0.08); stroke-width:10; }
+  .score-fill { fill:none; stroke-width:10; stroke-linecap:round; stroke:url(#scoreGrad); }
+  .score-inner { display:flex; flex-direction:column; align-items:center; justify-content:center; position:relative; z-index:10; }
+  .score-num { font-family:var(--font-display); font-size:54px; font-weight:900; color:#f5c842; line-height:1; display:block; text-shadow:0 0 32px rgba(245,200,66,0.7); }
+  .score-pct { font-family:var(--font-mono); font-size:18px; color:rgba(255,255,255,0.82); margin-top:4px; display:block; }
+  .score-label { font-family:var(--font-display); font-size:15px; letter-spacing:2px; color:var(--gold); margin-bottom:4px; }
+  .score-tag { font-family:var(--font-mono); font-size:11px; letter-spacing:3px; color:rgba(255,255,255,0.5); text-transform:uppercase; }
+  .section-head { font-family:var(--font-display); font-size:13px; letter-spacing:3px; color:var(--aurora-3); text-transform:uppercase; margin-bottom:20px; display:flex; align-items:center; gap:12px; }
+  .section-head::after { content:''; flex:1; height:1px; background:linear-gradient(to right,rgba(0,229,255,0.3),transparent); }
+  .cards-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:16px; margin-bottom:40px; }
 
-  /* ── Section header ── */
-  .section-head {
-    font-family: var(--font-display);
-    font-size: 13px;
-    letter-spacing: 3px;
-    color: var(--aurora-3);
-    text-transform: uppercase;
-    margin-bottom: 20px;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-  }
-  .section-head::after {
-    content: '';
-    flex: 1;
-    height: 1px;
-    background: linear-gradient(to right, rgba(0,229,255,0.3), transparent);
-  }
-
-  /* ── Cards grid ── */
-  .cards-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 16px;
-    margin-bottom: 40px;
-  }
+  /* ── COMPAT CARD — HOVER GLOW ── */
   .compat-card {
     background: var(--glass);
     border: 1px solid var(--glass-border);
     border-radius: 16px;
     padding: 20px;
     backdrop-filter: blur(12px);
-    transition: transform 0.2s, border-color 0.3s;
-  }
-  .compat-card:hover {
-    transform: translateY(-3px);
-    border-color: rgba(255,255,255,0.2);
-  }
-  .card-head {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 14px;
-  }
-  .card-emoji { font-size: 22px; }
-  .card-name {
-    font-family: var(--font-display);
-    font-size: 12px;
-    letter-spacing: 1px;
-    color: rgba(232,224,240,0.8);
-    flex: 1;
-  }
-  .card-score-num {
-    font-family: var(--font-mono);
-    font-size: 18px;
-    font-weight: 700;
-    color: var(--gold);
-  }
-
-  /* ── Progress bar ── */
-  .prog-bar {
-    height: 6px;
-    background: rgba(255,255,255,0.08);
-    border-radius: 3px;
+    transition: transform 0.32s ease, border-color 0.32s ease, box-shadow 0.32s ease;
+    position: relative;
     overflow: hidden;
-    margin-bottom: 8px;
+    cursor: pointer;
   }
-  .prog-fill {
-    height: 100%;
-    border-radius: 3px;
-    background: var(--bar-color, linear-gradient(to right, var(--aurora-1), var(--aurora-2)));
-    transition: width 1.5s cubic-bezier(0.4,0,0.2,1);
-    width: 0;
+  .compat-card::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    transition: opacity 0.35s ease;
+    z-index: 0;
+    pointer-events: none;
+    border-radius: 16px;
+    background: var(--hov, linear-gradient(135deg,rgba(123,47,255,.2),rgba(255,45,120,.14)));
   }
-  .prog-fill.animate { width: var(--target-width, 0%); }
-  .prog-label {
-    display: flex;
-    justify-content: space-between;
+  .compat-card:hover::after { opacity: 1; }
+  .compat-card:hover {
+    transform: translateY(-8px) scale(1.025);
+    border-color: rgba(255,255,255,0.4);
+    box-shadow: 0 24px 70px var(--hov-shadow, rgba(123,47,255,.45)), 0 0 50px rgba(255,45,120,.2);
+  }
+  .compat-card > * { position: relative; z-index: 1; }
+
+  .card-head { display:flex; align-items:center; gap:10px; margin-bottom:14px; }
+  .card-emoji { font-size:22px; }
+  .card-name { font-family:var(--font-display); font-size:12px; letter-spacing:1px; color:rgba(255,255,255,0.95); flex:1; }
+  .card-score-num { font-family:var(--font-mono); font-size:18px; font-weight:700; color:var(--gold); }
+  .prog-bar { height:6px; background:rgba(255,255,255,0.08); border-radius:3px; overflow:hidden; margin-bottom:8px; }
+  .prog-fill { height:100%; border-radius:3px; background:var(--bar-color,linear-gradient(to right,var(--aurora-1),var(--aurora-2))); transition:width 1.5s cubic-bezier(0.4,0,0.2,1); width:0; }
+  .prog-fill.animate { width:var(--target-width,0%); }
+  .prog-label { display:flex; justify-content:space-between; font-family:var(--font-mono); font-size:10px; color:rgba(255,255,255,0.55); letter-spacing:1px; }
+  .sub-metrics { display:flex; flex-direction:column; gap:10px; }
+  .sub-metric-row { display:flex; align-items:center; gap:10px; }
+  .sub-metric-label { font-size:13px; color:rgba(255,255,255,0.88); width:130px; flex-shrink:0; font-style:italic; }
+  .sub-metric-bar { flex:1; height:4px; background:rgba(255,255,255,0.07); border-radius:2px; overflow:hidden; }
+  .sub-metric-fill { height:100%; border-radius:2px; background:var(--fill-c,var(--aurora-3)); transition:width 1.8s cubic-bezier(0.4,0,0.2,1); width:0; }
+  .sub-metric-fill.animate { width:var(--w,0%); }
+  .sub-metric-val { font-family:var(--font-mono); font-size:11px; color:var(--fill-c,var(--aurora-3)); width:32px; text-align:right; }
+  .insight-box { background:rgba(123,47,255,0.08); border:1px solid rgba(123,47,255,0.25); border-radius:12px; padding:14px 16px; margin-top:12px; font-size:14px; font-style:italic; color:rgba(255,255,255,0.82); line-height:1.6; }
+  .insight-label { font-family:var(--font-mono); font-size:9px; letter-spacing:3px; color:var(--aurora-1); text-transform:uppercase; margin-bottom:6px; }
+  .planet-row { display:grid; grid-template-columns:repeat(auto-fill,minmax(100px,1fr)); gap:12px; margin-bottom:40px; }
+  .planet-item { background:var(--glass); border:1px solid var(--glass-border); border-radius:14px; padding:14px 10px; text-align:center; backdrop-filter:blur(8px); transition:transform 0.2s; }
+  .planet-item:hover { transform:translateY(-4px); }
+  .planet-symbol { font-size:28px; margin-bottom:6px; }
+  .planet-name { font-family:var(--font-mono); font-size:9px; letter-spacing:2px; color:rgba(255,255,255,0.75); text-transform:uppercase; margin-bottom:6px; }
+  .planet-score { font-family:var(--font-display); font-size:16px; color:var(--gold); }
+  .timeline { position:relative; padding:20px 0 20px 30px; margin-bottom:40px; }
+  .timeline::before { content:''; position:absolute; left:8px; top:0; bottom:0; width:2px; background:linear-gradient(to bottom,var(--aurora-1),var(--aurora-2),var(--aurora-3)); }
+  .tl-item { position:relative; margin-bottom:20px; padding-left:20px; }
+  .tl-dot { position:absolute; left:-26px; top:6px; width:12px; height:12px; border-radius:50%; background:var(--dot-c,var(--aurora-1)); border:2px solid var(--void); box-shadow:0 0 12px var(--dot-c,var(--aurora-1)); }
+  .tl-phase { font-family:var(--font-mono); font-size:10px; letter-spacing:2px; color:var(--dot-c,var(--aurora-1)); text-transform:uppercase; margin-bottom:3px; }
+  .tl-desc { font-size:14px; color:rgba(255,255,255,0.82); font-style:italic; }
+  .flags-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:40px; }
+  @media(max-width:600px){.flags-grid{grid-template-columns:1fr;}}
+  .flags-col { background:var(--glass); border:1px solid var(--glass-border); border-radius:16px; padding:20px; }
+  .flags-col-title { font-family:var(--font-mono); font-size:10px; letter-spacing:3px; text-transform:uppercase; margin-bottom:14px; }
+  .flag-item { display:flex; align-items:flex-start; gap:10px; margin-bottom:10px; font-size:14px; color:rgba(255,255,255,0.85); font-style:italic; }
+  .flag-icon { flex-shrink:0; font-size:16px; }
+  .ai-insights-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:14px; margin-bottom:40px; }
+  .ai-card { background:linear-gradient(135deg,rgba(123,47,255,0.08),rgba(255,45,120,0.05)); border:1px solid rgba(123,47,255,0.2); border-radius:14px; padding:18px; }
+  .ai-card-title { font-family:var(--font-mono); font-size:10px; letter-spacing:3px; color:var(--aurora-1); text-transform:uppercase; margin-bottom:10px; }
+  .ai-card-text { font-size:15px; color:rgba(255,255,255,0.85); line-height:1.65; font-style:italic; }
+  .reset-btn { display:block; margin:0 auto; padding:14px 40px; background:transparent; border:1px solid rgba(255,255,255,0.2); border-radius:50px; color:rgba(255,255,255,0.75); font-family:var(--font-mono); font-size:11px; letter-spacing:3px; text-transform:uppercase; cursor:pointer; transition:all 0.3s; }
+  .reset-btn:hover { border-color:var(--aurora-1); color:var(--aurora-3); box-shadow:0 0 30px rgba(123,47,255,0.2); }
+  .error-box { background:rgba(255,45,120,0.1); border:1px solid rgba(255,45,120,0.3); border-radius:12px; padding:14px 18px; color:#ff8ab0; font-family:var(--font-mono); font-size:12px; letter-spacing:1px; margin-bottom:20px; text-align:center; }
+  ::-webkit-scrollbar { width:6px; }
+  ::-webkit-scrollbar-track { background:var(--void); }
+  ::-webkit-scrollbar-thumb { background:rgba(123,47,255,0.4); border-radius:3px; }
+
+  /* ── WHO LOVES MORE ── */
+  .wlm-wrap { margin-bottom: 40px; }
+  .wlm-card {
+    background: linear-gradient(135deg, rgba(255,45,120,.07), rgba(123,47,255,.07));
+    border: 1px solid rgba(255,45,120,.25);
+    border-radius: 20px;
+    padding: 28px 24px;
+    position: relative;
+    overflow: hidden;
+  }
+  .wlm-card::before {
+    content: "♥";
+    position: absolute;
+    right: 24px; top: 16px;
+    font-size: 80px;
+    color: rgba(255,45,120,.06);
+    line-height: 1;
+  }
+  .wlm-disclaimer {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    letter-spacing: 2px;
+    color: rgba(255,255,255,.35);
+    text-transform: uppercase;
+    margin-bottom: 20px;
+    text-align: center;
+  }
+  .wlm-persons { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 24px; }
+  @media(max-width:560px){ .wlm-persons { grid-template-columns: 1fr; } }
+  .wlm-person { text-align: center; }
+  .wlm-person-name {
+    font-family: var(--font-display);
+    font-size: 14px;
+    letter-spacing: 1px;
+    margin-bottom: 14px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .wlm-ring-wrap {
+    width: 130px;
+    height: 130px;
+    position: relative;
+    margin: 0 auto 14px;
+  }
+  .wlm-ring-svg { width: 130px; height: 130px; transform: rotate(-90deg); position: absolute; top:0; left:0; }
+  .wlm-ring-bg { fill: none; stroke: rgba(255,255,255,.07); stroke-width: 10; }
+  .wlm-ring-fg { fill: none; stroke-width: 10; stroke-linecap: round; transition: stroke-dashoffset 1.8s cubic-bezier(.4,0,.2,1); }
+  .wlm-ring-inner {
+    position: absolute; inset: 0;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    gap: 0;
+  }
+  .wlm-pct-num {
+    font-family: var(--font-display);
+    font-size: 30px;
+    font-weight: 900;
+    line-height: 1;
+  }
+  .wlm-pct-sym { font-size: 14px; color: rgba(255,255,255,.6); font-family: var(--font-mono); margin-top: 2px; }
+  .wlm-label {
     font-family: var(--font-mono);
     font-size: 10px;
-    color: rgba(232,224,240,0.4);
-    letter-spacing: 1px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: rgba(255,255,255,.5);
+    margin-bottom: 6px;
   }
-
-  /* ── Sub metrics ── */
-  .sub-metrics { display: flex; flex-direction: column; gap: 10px; }
-  .sub-metric-row {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-  .sub-metric-label {
-    font-size: 13px;
-    color: rgba(232,224,240,0.6);
-    width: 130px;
-    flex-shrink: 0;
+  .wlm-bar-wrap { height: 6px; background: rgba(255,255,255,.08); border-radius: 3px; overflow: hidden; margin-bottom: 6px; }
+  .wlm-bar-fill { height: 100%; border-radius: 3px; transition: width 1.8s cubic-bezier(.4,0,.2,1); width: 0; }
+  .wlm-bar-fill.animate { width: var(--w, 0%); }
+  .wlm-intensity-label {
+    font-size: 12px;
     font-style: italic;
+    color: rgba(255,255,255,.55);
+    font-family: var(--font-body);
+    margin-top: 4px;
   }
-  .sub-metric-bar {
-    flex: 1;
-    height: 4px;
-    background: rgba(255,255,255,0.07);
-    border-radius: 2px;
+  .wlm-vs {
+    position: relative;
+    height: 6px;
+    background: rgba(255,255,255,.06);
+    border-radius: 3px;
     overflow: hidden;
+    margin: 8px 0 20px;
   }
-  .sub-metric-fill {
-    height: 100%;
-    border-radius: 2px;
-    background: var(--fill-c, var(--aurora-3));
-    transition: width 1.8s cubic-bezier(0.4,0,0.2,1);
-    width: 0;
-  }
-  .sub-metric-fill.animate { width: var(--w, 0%); }
-  .sub-metric-val {
-    font-family: var(--font-mono);
-    font-size: 11px;
-    color: var(--fill-c, var(--aurora-3));
-    width: 32px;
-    text-align: right;
-  }
-
-  /* ── Insight box ── */
-  .insight-box {
-    background: rgba(123,47,255,0.08);
-    border: 1px solid rgba(123,47,255,0.25);
+  .wlm-vs-fill1 { position: absolute; left: 0; top: 0; height: 100%; border-radius: 3px 0 0 3px; transition: width 1.8s cubic-bezier(.4,0,.2,1); }
+  .wlm-vs-fill2 { position: absolute; right: 0; top: 0; height: 100%; border-radius: 0 3px 3px 0; transition: width 1.8s cubic-bezier(.4,0,.2,1); }
+  .wlm-vs-labels { display: flex; justify-content: space-between; font-family: var(--font-mono); font-size: 10px; color: rgba(255,255,255,.4); margin-bottom: 4px; }
+  .wlm-insight {
+    background: rgba(0,0,0,.25);
+    border: 1px solid rgba(255,45,120,.18);
     border-radius: 12px;
     padding: 14px 16px;
-    margin-top: 12px;
-    font-size: 14px;
-    font-style: italic;
-    color: rgba(232,224,240,0.7);
-    line-height: 1.6;
-  }
-  .insight-label {
-    font-family: var(--font-mono);
-    font-size: 9px;
-    letter-spacing: 3px;
-    color: var(--aurora-1);
-    text-transform: uppercase;
-    margin-bottom: 6px;
-  }
-
-  /* ── Planetary row ── */
-  .planet-row {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-    gap: 12px;
-    margin-bottom: 40px;
-  }
-  .planet-item {
-    background: var(--glass);
-    border: 1px solid var(--glass-border);
-    border-radius: 14px;
-    padding: 14px 10px;
-    text-align: center;
-    backdrop-filter: blur(8px);
-    transition: transform 0.2s;
-  }
-  .planet-item:hover { transform: translateY(-4px); }
-  .planet-symbol { font-size: 28px; margin-bottom: 6px; }
-  .planet-name {
-    font-family: var(--font-mono);
-    font-size: 9px;
-    letter-spacing: 2px;
-    color: rgba(232,224,240,0.4);
-    text-transform: uppercase;
-    margin-bottom: 6px;
-  }
-  .planet-score {
-    font-family: var(--font-display);
-    font-size: 16px;
-    color: var(--gold);
-  }
-
-  /* ── Timeline ── */
-  .timeline {
-    position: relative;
-    padding: 20px 0 20px 30px;
-    margin-bottom: 40px;
-  }
-  .timeline::before {
-    content: '';
-    position: absolute;
-    left: 8px;
-    top: 0; bottom: 0;
-    width: 2px;
-    background: linear-gradient(to bottom, var(--aurora-1), var(--aurora-2), var(--aurora-3));
-  }
-  .tl-item {
-    position: relative;
-    margin-bottom: 20px;
-    padding-left: 20px;
-  }
-  .tl-dot {
-    position: absolute;
-    left: -26px;
-    top: 6px;
-    width: 12px;
-    height: 12px;
-    border-radius: 50%;
-    background: var(--dot-c, var(--aurora-1));
-    border: 2px solid var(--void);
-    box-shadow: 0 0 12px var(--dot-c, var(--aurora-1));
-  }
-  .tl-phase {
-    font-family: var(--font-mono);
-    font-size: 10px;
-    letter-spacing: 2px;
-    color: var(--dot-c, var(--aurora-1));
-    text-transform: uppercase;
-    margin-bottom: 3px;
-  }
-  .tl-desc {
-    font-size: 14px;
-    color: rgba(232,224,240,0.6);
-    font-style: italic;
-  }
-
-  /* ── Flags ── */
-  .flags-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 16px;
-    margin-bottom: 40px;
-  }
-  @media (max-width: 600px) { .flags-grid { grid-template-columns: 1fr; } }
-  .flags-col {
-    background: var(--glass);
-    border: 1px solid var(--glass-border);
-    border-radius: 16px;
-    padding: 20px;
-  }
-  .flags-col-title {
-    font-family: var(--font-mono);
-    font-size: 10px;
-    letter-spacing: 3px;
-    text-transform: uppercase;
     margin-bottom: 14px;
   }
-  .flag-item {
-    display: flex;
-    align-items: flex-start;
-    gap: 10px;
-    margin-bottom: 10px;
-    font-size: 14px;
-    color: rgba(232,224,240,0.75);
-    font-style: italic;
-  }
-  .flag-icon { flex-shrink: 0; font-size: 16px; }
-
-  /* ── AI insights ── */
-  .ai-insights-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-    gap: 14px;
-    margin-bottom: 40px;
-  }
-  .ai-card {
-    background: linear-gradient(135deg, rgba(123,47,255,0.08), rgba(255,45,120,0.05));
-    border: 1px solid rgba(123,47,255,0.2);
-    border-radius: 14px;
-    padding: 18px;
-  }
-  .ai-card-title {
+  .wlm-insight-lbl { font-family: var(--font-mono); font-size: 9px; letter-spacing: 2px; text-transform: uppercase; color: rgba(255,45,120,.7); margin-bottom: 6px; }
+  .wlm-insight-txt { font-size: 14px; color: rgba(255,255,255,.85); line-height: 1.7; font-style: italic; }
+  .wlm-pattern-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(255,45,120,.1);
+    border: 1px solid rgba(255,45,120,.25);
+    border-radius: 50px;
+    padding: 6px 16px;
     font-family: var(--font-mono);
     font-size: 10px;
-    letter-spacing: 3px;
-    color: var(--aurora-1);
+    letter-spacing: 2px;
     text-transform: uppercase;
-    margin-bottom: 10px;
+    color: #ff2d78;
+    margin-bottom: 14px;
   }
-  .ai-card-text {
-    font-size: 15px;
-    color: rgba(232,224,240,0.72);
-    line-height: 1.65;
-    font-style: italic;
-  }
-
-  /* ── Reset button ── */
-  .reset-btn {
-    display: block;
-    margin: 0 auto;
-    padding: 14px 40px;
-    background: transparent;
-    border: 1px solid rgba(255,255,255,0.2);
-    border-radius: 50px;
-    color: rgba(232,224,240,0.6);
+  .wlm-confidence {
+    display: flex;
+    align-items: center;
+    gap: 10px;
     font-family: var(--font-mono);
-    font-size: 11px;
-    letter-spacing: 3px;
-    text-transform: uppercase;
-    cursor: pointer;
-    transition: all 0.3s;
-  }
-  .reset-btn:hover {
-    border-color: var(--aurora-1);
-    color: var(--aurora-3);
-    box-shadow: 0 0 30px rgba(123,47,255,0.2);
-  }
-
-  /* ── Error ── */
-  .error-box {
-    background: rgba(255,45,120,0.1);
-    border: 1px solid rgba(255,45,120,0.3);
-    border-radius: 12px;
-    padding: 14px 18px;
-    color: #ff8ab0;
-    font-family: var(--font-mono);
-    font-size: 12px;
+    font-size: 10px;
+    color: rgba(255,255,255,.45);
     letter-spacing: 1px;
-    margin-bottom: 20px;
-    text-align: center;
+    text-transform: uppercase;
+    margin-top: 4px;
   }
+  .wlm-conf-bar { flex: 1; height: 3px; background: rgba(255,255,255,.08); border-radius: 2px; overflow: hidden; }
+  .wlm-conf-fill { height: 100%; background: linear-gradient(to right, #7b2fff, #00e5ff); border-radius: 2px; transition: width 2s ease; width: 0; }
+  .wlm-conf-fill.animate { width: var(--w, 0%); }
 
-  /* Scrollbar */
-  ::-webkit-scrollbar { width: 6px; }
-  ::-webkit-scrollbar-track { background: var(--void); }
-  ::-webkit-scrollbar-thumb { background: rgba(123,47,255,0.4); border-radius: 3px; }
 `;
 
-// ── Inject CSS ───────────────────────────────────────────────────────────────
 const styleEl = document.createElement("style");
 styleEl.textContent = css;
 document.head.appendChild(styleEl);
 
-// ── Compatibility API — calls YOUR backend (key stays server-side) ───────────
-async function fetchCompatibilityReport(p1: any, p2: any, scores: any) {
+async function fetchCompatibilityReport(p1, p2, scores) {
   const res = await fetch("/api/compatibility/analyze", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -789,6 +335,7 @@ async function fetchCompatibilityReport(p1: any, p2: any, scores: any) {
   if (!res.ok) throw new Error(`Backend error: ${res.status}`);
   return res.json();
 }
+
 const DAYS = Array.from({ length: 31 }, (_, i) => i + 1);
 const MONTHS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
 const YEARS = Array.from({ length: 120 }, (_, i) => new Date().getFullYear() - i);
@@ -819,7 +366,6 @@ function deriveScore(base, name1, name2, seed) {
   return Math.min(99, Math.max(52, base + (n % 20) - 10));
 }
 
-// ── Nominatim place search ───────────────────────────────────────────────────
 async function searchPlaces(q) {
   if (!q || q.length < 2) return [];
   const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(q)}&format=json&limit=5&addressdetails=1`;
@@ -835,12 +381,9 @@ async function searchPlaces(q) {
   }));
 }
 
-// ── Stars component ──────────────────────────────────────────────────────────
 function Starfield() {
   const stars = Array.from({ length: 120 }, (_, i) => ({
-    id: i,
-    x: Math.random() * 100,
-    y: Math.random() * 100,
+    id: i, x: Math.random() * 100, y: Math.random() * 100,
     size: Math.random() * 2.5 + 0.5,
     d: (Math.random() * 4 + 2).toFixed(1),
     delay: (Math.random() * 6).toFixed(2),
@@ -849,58 +392,40 @@ function Starfield() {
   return (
     <div className="starfield">
       {stars.map(s => (
-        <div key={s.id} className="star" style={{
-          left: `${s.x}%`, top: `${s.y}%`,
-          width: s.size, height: s.size,
-          "--d": `${s.d}s`, "--delay": `${s.delay}s`, "--op": s.op,
-        }} />
+        <div key={s.id} className="star" style={{ left:`${s.x}%`, top:`${s.y}%`, width:s.size, height:s.size, "--d":`${s.d}s`, "--delay":`${s.delay}s`, "--op":s.op }} />
       ))}
     </div>
   );
 }
 
-// ── Animated progress bar ────────────────────────────────────────────────────
 function ProgBar({ value, color }) {
   const ref = useRef(null);
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    setTimeout(() => el.classList.add("animate"), 100);
-  }, []);
+  useEffect(() => { const el = ref.current; if (!el) return; setTimeout(() => el.classList.add("animate"), 100); }, []);
   return (
     <div className="prog-bar">
-      <div ref={ref} className="prog-fill" style={{ "--target-width": `${value}%`, "--bar-color": color || undefined }} />
+      <div ref={ref} className="prog-fill" style={{ "--target-width":`${value}%`, "--bar-color":color || undefined }} />
     </div>
   );
 }
 
-// ── Sub metric ───────────────────────────────────────────────────────────────
 function SubMetric({ label, value, color }) {
   const ref = useRef(null);
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    setTimeout(() => el.classList.add("animate"), 200);
-  }, []);
+  useEffect(() => { const el = ref.current; if (!el) return; setTimeout(() => el.classList.add("animate"), 200); }, []);
   return (
     <div className="sub-metric-row">
       <div className="sub-metric-label">{label}</div>
       <div className="sub-metric-bar">
-        <div ref={ref} className="sub-metric-fill" style={{ "--w": `${value}%`, "--fill-c": color || "var(--aurora-3)" }} />
+        <div ref={ref} className="sub-metric-fill" style={{ "--w":`${value}%`, "--fill-c":color || "var(--aurora-3)" }} />
       </div>
       <div className="sub-metric-val" style={{ color: color || "var(--aurora-3)" }}>{value}%</div>
     </div>
   );
 }
 
-// ── Score circle ─────────────────────────────────────────────────────────────
-function ScoreCircle({ score, label, tag }) {
-  const r = 80;
-  const circ = 2 * Math.PI * r;
+function ScoreCircle({ score }) {
+  const r = 80, circ = 2 * Math.PI * r;
   const [offset, setOffset] = useState(circ);
-  useEffect(() => {
-    setTimeout(() => setOffset(circ - (score / 100) * circ), 200);
-  }, [score, circ]);
+  useEffect(() => { setTimeout(() => setOffset(circ - (score / 100) * circ), 200); }, [score, circ]);
   const medal = score >= 90 ? "✨ Cosmic Soulmates" : score >= 75 ? "💫 Stellar Match" : score >= 60 ? "⭐ Promising Pair" : "🌙 Growing Bond";
   return (
     <div className="score-circle-wrap">
@@ -914,11 +439,7 @@ function ScoreCircle({ score, label, tag }) {
             </linearGradient>
           </defs>
           <circle className="score-track" cx="90" cy="90" r={r} />
-          <circle className="score-fill" cx="90" cy="90" r={r}
-            strokeDasharray={circ}
-            strokeDashoffset={offset}
-            style={{ transition: "stroke-dashoffset 2s cubic-bezier(0.4,0,0.2,1)" }}
-          />
+          <circle className="score-fill" cx="90" cy="90" r={r} strokeDasharray={circ} strokeDashoffset={offset} style={{ transition:"stroke-dashoffset 2s cubic-bezier(0.4,0,0.2,1)" }} />
         </svg>
         <div className="score-inner">
           <span className="score-num">{score}</span>
@@ -926,40 +447,26 @@ function ScoreCircle({ score, label, tag }) {
         </div>
       </div>
       <div className="score-label">{medal}</div>
-      <div className="score-tag">{tag || "Overall Compatibility"}</div>
+      <div className="score-tag">Overall Compatibility</div>
     </div>
   );
 }
 
-// ── Place input ──────────────────────────────────────────────────────────────
 function PlaceInput({ value, onChange }) {
   const [query, setQuery] = useState(value?.display || "");
   const [results, setResults] = useState([]);
   const [open, setOpen] = useState(false);
   const timer = useRef(null);
-
   const handleChange = (e) => {
-    const v = e.target.value;
-    setQuery(v);
-    clearTimeout(timer.current);
+    const v = e.target.value; setQuery(v); clearTimeout(timer.current);
     if (v.length < 2) { setResults([]); return; }
-    timer.current = setTimeout(async () => {
-      const res = await searchPlaces(v);
-      setResults(res);
-      setOpen(res.length > 0);
-    }, 400);
+    timer.current = setTimeout(async () => { const res = await searchPlaces(v); setResults(res); setOpen(res.length > 0); }, 400);
   };
-
-  const pick = (r) => {
-    setQuery(r.display);
-    onChange(r);
-    setOpen(false);
-  };
-
+  const pick = (r) => { setQuery(r.display); onChange(r); setOpen(false); };
   return (
     <div className="place-wrap">
       <input value={query} onChange={handleChange} onBlur={() => setTimeout(() => setOpen(false), 200)}
-        placeholder="Type city name…" style={{ width: "100%", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 10, padding: "11px 14px", color: "#e8e0f0", fontFamily: "var(--font-body)", fontSize: 16, outline: "none" }} />
+        placeholder="Type city name…" style={{ width:"100%", background:"rgba(255,255,255,0.04)", border:"1px solid rgba(255,255,255,0.1)", borderRadius:10, padding:"11px 14px", color:"#e8e0f0", fontFamily:"var(--font-body)", fontSize:16, outline:"none" }} />
       {open && (
         <div className="place-dropdown">
           {results.map((r, i) => (
@@ -974,14 +481,13 @@ function PlaceInput({ value, onChange }) {
   );
 }
 
-// ── Person form ──────────────────────────────────────────────────────────────
 function PersonForm({ title, icon, grad, data, onChange }) {
   const up = (k, v) => onChange({ ...data, [k]: v });
   return (
     <div className="person-card" style={{ "--grad": grad }}>
       <div className="card-title">
         <span className="card-icon">{icon}</span>
-        <span style={{ background: grad, WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>{title}</span>
+        <span style={{ background:grad, WebkitBackgroundClip:"text", WebkitTextFillColor:"transparent", backgroundClip:"text" }}>{title}</span>
       </div>
       <div className="field">
         <label>Full Name *</label>
@@ -996,7 +502,7 @@ function PersonForm({ title, icon, grad, data, onChange }) {
           </select>
           <select value={data.month} onChange={e => up("month", e.target.value)}>
             <option value="">MM</option>
-            {MONTHS.map((m, i) => <option key={m} value={i + 1}>{m}</option>)}
+            {MONTHS.map((m, i) => <option key={m} value={i+1}>{m}</option>)}
           </select>
           <select value={data.year} onChange={e => up("year", e.target.value)}>
             <option value="">YYYY</option>
@@ -1013,7 +519,7 @@ function PersonForm({ title, icon, grad, data, onChange }) {
           </select>
           <select value={data.min} onChange={e => up("min", e.target.value)}>
             <option value="">MM</option>
-            {MINS.filter((_, i) => i % 5 === 0).map(m => <option key={m} value={m}>{m}</option>)}
+            {MINS.filter((_,i) => i%5===0).map(m => <option key={m} value={m}>{m}</option>)}
           </select>
           <select value={data.ampm} onChange={e => up("ampm", e.target.value)}>
             <option value="AM">AM</option>
@@ -1029,37 +535,27 @@ function PersonForm({ title, icon, grad, data, onChange }) {
   );
 }
 
-// ── Loading ──────────────────────────────────────────────────────────────────
 const LOADING_STEPS = [
-  "Reading Birth Charts",
-  "Mapping Planetary Positions",
-  "Aligning Cosmic Energies",
-  "Matching Soul Frequencies",
-  "Calculating Love Compatibility",
-  "Analyzing Marriage Potential",
-  "Generating Personalized Insights",
-  "Preparing Universe Report",
+  "Reading Birth Charts","Mapping Planetary Positions","Aligning Cosmic Energies",
+  "Matching Soul Frequencies","Calculating Love Compatibility","Analyzing Marriage Potential",
+  "Generating Personalized Insights","Preparing Universe Report",
 ];
 
 function LoadingScreen() {
   const [step, setStep] = useState(0);
-  useEffect(() => {
-    const t = setInterval(() => setStep(s => Math.min(s + 1, LOADING_STEPS.length - 1)), 700);
-    return () => clearInterval(t);
-  }, []);
+  useEffect(() => { const t = setInterval(() => setStep(s => Math.min(s+1,LOADING_STEPS.length-1)), 700); return () => clearInterval(t); }, []);
   return (
     <div className="loading-screen">
       <div className="loading-cosmos">
-        <div className="orbit-ring"><div className="orbit-dot" style={{ background: "#7b2fff" }} /></div>
-        <div className="orbit-ring"><div className="orbit-dot" style={{ background: "#ff2d78" }} /></div>
-        <div className="orbit-ring"><div className="orbit-dot" style={{ background: "#00e5ff" }} /></div>
+        <div className="orbit-ring"><div className="orbit-dot" style={{ background:"#7b2fff" }}/></div>
+        <div className="orbit-ring"><div className="orbit-dot" style={{ background:"#ff2d78" }}/></div>
+        <div className="orbit-ring"><div className="orbit-dot" style={{ background:"#00e5ff" }}/></div>
         <div className="orbit-center">💫</div>
       </div>
       <div className="loading-steps">
-        {LOADING_STEPS.map((s, i) => (
-          <div key={s} className={`loading-step ${i === step ? "active" : i < step ? "done" : ""}`}>
-            <div className="step-dot" />
-            <span>✨ {s}</span>
+        {LOADING_STEPS.map((s,i) => (
+          <div key={s} className={`loading-step ${i===step?"active":i<step?"done":""}`}>
+            <div className="step-dot"/><span>✨ {s}</span>
           </div>
         ))}
       </div>
@@ -1067,192 +563,338 @@ function LoadingScreen() {
   );
 }
 
-// ── Results ──────────────────────────────────────────────────────────────────
-function Results({ p1, p2, report, onReset }) {
-  const s = report.scores;
+// Card hover colors config
+const CARD_HOVERS = {
+  love:     { hov:"linear-gradient(135deg,rgba(255,45,120,.22),rgba(245,200,66,.14))",  shadow:"rgba(255,45,120,.5)"  },
+  emo:      { hov:"linear-gradient(135deg,rgba(123,47,255,.24),rgba(0,229,255,.14))",   shadow:"rgba(123,47,255,.5)"  },
+  phys:     { hov:"linear-gradient(135deg,rgba(255,107,53,.24),rgba(255,45,120,.16))",  shadow:"rgba(255,107,53,.5)"  },
+  fri:      { hov:"linear-gradient(135deg,rgba(0,229,255,.22),rgba(123,47,255,.14))",   shadow:"rgba(0,229,255,.45)"  },
+  mar:      { hov:"linear-gradient(135deg,rgba(245,200,66,.22),rgba(255,45,120,.16))",  shadow:"rgba(245,200,66,.45)" },
+  fin:      { hov:"linear-gradient(135deg,rgba(46,204,113,.22),rgba(245,200,66,.14))",  shadow:"rgba(46,204,113,.45)" },
+  fam:      { hov:"linear-gradient(135deg,rgba(230,126,34,.22),rgba(245,200,66,.14))",  shadow:"rgba(230,126,34,.45)" },
+  fam2:     { hov:"linear-gradient(135deg,rgba(255,45,120,.2),rgba(245,200,66,.14))",   shadow:"rgba(255,45,120,.4)"  },
+  spi:      { hov:"linear-gradient(135deg,rgba(123,47,255,.24),rgba(0,229,255,.2))",    shadow:"rgba(123,47,255,.55)" },
+};
 
-  const PLANETS = [
-    { symbol: "☀️", name: "Sun", score: deriveScore(s.overall, p1.name, p2.name, "sun") },
-    { symbol: "🌙", name: "Moon", score: deriveScore(s.emotional, p1.name, p2.name, "moon") },
-    { symbol: "⬆️", name: "Rising", score: deriveScore(s.love, p1.name, p2.name, "rise") },
-    { symbol: "♀️", name: "Venus", score: deriveScore(s.love, p1.name, p2.name, "venus") },
-    { symbol: "♂️", name: "Mars", score: deriveScore(s.physical, p1.name, p2.name, "mars") },
-    { symbol: "☿", name: "Mercury", score: deriveScore(s.emotional, p1.name, p2.name, "merc") },
-    { symbol: "♃", name: "Jupiter", score: deriveScore(s.spiritual, p1.name, p2.name, "jup") },
-    { symbol: "♄", name: "Saturn", score: deriveScore(s.marriage, p1.name, p2.name, "sat") },
-  ];
+function CC({ type, children }) {
+  const h = CARD_HOVERS[type] || CARD_HOVERS.love;
+  return <div className="compat-card" style={{"--hov":h.hov,"--hov-shadow":h.shadow}}>{children}</div>;
+}
 
-  const TL = [
-    { phase: "First Attraction", desc: report.timeline?.attraction, c: "#7b2fff" },
-    { phase: "Connection Phase", desc: report.timeline?.connection, c: "#ff2d78" },
-    { phase: "Relationship Growth", desc: report.timeline?.growth, c: "#f5c842" },
-    { phase: "Commitment Phase", desc: report.timeline?.commitment, c: "#00e5ff" },
-    { phase: "Marriage Potential", desc: report.timeline?.marriage, c: "#7b2fff" },
-    { phase: "Long-Term Stability", desc: report.timeline?.stability, c: "#ff2d78" },
+// ── WHO LOVES MORE — deterministic from compatibility factors ────────────────
+function computeWhoLovesMore(p1, p2, scores) {
+  // Factors that indicate emotional investment
+  const s = scores;
+
+  // P1 investment signals: emotional score relative to love, high friendship
+  // P2 investment signals: spiritual alignment, physical
+  const p1Base =
+    (s.emotional * 0.35) +
+    (s.love * 0.25) +
+    (s.friendship * 0.2) +
+    (s.marriage * 0.2);
+
+  const p2Base =
+    (s.spiritual * 0.35) +
+    (s.physical * 0.25) +
+    (s.family * 0.2) +
+    (s.financial * 0.2);
+
+  // Name-derived tiebreaker (deterministic)
+  const n1 = p1.name.split("").reduce((a,c)=>a+c.charCodeAt(0),0);
+  const n2 = p2.name.split("").reduce((a,c)=>a+c.charCodeAt(0),0);
+  const nameBias = ((n1 - n2) % 15); // -14 to +14 range
+
+  const raw1 = p1Base + nameBias;
+  const raw2 = p2Base - nameBias;
+  const total = raw1 + raw2;
+  let pct1 = Math.round((raw1 / total) * 100);
+  let pct2 = 100 - pct1;
+
+  // Clamp to 15-85 range (avoid extremes)
+  pct1 = Math.min(85, Math.max(15, pct1));
+  pct2 = 100 - pct1;
+
+  // Determine pattern label
+  const diff = Math.abs(pct1 - pct2);
+  const pattern =
+    diff <= 4  ? "Balanced Love" :
+    diff <= 12 ? "Slightly More Invested" :
+    diff <= 22 ? "Noticeably More Invested" :
+    diff <= 35 ? "Deeply Invested" :
+                 "One-Sided Attraction";
+
+  const patternEmoji =
+    diff <= 4  ? "⚖️" :
+    diff <= 12 ? "💛" :
+    diff <= 22 ? "💕" :
+    diff <= 35 ? "💗" : "❤️‍🔥";
+
+  // Confidence: higher when signals are clear (big diff = more confident)
+  const confidence = Math.min(95, 55 + diff * 1.2);
+
+  // Who loves more
+  const moreInvested = pct1 >= pct2 ? p1.name : p2.name;
+  const lessInvested = pct1 >= pct2 ? p2.name : p1.name;
+  const morePct = Math.max(pct1, pct2);
+  const lessPct = Math.min(pct1, pct2);
+
+  // Insight text
+  const insightMap = [
+    { max: 4,  text: `${p1.name} and ${p2.name} share a beautifully balanced emotional investment. Both are equally committed, creating a foundation of mutual love and stability. This rare equilibrium is one of the strongest indicators of lasting partnership.` },
+    { max: 12, text: `${moreInvested} tends to be slightly more emotionally expressive and invests just a little more in the relationship. ${lessInvested} is deeply caring too — the difference is subtle and reflects complementary love styles rather than imbalance.` },
+    { max: 22, text: `${moreInvested} is noticeably more emotionally invested at this stage, often being the initiator and emotional anchor. ${lessInvested} shows love through actions and loyalty rather than emotional expression. This dynamic can work beautifully when both understand each other's style.` },
+    { max: 35, text: `${moreInvested} carries significantly more of the emotional weight in this relationship. Their deep feelings drive the connection forward. ${lessInvested} values the relationship but expresses it differently — understanding this difference is key to harmony.` },
+    { max: 100, text: `The emotional intensity is strongly skewed toward ${moreInvested}. This doesn't mean ${lessInvested} doesn't care — it reflects a deeply different emotional expression style. Open communication about love languages could transform this dynamic significantly.` },
   ];
+  const insight = insightMap.find(i => diff <= i.max)?.text || insightMap[insightMap.length-1].text;
+
+  // Intensity labels
+  const intensity = (pct) =>
+    pct >= 75 ? "Deeply Devoted" :
+    pct >= 62 ? "Strongly Invested" :
+    pct >= 52 ? "Warmly Engaged" :
+    pct >= 42 ? "Steadily Present" :
+                "Quietly Caring";
+
+  return { pct1, pct2, pattern, patternEmoji, confidence: Math.round(confidence), moreInvested, morePct, lessInvested, lessPct, insight, intensity1: intensity(pct1), intensity2: intensity(pct2) };
+}
+
+function WhoLovesMore({ p1, p2, scores }) {
+  const wlm = computeWhoLovesMore(p1, p2, scores);
+  const r = 52, circ = 2 * Math.PI * r;
+  const offset1 = circ - (wlm.pct1 / 100) * circ;
+  const offset2 = circ - (wlm.pct2 / 100) * circ;
+
+  const ref1 = useRef(null), ref2 = useRef(null);
+  const refBar1 = useRef(null), refBar2 = useRef(null);
+  const refConf = useRef(null);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      ref1.current?.style && (ref1.current.style.strokeDashoffset = offset1);
+      ref2.current?.style && (ref2.current.style.strokeDashoffset = offset2);
+      refBar1.current?.classList.add("animate");
+      refBar2.current?.classList.add("animate");
+      refConf.current?.classList.add("animate");
+    }, 300);
+    return () => clearTimeout(timer);
+  }, []);
+
+  const c1 = "#ff2d78", c2 = "#7b2fff";
 
   return (
+    <div className="wlm-wrap">
+      <div className="wlm-card">
+        <div className="wlm-disclaimer">✦ AI-Generated Relationship Analysis — For Entertainment & Insight Only ✦</div>
+
+        <div style={{display:"flex",alignItems:"center",gap:12,marginBottom:18,flexWrap:"wrap"}}>
+          <div className="wlm-pattern-badge">{wlm.patternEmoji} {wlm.pattern}</div>
+        </div>
+
+        {/* Two rings side by side */}
+        <div className="wlm-persons">
+          {[
+            {name:p1.name, pct:wlm.pct1, color:c1, offset:offset1, ref:ref1, barRef:refBar1, intensity:wlm.intensity1},
+            {name:p2.name, pct:wlm.pct2, color:c2, offset:offset2, ref:ref2, barRef:refBar2, intensity:wlm.intensity2},
+          ].map((person, i) => (
+            <div key={i} className="wlm-person">
+              <div className="wlm-person-name" style={{color:person.color}}>{person.name}</div>
+              <div className="wlm-ring-wrap">
+                <svg className="wlm-ring-svg" viewBox="0 0 120 120">
+                  <circle className="wlm-ring-bg" cx="60" cy="60" r={r}/>
+                  <circle ref={person.ref} className="wlm-ring-fg" cx="60" cy="60" r={r}
+                    stroke={person.color} strokeDasharray={circ}
+                    strokeDashoffset={circ}
+                    style={{transition:"stroke-dashoffset 1.8s cubic-bezier(.4,0,.2,1)"}}/>
+                </svg>
+                <div className="wlm-ring-inner">
+                  <span className="wlm-pct-num" style={{color:person.color}}>{person.pct}</span>
+                  <span className="wlm-pct-sym">%</span>
+                </div>
+              </div>
+              <div className="wlm-label">Love Intensity</div>
+              <div className="wlm-bar-wrap">
+                <div ref={person.barRef} className="wlm-bar-fill"
+                  style={{"--w":`${person.pct}%`, background:person.color}}/>
+              </div>
+              <div className="wlm-intensity-label">{person.intensity}</div>
+            </div>
+          ))}
+        </div>
+
+        {/* VS bar */}
+        <div className="wlm-vs-labels">
+          <span style={{color:c1}}>{p1.name}</span>
+          <span style={{color:"rgba(255,255,255,.3)"}}>vs</span>
+          <span style={{color:c2}}>{p2.name}</span>
+        </div>
+        <div className="wlm-vs">
+          <div className="wlm-vs-fill1" style={{width:`${wlm.pct1}%`, background:`linear-gradient(to right,${c1},rgba(255,45,120,.5))`}}/>
+          <div className="wlm-vs-fill2" style={{width:`${wlm.pct2}%`, background:`linear-gradient(to left,${c2},rgba(123,47,255,.5))`}}/>
+        </div>
+        <div style={{display:"flex",justifyContent:"space-between",fontFamily:"var(--font-mono)",fontSize:11,color:"rgba(255,255,255,.5)",marginBottom:20}}>
+          <span style={{color:c1}}>{wlm.pct1}%</span>
+          <span style={{color:c2}}>{wlm.pct2}%</span>
+        </div>
+
+        {/* Insight */}
+        <div className="wlm-insight">
+          <div className="wlm-insight-lbl">💬 Relationship Dynamics Insight</div>
+          <div className="wlm-insight-txt">{wlm.insight}</div>
+        </div>
+
+        {/* Summary message */}
+        <div style={{fontSize:14,color:"rgba(255,255,255,.75)",lineHeight:1.7,fontStyle:"italic",marginBottom:16,textAlign:"center"}}>
+          Based on the relationship dynamics, <strong style={{color:wlm.moreInvested===p1.name?c1:c2}}>{wlm.moreInvested}</strong> appears to be {wlm.pattern === "Balanced Love" ? "equally" : "more"} emotionally invested{wlm.pattern !== "Balanced Love" ? ` at ${wlm.morePct}%` : ""}.
+        </div>
+
+        {/* Confidence score */}
+        <div className="wlm-confidence">
+          <span>Analysis Confidence</span>
+          <div className="wlm-conf-bar">
+            <div ref={refConf} className="wlm-conf-fill" style={{"--w":`${wlm.confidence}%`}}/>
+          </div>
+          <span style={{color:"#00e5ff",minWidth:32}}>{wlm.confidence}%</span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+
+function Results({ p1, p2, report, onReset }) {
+  const s = report.scores;
+  const PLANETS = [
+    { symbol:"☀️", name:"Sun",     score:deriveScore(s.overall,   p1.name,p2.name,"sun")   },
+    { symbol:"🌙", name:"Moon",    score:deriveScore(s.emotional, p1.name,p2.name,"moon")  },
+    { symbol:"⬆️", name:"Rising",  score:deriveScore(s.love,      p1.name,p2.name,"rise")  },
+    { symbol:"♀️", name:"Venus",   score:deriveScore(s.love,      p1.name,p2.name,"venus") },
+    { symbol:"♂️", name:"Mars",    score:deriveScore(s.physical,  p1.name,p2.name,"mars")  },
+    { symbol:"☿",  name:"Mercury", score:deriveScore(s.emotional, p1.name,p2.name,"merc")  },
+    { symbol:"♃",  name:"Jupiter", score:deriveScore(s.spiritual, p1.name,p2.name,"jup")   },
+    { symbol:"♄",  name:"Saturn",  score:deriveScore(s.marriage,  p1.name,p2.name,"sat")   },
+  ];
+  const TL = [
+    { phase:"First Attraction",   desc:report.timeline?.attraction,  c:"#7b2fff" },
+    { phase:"Connection Phase",   desc:report.timeline?.connection,   c:"#ff2d78" },
+    { phase:"Relationship Growth",desc:report.timeline?.growth,       c:"#f5c842" },
+    { phase:"Commitment Phase",   desc:report.timeline?.commitment,   c:"#00e5ff" },
+    { phase:"Marriage Potential", desc:report.timeline?.marriage,     c:"#7b2fff" },
+    { phase:"Long-Term Stability",desc:report.timeline?.stability,    c:"#ff2d78" },
+  ];
+  return (
     <div className="results">
+      {/* Couple names — BIG and VISIBLE */}
       <div className="couple-header">
-        <div className="couple-names">{p1.name} ✦ {p2.name}</div>
-        <div className="couple-sub">Universe Compatibility Analysis · {p1.zodiac} & {p2.zodiac}</div>
+        <span className="couple-names">{p1.name} ✦ {p2.name}</span>
+        <span className="couple-sub">Universe Compatibility Analysis · {p1.zodiac} & {p2.zodiac}</span>
       </div>
 
-      {/* Overall Score */}
-      <div className="score-hero">
-        <ScoreCircle score={s.overall} tag="Overall Compatibility" />
-      </div>
+      <div className="score-hero"><ScoreCircle score={s.overall}/></div>
 
-      {/* Love */}
+      <div className="section-head">💞 Who Loves More?</div>
+      <WhoLovesMore p1={p1} p2={p2} scores={s}/>
+
+
       <div className="section-head">❤️ Love Compatibility</div>
       <div className="cards-grid">
-        <div className="compat-card">
-          <div className="card-head">
-            <span className="card-emoji">💕</span>
-            <span className="card-name">Love Score</span>
-            <span className="card-score-num">{s.love}%</span>
-          </div>
-          <ProgBar value={s.love} color="linear-gradient(to right,#ff2d78,#f5c842)" />
-          <div className="sub-metrics" style={{ marginTop: 12 }}>
-            <SubMetric label="Emotional Bond" value={deriveScore(s.love, p1.name, p2.name, "bond")} color="#ff2d78" />
-            <SubMetric label="Romantic Spark" value={deriveScore(s.love, p1.name, p2.name, "spark")} color="#f5c842" />
-            <SubMetric label="Soulmate Potential" value={deriveScore(s.love, p1.name, p2.name, "soul")} color="#7b2fff" />
+        <CC type="love">
+          <div className="card-head"><span className="card-emoji">💕</span><span className="card-name">Love Score</span><span className="card-score-num">{s.love}%</span></div>
+          <ProgBar value={s.love} color="linear-gradient(to right,#ff2d78,#f5c842)"/>
+          <div className="sub-metrics" style={{marginTop:12}}>
+            <SubMetric label="Emotional Bond"     value={deriveScore(s.love,p1.name,p2.name,"bond")}  color="#ff2d78"/>
+            <SubMetric label="Romantic Spark"     value={deriveScore(s.love,p1.name,p2.name,"spark")} color="#f5c842"/>
+            <SubMetric label="Soulmate Potential" value={deriveScore(s.love,p1.name,p2.name,"soul")}  color="#7b2fff"/>
           </div>
           {report.loveInsight && <div className="insight-box"><div className="insight-label">AI Insight</div>{report.loveInsight}</div>}
-        </div>
-
-        <div className="compat-card">
-          <div className="card-head">
-            <span className="card-emoji">🧠</span>
-            <span className="card-name">Emotional Compatibility</span>
-            <span className="card-score-num">{s.emotional}%</span>
+        </CC>
+        <CC type="emo">
+          <div className="card-head"><span className="card-emoji">🧠</span><span className="card-name">Emotional Compatibility</span><span className="card-score-num">{s.emotional}%</span></div>
+          <ProgBar value={s.emotional} color="linear-gradient(to right,#7b2fff,#00e5ff)"/>
+          <div className="sub-metrics" style={{marginTop:12}}>
+            <SubMetric label="Understanding" value={deriveScore(s.emotional,p1.name,p2.name,"und")}   color="#00e5ff"/>
+            <SubMetric label="Trust"         value={deriveScore(s.emotional,p1.name,p2.name,"trust")} color="#7b2fff"/>
+            <SubMetric label="Communication" value={deriveScore(s.emotional,p1.name,p2.name,"comm")}  color="#ff2d78"/>
+            <SubMetric label="Loyalty"       value={deriveScore(s.emotional,p1.name,p2.name,"loyal")} color="#f5c842"/>
           </div>
-          <ProgBar value={s.emotional} color="linear-gradient(to right,#7b2fff,#00e5ff)" />
-          <div className="sub-metrics" style={{ marginTop: 12 }}>
-            <SubMetric label="Understanding" value={deriveScore(s.emotional, p1.name, p2.name, "und")} color="#00e5ff" />
-            <SubMetric label="Trust" value={deriveScore(s.emotional, p1.name, p2.name, "trust")} color="#7b2fff" />
-            <SubMetric label="Communication" value={deriveScore(s.emotional, p1.name, p2.name, "comm")} color="#ff2d78" />
-            <SubMetric label="Loyalty" value={deriveScore(s.emotional, p1.name, p2.name, "loyal")} color="#f5c842" />
+        </CC>
+        <CC type="phys">
+          <div className="card-head"><span className="card-emoji">🔥</span><span className="card-name">Physical Attraction</span><span className="card-score-num">{s.physical}%</span></div>
+          <ProgBar value={s.physical} color="linear-gradient(to right,#ff6b35,#ff2d78)"/>
+          <div className="sub-metrics" style={{marginTop:12}}>
+            <SubMetric label="Chemistry"       value={deriveScore(s.physical,p1.name,p2.name,"chem")} color="#ff6b35"/>
+            <SubMetric label="Passion Index"   value={deriveScore(s.physical,p1.name,p2.name,"pass")} color="#ff2d78"/>
+            <SubMetric label="Attraction Score"value={deriveScore(s.physical,p1.name,p2.name,"attr")} color="#f5c842"/>
           </div>
-        </div>
-
-        <div className="compat-card">
-          <div className="card-head">
-            <span className="card-emoji">🔥</span>
-            <span className="card-name">Physical Attraction</span>
-            <span className="card-score-num">{s.physical}%</span>
-          </div>
-          <ProgBar value={s.physical} color="linear-gradient(to right,#ff6b35,#ff2d78)" />
-          <div className="sub-metrics" style={{ marginTop: 12 }}>
-            <SubMetric label="Chemistry" value={deriveScore(s.physical, p1.name, p2.name, "chem")} color="#ff6b35" />
-            <SubMetric label="Passion Index" value={deriveScore(s.physical, p1.name, p2.name, "pass")} color="#ff2d78" />
-            <SubMetric label="Attraction Score" value={deriveScore(s.physical, p1.name, p2.name, "attr")} color="#f5c842" />
-          </div>
-        </div>
+        </CC>
       </div>
 
-      {/* Friendship + Marriage */}
       <div className="section-head">🤝 Friendship & Commitment</div>
       <div className="cards-grid">
-        <div className="compat-card">
-          <div className="card-head">
-            <span className="card-emoji">🤝</span>
-            <span className="card-name">Friendship Score</span>
-            <span className="card-score-num">{s.friendship}%</span>
+        <CC type="fri">
+          <div className="card-head"><span className="card-emoji">🤝</span><span className="card-name">Friendship Score</span><span className="card-score-num">{s.friendship}%</span></div>
+          <ProgBar value={s.friendship} color="linear-gradient(to right,#00e5ff,#7b2fff)"/>
+          <div className="sub-metrics" style={{marginTop:12}}>
+            <SubMetric label="Support Level"  value={deriveScore(s.friendship,p1.name,p2.name,"sup")}  color="#00e5ff"/>
+            <SubMetric label="Long-Term Bond" value={deriveScore(s.friendship,p1.name,p2.name,"ltb")}  color="#7b2fff"/>
+            <SubMetric label="Teamwork"       value={deriveScore(s.friendship,p1.name,p2.name,"team")} color="#ff2d78"/>
           </div>
-          <ProgBar value={s.friendship} color="linear-gradient(to right,#00e5ff,#7b2fff)" />
-          <div className="sub-metrics" style={{ marginTop: 12 }}>
-            <SubMetric label="Support Level" value={deriveScore(s.friendship, p1.name, p2.name, "sup")} color="#00e5ff" />
-            <SubMetric label="Long-Term Bond" value={deriveScore(s.friendship, p1.name, p2.name, "ltb")} color="#7b2fff" />
-            <SubMetric label="Teamwork" value={deriveScore(s.friendship, p1.name, p2.name, "team")} color="#ff2d78" />
+        </CC>
+        <CC type="mar">
+          <div className="card-head"><span className="card-emoji">💍</span><span className="card-name">Marriage Potential</span><span className="card-score-num">{s.marriage}%</span></div>
+          <ProgBar value={s.marriage} color="linear-gradient(to right,#f5c842,#ff2d78)"/>
+          <div className="sub-metrics" style={{marginTop:12}}>
+            <SubMetric label="Marriage Readiness" value={deriveScore(s.marriage,p1.name,p2.name,"mrd")}  color="#f5c842"/>
+            <SubMetric label="Commitment Score"   value={deriveScore(s.marriage,p1.name,p2.name,"com")}  color="#ff2d78"/>
+            <SubMetric label="Stability"          value={deriveScore(s.marriage,p1.name,p2.name,"stab")} color="#7b2fff"/>
           </div>
-        </div>
-
-        <div className="compat-card">
-          <div className="card-head">
-            <span className="card-emoji">💍</span>
-            <span className="card-name">Marriage Potential</span>
-            <span className="card-score-num">{s.marriage}%</span>
+          {report.marriageWindow && <div className="insight-box"><div className="insight-label">Most Favorable Period</div>{report.marriageWindow}</div>}
+        </CC>
+        <CC type="fin">
+          <div className="card-head"><span className="card-emoji">💰</span><span className="card-name">Financial Compatibility</span><span className="card-score-num">{s.financial}%</span></div>
+          <ProgBar value={s.financial} color="linear-gradient(to right,#2ecc71,#f5c842)"/>
+          <div className="sub-metrics" style={{marginTop:12}}>
+            <SubMetric label="Wealth Building"  value={deriveScore(s.financial,p1.name,p2.name,"wb")} color="#2ecc71"/>
+            <SubMetric label="Money Management" value={deriveScore(s.financial,p1.name,p2.name,"mm")} color="#f5c842"/>
+            <SubMetric label="Spending Style"   value={deriveScore(s.financial,p1.name,p2.name,"sp")} color="#00e5ff"/>
           </div>
-          <ProgBar value={s.marriage} color="linear-gradient(to right,#f5c842,#ff2d78)" />
-          <div className="sub-metrics" style={{ marginTop: 12 }}>
-            <SubMetric label="Marriage Readiness" value={deriveScore(s.marriage, p1.name, p2.name, "mrd")} color="#f5c842" />
-            <SubMetric label="Commitment Score" value={deriveScore(s.marriage, p1.name, p2.name, "com")} color="#ff2d78" />
-            <SubMetric label="Stability" value={deriveScore(s.marriage, p1.name, p2.name, "stab")} color="#7b2fff" />
-          </div>
-          {report.marriageWindow && (
-            <div className="insight-box">
-              <div className="insight-label">Most Favorable Period</div>
-              {report.marriageWindow}
-            </div>
-          )}
-        </div>
-
-        <div className="compat-card">
-          <div className="card-head">
-            <span className="card-emoji">💰</span>
-            <span className="card-name">Financial Compatibility</span>
-            <span className="card-score-num">{s.financial}%</span>
-          </div>
-          <ProgBar value={s.financial} color="linear-gradient(to right,#2ecc71,#f5c842)" />
-          <div className="sub-metrics" style={{ marginTop: 12 }}>
-            <SubMetric label="Wealth Building" value={deriveScore(s.financial, p1.name, p2.name, "wb")} color="#2ecc71" />
-            <SubMetric label="Money Management" value={deriveScore(s.financial, p1.name, p2.name, "mm")} color="#f5c842" />
-            <SubMetric label="Spending Style" value={deriveScore(s.financial, p1.name, p2.name, "sp")} color="#00e5ff" />
-          </div>
-        </div>
+        </CC>
       </div>
 
-      {/* Family + Spiritual */}
       <div className="section-head">🏠 Family & Spiritual</div>
       <div className="cards-grid">
-        <div className="compat-card">
-          <div className="card-head">
-            <span className="card-emoji">🏠</span>
-            <span className="card-name">Family Harmony</span>
-            <span className="card-score-num">{s.family}%</span>
+        <CC type="fam">
+          <div className="card-head"><span className="card-emoji">🏠</span><span className="card-name">Family Harmony</span><span className="card-score-num">{s.family}%</span></div>
+          <ProgBar value={s.family} color="linear-gradient(to right,#e67e22,#f5c842)"/>
+          <div className="sub-metrics" style={{marginTop:12}}>
+            <SubMetric label="Domestic Harmony"  value={deriveScore(s.family,p1.name,p2.name,"dh")} color="#e67e22"/>
+            <SubMetric label="Family Acceptance" value={deriveScore(s.family,p1.name,p2.name,"fa")} color="#f5c842"/>
+            <SubMetric label="Parenting Energy"  value={deriveScore(s.family,p1.name,p2.name,"pe")} color="#ff2d78"/>
           </div>
-          <ProgBar value={s.family} color="linear-gradient(to right,#e67e22,#f5c842)" />
-          <div className="sub-metrics" style={{ marginTop: 12 }}>
-            <SubMetric label="Domestic Harmony" value={deriveScore(s.family, p1.name, p2.name, "dh")} color="#e67e22" />
-            <SubMetric label="Family Acceptance" value={deriveScore(s.family, p1.name, p2.name, "fa")} color="#f5c842" />
-            <SubMetric label="Parenting Energy" value={deriveScore(s.family, p1.name, p2.name, "pe")} color="#ff2d78" />
+        </CC>
+        <CC type="fam2">
+          <div className="card-head"><span className="card-emoji">👶</span><span className="card-name">Future Family Energy</span><span className="card-score-num">{deriveScore(s.family,p1.name,p2.name,"ffe")}%</span></div>
+          <ProgBar value={deriveScore(s.family,p1.name,p2.name,"ffe")} color="linear-gradient(to right,#ff2d78,#f5c842)"/>
+          <div className="sub-metrics" style={{marginTop:12}}>
+            <SubMetric label="Family Growth"      value={deriveScore(s.family,p1.name,p2.name,"fg")} color="#f5c842"/>
+            <SubMetric label="Nurturing Potential"value={deriveScore(s.family,p1.name,p2.name,"np")} color="#ff2d78"/>
+            <SubMetric label="Child Compatibility"value={deriveScore(s.family,p1.name,p2.name,"cc")} color="#7b2fff"/>
           </div>
-        </div>
-        <div className="compat-card">
-          <div className="card-head">
-            <span className="card-emoji">👶</span>
-            <span className="card-name">Future Family Energy</span>
-            <span className="card-score-num">{deriveScore(s.family, p1.name, p2.name, "ffe")}%</span>
+          <div className="insight-box" style={{fontSize:13}}><div className="insight-label">Note</div>These are astrology-based compatibility indicators, not guarantees of future outcomes.</div>
+        </CC>
+        <CC type="spi">
+          <div className="card-head"><span className="card-emoji">🌙</span><span className="card-name">Spiritual Connection</span><span className="card-score-num">{s.spiritual}%</span></div>
+          <ProgBar value={s.spiritual} color="linear-gradient(to right,#7b2fff,#00e5ff)"/>
+          <div className="sub-metrics" style={{marginTop:12}}>
+            <SubMetric label="Karma Connection"    value={deriveScore(s.spiritual,p1.name,p2.name,"karma")} color="#7b2fff"/>
+            <SubMetric label="Soul Bond"            value={deriveScore(s.spiritual,p1.name,p2.name,"soul2")} color="#00e5ff"/>
+            <SubMetric label="Past Life Indicators" value={deriveScore(s.spiritual,p1.name,p2.name,"past")}  color="#ff2d78"/>
+            <SubMetric label="Destiny Connection"   value={deriveScore(s.spiritual,p1.name,p2.name,"dest")}  color="#f5c842"/>
           </div>
-          <ProgBar value={deriveScore(s.family, p1.name, p2.name, "ffe")} color="linear-gradient(to right,#ff2d78,#f5c842)" />
-          <div className="sub-metrics" style={{ marginTop: 12 }}>
-            <SubMetric label="Family Growth" value={deriveScore(s.family, p1.name, p2.name, "fg")} color="#f5c842" />
-            <SubMetric label="Nurturing Potential" value={deriveScore(s.family, p1.name, p2.name, "np")} color="#ff2d78" />
-            <SubMetric label="Child Compatibility" value={deriveScore(s.family, p1.name, p2.name, "cc")} color="#7b2fff" />
-          </div>
-          <div className="insight-box" style={{ fontSize: 13 }}>
-            <div className="insight-label">Note</div>
-            These are astrology-based compatibility indicators, not guarantees of future outcomes.
-          </div>
-        </div>
-        <div className="compat-card">
-          <div className="card-head">
-            <span className="card-emoji">🌙</span>
-            <span className="card-name">Spiritual Connection</span>
-            <span className="card-score-num">{s.spiritual}%</span>
-          </div>
-          <ProgBar value={s.spiritual} color="linear-gradient(to right,#7b2fff,#00e5ff)" />
-          <div className="sub-metrics" style={{ marginTop: 12 }}>
-            <SubMetric label="Karma Connection" value={deriveScore(s.spiritual, p1.name, p2.name, "karma")} color="#7b2fff" />
-            <SubMetric label="Soul Bond" value={deriveScore(s.spiritual, p1.name, p2.name, "soul2")} color="#00e5ff" />
-            <SubMetric label="Past Life Indicators" value={deriveScore(s.spiritual, p1.name, p2.name, "past")} color="#ff2d78" />
-            <SubMetric label="Destiny Connection" value={deriveScore(s.spiritual, p1.name, p2.name, "dest")} color="#f5c842" />
-          </div>
-        </div>
+        </CC>
       </div>
 
-      {/* Planets */}
       <div className="section-head">🪐 Planetary Analysis</div>
       <div className="planet-row">
         {PLANETS.map(pl => (
@@ -1264,39 +906,32 @@ function Results({ p1, p2, report, onReset }) {
         ))}
       </div>
 
-      {/* Timeline */}
       <div className="section-head">📅 Relationship Timeline</div>
       <div className="timeline">
-        {TL.map((t, i) => (
+        {TL.map((t,i) => (
           <div key={i} className="tl-item">
-            <div className="tl-dot" style={{ "--dot-c": t.c }} />
-            <div className="tl-phase" style={{ color: t.c }}>{t.phase}</div>
+            <div className="tl-dot" style={{"--dot-c":t.c}}/>
+            <div className="tl-phase" style={{color:t.c}}>{t.phase}</div>
             <div className="tl-desc">{t.desc || "Cosmic energies align for this phase of your journey."}</div>
           </div>
         ))}
       </div>
 
-      {/* Flags */}
       <div className="section-head">🚩 Compatibility Indicators</div>
       <div className="flags-grid">
         <div className="flags-col">
-          <div className="flags-col-title" style={{ color: "#2ecc71" }}>✅ Green Flags</div>
-          {(report.greenFlags || []).map((f, i) => (
-            <div key={i} className="flag-item"><span className="flag-icon">✅</span>{f}</div>
-          ))}
+          <div className="flags-col-title" style={{color:"#2ecc71"}}>✅ Green Flags</div>
+          {(report.greenFlags||[]).map((f,i) => <div key={i} className="flag-item"><span className="flag-icon">✅</span>{f}</div>)}
         </div>
         <div className="flags-col">
-          <div className="flags-col-title" style={{ color: "#ff6b35" }}>⚠️ Areas to Navigate</div>
-          {(report.redFlags || []).map((f, i) => (
-            <div key={i} className="flag-item"><span className="flag-icon">⚠️</span>{f}</div>
-          ))}
+          <div className="flags-col-title" style={{color:"#ff6b35"}}>⚠️ Areas to Navigate</div>
+          {(report.redFlags||[]).map((f,i) => <div key={i} className="flag-item"><span className="flag-icon">⚠️</span>{f}</div>)}
         </div>
       </div>
 
-      {/* AI Insights */}
       <div className="section-head">🤖 AI Relationship Insights</div>
       <div className="ai-insights-grid">
-        {(report.aiInsights || []).map((ins, i) => (
+        {(report.aiInsights||[]).map((ins,i) => (
           <div key={i} className="ai-card">
             <div className="ai-card-title">{ins.title}</div>
             <div className="ai-card-text">{ins.text}</div>
@@ -1309,132 +944,87 @@ function Results({ p1, p2, report, onReset }) {
   );
 }
 
-// ── Main App ─────────────────────────────────────────────────────────────────
-const empty = () => ({ name: "", day: "", month: "", year: "", hour: "", min: "", ampm: "AM", place: null });
+const empty = () => ({ name:"", day:"", month:"", year:"", hour:"", min:"", ampm:"AM", place:null });
 
 export default function App() {
-  const [p1, setP1] = useState(empty());
-  const [p2, setP2] = useState(empty());
-  const [phase, setPhase] = useState("form"); // form | loading | results
-  const [report, setReport] = useState(null);
-  const [error, setError] = useState("");
+  const [p1,setP1] = useState(empty());
+  const [p2,setP2] = useState(empty());
+  const [phase,setPhase] = useState("form");
+  const [report,setReport] = useState(null);
+  const [error,setError] = useState("");
 
   const compute = useCallback(async () => {
     setError("");
-    if (!p1.name || !p2.name || !p1.day || !p1.month || !p1.year || !p2.day || !p2.month || !p2.year) {
-      setError("Please fill in the required fields (Name & Date of Birth) for both persons.");
-      return;
+    if (!p1.name||!p2.name||!p1.day||!p1.month||!p1.year||!p2.day||!p2.month||!p2.year) {
+      setError("Please fill in the required fields (Name & Date of Birth) for both persons."); return;
     }
-
     setPhase("loading");
-
-    // Derive zodiac & life path
-    const z1 = getZodiac(+p1.day, +p1.month);
-    const z2 = getZodiac(+p2.day, +p2.month);
-    const dob1 = `${p1.year}-${String(p1.month).padStart(2,"0")}-${String(p1.day).padStart(2,"0")}`;
-    const dob2 = `${p2.year}-${String(p2.month).padStart(2,"0")}-${String(p2.day).padStart(2,"0")}`;
-    const lp1 = getLifePath(dob1);
-    const lp2 = getLifePath(dob2);
-
-    // Deterministic base scores from names + DOB
-    const seed = p1.name + p2.name + dob1 + dob2;
-    const hash = seed.split("").reduce((a, c) => (a * 31 + c.charCodeAt(0)) & 0xffff, 0);
-    const base = 60 + (hash % 35);
-    const scores = {
-      overall:    Math.min(99, base + 5),
-      love:       deriveScore(base, p1.name, p2.name, "love"),
-      emotional:  deriveScore(base, p1.name, p2.name, "emo"),
-      physical:   deriveScore(base, p1.name, p2.name, "phys"),
-      friendship: deriveScore(base, p1.name, p2.name, "fri"),
-      marriage:   deriveScore(base, p1.name, p2.name, "mar"),
-      financial:  deriveScore(base, p1.name, p2.name, "fin"),
-      family:     deriveScore(base, p1.name, p2.name, "fam"),
-      spiritual:  deriveScore(base, p1.name, p2.name, "spi"),
+    const z1=getZodiac(+p1.day,+p1.month), z2=getZodiac(+p2.day,+p2.month);
+    const dob1=`${p1.year}-${String(p1.month).padStart(2,"0")}-${String(p1.day).padStart(2,"0")}`;
+    const dob2=`${p2.year}-${String(p2.month).padStart(2,"0")}-${String(p2.day).padStart(2,"0")}`;
+    const lp1=getLifePath(dob1), lp2=getLifePath(dob2);
+    const seed=p1.name+p2.name+dob1+dob2;
+    const hash=seed.split("").reduce((a,c)=>(a*31+c.charCodeAt(0))&0xffff,0);
+    const base=60+(hash%35);
+    const scores={
+      overall:Math.min(99,base+5), love:deriveScore(base,p1.name,p2.name,"love"),
+      emotional:deriveScore(base,p1.name,p2.name,"emo"), physical:deriveScore(base,p1.name,p2.name,"phys"),
+      friendship:deriveScore(base,p1.name,p2.name,"fri"), marriage:deriveScore(base,p1.name,p2.name,"mar"),
+      financial:deriveScore(base,p1.name,p2.name,"fin"), family:deriveScore(base,p1.name,p2.name,"fam"),
+      spiritual:deriveScore(base,p1.name,p2.name,"spi"),
     };
-
-    // Try AI via backend
-    let aiData = null;
-    try {
-      aiData = await fetchCompatibilityReport(
-        { name: p1.name, dob: dob1, zodiac: z1, lifePath: lp1, place: p1.place?.city },
-        { name: p2.name, dob: dob2, zodiac: z2, lifePath: lp2, place: p2.place?.city },
-        scores
-      );
-    } catch (e) {
-      console.warn("AI backend error — using fallback:", e);
-    }
-
-    // Fallback static data
-    const fallback = {
-      loveInsight: `${p1.name} and ${p2.name} share a profound emotional resonance rooted in their ${z1}–${z2} cosmic alignment. Their life path numbers ${lp1} and ${lp2} create a complementary energetic balance.`,
-      marriageWindow: `${2027 + (hash % 5)} – ${2029 + (hash % 5)}`,
-      greenFlags: ["Strong emotional connection and mutual understanding","Complementary zodiac energies create natural harmony","Shared life path resonance supports long-term growth","Deep spiritual alignment and karmic connection","High marriage potential with stable long-term outlook"],
-      redFlags: ["Occasional communication style differences to navigate","Financial planning approaches may need alignment","Personal space and independence balance requires attention"],
-      timeline: {
-        attraction: "Initial cosmic attraction is powerful and immediate, drawing these souls together.",
-        connection: "Emotional bonds deepen as shared values and dreams align beautifully.",
-        growth: "The relationship blossoms through mutual support and spiritual growth.",
-        commitment: "A natural progression toward deeper commitment feels destined.",
-        marriage: `Marriage energy peaks around ${2027 + (hash % 5)}, supported by favorable planetary alignments.`,
-        stability: "Long-term cosmic compatibility ensures enduring happiness and harmony.",
-      },
-      aiInsights: [
-        { title: "Relationship Strengths", text: `${p1.name} and ${p2.name} possess remarkable compatibility rooted in their ${z1} and ${z2} synergy. Their combined life path numbers ${lp1} and ${lp2} create a relationship that balances ambition with emotional depth.` },
-        { title: "Communication Style", text: "Your communication is naturally intuitive, often understanding each other without words. Building clear channels for expressing needs will transform this connection from good to extraordinary." },
-        { title: "Love Languages", text: `${p1.name} expresses love through thoughtful gestures and quality time, while ${p2.name}'s love language centers around words of affirmation and deep emotional sharing.` },
-        { title: "Growth Opportunities", text: "Together you inspire each other's highest potential. Embrace your differences as cosmic teachers rather than obstacles, and watch your relationship evolve beautifully." },
-        { title: "Conflict Resolution", text: "When tensions arise, return to your core emotional connection. Both partners benefit from taking reflective pauses before discussing sensitive topics, honoring each other's processing styles." },
-        { title: "Long-Term Vision", text: "The stars indicate a relationship built for the long journey. Your combined energies create a stable, loving foundation that grows stronger with each passing year." },
+    let aiData=null;
+    try { aiData=await fetchCompatibilityReport({name:p1.name,dob:dob1,zodiac:z1,lifePath:lp1,place:p1.place?.city},{name:p2.name,dob:dob2,zodiac:z2,lifePath:lp2,place:p2.place?.city},scores); }
+    catch(e) { console.warn("AI backend error:",e); }
+    const fallback={
+      loveInsight:`${p1.name} and ${p2.name} share a profound emotional resonance rooted in their ${z1}–${z2} cosmic alignment. Their life path numbers ${lp1} and ${lp2} create a complementary energetic balance.`,
+      marriageWindow:`${2027+(hash%5)} – ${2029+(hash%5)}`,
+      greenFlags:["Strong emotional connection and mutual understanding","Complementary zodiac energies create natural harmony","Shared life path resonance supports long-term growth","Deep spiritual alignment and karmic connection","High marriage potential with stable long-term outlook"],
+      redFlags:["Occasional communication style differences to navigate","Financial planning approaches may need alignment","Personal space and independence balance requires attention"],
+      timeline:{attraction:"Initial cosmic attraction is powerful and immediate, drawing these souls together.",connection:"Emotional bonds deepen as shared values and dreams align beautifully.",growth:"The relationship blossoms through mutual support and spiritual growth.",commitment:"A natural progression toward deeper commitment feels destined.",marriage:`Marriage energy peaks around ${2027+(hash%5)}, supported by favorable planetary alignments.`,stability:"Long-term cosmic compatibility ensures enduring happiness and harmony."},
+      aiInsights:[
+        {title:"Relationship Strengths",text:`${p1.name} and ${p2.name} possess remarkable compatibility rooted in their ${z1} and ${z2} synergy. Their combined life path numbers ${lp1} and ${lp2} create a relationship that balances ambition with emotional depth.`},
+        {title:"Communication Style",text:"Your communication is naturally intuitive, often understanding each other without words. Building clear channels for expressing needs will transform this connection from good to extraordinary."},
+        {title:"Love Languages",text:`${p1.name} expresses love through thoughtful gestures and quality time, while ${p2.name}'s love language centers around words of affirmation and deep emotional sharing.`},
+        {title:"Growth Opportunities",text:"Together you inspire each other's highest potential. Embrace your differences as cosmic teachers rather than obstacles, and watch your relationship evolve beautifully."},
+        {title:"Conflict Resolution",text:"When tensions arise, return to your core emotional connection. Both partners benefit from taking reflective pauses before discussing sensitive topics, honoring each other's processing styles."},
+        {title:"Long-Term Vision",text:"The stars indicate a relationship built for the long journey. Your combined energies create a stable, loving foundation that grows stronger with each passing year."},
       ],
     };
-
-    const finalReport = {
-      scores,
-      ...(aiData || fallback),
-    };
-
-    // Simulate minimum loading time
-    await new Promise(r => setTimeout(r, 5600));
-    setP1(prev => ({ ...prev, zodiac: z1, lifePath: lp1 }));
-    setP2(prev => ({ ...prev, zodiac: z2, lifePath: lp2 }));
-    setReport(finalReport);
+    await new Promise(r=>setTimeout(r,5600));
+    setP1(prev=>({...prev,zodiac:z1,lifePath:lp1}));
+    setP2(prev=>({...prev,zodiac:z2,lifePath:lp2}));
+    setReport({scores,...(aiData||fallback)});
     setPhase("results");
-  }, [p1, p2]);
+  },[p1,p2]);
 
   return (
     <div className="universe-app">
-      {/* Fixed background */}
-      <Starfield />
-      <div className="nebula-blob" style={{ width: 600, height: 600, top: "-200px", left: "-200px", background: "radial-gradient(circle, rgba(123,47,255,0.15), transparent 70%)", animationDuration: "18s" }} />
-      <div className="nebula-blob" style={{ width: 500, height: 500, bottom: "10%", right: "-150px", background: "radial-gradient(circle, rgba(255,45,120,0.12), transparent 70%)", animationDuration: "22s", animationDelay: "3s" }} />
-      <div className="nebula-blob" style={{ width: 400, height: 400, top: "40%", left: "30%", background: "radial-gradient(circle, rgba(0,229,255,0.07), transparent 70%)", animationDuration: "25s", animationDelay: "6s" }} />
-
-      {phase === "loading" && <LoadingScreen />}
-
-      <div className="content" style={{ display: phase === "loading" ? "none" : "block" }}>
-        {phase === "form" && (
+      <Starfield/>
+      <div className="nebula-blob" style={{width:600,height:600,top:"-200px",left:"-200px",background:"radial-gradient(circle,rgba(123,47,255,0.15),transparent 70%)",animationDuration:"18s"}}/>
+      <div className="nebula-blob" style={{width:500,height:500,bottom:"10%",right:"-150px",background:"radial-gradient(circle,rgba(255,45,120,0.12),transparent 70%)",animationDuration:"22s",animationDelay:"3s"}}/>
+      <div className="nebula-blob" style={{width:400,height:400,top:"40%",left:"30%",background:"radial-gradient(circle,rgba(0,229,255,0.07),transparent 70%)",animationDuration:"25s",animationDelay:"6s"}}/>
+      {phase==="loading" && <LoadingScreen/>}
+      <div className="content" style={{display:phase==="loading"?"none":"block"}}>
+        {phase==="form" && (
           <>
             <div className="header">
               <div className="header-tag">✦ Universe Relationship Analyzer ✦</div>
-              <h1>Cosmic Compatibility<br />Oracle</h1>
+              <h1>Cosmic Compatibility<br/>Oracle</h1>
               <p>Let the universe reveal the truth of your connection</p>
             </div>
-
             <div className="form-container">
               {error && <div className="error-box">⚠ {error}</div>}
               <div className="persons-grid">
-                <PersonForm title="The Divine Masculine" icon="♂" grad="linear-gradient(135deg,#7b2fff,#00e5ff)" data={p1} onChange={setP1} />
-                <PersonForm title="The Divine Feminine" icon="♀" grad="linear-gradient(135deg,#ff2d78,#f5c842)" data={p2} onChange={setP2} />
+                <PersonForm title="The Divine Masculine" icon="♂" grad="linear-gradient(135deg,#7b2fff,#00e5ff)" data={p1} onChange={setP1}/>
+                <PersonForm title="The Divine Feminine"  icon="♀" grad="linear-gradient(135deg,#ff2d78,#f5c842)" data={p2} onChange={setP2}/>
               </div>
-              <button className="submit-btn" onClick={compute}>
-                ✦ Reveal Cosmic Compatibility ✦
-              </button>
+              <button className="submit-btn" onClick={compute}>✦ Reveal Cosmic Compatibility ✦</button>
             </div>
           </>
         )}
-
-        {phase === "results" && report && (
-          <Results p1={p1} p2={p2} report={report} onReset={() => { setPhase("form"); setReport(null); setP1(empty()); setP2(empty()); }} />
+        {phase==="results" && report && (
+          <Results p1={p1} p2={p2} report={report} onReset={()=>{setPhase("form");setReport(null);setP1(empty());setP2(empty());}}/>
         )}
       </div>
     </div>

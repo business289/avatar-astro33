@@ -1,493 +1,531 @@
-import { useRef, useMemo, useEffect, useCallback } from 'react';
-import { Canvas, useFrame, useThree } from '@react-three/fiber';
-import { Stars, Sphere, useTexture } from '@react-three/drei';
-import * as THREE from 'three';
-import gsap from 'gsap';
-import sunTextureImg from '@/assets/sun-texture.png';
+import { useEffect, useRef, useState } from "react";
 
-// Sun component with texture and glow - optimized
-const Sun = () => {
-  const sunRef = useRef<THREE.Mesh>(null);
-  const coronaRef = useRef<THREE.Mesh>(null);
-  const sunTexture = useTexture(sunTextureImg);
-  const rotationRef = useRef(0);
-  const coronaScaleRef = useRef(1);
-
-  sunTexture.wrapS = THREE.RepeatWrapping;
-  sunTexture.wrapT = THREE.ClampToEdgeWrapping;
-
-  useFrame(({ clock }) => {
-    rotationRef.current += 0.0003;
-    if (sunRef.current) sunRef.current.rotation.y = rotationRef.current;
-    
-    if (coronaRef.current) {
-      coronaScaleRef.current = 1 + Math.sin(clock.getElapsedTime() * 0.5) * 0.03;
-      coronaRef.current.rotation.z = rotationRef.current * 0.67;
-      coronaRef.current.scale.setScalar(coronaScaleRef.current);
-    }
-  });
-
-  return (
-    <group>
-      <Sphere ref={sunRef} args={[2, 24, 20]} position={[0, 0, 0]}>
-        <meshBasicMaterial map={sunTexture} color="#ffffff" />
-      </Sphere>
-      <Sphere args={[2.05, 16, 12]} position={[0, 0, 0]}>
-        <meshBasicMaterial color="#ffaa33" transparent opacity={0.3} />
-      </Sphere>
-      <Sphere ref={coronaRef} args={[2.2, 12, 8]} position={[0, 0, 0]}>
-        <meshBasicMaterial color="#ff9922" transparent opacity={0.25} />
-      </Sphere>
-      <Sphere args={[2.5, 12, 8]} position={[0, 0, 0]}>
-        <meshBasicMaterial color="#ff8811" transparent opacity={0.15} />
-      </Sphere>
-      <pointLight color="#ffcc66" intensity={3} distance={150} decay={2} />
-    </group>
-  );
+// ── Real NASA-style planet image URLs (public domain) ───────────────────────
+const PLANET_IMAGES = {
+  mercury: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4a/Mercury_in_true_color.jpg/240px-Mercury_in_true_color.jpg",
+  venus:   "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e5/Venus-real_color.jpg/240px-Venus-real_color.jpg",
+  earth:   "https://upload.wikimedia.org/wikipedia/commons/thumb/9/97/The_Earth_seen_from_Apollo_17.jpg/240px-The_Earth_seen_from_Apollo_17.jpg",
+  mars:    "https://upload.wikimedia.org/wikipedia/commons/thumb/0/02/OSIRIS_Mars_true_color.jpg/240px-OSIRIS_Mars_true_color.jpg",
+  jupiter: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2b/Jupiter_and_its_shrunken_Great_Red_Spot.jpg/240px-Jupiter_and_its_shrunken_Great_Red_Spot.jpg",
+  saturn:  "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c7/Saturn_during_Equinox.jpg/240px-Saturn_during_Equinox.jpg",
+  uranus:  "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3d/Uranus2.jpg/240px-Uranus2.jpg",
 };
 
-// Lightweight procedural texture generator
-const useRealisticPlanetTexture = (config: {
-  type: 'terrestrial' | 'gas' | 'rocky' | 'ice';
-  primaryColor: string;
-  secondaryColor: string;
-  tertiaryColor?: string;
-  hasOceans?: boolean;
-  oceanColor?: string;
-  resolution?: number;
-}) => {
-  return useMemo(() => {
-    const resolution = config.resolution || 256;
-    const canvas = document.createElement('canvas');
-    canvas.width = resolution;
-    canvas.height = resolution / 2;
-    const ctx = canvas.getContext('2d')!;
+// ── 7 Planets data ────────────────────────────────────────────────────────────
+const PLANETS = [
+  {
+    id: "mercury", name: "Mercury", symbol: "☿",
+    size: 7,
+    orbitRx: 90,  orbitRy: 27,
+    speed: 0.0055, startAngle: 0.3,
+    signs: ["Gemini", "Virgo"],
+    description: "Planet of communication, intellect & quick thinking",
+    glowColor: "#b0b0b0",
+  },
+  {
+    id: "venus", name: "Venus", symbol: "♀",
+    size: 11,
+    orbitRx: 140, orbitRy: 42,
+    speed: 0.004, startAngle: 1.8,
+    signs: ["Taurus", "Libra"],
+    description: "Planet of love, beauty, harmony & attraction",
+    glowColor: "#e8c46a",
+  },
+  {
+    id: "earth", name: "Earth", symbol: "🜨",
+    size: 12,
+    orbitRx: 195, orbitRy: 58,
+    speed: 0.003, startAngle: 0.9,
+    signs: ["All Signs"],
+    description: "Our home — the bridge between cosmos and consciousness",
+    glowColor: "#4a9eff",
+  },
+  {
+    id: "mars", name: "Mars", symbol: "♂",
+    size: 9,
+    orbitRx: 252, orbitRy: 75,
+    speed: 0.0024, startAngle: 2.5,
+    signs: ["Aries", "Scorpio"],
+    description: "Planet of energy, action, passion & drive",
+    glowColor: "#e05c3a",
+  },
+  {
+    id: "jupiter", name: "Jupiter", symbol: "♃",
+    size: 22,
+    orbitRx: 318, orbitRy: 95,
+    speed: 0.0017, startAngle: 3.7,
+    signs: ["Sagittarius", "Pisces"],
+    description: "Planet of expansion, wisdom, luck & abundance",
+    glowColor: "#c8924a",
+  },
+  {
+    id: "saturn", name: "Saturn", symbol: "♄",
+    size: 18,
+    orbitRx: 390, orbitRy: 117,
+    speed: 0.0012, startAngle: 4.1,
+    signs: ["Capricorn", "Aquarius"],
+    description: "Planet of discipline, karma, time & life lessons",
+    glowColor: "#c8a84b",
+    hasRing: true,
+  },
+  {
+    id: "uranus", name: "Uranus", symbol: "♅",
+    size: 14,
+    orbitRx: 468, orbitRy: 140,
+    speed: 0.0008, startAngle: 5.5,
+    signs: ["Aquarius"],
+    description: "Planet of revolution, innovation & sudden change",
+    glowColor: "#5bf0e8",
+  },
+];
 
-    const hexToRgb = (hex: string) => {
-      const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-      return result ? {
-        r: parseInt(result[1], 16), g: parseInt(result[2], 16), b: parseInt(result[3], 16)
-      } : { r: 128, g: 128, b: 128 };
-    };
-
-    const noise = (x: number, y: number, octaves: number = 4, persistence: number = 0.5) => {
-      let value = 0, amplitude = 1, frequency = 1, maxValue = 0;
-      for (let i = 0; i < octaves; i++) {
-        value += Math.sin(x * frequency * 0.02 + Math.cos(y * frequency * 0.015)) *
-                 Math.cos(y * frequency * 0.018 + Math.sin(x * frequency * 0.012)) * amplitude;
-        value += Math.sin((x + y) * frequency * 0.01 + i * 1.5) * amplitude * 0.5;
-        maxValue += amplitude;
-        amplitude *= persistence;
-        frequency *= 2;
-      }
-      return (value / maxValue + 1) * 0.5;
-    };
-
-    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-    const data = imageData.data;
-    const primary = hexToRgb(config.primaryColor);
-    const secondary = hexToRgb(config.secondaryColor);
-    const tertiary = config.tertiaryColor ? hexToRgb(config.tertiaryColor) : secondary;
-    const ocean = config.oceanColor ? hexToRgb(config.oceanColor) : { r: 30, g: 80, b: 140 };
-
-    for (let y = 0; y < canvas.height; y++) {
-      for (let x = 0; x < canvas.width; x++) {
-        const i = (y * canvas.width + x) * 4;
-        let r, g, b;
-
-        if (config.type === 'terrestrial') {
-          const continentNoise = noise(x, y, 5, 0.6);
-          const detailNoise = noise(x * 2, y * 2, 3, 0.4);
-          const isOcean = config.hasOceans && continentNoise < 0.45;
-          const isDesert = continentNoise > 0.7 && Math.abs(y - canvas.height / 2) < canvas.height * 0.2;
-
-          if (isOcean) {
-            const depth = continentNoise / 0.45;
-            r = Math.floor(ocean.r * (0.6 + depth * 0.4) + detailNoise * 15);
-            g = Math.floor(ocean.g * (0.7 + depth * 0.3) + detailNoise * 20);
-            b = Math.floor(ocean.b * (0.8 + depth * 0.2) + detailNoise * 25);
-          } else if (isDesert) {
-            r = Math.floor(tertiary.r * (0.9 + detailNoise * 0.2));
-            g = Math.floor(tertiary.g * (0.85 + detailNoise * 0.15));
-            b = Math.floor(tertiary.b * (0.8 + detailNoise * 0.1));
-          } else {
-            const vegBlend = detailNoise;
-            r = Math.floor(primary.r * vegBlend + secondary.r * (1 - vegBlend));
-            g = Math.floor(primary.g * vegBlend + secondary.g * (1 - vegBlend));
-            b = Math.floor(primary.b * vegBlend + secondary.b * (1 - vegBlend));
-          }
-        } else if (config.type === 'gas') {
-          const bandNoise = noise(x * 0.5, y * 3, 3, 0.7);
-          const latBand = Math.sin(y / canvas.height * Math.PI * 12 + bandNoise * 2);
-          const blend = (latBand + 1) * 0.5;
-          r = Math.floor(primary.r * blend + secondary.r * (1 - blend));
-          g = Math.floor(primary.g * blend + secondary.g * (1 - blend));
-          b = Math.floor(primary.b * blend + secondary.b * (1 - blend));
-        } else if (config.type === 'rocky') {
-          const baseNoise = noise(x, y, 4, 0.5);
-          const craterNoise = noise(x * 3, y * 3, 2, 0.6);
-          r = Math.floor(primary.r * baseNoise + secondary.r * (1 - baseNoise) - craterNoise * 30);
-          g = Math.floor(primary.g * baseNoise + secondary.g * (1 - baseNoise) - craterNoise * 25);
-          b = Math.floor(primary.b * baseNoise + secondary.b * (1 - baseNoise) - craterNoise * 20);
-        } else {
-          const iceNoise = noise(x, y, 3, 0.6);
-          r = Math.floor(200 + iceNoise * 55);
-          g = Math.floor(210 + iceNoise * 45);
-          b = Math.floor(230 + iceNoise * 25);
-        }
-
-        data[i] = Math.min(255, Math.max(0, r));
-        data[i + 1] = Math.min(255, Math.max(0, g));
-        data[i + 2] = Math.min(255, Math.max(0, b));
-        data[i + 3] = 255;
-      }
-    }
-
-    ctx.putImageData(imageData, 0, 0);
-    const texture = new THREE.CanvasTexture(canvas);
-    texture.wrapS = THREE.RepeatWrapping;
-    texture.wrapT = THREE.ClampToEdgeWrapping;
-    return texture;
-  }, [config]);
-};
-
-// Cloud layer texture - only used when needed
-const useCloudTexture = (enabled: boolean) => {
-  return useMemo(() => {
-    if (!enabled) return null;
-    const resolution = 256;
-    const canvas = document.createElement('canvas');
-    canvas.width = resolution;
-    canvas.height = resolution / 2;
-    const ctx = canvas.getContext('2d')!;
-    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-    const data = imageData.data;
-
-    for (let y = 0; y < canvas.height; y++) {
-      for (let x = 0; x < canvas.width; x++) {
-        const i = (y * canvas.width + x) * 4;
-        let cloud = 0;
-        cloud += Math.sin(x * 0.02 + Math.cos(y * 0.015)) * 0.3;
-        cloud += Math.sin(x * 0.05 + y * 0.03) * Math.cos(y * 0.02) * 0.4;
-        cloud += Math.sin((x + y) * 0.015) * 0.2;
-        cloud = (cloud + 1) * 0.5;
-        const alpha = cloud > 0.4 ? (cloud - 0.4) * 2 : 0;
-        data[i] = 255; data[i + 1] = 255; data[i + 2] = 255;
-        data[i + 3] = Math.floor(alpha * 180);
-      }
-    }
-
-    ctx.putImageData(imageData, 0, 0);
-    const texture = new THREE.CanvasTexture(canvas);
-    texture.wrapS = THREE.RepeatWrapping;
-    texture.wrapT = THREE.ClampToEdgeWrapping;
-    return texture;
-  }, [enabled]);
-};
-
-// Ring texture
-const useRingTexture = (enabled: boolean, innerColor: string, outerColor: string) => {
-  return useMemo(() => {
-    if (!enabled) return null;
-    const resolution = 256;
-    const canvas = document.createElement('canvas');
-    canvas.width = resolution;
-    canvas.height = 1;
-    const ctx = canvas.getContext('2d')!;
-
-    const hexToRgb = (hex: string) => {
-      const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-      return result ? {
-        r: parseInt(result[1], 16), g: parseInt(result[2], 16), b: parseInt(result[3], 16)
-      } : { r: 200, g: 180, b: 150 };
-    };
-
-    const inner = hexToRgb(innerColor);
-    const outer = hexToRgb(outerColor);
-    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-    const data = imageData.data;
-
-    for (let x = 0; x < canvas.width; x++) {
-      const t = x / canvas.width;
-      let alpha = 0.8;
-      if (t > 0.3 && t < 0.35) alpha = 0.2;
-      if (t > 0.5 && t < 0.52) alpha = 0.3;
-      if (t > 0.7 && t < 0.73) alpha = 0.15;
-
-      data[x * 4] = Math.floor(inner.r * (1 - t) + outer.r * t);
-      data[x * 4 + 1] = Math.floor(inner.g * (1 - t) + outer.g * t);
-      data[x * 4 + 2] = Math.floor(inner.b * (1 - t) + outer.b * t);
-      data[x * 4 + 3] = Math.floor(alpha * 255);
-    }
-
-    ctx.putImageData(imageData, 0, 0);
-    const texture = new THREE.CanvasTexture(canvas);
-    texture.wrapS = THREE.ClampToEdgeWrapping;
-    texture.wrapT = THREE.ClampToEdgeWrapping;
-    return texture;
-  }, [enabled, innerColor, outerColor]);
-};
-
-// Optimized planet component
-interface RealisticPlanetProps {
-  radius: number;
-  orbitRadius: number;
-  speed: number;
-  planetType: 'terrestrial' | 'gas' | 'rocky' | 'ice';
-  primaryColor: string;
-  secondaryColor: string;
-  tertiaryColor?: string;
-  initialAngle?: number;
-  hasAtmosphere?: boolean;
-  atmosphereColor?: string;
-  atmosphereIntensity?: number;
-  hasClouds?: boolean;
-  hasOceans?: boolean;
-  oceanColor?: string;
-  hasRing?: boolean;
-  ringInnerColor?: string;
-  ringOuterColor?: string;
-  rotationSpeed?: number;
-  tilt?: number;
+// ── Preload images ────────────────────────────────────────────────────────────
+const imageCache = {};
+function loadImage(id, url) {
+  if (imageCache[id]) return imageCache[id];
+  const img = new Image();
+  img.crossOrigin = "anonymous";
+  img.src = url;
+  imageCache[id] = img;
+  return img;
 }
 
-const RealisticPlanet = ({
-  radius, orbitRadius, speed, planetType, primaryColor, secondaryColor, tertiaryColor,
-  initialAngle = 0, hasAtmosphere, atmosphereColor = '#88ccff', atmosphereIntensity = 1,
-  hasClouds, hasOceans, oceanColor, hasRing, ringInnerColor = '#d4b896', ringOuterColor = '#8b7355',
-  rotationSpeed = 0.005, tilt = 0,
-}: RealisticPlanetProps) => {
-  const planetRef = useRef<THREE.Group>(null);
-  const meshRef = useRef<THREE.Mesh>(null);
-  const cloudRef = useRef<THREE.Mesh>(null);
+// ── Planet Modal ──────────────────────────────────────────────────────────────
+function PlanetModal({ planet, onClose }) {
+  useEffect(() => {
+    const h = (e) => { if (e.key === "Escape") onClose(); };
+    window.addEventListener("keydown", h);
+    return () => window.removeEventListener("keydown", h);
+  }, [onClose]);
 
-  const surfaceTexture = useRealisticPlanetTexture({
-    type: planetType, primaryColor, secondaryColor, tertiaryColor, hasOceans, oceanColor, resolution: 256,
-  });
-
-  const cloudTexture = useCloudTexture(!!hasClouds);
-  const ringTexture = useRingTexture(!!hasRing, ringInnerColor, ringOuterColor);
-
-  useFrame(({ clock }) => {
-    if (planetRef.current) {
-      const t = clock.getElapsedTime() * speed + initialAngle;
-      planetRef.current.position.x = Math.cos(t) * orbitRadius;
-      planetRef.current.position.z = Math.sin(t) * orbitRadius;
-    }
-    if (meshRef.current) meshRef.current.rotation.y += rotationSpeed;
-    if (cloudRef.current) cloudRef.current.rotation.y += rotationSpeed * 1.2;
-  });
+  const img = imageCache[planet.id];
 
   return (
-    <group ref={planetRef}>
-      <group rotation={[tilt, 0, 0]}>
-        {/* Main planet surface - ultra-optimized segments */}
-        <Sphere ref={meshRef} args={[radius, 24, 18]}>
-          <meshStandardMaterial map={surfaceTexture} roughness={0.8} metalness={0.1} />
-        </Sphere>
+    <div
+      onClick={onClose}
+      style={{
+        position: "fixed", inset: 0, zIndex: 9999,
+        background: "rgba(0,0,0,0.75)",
+        display: "flex", alignItems: "center", justifyContent: "center",
+        backdropFilter: "blur(8px)",
+        animation: "mfadeIn .25s ease",
+      }}
+    >
+      <div
+        onClick={(e) => e.stopPropagation()}
+        style={{
+          background: "linear-gradient(135deg,rgba(8,12,35,0.98),rgba(4,6,20,0.98))",
+          border: `1px solid ${planet.glowColor}44`,
+          borderRadius: 22,
+          padding: "36px 40px",
+          maxWidth: 420, width: "90vw",
+          boxShadow: `0 0 80px ${planet.glowColor}30, 0 30px 80px rgba(0,0,0,0.9)`,
+          animation: "mslideUp .3s ease",
+          position: "relative", textAlign: "center",
+        }}
+      >
+        <button
+          onClick={onClose}
+          style={{
+            position:"absolute",top:14,right:18,
+            background:"none",border:"none",
+            color:"rgba(255,255,255,0.35)",fontSize:22,
+            cursor:"pointer",lineHeight:1,
+          }}
+        >✕</button>
 
-        {/* Cloud layer */}
-        {hasClouds && cloudTexture && (
-          <Sphere ref={cloudRef} args={[radius * 1.015, 18, 12]}>
-            <meshStandardMaterial map={cloudTexture} transparent opacity={0.7} depthWrite={false} />
-          </Sphere>
-        )}
-
-        {/* Atmosphere - single layer */}
-        {hasAtmosphere && (
-          <Sphere args={[radius * 1.06, 18, 12]}>
-            <meshBasicMaterial
-              color={atmosphereColor}
-              transparent
-              opacity={0.2 * atmosphereIntensity}
-              side={THREE.BackSide}
-              blending={THREE.AdditiveBlending}
+        {/* Planet image */}
+        <div style={{
+          width:90, height:90, borderRadius:"50%",
+          overflow:"hidden", margin:"0 auto 18px",
+          boxShadow:`0 0 30px ${planet.glowColor}80, 0 0 70px ${planet.glowColor}30`,
+          border:`2px solid ${planet.glowColor}50`,
+          position:"relative",
+        }}>
+          {img && img.complete ? (
+            <img
+              src={img.src} alt={planet.name}
+              style={{ width:"100%", height:"100%", objectFit:"cover", borderRadius:"50%" }}
             />
-          </Sphere>
-        )}
+          ) : (
+            <div style={{
+              width:"100%",height:"100%",
+              background:`radial-gradient(circle at 35% 35%, ${planet.glowColor}cc, ${planet.glowColor}44)`,
+              display:"flex",alignItems:"center",justifyContent:"center",
+              fontSize:30, color:"rgba(255,255,255,0.7)",
+            }}>{planet.symbol}</div>
+          )}
+          {planet.hasRing && (
+            <div style={{
+              position:"absolute",top:"50%",left:"50%",
+              transform:"translate(-50%,-50%) rotateX(70deg)",
+              width:130,height:130,borderRadius:"50%",
+              border:`3px solid ${planet.glowColor}60`,
+              pointerEvents:"none",
+            }}/>
+          )}
+        </div>
 
-        {/* Ring system */}
-        {hasRing && ringTexture && (
-          <group rotation={[Math.PI / 2.2, 0.1, 0]}>
-            <mesh>
-              <ringGeometry args={[radius * 1.4, radius * 2.4, 40]} />
-              <meshBasicMaterial map={ringTexture} transparent opacity={0.85} side={THREE.DoubleSide} />
-            </mesh>
-          </group>
-        )}
-      </group>
-    </group>
+        <h2 style={{
+          fontFamily:"'Cinzel Decorative',serif",
+          fontSize:22, color:planet.glowColor,
+          margin:"0 0 6px",
+          textShadow:`0 0 20px ${planet.glowColor}80`,
+        }}>{planet.name}</h2>
+
+        <div style={{
+          fontSize:11,color:"rgba(255,255,255,0.3)",
+          fontFamily:"'Space Mono',monospace",
+          letterSpacing:3,marginBottom:18,
+        }}>PLANETARY ENERGY</div>
+
+        <p style={{
+          fontSize:15,color:"rgba(255,255,255,0.75)",
+          lineHeight:1.75,fontStyle:"italic",
+          fontFamily:"'Cormorant Garamond',serif",
+          marginBottom:22,
+        }}>{planet.description}</p>
+
+        <div style={{
+          borderTop:`1px solid ${planet.glowColor}25`,
+          paddingTop:16,marginBottom:22,
+        }}>
+          <div style={{
+            fontSize:9,color:"rgba(255,255,255,0.28)",
+            fontFamily:"'Space Mono',monospace",
+            letterSpacing:3,marginBottom:10,
+            textTransform:"uppercase",
+          }}>Rules These Signs</div>
+          <div style={{display:"flex",gap:8,justifyContent:"center",flexWrap:"wrap"}}>
+            {planet.signs.map(s => (
+              <span key={s} style={{
+                padding:"5px 16px",
+                border:`1px solid ${planet.glowColor}50`,
+                borderRadius:50,fontSize:13,
+                color:planet.glowColor,
+                fontFamily:"'Cormorant Garamond',serif",
+                background:`${planet.glowColor}12`,
+              }}>{s}</span>
+            ))}
+          </div>
+        </div>
+
+        <button
+          onClick={() => { window.location.href="/astrology-tools"; }}
+          style={{
+            padding:"12px 36px",
+            background:`linear-gradient(135deg,${planet.glowColor}cc,${planet.glowColor}66)`,
+            border:"none",borderRadius:50,
+            color:"#000",fontFamily:"'Cinzel Decorative',serif",
+            fontSize:11,letterSpacing:2,cursor:"pointer",fontWeight:700,
+            boxShadow:`0 4px 24px ${planet.glowColor}50`,
+            transition:"transform .2s,box-shadow .2s",
+          }}
+          onMouseEnter={e=>{e.currentTarget.style.transform="translateY(-2px)";}}
+          onMouseLeave={e=>{e.currentTarget.style.transform="";}}
+        >EXPLORE {planet.name.toUpperCase()}</button>
+      </div>
+    </div>
   );
-};
-
-// Simplified orbit ring - ultra-optimized
-const OrbitRing = ({ radius }: { radius: number }) => (
-  <group rotation={[Math.PI / 2, 0, 0]}>
-    <mesh>
-      <ringGeometry args={[radius - 0.03, radius + 0.03, 48]} />
-      <meshBasicMaterial color="#f5c36a" transparent opacity={0.35} side={THREE.DoubleSide} />
-    </mesh>
-  </group>
-);
-
-// Camera controller with GSAP smooth animation
-const CameraController = ({ scrollProgress }: { scrollProgress: number }) => {
-  const { camera, size } = useThree();
-  const mousePos = useRef({ x: 0, y: 0 });
-  const cameraState = useRef({ x: 0, y: 3, z: 30 });
-  const isMobile = size.width < 768;
-  const tweenRef = useRef<gsap.core.Tween | null>(null);
-
-  useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => {
-      mousePos.current.x = (e.clientX / window.innerWidth - 0.5) * 2;
-      mousePos.current.y = (e.clientY / window.innerHeight - 0.5) * 2;
-    };
-    window.addEventListener('mousemove', handleMouseMove);
-    return () => window.removeEventListener('mousemove', handleMouseMove);
-  }, []);
-
-  useEffect(() => {
-    const mobileZoomOffset = isMobile ? 20 : 0;
-    const targetZ = 30 + mobileZoomOffset - scrollProgress * 25;
-    const targetX = isMobile ? 0 : mousePos.current.x * 4;
-    const targetY = (isMobile ? 0 : mousePos.current.y * 3) + 3;
-
-    // Kill previous tween
-    if (tweenRef.current) tweenRef.current.kill();
-
-    // Create smooth GSAP tween
-    tweenRef.current = gsap.to(cameraState.current, {
-      x: targetX,
-      y: targetY,
-      z: targetZ,
-      duration: 0.5,
-      ease: 'power2.out',
-      overwrite: 'auto',
-    });
-  }, [scrollProgress, isMobile]);
-
-  useFrame(() => {
-    camera.position.x = cameraState.current.x;
-    camera.position.y = cameraState.current.y;
-    camera.position.z = cameraState.current.z;
-    camera.lookAt(0, 0, 0);
-  });
-
-  return null;
-};
-
-// Ultra-optimized particle field - reduced count
-const ParticleField = () => {
-  const particlesRef = useRef<THREE.Points>(null);
-  const rotationRef = useRef(0);
-
-  const { positions, colors } = useMemo(() => {
-    const positions = new Float32Array(300 * 3); // Reduced from 600
-    const colors = new Float32Array(300 * 3);
-
-    for (let i = 0; i < 300; i++) {
-      positions[i * 3] = (Math.random() - 0.5) * 120;
-      positions[i * 3 + 1] = (Math.random() - 0.5) * 120;
-      positions[i * 3 + 2] = (Math.random() - 0.5) * 120;
-
-      const warmth = Math.random() * 0.3;
-      colors[i * 3] = 1;
-      colors[i * 3 + 1] = 0.9 + warmth * 0.1;
-      colors[i * 3 + 2] = 0.7 + warmth * 0.2;
-    }
-    return { positions, colors };
-  }, []);
-
-  useFrame(() => {
-    if (particlesRef.current) {
-      rotationRef.current += 0.00003;
-      particlesRef.current.rotation.y = rotationRef.current;
-    }
-  });
-
-  return (
-    <points ref={particlesRef}>
-      <bufferGeometry>
-        <bufferAttribute attach="attributes-position" count={300} array={positions} itemSize={3} />
-        <bufferAttribute attach="attributes-color" count={300} array={colors} itemSize={3} />
-      </bufferGeometry>
-      <pointsMaterial size={0.06} transparent opacity={0.7} vertexColors sizeAttenuation />
-    </points>
-  );
-};
-
-interface SolarSystemProps {
-  scrollProgress: number;
 }
 
-export const SolarSystemScene = ({ scrollProgress }: SolarSystemProps) => (
-  <>
-    <CameraController scrollProgress={scrollProgress} />
-    <ambientLight intensity={0.2} />
-    <directionalLight position={[10, 5, 5]} intensity={0.5} color="#fff8e0" />
+// ── Main Component ────────────────────────────────────────────────────────────
+export default function SolarSystem() {
+  const canvasRef = useRef(null);
+  const stateRef = useRef({
+    angles: Object.fromEntries(PLANETS.map(p => [p.id, p.startAngle])),
+    tiltX: 0, tiltY: 0,
+    targetTiltX: 0, targetTiltY: 0,
+    raf: null,
+    positions: {},
+    imagesLoaded: false,
+  });
+  const [selectedPlanet, setSelectedPlanet] = useState(null);
+  const [hovered, setHovered] = useState(null);
 
-    <Stars radius={120} depth={60} count={800} factor={5} saturation={0.3} fade speed={0.5} />
-    <ParticleField />
+  // Preload all planet images
+  useEffect(() => {
+    PLANETS.forEach(p => {
+      if (PLANET_IMAGES[p.id]) loadImage(p.id, PLANET_IMAGES[p.id]);
+    });
+    // Force re-renders as images load
+    const timer = setInterval(() => {
+      const allLoaded = PLANETS.every(p => {
+        const img = imageCache[p.id];
+        return img && img.complete;
+      });
+      if (allLoaded) clearInterval(timer);
+    }, 200);
+    return () => clearInterval(timer);
+  }, []);
 
-    <Sun />
+  // ── Canvas draw loop ───────────────────────────────────────────────────────
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    const state = stateRef.current;
 
-    <OrbitRing radius={5} />
-    <OrbitRing radius={7.5} />
-    <OrbitRing radius={11} />
-    <OrbitRing radius={15} />
-    <OrbitRing radius={20} />
+    const resize = () => {
+      const dpr = window.devicePixelRatio || 1;
+      const W = canvas.offsetWidth;
+      const H = canvas.offsetHeight;
+      canvas.width = W * dpr;
+      canvas.height = H * dpr;
+      ctx.scale(dpr, dpr);
+    };
+    resize();
+    window.addEventListener("resize", resize);
 
-    {/* Mercury */}
-    <RealisticPlanet radius={0.25} orbitRadius={5} speed={0.9} planetType="rocky"
-      primaryColor="#9a8878" secondaryColor="#5a4a3a" initialAngle={0.5} rotationSpeed={0.002} />
+    // Create circular clip paths for planets
+    const drawPlanetWithImage = (ctx, planet, x, y) => {
+      const r = planet.size;
+      const img = imageCache[planet.id];
 
-    {/* Venus */}
-    <RealisticPlanet radius={0.45} orbitRadius={7.5} speed={0.6} planetType="terrestrial"
-      primaryColor="#e6c87a" secondaryColor="#c9a050" tertiaryColor="#d4a855" initialAngle={2.1}
-      hasAtmosphere atmosphereColor="#ffe4a0" atmosphereIntensity={1.5} hasClouds rotationSpeed={0.001} />
+      ctx.save();
+      ctx.translate(x, y);
 
-    {/* Earth */}
-    <RealisticPlanet radius={0.5} orbitRadius={11} speed={0.4} planetType="terrestrial"
-      primaryColor="#2d5a27" secondaryColor="#3d6545" tertiaryColor="#c9a050" oceanColor="#1a5080"
-      initialAngle={4.2} hasAtmosphere atmosphereColor="#88ccff" atmosphereIntensity={1.2}
-      hasClouds hasOceans rotationSpeed={0.008} tilt={0.41} />
+      // Glow
+      const glow = ctx.createRadialGradient(0,0,0,0,0,r*3);
+      glow.addColorStop(0, planet.glowColor + "55");
+      glow.addColorStop(1, "transparent");
+      ctx.beginPath();
+      ctx.arc(0,0,r*3,0,Math.PI*2);
+      ctx.fillStyle = glow;
+      ctx.fill();
 
-    {/* Mars */}
-    <RealisticPlanet radius={0.35} orbitRadius={15} speed={0.25} planetType="rocky"
-      primaryColor="#c45c3a" secondaryColor="#8b3a20" tertiaryColor="#d4704a" initialAngle={1.3}
-      hasAtmosphere atmosphereColor="#ffccaa" atmosphereIntensity={0.3} rotationSpeed={0.007} tilt={0.44} />
+      // Saturn ring behind planet
+      if (planet.hasRing) {
+        ctx.save();
+        ctx.scale(1, 0.3);
+        ctx.beginPath();
+        ctx.arc(0, 0, r*2.4, 0, Math.PI*2);
+        ctx.strokeStyle = "rgba(200,168,75,0.6)";
+        ctx.lineWidth = r * 0.5 / 0.3;
+        ctx.stroke();
+        // Outer ring
+        ctx.beginPath();
+        ctx.arc(0, 0, r*2.8, 0, Math.PI*2);
+        ctx.strokeStyle = "rgba(180,148,55,0.3)";
+        ctx.lineWidth = r * 0.25 / 0.3;
+        ctx.stroke();
+        ctx.restore();
+      }
 
-    {/* Saturn */}
-    <RealisticPlanet radius={1.1} orbitRadius={20} speed={0.12} planetType="gas"
-      primaryColor="#e4c88c" secondaryColor="#c4a060" tertiaryColor="#d4b078" initialAngle={3.7}
-      hasAtmosphere atmosphereColor="#f5e6c8" atmosphereIntensity={0.4}
-      hasRing ringInnerColor="#d4b896" ringOuterColor="#8b7355" rotationSpeed={0.012} tilt={0.47} />
-  </>
-);
+      // Planet circle clip
+      ctx.save();
+      ctx.beginPath();
+      ctx.arc(0,0,r,0,Math.PI*2);
+      ctx.clip();
 
-export const SolarSystem = ({ scrollProgress }: SolarSystemProps) => (
-  <Canvas
-    camera={{ position: [0, 3, 30], fov: 55 }}
-    style={{
-      position: 'absolute', top: 0, left: '50%', transform: 'translateX(-50%)',
-      width: '100%', maxWidth: '100vw', height: '100%', overflow: 'hidden'
-    }}
-    gl={{ 
-      antialias: true, 
-      alpha: true, 
-      powerPreference: 'high-performance',
-      precision: 'mediump',
-      stencil: false,
-      depth: true,
-      logarithmicDepthBuffer: false
-    }}
-    dpr={[1, 1]}
-    frameloop="always"
-    performance={{ min: 0.5, max: 1 }}
-  >
-    <SolarSystemScene scrollProgress={scrollProgress} />
-  </Canvas>
-);
+      if (img && img.complete && img.naturalWidth > 0) {
+        // Draw real image
+        ctx.drawImage(img, -r, -r, r*2, r*2);
+        // Subtle dark edge vignette
+        const edge = ctx.createRadialGradient(0,0,r*0.5,0,0,r);
+        edge.addColorStop(0,"transparent");
+        edge.addColorStop(1,"rgba(0,0,0,0.4)");
+        ctx.fillStyle = edge;
+        ctx.beginPath();
+        ctx.arc(0,0,r,0,Math.PI*2);
+        ctx.fill();
+      } else {
+        // Fallback gradient ball
+        const fb = ctx.createRadialGradient(-r*0.3,-r*0.3,r*0.1,0,0,r);
+        fb.addColorStop(0, planet.glowColor + "ff");
+        fb.addColorStop(1, planet.glowColor + "44");
+        ctx.fillStyle = fb;
+        ctx.fillRect(-r,-r,r*2,r*2);
+      }
+      ctx.restore();
 
-export default SolarSystem;
+      // Specular highlight
+      const spec = ctx.createRadialGradient(-r*0.28,-r*0.28,0,-r*0.28,-r*0.28,r*0.6);
+      spec.addColorStop(0,"rgba(255,255,255,0.28)");
+      spec.addColorStop(1,"transparent");
+      ctx.beginPath();
+      ctx.arc(0,0,r,0,Math.PI*2);
+      ctx.fillStyle = spec;
+      ctx.fill();
+
+      // Hover ring
+      if (hovered === planet.id) {
+        ctx.beginPath();
+        ctx.arc(0,0,r+5,0,Math.PI*2);
+        ctx.strokeStyle = planet.glowColor + "dd";
+        ctx.lineWidth = 2;
+        ctx.stroke();
+
+        // Name tag
+        ctx.fillStyle = "#fff";
+        ctx.font = `bold 11px 'Space Mono',monospace`;
+        ctx.textAlign = "center";
+        ctx.shadowColor = "rgba(0,0,0,0.8)";
+        ctx.shadowBlur = 6;
+        ctx.fillText(planet.name, 0, -r - 10);
+        ctx.shadowBlur = 0;
+      }
+
+      ctx.restore();
+    };
+
+    const draw = () => {
+      const W = canvas.offsetWidth;
+      const H = canvas.offsetHeight;
+      ctx.clearRect(0,0,W,H);
+
+      // Smooth tilt
+      state.tiltX += (state.targetTiltX - state.tiltX) * 0.055;
+      state.tiltY += (state.targetTiltY - state.tiltY) * 0.055;
+
+      const cx = W / 2;
+      const cy = H / 2;
+
+      // Tilt affects how squished the ellipses look
+      const tF = 1 + state.tiltX * 0.10;
+      const sX = state.tiltY * 18;
+      const sY = state.tiltX * 10;
+
+      ctx.save();
+      ctx.translate(cx + sX, cy + sY);
+
+      // ── Draw 7 orbital rings ─────────────────────────────────────────────
+      PLANETS.forEach((planet, i) => {
+        const rx = planet.orbitRx;
+        const ry = planet.orbitRy * tF;
+
+        // Orbit glow (very subtle)
+        ctx.beginPath();
+        ctx.ellipse(0,0,rx,ry,0,0,Math.PI*2);
+        ctx.strokeStyle = `rgba(212,175,55,${i === 0 ? 0.25 : 0.15})`;
+        ctx.lineWidth = 0.8;
+        ctx.setLineDash([5,10]);
+        ctx.stroke();
+        ctx.setLineDash([]);
+      });
+
+      // ── Draw Sun ──────────────────────────────────────────────────────────
+      // Corona layers
+      [[90,0.04],[65,0.07],[45,0.13],[30,0.0]].forEach(([r,a]) => {
+        if (a > 0) {
+          const cg = ctx.createRadialGradient(0,0,0,0,0,r);
+          cg.addColorStop(0,`rgba(255,180,0,${a})`);
+          cg.addColorStop(1,"transparent");
+          ctx.beginPath(); ctx.arc(0,0,r,0,Math.PI*2);
+          ctx.fillStyle=cg; ctx.fill();
+        }
+      });
+      // Sun body
+      const sunG = ctx.createRadialGradient(-9,-9,2,0,0,30);
+      sunG.addColorStop(0,"#fff8d0");
+      sunG.addColorStop(0.25,"#ffdd00");
+      sunG.addColorStop(0.6,"#ff9900");
+      sunG.addColorStop(1,"#cc3300");
+      ctx.beginPath(); ctx.arc(0,0,30,0,Math.PI*2);
+      ctx.fillStyle=sunG; ctx.fill();
+      // Sun glint
+      const sg2 = ctx.createRadialGradient(-9,-9,0,-9,-9,16);
+      sg2.addColorStop(0,"rgba(255,255,255,0.35)");
+      sg2.addColorStop(1,"transparent");
+      ctx.beginPath(); ctx.arc(0,0,30,0,Math.PI*2);
+      ctx.fillStyle=sg2; ctx.fill();
+
+      // ── Draw Planets ──────────────────────────────────────────────────────
+      const positions = {};
+      PLANETS.forEach(planet => {
+        state.angles[planet.id] += planet.speed;
+        const angle = state.angles[planet.id];
+        const rx = planet.orbitRx;
+        const ry = planet.orbitRy * tF;
+        const px = Math.cos(angle) * rx;
+        const py = Math.sin(angle) * ry;
+
+        positions[planet.id] = {
+          x: cx + sX + px,
+          y: cy + sY + py,
+          r: planet.size + 8,
+        };
+
+        drawPlanetWithImage(ctx, planet, px, py);
+      });
+
+      ctx.restore();
+      state.positions = positions;
+      state.raf = requestAnimationFrame(draw);
+    };
+
+    state.raf = requestAnimationFrame(draw);
+    return () => {
+      cancelAnimationFrame(state.raf);
+      window.removeEventListener("resize", resize);
+    };
+  }, [hovered]);
+
+  // ── Mouse move ─────────────────────────────────────────────────────────────
+  const onMouseMove = (e) => {
+    const state = stateRef.current;
+    const rect = canvasRef.current.getBoundingClientRect();
+    const mx = (e.clientX - rect.left) / rect.width - 0.5;
+    const my = (e.clientY - rect.top) / rect.height - 0.5;
+    state.targetTiltY = mx * 2.2;
+    state.targetTiltX = my * 2.2;
+
+    // Hit test planets
+    let hit = null;
+    for (const p of PLANETS) {
+      const pos = state.positions[p.id];
+      if (!pos) continue;
+      const dx = e.clientX - rect.left - pos.x;
+      const dy = e.clientY - rect.top - pos.y;
+      if (dx*dx + dy*dy < pos.r * pos.r) { hit = p.id; break; }
+    }
+    setHovered(hit);
+    if (canvasRef.current) canvasRef.current.style.cursor = hit ? "pointer" : "default";
+  };
+
+  const onMouseLeave = () => {
+    stateRef.current.targetTiltX = 0;
+    stateRef.current.targetTiltY = 0;
+    setHovered(null);
+  };
+
+  const onClick = (e) => {
+    const state = stateRef.current;
+    const rect = canvasRef.current.getBoundingClientRect();
+    for (const p of PLANETS) {
+      const pos = state.positions[p.id];
+      if (!pos) continue;
+      const dx = e.clientX - rect.left - pos.x;
+      const dy = e.clientY - rect.top - pos.y;
+      if (dx*dx + dy*dy < pos.r * pos.r) {
+        setSelectedPlanet(p);
+        return;
+      }
+    }
+  };
+
+  return (
+    <>
+      <style>{`
+        @keyframes mfadeIn { from{opacity:0}to{opacity:1} }
+        @keyframes mslideUp { from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:translateY(0)} }
+      `}</style>
+
+      {/* Canvas fills its parent — make sure parent has a dark bg */}
+      <canvas
+        ref={canvasRef}
+        onMouseMove={onMouseMove}
+        onMouseLeave={onMouseLeave}
+        onClick={onClick}
+        style={{ width:"100%", height:"100%", display:"block", background:"transparent" }}
+      />
+
+      {selectedPlanet && (
+        <PlanetModal
+          planet={selectedPlanet}
+          onClose={() => setSelectedPlanet(null)}
+        />
+      )}
+    </>
+  );
+}

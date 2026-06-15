@@ -5,7 +5,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { ArrowRight, Sparkles, Eye, Heart, Briefcase, Calendar, User, Shield, Star, Zap } from "lucide-react";
 import NewsletterForm from "@/components/NewsletterForm";
 import ZodiacWheelSection from "@/components/ZodiacWheelSection";
-import RealisticStarfield from "@/components/three/RealisticStarfield";
+// RealisticStarfield removed to allow global CosmicBackground to show
 
 // Lazy load the 3D scrollytelling hero for better initial load
 const ScrollytellingHero = lazy(() => import("@/components/three/ScrollytellingHero"));
@@ -124,10 +124,7 @@ const Index = () => {
 
   return (
     <div className="relative">
-      {/* Realistic Starfield Background - Fixed across entire page */}
-      <div className="fixed top-0 left-0 w-full h-screen z-0 pointer-events-none">
-        <RealisticStarfield scrollProgress={0} />
-      </div>
+      {/* Global `CosmicBackground` from App is used instead of local RealisticStarfield */}
 
       {/* Content wrapper with z-index above background */}
       <div className="relative z-10">

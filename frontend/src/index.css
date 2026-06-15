@@ -17,24 +17,24 @@
     --popover-foreground: 40 20% 92%;
 
     /* Golden Yellow Accent */
-    --primary: 40 85% 65%;
-    --primary-foreground: 215 25% 6%;
+    --primary: 50 100% 52%;
+    --primary-foreground: 0 0% 100%;
 
-    --secondary: 215 15% 15%;
-    --secondary-foreground: 40 20% 92%;
+    --secondary: 50 100% 62%;
+    --secondary-foreground: 0 0% 100%;
 
     --muted: 215 15% 12%;
-    --muted-foreground: 215 10% 55%;
+    --muted-foreground: 0 0% 92%;
 
-    --accent: 40 85% 65%;
-    --accent-foreground: 215 25% 6%;
+    --accent: 50 100% 65%;
+    --accent-foreground: 0 0% 100%;
 
     --destructive: 0 84% 60%;
-    --destructive-foreground: 40 20% 92%;
+    --destructive-foreground: 0 0% 100%;
 
     --border: 215 15% 18%;
     --input: 215 15% 12%;
-    --ring: 40 85% 65%;
+    --ring: 50 100% 52%;
 
     --radius: 0.75rem;
 
@@ -42,9 +42,9 @@
     --cosmic-dark: 215 30% 5%;
     --cosmic-charcoal: 215 20% 10%;
     --star-white: 40 30% 95%;
-    --gold: 40 85% 65%;
-    --gold-dim: 40 70% 50%;
-    --gold-glow: 40 100% 70%;
+    --gold: 50 100% 52%;
+    --gold-dim: 50 90% 52%;
+    --gold-glow: 50 100% 65%;
 
     /* Gradients */
     --gradient-cosmic: linear-gradient(180deg, hsl(215 30% 5%) 0%, hsl(215 20% 8%) 50%, hsl(215 25% 10%) 100%);
@@ -67,7 +67,9 @@
   }
 
   body {
-    @apply bg-transparent text-foreground antialiased;
+    background: rgb(11, 13, 21);
+    margin: 0;
+    @apply text-foreground antialiased;
     font-family: 'Iceland', sans-serif;
     min-height: 100vh;
   }

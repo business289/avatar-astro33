@@ -22,6 +22,7 @@ import InnerVoiceDashboard from "./pages/InnerVoiceDashboard";
 import InnerVoiceJournal from "./pages/InnerVoiceJournal";
 import InnerVoiceWisdom from "./pages/InnerVoiceWisdom";
 import NotFound from "./pages/NotFound";
+import CosmicBackground from "./components/CosmicBackground";
 
 const queryClient = new QueryClient();
 
@@ -167,6 +168,7 @@ const AnimatedRoutes = () => {
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
+      <CosmicBackground />
       <Toaster />
       <Sonner />
       <BrowserRouter>
