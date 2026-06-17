@@ -46,7 +46,7 @@ export default function CosmicCursor() {
   const constellationActive = useRef(false);
   const constellationTimer  = useRef<ReturnType<typeof setTimeout>|null>(null);
 
-  const [hoverType, setHoverType] = useState<"default"|"button"|"zodiac"|"planet"|"card">("default");
+  const [hoverType, setHoverType] = useState<"default"|"button"|"zodiac"|"planet"|"card"|"input">("default");
   const [zodiacSymbol, setZodiacSymbol] = useState("");
   const [constellationMode, setConstellationMode] = useState(false);
   const [energyLevel, setEnergyLevel] = useState(0);
@@ -355,12 +355,16 @@ export default function CosmicCursor() {
 
       // detect what we're hovering
       const el = e.target as HTMLElement;
+      const isInput = el.closest("input,textarea,select,[contenteditable],[role=searchbox],[role=combobox]");
       const isBtn = el.closest("button,a,[role=button]");
       const isZodiac = el.closest("[data-zodiac]");
       const isPlanet = el.closest("[data-planet]");
       const isCard = el.closest("[data-card],.zodiac-card,.horo-card");
 
-      if (isZodiac) {
+      if (isInput) {
+        setHoverType("input");
+        setZodiacSymbol("");
+      } else if (isZodiac) {
         const sign = (isZodiac as HTMLElement).dataset.zodiac || "";
         setZodiacSymbol(ZODIAC_SYMBOLS[sign.toLowerCase()] || "✨");
         setHoverType("zodiac");
@@ -397,6 +401,7 @@ export default function CosmicCursor() {
   }, [spawnBurst]);
 
   // ─── Cursor sizes by state ────────────────────────────────────────────────
+  const cursorHidden = hoverType === "input";
   const outerSize = hoverType === "button" ? 56 : hoverType === "zodiac" ? 52 : hoverType === "card" ? 48 : 38;
   const innerSize = hoverType === "button" ? 10 : 7;
   const energyBrightness = 1 + (energyLevel / 100) * 0.8;
@@ -405,15 +410,10 @@ export default function CosmicCursor() {
     <>
       <style>{`
         * { cursor: none !important; }
+        input, textarea, select, [contenteditable], [role="searchbox"], [role="combobox"] {
+          cursor: text !important;
+        }
 
-        @keyframes ring-pulse {
-          0%,100% { transform: translate(-50%,-50%) scale(1); opacity:0.85; }
-          50%      { transform: translate(-50%,-50%) scale(1.12); opacity:1; }
-        }
-        @keyframes ring-pulse-btn {
-          0%,100% { transform: translate(-50%,-50%) scale(1); opacity:1; }
-          50%      { transform: translate(-50%,-50%) scale(1.2); opacity:0.9; }
-        }
         @keyframes inner-spin {
           from { transform: translate(-50%,-50%) rotate(0deg); }
           to   { transform: translate(-50%,-50%) rotate(360deg); }
@@ -507,6 +507,7 @@ export default function CosmicCursor() {
         ref={outerRef}
         className="cosmic-outer"
         style={{
+          opacity: cursorHidden ? 0 : 1,
           // @ts-ignore
           "--cur-glow": theme.glow,
           width: outerSize,
@@ -515,23 +516,6 @@ export default function CosmicCursor() {
           marginTop: -outerSize/2,
         } as React.CSSProperties}
       >
-        <div style={{
-          width: "100%", height: "100%",
-          position: "absolute",
-          top: "50%", left: "50%",
-          borderRadius: "50%",
-          border: `2px solid ${theme.ring}`,
-          boxShadow: `0 0 ${8 + energyLevel * 0.15}px ${theme.glow}, inset 0 0 6px ${theme.glow}40`,
-          animation: hoverType === "button"
-            ? "ring-pulse-btn 0.6s ease-in-out infinite"
-            : "ring-pulse 2s ease-in-out infinite",
-          filter: `brightness(${energyBrightness})`,
-          backdropFilter: "blur(1px)",
-          background: hoverType === "zodiac"
-            ? `radial-gradient(circle, ${theme.glow}22 0%, transparent 70%)`
-            : `radial-gradient(circle, ${theme.glow}0A 0%, transparent 70%)`,
-          transition: "width 0.25s cubic-bezier(0.34,1.56,0.64,1), height 0.25s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.2s, background 0.3s",
-        }}/>
 
         {/* Zodiac symbol overlay */}
         {hoverType === "zodiac" && zodiacSymbol && (
@@ -567,6 +551,7 @@ export default function CosmicCursor() {
         ref={innerRef}
         className="cosmic-inner"
         style={{
+          opacity: cursorHidden ? 0 : 1,
           width: innerSize,
           height: innerSize,
           marginLeft: -innerSize/2,

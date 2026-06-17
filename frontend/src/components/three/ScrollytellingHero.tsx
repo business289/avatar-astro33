@@ -1,5 +1,5 @@
-import { useState, useEffect, useRef, memo, Suspense } from "react";
-import { motion } from "framer-motion";
+import React, { useState, useEffect, useRef, memo, Suspense } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { Link } from "react-router-dom";
 import { ArrowRight, ChevronDown } from "lucide-react";
 import gsap from "gsap";
@@ -9,6 +9,49 @@ import { PlanetInfoPanel } from "../PlanetInfoPanel";
 import { Planet, getDailyInfluence, PlanetaryInfluence, ZodiacSign } from "@/data/planetaryData";
 
 gsap.registerPlugin(ScrollTrigger);
+
+class PanelBoundary extends React.Component<
+  { children: React.ReactNode },
+  { crashed: boolean }
+> {
+  constructor(props: { children: React.ReactNode }) {
+    super(props);
+    this.state = { crashed: false };
+  }
+  static getDerivedStateFromError() { return { crashed: true }; }
+  componentDidCatch(err: Error, info: React.ErrorInfo) {
+    console.error("[PlanetInfoPanel crash]", err.message, "\n", info.componentStack);
+  }
+  render() {
+    return this.state.crashed ? null : this.props.children;
+  }
+}
+
+class SceneBoundary extends React.Component<
+  { children: React.ReactNode },
+  { crashed: boolean }
+> {
+  constructor(props: { children: React.ReactNode }) {
+    super(props);
+    this.state = { crashed: false };
+  }
+  static getDerivedStateFromError() { return { crashed: true }; }
+  componentDidCatch(err: Error, info: React.ErrorInfo) {
+    console.error("[SolarSystem crash]", err.message, "\n", info.componentStack);
+  }
+  render() {
+    if (this.state.crashed) {
+      return (
+        <div className="absolute inset-0 flex items-center justify-center">
+          <span className="text-sm text-muted-foreground font-display tracking-wider">
+            Scene unavailable — reload to retry
+          </span>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
 
 const SceneLoader = memo(() => (
   <div className="absolute inset-0 flex items-center justify-center">
@@ -106,15 +149,20 @@ export const ScrollytellingHero = () => {
   return (
     <>
       {/* Glassmorphism info panel — fixed, unaffected by scroll */}
-      {selectedPlanet && dailyInfluence && (
-        <PlanetInfoPanel
-          planet={selectedPlanet}
-          influence={dailyInfluence}
-          isOpen
-          onClose={() => setSelectedPlanet(null)}
-          zodiacSign={userZodiac}
-        />
-      )}
+      <PanelBoundary key={selectedPlanet?.id ?? 'none'}>
+        <AnimatePresence>
+          {selectedPlanet && dailyInfluence && (
+            <PlanetInfoPanel
+              key={selectedPlanet.id}
+              planet={selectedPlanet}
+              influence={dailyInfluence}
+              isOpen
+              onClose={() => setSelectedPlanet(null)}
+              zodiacSign={userZodiac}
+            />
+          )}
+        </AnimatePresence>
+      </PanelBoundary>
 
       {/*
         ── Pinned hero section ──────────────────────────────────────────
@@ -130,12 +178,14 @@ export const ScrollytellingHero = () => {
         {/* ── Full-screen Three.js canvas — absolutely positioned ── */}
         <div className="absolute inset-0 z-0">
           <Suspense fallback={<SceneLoader />}>
-            <InteractiveSolarSystem
-              selectedPlanet={selectedPlanet}
-              onPlanetSelect={setSelectedPlanet}
-              scrollRef={scrollRef}
-              canInteract={canInteract}
-            />
+            <SceneBoundary>
+              <InteractiveSolarSystem
+                selectedPlanet={selectedPlanet}
+                onPlanetSelect={setSelectedPlanet}
+                scrollRef={scrollRef}
+                canInteract={canInteract}
+              />
+            </SceneBoundary>
           </Suspense>
         </div>
 

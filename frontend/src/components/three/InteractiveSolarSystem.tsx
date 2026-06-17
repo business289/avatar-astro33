@@ -13,14 +13,17 @@ const CAM_END_Y   = 6;
 const getVisualSize = (size: number) => Math.cbrt(size) * 0.62;
 
 // ── Planet photo textures (public/textures/) ─────────────────────────────────
-const PLANET_TEXTURES: Record<string, string> = {
+const PLANET_TEXTURE_PATHS = {
   mercury: '/textures/mercury.jpg',
   venus:   '/textures/venus.jpg',
   earth:   '/textures/earth.jpg',
   mars:    '/textures/mars.jpg',
   jupiter: '/textures/jupiter.jpg',
   saturn:  '/textures/saturn.jpg',
-};
+} as const;
+
+// Kick off texture downloads before any component renders
+Object.values(PLANET_TEXTURE_PATHS).forEach(p => useTexture.preload(p));
 
 // ── Per-planet glow palette ──────────────────────────────────────────────────
 const GLOW: Record<string, { core: string; mid: string }> = {
@@ -257,36 +260,13 @@ const Sun = () => {
   );
 };
 
-// ── Planet textured material ──────────────────────────────────────────────────
-// Uses drei useTexture — same pattern as SunCore — so texture is guaranteed
-// to be loaded before the material mounts. Wrapped in Suspense by the caller.
-const PlanetTexturedMaterial = ({
-  planetId,
-  glowCore,
-}: {
-  planetId: string;
-  glowCore: string;
-}) => {
-  const tex = useTexture(PLANET_TEXTURES[planetId]);
-  // Ensure texture encoding is correct for Three.js r152+
-  tex.colorSpace = THREE.SRGBColorSpace;
-  return (
-    <meshPhongMaterial
-      map={tex}
-      color="#ffffff"        // must be white so texture colours show through
-      emissive={glowCore}
-      emissiveIntensity={0.06}  // very low — just enough for a subtle glow
-      shininess={35}
-      transparent
-      opacity={1}
-    />
-  );
-};
-
 // ── Orbital path ──────────────────────────────────────────────────────────────
+const COLOR_GOLD  = new THREE.Color('#FFD700');
+const COLOR_ORBIT = new THREE.Color('#3a4f7a');
+
 const OrbitalRing = ({
-  radius, scrollRef,
-}: { radius: number; scrollRef: React.MutableRefObject<{ progress: number }> }) => {
+  radius, scrollRef, isHighlighted = false,
+}: { radius: number; scrollRef: React.MutableRefObject<{ progress: number }>; isHighlighted?: boolean }) => {
   const matRef = useRef<THREE.LineBasicMaterial>(null);
   const COUNT  = 128;
   const positions = useMemo(() => {
@@ -298,8 +278,10 @@ const OrbitalRing = ({
     return arr;
   }, [radius]);
   useFrame(() => {
-    if (matRef.current)
-      matRef.current.opacity = THREE.MathUtils.lerp(0, 0.22, scrollRef.current.progress);
+    if (!matRef.current) return;
+    const targetOpacity = isHighlighted ? 0.75 : THREE.MathUtils.lerp(0, 0.22, scrollRef.current.progress);
+    matRef.current.color.lerp(isHighlighted ? COLOR_GOLD : COLOR_ORBIT, 0.08);
+    matRef.current.opacity = THREE.MathUtils.lerp(matRef.current.opacity, targetOpacity, 0.08);
   });
   return (
     <line>
@@ -328,6 +310,7 @@ const SaturnRings = () => (
 // ── Planet ────────────────────────────────────────────────────────────────────
 interface PlanetProps {
   planet: Planet;
+  texture: THREE.Texture | null;
   isSelected: boolean;
   anySelected: boolean;
   onSelect: () => void;
@@ -335,7 +318,7 @@ interface PlanetProps {
   scrollRef: React.MutableRefObject<{ progress: number }>;
 }
 const PlanetComponent = ({
-  planet, isSelected, anySelected, onSelect, canInteract, scrollRef,
+  planet, texture, isSelected, anySelected, onSelect, canInteract, scrollRef,
 }: PlanetProps) => {
   const groupRef = useRef<THREE.Group>(null);
   const meshRef  = useRef<THREE.Mesh>(null);
@@ -346,12 +329,17 @@ const PlanetComponent = ({
   const selScale = Math.max(1.6, 1.9 / vs) * vs;
   const glow     = GLOW[planet.id] ?? { core: planet.color, mid: planet.color };
 
+  const spinData       = useRef({ active: false, startTime: 0 });
+  const prevIsSelected = useRef(false);
+  const SPIN_DUR       = 1.4;
+  const glowMidColor   = useMemo(() => new THREE.Color(glow.mid), [glow.mid]);
+
   useEffect(() => {
     if (meshRef.current) meshRef.current.scale.setScalar(vs);
     if (glowRef.current) glowRef.current.scale.setScalar(vs * 1.25);
   }, [vs]);
 
-  useFrame((s) => {
+  useFrame((s, delta) => {
     if (!groupRef.current || !meshRef.current) return;
     const t        = s.clock.elapsedTime;
     const progress = scrollRef.current.progress;
@@ -368,31 +356,50 @@ const PlanetComponent = ({
       );
     }
 
-    // Scale + rotation
+    // Scale
     const ts = isSelected ? selScale : vs;
     meshRef.current.scale.lerp(new THREE.Vector3(ts, ts, ts), 0.04);
-    meshRef.current.rotation.y += 0.003 / Math.max(planet.speed, 0.2);
 
-    // Material opacity (fade out non-selected planets)
+    // Spin: trigger 360° bell-curve spin on selection
+    if (isSelected && !prevIsSelected.current) {
+      spinData.current = { active: true, startTime: t };
+    }
+    prevIsSelected.current = isSelected;
+
+    if (spinData.current.active) {
+      const elapsed = t - spinData.current.startTime;
+      const p       = Math.min(1, elapsed / SPIN_DUR);
+      if (p >= 1) {
+        spinData.current.active = false;
+      } else {
+        const peakRate = (Math.PI * Math.PI) / SPIN_DUR;
+        meshRef.current.rotation.y += peakRate * Math.sin(p * Math.PI) * delta;
+      }
+    } else {
+      meshRef.current.rotation.y += 0.003 / Math.max(planet.speed, 0.2);
+    }
+
+    // Material opacity (dim non-selected planets to 45%)
     const mat = meshRef.current.material as THREE.MeshPhongMaterial;
     if (mat) {
       mat.opacity = THREE.MathUtils.lerp(
-        mat.opacity, anySelected && !isSelected ? 0.18 : 1.0, 0.04,
+        mat.opacity, anySelected && !isSelected ? 0.45 : 1.0, 0.04,
       );
       const p2           = progress * progress;
       const baseEmissive = THREE.MathUtils.lerp(0.06, 0.18, p2);
-      const target       = isSelected ? 0.28 : hovered ? 0.18 : baseEmissive;
+      const target       = isSelected ? 0.32 : hovered ? 0.18 : baseEmissive;
       mat.emissiveIntensity = THREE.MathUtils.lerp(mat.emissiveIntensity, target, 0.07);
     }
 
-    // Glow halo
+    // Glow halo — golden aura when selected
     if (glowRef.current) {
-      const gm  = glowRef.current.material as THREE.MeshBasicMaterial;
-      const p2  = progress * progress;
-      const tOp = isSelected ? 0.52 : hovered ? 0.38 : THREE.MathUtils.lerp(0.22, 0.45, p2);
-      const tGs = isSelected ? selScale * 1.55
-                : hovered   ? vs * 1.42
-                : vs * THREE.MathUtils.lerp(1.1, 1.32, p2);
+      const gm         = glowRef.current.material as THREE.MeshBasicMaterial;
+      const p2         = progress * progress;
+      const tOp        = isSelected ? 0.65 : hovered ? 0.38 : THREE.MathUtils.lerp(0.22, 0.45, p2);
+      const tGs        = isSelected ? selScale * 1.65
+                       : hovered   ? vs * 1.42
+                       : vs * THREE.MathUtils.lerp(1.1, 1.32, p2);
+      gm.color.lerp(isSelected ? COLOR_GOLD : glowMidColor, 0.06);
       gm.opacity = THREE.MathUtils.lerp(gm.opacity, tOp, 0.07);
       glowRef.current.scale.lerp(new THREE.Vector3(tGs, tGs, tGs), 0.05);
     }
@@ -413,13 +420,18 @@ const PlanetComponent = ({
       >
         <sphereGeometry args={[1, 42, 42]} />
 
-        {/*
-          FIX: Use Suspense + PlanetTexturedMaterial (useTexture inside)
-          instead of useEffect/setState. This guarantees the texture is fully
-          loaded before the material mounts — same pattern as SunCore.
-          Fallback is the original coloured sphere shown while loading.
-        */}
-        <Suspense fallback={
+        {/* Material is created with texture already set — no needsUpdate required */}
+        {texture ? (
+          <meshPhongMaterial
+            map={texture}
+            color="#ffffff"
+            emissive={glow.core}
+            emissiveIntensity={0.06}
+            shininess={35}
+            transparent
+            opacity={1}
+          />
+        ) : (
           <meshPhongMaterial
             color={glow.core}
             emissive={glow.core}
@@ -427,11 +439,8 @@ const PlanetComponent = ({
             shininess={30}
             transparent
             opacity={1}
-            
           />
-        }>
-          <PlanetTexturedMaterial planetId={planet.id} glowCore={glow.core} />
-        </Suspense>
+        )}
 
         {planet.id === 'saturn' && <SaturnRings />}
       </mesh>
@@ -466,6 +475,58 @@ const PlanetComponent = ({
   );
 };
 
+// ── Planet texture loader — suspends until all textures are ready ─────────────
+// Same pattern as SunCore: useTexture inside a Suspense, materials created
+// with the texture already set so Three.js compiles the shader correctly.
+interface PlanetGroupProps {
+  selectedPlanet: Planet | null;
+  onPlanetSelect: (planet: Planet | null) => void;
+  scrollRef: React.MutableRefObject<{ progress: number }>;
+  canInteract: boolean;
+}
+const PlanetGroupWithTextures = ({ selectedPlanet, onPlanetSelect, scrollRef, canInteract }: PlanetGroupProps) => {
+  const textures = useTexture(PLANET_TEXTURE_PATHS) as Record<keyof typeof PLANET_TEXTURE_PATHS, THREE.Texture>;
+
+  useMemo(() => {
+    Object.values(textures).forEach(tex => { tex.colorSpace = THREE.SRGBColorSpace; });
+  }, [textures]);
+
+  return (
+    <>
+      {PLANETS.map((p: Planet) => (
+        <PlanetComponent
+          key={p.id}
+          planet={p}
+          texture={textures[p.id as keyof typeof PLANET_TEXTURE_PATHS] ?? null}
+          isSelected={selectedPlanet?.id === p.id}
+          anySelected={selectedPlanet !== null}
+          onSelect={() => onPlanetSelect(selectedPlanet?.id === p.id ? null : p)}
+          canInteract={canInteract}
+          scrollRef={scrollRef}
+        />
+      ))}
+    </>
+  );
+};
+
+// Fallback: render planets with solid colors while textures download
+const PlanetGroupFallback = ({ selectedPlanet, onPlanetSelect, scrollRef, canInteract }: PlanetGroupProps) => (
+  <>
+    {PLANETS.map((p: Planet) => (
+      <PlanetComponent
+        key={p.id}
+        planet={p}
+        texture={null}
+        isSelected={selectedPlanet?.id === p.id}
+        anySelected={selectedPlanet !== null}
+        onSelect={() => onPlanetSelect(selectedPlanet?.id === p.id ? null : p)}
+        canInteract={canInteract}
+        scrollRef={scrollRef}
+      />
+    ))}
+  </>
+);
+
 // ── Main scene ────────────────────────────────────────────────────────────────
 interface SceneProps {
   selectedPlanet: Planet | null;
@@ -488,15 +549,17 @@ const SolarSystemScene = ({ selectedPlanet, onPlanetSelect, scrollRef, canIntera
 
     const tx = sel ? -6         : mouse.x * 3.5 * pStr;
     const ty = sel ?  4         : baseY + mouse.y * 2 * pStr;
-    const tz = sel ? baseZ - 4  : baseZ;
+    const tz = sel ? baseZ - 6  : baseZ;
 
     camera.position.x = THREE.MathUtils.lerp(camera.position.x, tx, 0.028);
     camera.position.y = THREE.MathUtils.lerp(camera.position.y, ty, 0.028);
     camera.position.z = THREE.MathUtils.lerp(camera.position.z, tz, 0.036);
 
     const rotY = Math.sin(Date.now() * 0.00005) * 0.5 * (1 - p);
-    camera.lookAt(sel ? 5 : rotY, 0, 0);
+    camera.lookAt(sel ? 8 : rotY, 0, 0);
   });
+
+  const planetGroupProps: PlanetGroupProps = { selectedPlanet, onPlanetSelect, scrollRef, canInteract };
 
   return (
     <>
@@ -515,21 +578,18 @@ const SolarSystemScene = ({ selectedPlanet, onPlanetSelect, scrollRef, canIntera
 
       <Sun />
 
-      {PLANETS.map(p => (
-        <OrbitalRing key={`orbit-${p.id}`} radius={p.orbitRadius} scrollRef={scrollRef} />
-      ))}
-
-      {PLANETS.map(p => (
-        <PlanetComponent
-          key={p.id}
-          planet={p}
-          isSelected={selectedPlanet?.id === p.id}
-          anySelected={selectedPlanet !== null}
-          onSelect={() => onPlanetSelect(selectedPlanet?.id === p.id ? null : p)}
-          canInteract={canInteract}
+      {PLANETS.map((p: Planet) => (
+        <OrbitalRing
+          key={`orbit-${p.id}`}
+          radius={p.orbitRadius}
           scrollRef={scrollRef}
+          isHighlighted={selectedPlanet?.id === p.id}
         />
       ))}
+
+      <Suspense fallback={<PlanetGroupFallback {...planetGroupProps} />}>
+        <PlanetGroupWithTextures {...planetGroupProps} />
+      </Suspense>
     </>
   );
 };
@@ -558,4 +618,3 @@ export const InteractiveSolarSystem = ({
     />
   </Canvas>
 );
-

@@ -308,6 +308,169 @@ export const getDailyInfluence = (
   };
 };
 
+// ── Rich per-planet detail data ───────────────────────────────────────────────
+export interface PlanetDetail {
+  zodiacPlacement: string;
+  housePlacement: string;
+  strengthScore: number;       // 1–10
+  nature: 'Benefic' | 'Malefic' | 'Neutral';
+  keyTraits: string[];
+  positiveEffects: string[];
+  challengingEffects: string[];
+  careerInfluence: string;
+  relationshipInfluence: string;
+  healthInfluence: string;
+  karmicLessons: string;
+  aiInterpretation: string;
+}
+
+export const PLANET_DETAILS: Record<string, PlanetDetail> = {
+  mercury: {
+    zodiacPlacement: 'Gemini & Virgo',
+    housePlacement: '3rd House (Communication) & 6th House (Service)',
+    strengthScore: 7,
+    nature: 'Neutral',
+    keyTraits: ['Analytical', 'Communicative', 'Adaptable', 'Quick-witted', 'Perceptive'],
+    positiveEffects: [
+      'Sharp intellect and razor-sharp perception',
+      'Eloquent, persuasive communication',
+      'Rapid problem-solving and logical clarity',
+      'Versatility that allows mastery of many skills',
+    ],
+    challengingEffects: [
+      'Overthinking that leads to mental paralysis',
+      'Anxiety and nervous restlessness',
+      'Scattered focus — too many ideas, too little follow-through',
+      'Tendency toward indecision and second-guessing',
+    ],
+    careerInfluence: 'Mercury empowers careers in journalism, writing, technology, education, trading, and all forms of communication. Your mind is your greatest asset — wield it boldly.',
+    relationshipInfluence: 'You seek intellectual equal partnerships where words flow freely. Stimulating conversation is your love language. A meeting of minds ignites your deepest connections.',
+    healthInfluence: 'Mercury governs the nervous system, lungs, hands, and cognitive function. Mental rest, breathwork, and regular grounding practices keep your quicksilver energy balanced.',
+    karmicLessons: 'Express your deepest truths with compassion and precision. Learn that silence is also a form of wisdom. Master the art of listening as deeply as you speak.',
+    aiInterpretation: 'Mercury, planet of mind and message, sharpens your perception to a cosmic edge today. Your words carry the power to heal, inspire, and transform. Choose them as a sculptor chooses each stroke — with intention and mastery. The universe is listening to every thought you broadcast.',
+  },
+  venus: {
+    zodiacPlacement: 'Taurus & Libra',
+    housePlacement: '2nd House (Values & Wealth) & 7th House (Partnerships)',
+    strengthScore: 9,
+    nature: 'Benefic',
+    keyTraits: ['Loving', 'Artistic', 'Harmonious', 'Magnetic', 'Sensual'],
+    positiveEffects: [
+      'Irresistible magnetic charm that attracts love and abundance',
+      'Artistic brilliance and refined aesthetic sense',
+      'Social grace that creates harmony everywhere you go',
+      'Deep capacity for unconditional love and devotion',
+    ],
+    challengingEffects: [
+      'Vanity and excessive focus on outward appearances',
+      'Over-indulgence in pleasure, comfort, and luxury',
+      'Conflict avoidance that allows problems to fester',
+      'Emotional dependency and fear of being unloved',
+    ],
+    careerInfluence: 'Venus opens doors in art, music, luxury goods, fashion, diplomacy, beauty, and entertainment. Your refined taste and people skills make you a natural in fields where beauty and connection create value.',
+    relationshipInfluence: 'Venus deepens romantic bonds and calls you to create lasting partnerships through beauty and mutual growth. You thrive in relationships where both partners elevate each other spiritually and emotionally.',
+    healthInfluence: 'Venus rules the kidneys, skin, throat, hormonal balance, and venous system. Nurture these through hydration, natural beauty rituals, and environments that feel aesthetically peaceful.',
+    karmicLessons: 'Discover that true beauty radiates from the soul, not the surface. Learn that love begins as a relationship with yourself before it can flourish with another.',
+    aiInterpretation: 'Venus, cosmic goddess of love and divine beauty, wraps your entire day in golden light today. The universe is arranging encounters, opportunities, and moments of grace in your favor. Open your heart fully — what you radiate from within, you shall attract without. Let beauty be your compass and love be your north star.',
+  },
+  earth: {
+    zodiacPlacement: 'Taurus & Capricorn (Earth Element)',
+    housePlacement: '1st House (Self & Identity) & 4th House (Home & Roots)',
+    strengthScore: 10,
+    nature: 'Neutral',
+    keyTraits: ['Grounded', 'Stable', 'Nurturing', 'Practical', 'Enduring'],
+    positiveEffects: [
+      'Unparalleled manifestation power in the physical realm',
+      'Deep connection to nature and natural cycles',
+      'Steadfast presence that others rely on completely',
+      'Material mastery — the ability to build lasting legacies',
+    ],
+    challengingEffects: [
+      'Stubbornness that resists necessary evolution',
+      'Over-attachment to material possessions and security',
+      'Resistance to spiritual growth in favor of the tangible',
+      'Difficulty embracing uncertainty and the unknown',
+    ],
+    careerInfluence: 'Earth energy thrives in environmental work, agriculture, architecture, real estate, healing arts, and any field that transforms raw material into lasting structures of beauty and function.',
+    relationshipInfluence: 'Earth provides the foundation every relationship needs — unwavering stability, deep warmth, and loyalty that endures all seasons. You love through acts of service and presence.',
+    healthInfluence: 'Earth governs the skeletal system, muscles, digestive health, and overall physical vitality. Time in nature, barefoot grounding, and whole foods align you with Earth\'s healing frequency.',
+    karmicLessons: 'Walk between worlds — honor the sacred physical while never forgetting your divine origin. Master the art of manifestation: turning spirit into matter, and matter back into spirit.',
+    aiInterpretation: 'Earth, your cosmic home and sacred ground, anchors your spirit in the miracle of physical existence today. Feel the intelligence of the living planet beneath you — it holds your history, your healing, and your highest potential. Today, let the Earth remind you: you are not separate from nature. You ARE nature, expressing itself consciously.',
+  },
+  mars: {
+    zodiacPlacement: 'Aries & Scorpio',
+    housePlacement: '1st House (Self & Action) & 8th House (Transformation)',
+    strengthScore: 7,
+    nature: 'Malefic',
+    keyTraits: ['Bold', 'Courageous', 'Passionate', 'Driven', 'Transformative'],
+    positiveEffects: [
+      'Unstoppable drive that achieves what others deem impossible',
+      'Fearless leadership that inspires others to rise',
+      'Passionate devotion that protects what truly matters',
+      'Transformative power to rise from adversity stronger',
+    ],
+    challengingEffects: [
+      'Uncontrolled anger that damages relationships and opportunities',
+      'Reckless impulsiveness that bypasses wisdom',
+      'Tendency toward unnecessary conflict and power struggles',
+      'Burn-out from pushing physical and emotional limits too far',
+    ],
+    careerInfluence: 'Mars fuels success in entrepreneurship, sports, military leadership, surgery, emergency services, engineering, and any arena demanding courage, decisiveness, and raw competitive energy.',
+    relationshipInfluence: 'Mars creates passionate, intensely devoted partnerships charged with electricity and depth. You protect what you love with fierce loyalty. However, learning emotional regulation is essential for harmony.',
+    healthInfluence: 'Mars rules blood, muscles, the adrenal glands, and inflammatory processes in the body. Channel this fiery energy through disciplined physical training, and honor the body\'s need for recovery.',
+    karmicLessons: 'Transform the warrior\'s aggression into the hero\'s compassionate courage. Learn that the greatest battles are fought within — and the greatest victories are choosing love over ego.',
+    aiInterpretation: 'Mars, the cosmic warrior and planet of divine courage, activates your deepest source of power today. This is your day to act with bold intention. The universe does not reward the hesitant — it rewards the brave. Channel every ounce of this fierce energy toward your highest purpose, and watch the cosmos clear every obstacle in your path.',
+  },
+  jupiter: {
+    zodiacPlacement: 'Sagittarius & Pisces',
+    housePlacement: '9th House (Wisdom & Travel) & 12th House (Spirituality)',
+    strengthScore: 10,
+    nature: 'Benefic',
+    keyTraits: ['Expansive', 'Optimistic', 'Wise', 'Generous', 'Visionary'],
+    positiveEffects: [
+      'Extraordinary luck that bends reality in your favor',
+      'Deep philosophical wisdom earned through experience',
+      'Abundance consciousness that attracts wealth and opportunity',
+      'Spiritual insight that guides others toward their highest path',
+    ],
+    challengingEffects: [
+      'Overconfidence and excessive optimism without grounded planning',
+      'Over-indulgence in all pleasures — excess in every form',
+      'Scattered focus from too many simultaneous opportunities',
+      'Unrealistic expectations that lead to eventual disappointment',
+    ],
+    careerInfluence: 'Jupiter opens paths in law, philosophy, higher education, publishing, spirituality, international trade, and any field where wisdom, vision, and expansion create extraordinary value.',
+    relationshipInfluence: 'Jupiter brings boundless joy, spiritual depth, and shared visions of growth to relationships. Your partnerships often feel fated — soulmate connections that expand both individuals beyond known limits.',
+    healthInfluence: 'Jupiter governs the liver, hips, thighs, blood sugar regulation, and the immune system. Conscious moderation — especially in diet and lifestyle — is Jupiter\'s greatest health teaching.',
+    karmicLessons: 'Expand beyond every limitation you have inherited. Become a teacher of possibility — show others that the universe\'s abundance is not earned through struggle, but through alignment.',
+    aiInterpretation: 'Jupiter, the great benefactor and cosmic expander of destinies, pours unlimited blessings upon your path today. Every door you approach is already opening. Every seed you plant today contains a forest of potential. This is a day to say YES to expansion, YES to abundance, and YES to the extraordinary life you were born to live. The universe is conspiring entirely in your favor.',
+  },
+  saturn: {
+    zodiacPlacement: 'Capricorn & Aquarius',
+    housePlacement: '10th House (Career & Legacy) & 11th House (Community & Vision)',
+    strengthScore: 8,
+    nature: 'Malefic',
+    keyTraits: ['Disciplined', 'Structured', 'Patient', 'Karmic', 'Authoritative'],
+    positiveEffects: [
+      'Mastery and excellence built through patient, persistent effort',
+      'Enduring success that withstands the test of time',
+      'Profound wisdom earned through overcoming adversity',
+      'Karmic rewards that arrive precisely when most needed',
+    ],
+    challengingEffects: [
+      'Painful delays and restrictions that test faith in the process',
+      'Heavy responsibilities that feel isolating and overwhelming',
+      'Deep-seated fear of failure, scarcity, and inadequacy',
+      'Pessimism and rigidity that blocks necessary flow and change',
+    ],
+    careerInfluence: 'Saturn builds legendary careers in government, law, corporate leadership, architecture, banking, and traditional industries. Your rise may be slower than others — but it will be higher and more enduring.',
+    relationshipInfluence: 'Saturn calls you toward serious, committed partnerships built on trust, mutual responsibility, and shared growth. These relationships may start slowly but they build into unbreakable bonds across lifetimes.',
+    healthInfluence: 'Saturn governs bones, teeth, joints, skin, and the body\'s structural integrity. Regular discipline — consistent sleep, disciplined nutrition, and skeletal care — honors Saturn\'s domain.',
+    karmicLessons: 'Time is the cosmic currency. What you build with integrity and patience shall outlast everything built with shortcuts. Embrace responsibility not as a burden, but as the sacred architecture of your destiny.',
+    aiInterpretation: 'Saturn, the cosmic architect of destiny and keeper of karmic accounts, calls you to rise today to the absolute height of your potential. Every restriction you encounter is a custom-designed curriculum preparing you for your greatest chapter. Do not rush what needs time to become great. Your patience today is tomorrow\'s mastery. The cosmos rewards every disciplined effort with timeless, irreversible success.',
+  },
+};
+
 // Get zodiac sign from birth date
 export const getZodiacSign = (date: Date): ZodiacSign => {
   const month = date.getMonth() + 1;

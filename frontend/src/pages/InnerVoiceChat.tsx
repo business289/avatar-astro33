@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
+import VoiceConsultation from "../components/VoiceConsultation";
 
 const fl = document.createElement("link"); fl.rel = "stylesheet";
 fl.href = "https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Inter:wght@300;400;500;600&family=Space+Mono:wght@400;700&display=swap";
@@ -1242,6 +1243,7 @@ export default function InnerVoiceChat(){
 
           <div className="ivc-tabs">
             <div className={`ivc-tab${activeTab==="consultation"?" active":""}`} onClick={()=>setActiveTab("consultation")}>💬 Consultation Mode</div>
+            <div className={`ivc-tab${activeTab==="voice"?" active":""}`} onClick={()=>setActiveTab("voice")}>🎤 Voice Consultation</div>
             <div className={`ivc-tab${activeTab==="report"?" active":""}`} onClick={()=>{
               setActiveTab("report");
               // Auto-generate if we have messages but no report yet
@@ -1302,6 +1304,10 @@ export default function InnerVoiceChat(){
                 <div className="ivc-inp-hint">Enter to send · Shift+Enter for new line · 🎙️ for voice</div>
               </div>
             </>
+          )}
+
+          {activeTab==="voice"&&(
+            <VoiceConsultation />
           )}
 
           {activeTab==="report"&&(
