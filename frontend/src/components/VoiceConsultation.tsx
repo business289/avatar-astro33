@@ -75,28 +75,31 @@ function transliterateToRoman(text: string): string {
 let _cachedMaleVoice: SpeechSynthesisVoice | null | undefined = undefined;
 
 function getPreferredMaleVoice(): SpeechSynthesisVoice | null {
-  if (_cachedMaleVoice !== undefined) return _cachedMaleVoice;
+  // Only cache a positive hit — never cache null so we always retry on empty list
+  if (_cachedMaleVoice) return _cachedMaleVoice;
   if (typeof window === "undefined" || !window.speechSynthesis) return null;
   const voices = window.speechSynthesis.getVoices();
   if (!voices.length) return null;
 
-  const name = (v: SpeechSynthesisVoice) => v.name.toLowerCase();
+  const n = (v: SpeechSynthesisVoice) => v.name.toLowerCase();
   const isFemale = (v: SpeechSynthesisVoice) =>
-    name(v).includes("female") || name(v).includes("woman") ||
-    name(v).includes("zira") || name(v).includes("heera") ||
-    name(v).includes("lekha");
+    n(v).includes("female") || n(v).includes("woman") ||
+    n(v).includes("zira")   || n(v).includes("heera") ||
+    n(v).includes("lekha")  || n(v).includes("priya") ||
+    n(v).includes("veena")  || n(v).includes("kanya");
 
   const pick =
-    voices.find((v) => name(v).includes("ravi")) ||
-    voices.find((v) => v.lang === "hi-IN" && !isFemale(v)) ||
-    voices.find((v) => v.lang.startsWith("hi") && !isFemale(v)) ||
-    voices.find((v) => v.lang === "en-IN" && !isFemale(v)) ||
-    voices.find((v) => v.lang === "hi-IN") ||
-    voices.find((v) => v.lang.startsWith("hi")) ||
-    voices.find((v) => v.lang === "en-IN") ||
+    voices.find((v) => n(v).includes("ravi"))                         ||
+    voices.find((v) => n(v).includes("google")  && v.lang === "hi-IN" && !isFemale(v)) ||
+    voices.find((v) => v.lang === "hi-IN"        && !isFemale(v))     ||
+    voices.find((v) => v.lang.startsWith("hi")   && !isFemale(v))     ||
+    voices.find((v) => v.lang === "en-IN"        && !isFemale(v))     ||
+    voices.find((v) => v.lang === "en-IN")        ||
+    voices.find((v) => v.lang === "hi-IN")        ||
+    voices.find((v) => v.lang.startsWith("hi"))   ||
     null;
 
-  _cachedMaleVoice = pick;
+  if (pick) _cachedMaleVoice = pick; // only store a real voice
   return pick;
 }
 
@@ -165,25 +168,26 @@ const VC_CSS = `
 .vc-msg-pandit .vc-msg-text{background:#14141c;border:1px solid rgba(255,255,255,.08);border-radius:4px 14px 14px 14px;color:#e8e8e8;}
 .vc-msg-user .vc-msg-text{background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.13);border-radius:14px 14px 4px 14px;color:#fff;}
 /* ── Audio Player ── */
-.vc-audio-card{background:rgba(8,8,16,.9);border:1px solid rgba(251,113,133,.18);border-radius:12px;overflow:hidden;}
-.vc-audio-wave{display:flex;gap:2px;align-items:center;height:44px;padding:6px 14px;background:rgba(251,113,133,.04);}
-.vc-wave-bar{flex:1;background:rgba(251,113,133,.28);border-radius:2px;transform:scaleY(0.3);transform-origin:center;}
-.vc-wave-bar.vc-wave-on{animation:vc-wv .7s ease-in-out infinite;background:rgba(251,113,133,.8);}
-@keyframes vc-wv{0%,100%{transform:scaleY(0.25);}50%{transform:scaleY(1);}}
-.vc-audio-prog-row{display:flex;align-items:center;gap:8px;padding:4px 14px 2px;}
-.vc-audio-time{font-size:10px;color:rgba(255,255,255,.38);font-family:'Space Mono',monospace;min-width:32px;}
-.vc-audio-track{flex:1;height:3px;background:rgba(255,255,255,.1);border-radius:2px;position:relative;cursor:pointer;}
+.vc-audio-card{background:rgba(18,12,28,1);border:1.5px solid rgba(251,113,133,.55);border-radius:12px;overflow:hidden;margin-top:2px;}
+.vc-audio-wave{display:flex;gap:2px;align-items:center;height:46px;padding:6px 14px;background:rgba(251,113,133,.08);}
+.vc-wave-bar{flex:1;background:rgba(251,113,133,.4);border-radius:2px;transform:scaleY(0.3);transform-origin:center;}
+.vc-wave-bar.vc-wave-on{animation:vc-wv .7s ease-in-out infinite;background:#fb7185;}
+@keyframes vc-wv{0%,100%{transform:scaleY(0.2);}50%{transform:scaleY(1);}}
+.vc-audio-prog-row{display:flex;align-items:center;gap:8px;padding:6px 14px 4px;}
+.vc-audio-time{font-size:11px;color:rgba(255,255,255,.6);font-family:'Space Mono',monospace;min-width:34px;}
+.vc-audio-track{flex:1;height:4px;background:rgba(255,255,255,.15);border-radius:2px;position:relative;cursor:pointer;}
 .vc-audio-fill{height:100%;background:linear-gradient(90deg,#fb7185,#D4AF37);border-radius:2px;position:relative;transition:width .1s linear;}
-.vc-audio-thumb{width:9px;height:9px;background:#fb7185;border-radius:50%;position:absolute;right:-4px;top:-3px;box-shadow:0 0 6px rgba(251,113,133,.7);}
-.vc-audio-btns{display:flex;gap:5px;padding:8px 12px 10px;flex-wrap:wrap;}
-.vc-ab{display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:6px;font-size:11px;cursor:pointer;transition:all .18s;font-family:'Inter',sans-serif;border:1px solid;white-space:nowrap;}
-.vc-ab-play{background:rgba(251,113,133,.12);border-color:rgba(251,113,133,.28);color:#fda4af;}
-.vc-ab-play:hover{background:rgba(251,113,133,.22);}
-.vc-ab-pause{background:rgba(251,113,133,.12);border-color:rgba(251,113,133,.28);color:#fda4af;}
-.vc-ab-stop{background:rgba(255,255,255,.05);border-color:rgba(255,255,255,.1);color:rgba(255,255,255,.55);}
-.vc-ab-stop:hover{background:rgba(255,255,255,.1);}
-.vc-ab-replay{background:rgba(212,175,55,.08);border-color:rgba(212,175,55,.22);color:rgba(212,175,55,.8);}
-.vc-ab-replay:hover{background:rgba(212,175,55,.18);}
+.vc-audio-thumb{width:10px;height:10px;background:#fb7185;border-radius:50%;position:absolute;right:-5px;top:-3px;box-shadow:0 0 8px rgba(251,113,133,.9);}
+.vc-audio-btns{display:flex;gap:6px;padding:8px 12px 12px;flex-wrap:wrap;}
+.vc-ab{display:inline-flex;align-items:center;gap:5px;padding:6px 13px;border-radius:7px;font-size:12px;font-weight:500;cursor:pointer;transition:all .18s;font-family:'Inter',sans-serif;border:1.5px solid;white-space:nowrap;}
+.vc-ab-play{background:rgba(251,113,133,.2);border-color:rgba(251,113,133,.6);color:#ff8fab;}
+.vc-ab-play:hover{background:rgba(251,113,133,.35);}
+.vc-ab-pause{background:rgba(251,113,133,.2);border-color:rgba(251,113,133,.6);color:#ff8fab;}
+.vc-ab-pause:hover{background:rgba(251,113,133,.35);}
+.vc-ab-stop{background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.25);color:rgba(255,255,255,.8);}
+.vc-ab-stop:hover{background:rgba(255,255,255,.2);}
+.vc-ab-replay{background:rgba(212,175,55,.15);border-color:rgba(212,175,55,.5);color:#D4AF37;}
+.vc-ab-replay:hover{background:rgba(212,175,55,.28);}
 /* ── Mic area ── */
 .vc-mic-area{flex-shrink:0;padding:18px 24px 26px;display:flex;flex-direction:column;align-items:center;gap:11px;border-top:1px solid rgba(255,255,255,.06);background:rgba(8,8,14,.8);}
 .vc-mic-ring{width:88px;height:88px;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;position:relative;user-select:none;transition:background .3s,border-color .3s,box-shadow .3s;}
@@ -275,44 +279,72 @@ export default function VoiceConsultation() {
     if (audioTimerRef.current) { clearInterval(audioTimerRef.current); audioTimerRef.current = null; }
   }, []);
 
+  const mutedRef = useRef(tts.muted);
+  useEffect(() => { mutedRef.current = tts.muted; }, [tts.muted]);
+
   const speakWithControls = useCallback((idx: number, text: string, ttsLang: string, onDone?: () => void) => {
     clearAudioTimer();
-    tts.stop();
+    window.speechSynthesis?.cancel(); // stop anything playing
 
-    // Select preferred male voice
-    const voice = getPreferredMaleVoice();
     const dur = estimateDuration(text);
     audioPausedElapsedRef.current = 0;
     audioStartRef.current = Date.now();
-
     setAudio({ playingIdx: idx, paused: false, progress: 0, elapsed: 0, duration: dur });
 
-    audioTimerRef.current = setInterval(() => {
-      const elapsed = audioPausedElapsedRef.current + (Date.now() - audioStartRef.current) / 1000;
-      setAudio((a) => ({ ...a, elapsed, progress: Math.min((elapsed / dur) * 100, 99) }));
-    }, 80);
-
-    // Speak — inject preferred voice via the utterance override
-    if (typeof window !== "undefined" && window.speechSynthesis) {
-      window.speechSynthesis.cancel();
-      const utt = new SpeechSynthesisUtterance(text);
-      utt.lang = ttsLang;
-      utt.rate = 0.86;
-      utt.pitch = 0.90;
-      if (voice) utt.voice = voice;
-      utt.onend = () => {
-        clearAudioTimer();
+    // If muted, advance UI state instantly without speaking
+    if (mutedRef.current) {
+      setTimeout(() => {
         setAudio((a) => ({ ...a, playingIdx: null, paused: false, progress: 100, elapsed: dur }));
         onDone?.();
-      };
-      utt.onerror = () => {
-        clearAudioTimer();
-        setAudio((a) => ({ ...a, playingIdx: null, paused: false }));
-        onDone?.();
-      };
-      window.speechSynthesis.speak(utt);
+      }, 300);
+      return;
     }
-  }, [tts, clearAudioTimer]);
+
+    audioTimerRef.current = setInterval(() => {
+      const el = audioPausedElapsedRef.current + (Date.now() - audioStartRef.current) / 1000;
+      setAudio((a) => ({ ...a, elapsed: el, progress: Math.min((el / dur) * 100, 99) }));
+    }, 80);
+
+    if (typeof window !== "undefined" && window.speechSynthesis) {
+      // Try to get male voice; if voices not loaded yet, retry once after a short delay
+      let voice = getPreferredMaleVoice();
+      const speak = (v: SpeechSynthesisVoice | null) => {
+        const utt = new SpeechSynthesisUtterance(text);
+        utt.lang  = ttsLang;
+        utt.rate  = 0.82;  // measured, wise pace
+        utt.pitch = 0.72;  // deep masculine tone regardless of which voice is used
+        if (v) utt.voice = v;
+        utt.onend = () => {
+          clearAudioTimer();
+          setAudio((a) => ({ ...a, playingIdx: null, paused: false, progress: 100, elapsed: dur }));
+          onDone?.();
+        };
+        utt.onerror = () => {
+          clearAudioTimer();
+          setAudio((a) => ({ ...a, playingIdx: null, paused: false }));
+          onDone?.();
+        };
+        window.speechSynthesis.speak(utt);
+      };
+
+      if (!voice) {
+        // Voices not loaded yet — wait for them once
+        const retry = () => {
+          window.speechSynthesis.removeEventListener("voiceschanged", retry);
+          voice = getPreferredMaleVoice();
+          speak(voice);
+        };
+        window.speechSynthesis.addEventListener("voiceschanged", retry);
+        // Fallback: speak anyway after 400ms even if event never fires
+        setTimeout(() => {
+          window.speechSynthesis.removeEventListener("voiceschanged", retry);
+          if (!window.speechSynthesis.speaking) speak(getPreferredMaleVoice());
+        }, 400);
+      } else {
+        speak(voice);
+      }
+    }
+  }, [clearAudioTimer]);
 
   const pauseAudio = useCallback(() => {
     window.speechSynthesis?.pause();
@@ -412,7 +444,8 @@ export default function VoiceConsultation() {
       if (abortRef.current) return;
       const data = await res.json();
       if (data.error) throw new Error(data.error.message);
-      const reply = (data.choices?.[0]?.message?.content || "").trim();
+      // Always convert to Roman — guards against Llama responding in Devanagari despite the prompt
+      const reply = transliterateToRoman((data.choices?.[0]?.message?.content || "").trim());
       if (!reply) throw new Error("Empty response");
       const replyLang = detectLanguage(reply);
       const replyTtsLang = getTTSLang(replyLang);
