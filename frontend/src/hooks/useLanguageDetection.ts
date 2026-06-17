@@ -1,5 +1,7 @@
 export type Language = "hindi" | "hinglish" | "english";
 
+// Common Hindi words that appear in Roman-script (Hinglish) text.
+// Since recognition is now en-IN, these will always be in Roman letters.
 const HINGLISH_MARKERS = [
   "mujhe","mera","meri","mere","main","mai","aap","apna","apni",
   "hoon","hun","hai","hain","tha","thi","the","ho","hoga","hogi",
@@ -8,12 +10,14 @@ const HINGLISH_MARKERS = [
   "pe","se","ko","ka","ki","ke","bhi","sochna","lagta","lagti",
   "bahut","bilkul","zaroor","thoda","zyada","sirf","abhi","pehle",
   "baad","phir","agar","isliye","aisa","waisa","jab","tab","yeh",
-  "woh","kuch","sab","haan","theek","sahi","galat","accha","bura",
+  "woh","kuch","sab","haan","theek","sahi","galat","achha","bura",
   "boht","naukri","paisa","rishta","vivah","parivar","swasthya",
-  "tension","ghar","pyaar","shaadi","dost","zindagi","duniya","log",
-  "baat","kaam","problem","samasya","mushkil","rasta","ummeed",
-  "dukh","sukh","takleef","pareshan","khushi","mann","dil","darr",
-  "gussa","nafrat","akela","safalta","sapna","sochta","sochti",
+  "ghar","pyaar","shaadi","dost","zindagi","duniya","baat","kaam",
+  "problem","pareshan","mushkil","ummeed","dukh","sukh","takleef",
+  "darr","gussa","dil","khushi","chinta","safalta","sapna","mann",
+  "karma","dharm","ishwar","bhagwan","puja","mantra","jeevan",
+  "karun","karu","batao","samajh","sochta","sochti","lagta","rehna",
+  "pandit","ji","mujhse","aapse","unse","inse","unka","unki",
 ];
 
 function containsDevanagari(text: string): boolean {
@@ -22,19 +26,17 @@ function containsDevanagari(text: string): boolean {
 
 function containsHinglish(text: string): boolean {
   const lower = text.toLowerCase();
-  const words = lower.split(/[\s,।?!.]+/);
+  // Tokenize on spaces and common punctuation
+  const words = lower.split(/[\s,।?!.;:'"()\-]+/).filter(Boolean);
   return HINGLISH_MARKERS.some(
-    (marker) =>
-      words.includes(marker) ||
-      lower.includes(` ${marker} `) ||
-      lower.startsWith(`${marker} `) ||
-      lower.endsWith(` ${marker}`)
+    (m) => words.includes(m) || lower.includes(` ${m} `)
   );
 }
 
 export function useLanguageDetection() {
   const detectLanguage = (text: string): Language => {
-    if (!text || !text.trim()) return "english";
+    if (!text?.trim()) return "english";
+    // Devanagari check kept as fallback (e.g. Pandit Ji's reply might be in Hindi)
     if (containsDevanagari(text)) return "hindi";
     if (containsHinglish(text)) return "hinglish";
     return "english";

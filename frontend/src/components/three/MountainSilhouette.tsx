@@ -109,7 +109,7 @@ export const MountainSilhouette = ({ scrollProgress }: MountainSilhouetteProps) 
           strokeWidth="1"
           opacity="0.2"
         />
-        
+         
         {/* Glowing stars/lights on peaks */}
         <g filter="url(#peakGlow)">
           <circle cx="260" cy="288" r="3" fill="#f5c36a" opacity="0.9" />
