@@ -1,20 +1,21 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { useSpeechRecognition } from "../hooks/useSpeechRecognition";
 import { useTextToSpeech } from "../hooks/useTextToSpeech";
-import { useLanguageDetection } from "../hooks/useLanguageDetection";
+import { useLanguageDetection, type Language } from "../hooks/useLanguageDetection";
 import { useConsultationGuard } from "../hooks/useConsultationGuard";
 
 // ── API ──────────────────────────────────────────────────────────────────────
 const GROQ_API_KEY = import.meta.env.VITE_GROQ_API_KEY;
 const GROQ_URL = "https://api.groq.com/openai/v1/chat/completions";
 
-// Future-upgrade hook: swap provider to use ElevenLabs / OpenAI TTS / Google TTS
-// without touching the UI — just change TTS_PROVIDER and implement the adapter below.
-export const TTS_PROVIDER = "browser"; // "browser" | "elevenlabs" | "openai" | "google"
+// ElevenLabs — set VITE_ELEVENLABS_API_KEY in .env to activate.
+// To use "Pandit Rameshwar Ji" voice: create it on ElevenLabs dashboard,
+// then set VITE_ELEVENLABS_VOICE_ID to that voice's ID.
+const EL_KEY = import.meta.env.VITE_ELEVENLABS_API_KEY as string | undefined;
+const EL_VOICE = (import.meta.env.VITE_ELEVENLABS_VOICE_ID as string) || "pNInz6obpgDQGcFmaJgB"; // Adam (deep male)
+export const TTS_PROVIDER: "elevenlabs" | "browser" = EL_KEY ? "elevenlabs" : "browser";
 
 // ── Transliteration ──────────────────────────────────────────────────────────
-// Safety net: if speech recognition still returns Devanagari, convert to Roman.
-// Primary fix is using lang="en-IN" for recognition which prevents Devanagari output.
 const DEVA_WORDS: Record<string, string> = {
   "मुझे":"mujhe","मेरा":"mera","मेरी":"meri","मेरे":"mere","मैं":"main",
   "आप":"aap","हूं":"hoon","हूँ":"hoon","है":"hai","हैं":"hain",
@@ -37,7 +38,6 @@ const DEVA_WORDS: Record<string, string> = {
   "जीवन":"jeevan","आध्यात्म":"adhyatm","कर्म":"karma","मन":"mann",
   "धर्म":"dharm","ईश्वर":"ishwar",
 };
-
 const DEVA_CHARS: Record<string, string> = {
   "क":"k","ख":"kh","ग":"g","घ":"gh","ङ":"ng",
   "च":"ch","छ":"chh","ज":"j","झ":"jh","ञ":"ny",
@@ -55,55 +55,107 @@ const DEVA_CHARS: Record<string, string> = {
   "०":"0","१":"1","२":"2","३":"3","४":"4",
   "५":"5","६":"6","७":"7","८":"8","९":"9",
 };
-
 function transliterateToRoman(text: string): string {
   if (!/[ऀ-ॿ]/.test(text)) return text;
   let result = text;
-  // Word-level replacements first (more accurate)
-  for (const [key, val] of Object.entries(DEVA_WORDS)) {
+  for (const [key, val] of Object.entries(DEVA_WORDS))
     result = result.replace(new RegExp(key, "g"), val);
-  }
-  // Character-level fallback for remaining Devanagari
-  result = result.replace(/[ऀ-ॿ]+/g, (match) =>
-    match.split("").map((c) => DEVA_CHARS[c] ?? "").join("")
+  result = result.replace(/[ऀ-ॿ]+/g, (m) =>
+    m.split("").map((c) => DEVA_CHARS[c] ?? "").join("")
   );
   return result.replace(/\s{2,}/g, " ").trim();
 }
 
-// ── Male Voice Selection ─────────────────────────────────────────────────────
-// Priority: Microsoft Ravi → Google हिन्दी male → en-IN male → any hi-IN → null
+// ── Male Voice (browser fallback) ─────────────────────────────────────────────
 let _cachedMaleVoice: SpeechSynthesisVoice | null | undefined = undefined;
-
 function getPreferredMaleVoice(): SpeechSynthesisVoice | null {
-  // Only cache a positive hit — never cache null so we always retry on empty list
   if (_cachedMaleVoice) return _cachedMaleVoice;
   if (typeof window === "undefined" || !window.speechSynthesis) return null;
   const voices = window.speechSynthesis.getVoices();
   if (!voices.length) return null;
-
   const n = (v: SpeechSynthesisVoice) => v.name.toLowerCase();
   const isFemale = (v: SpeechSynthesisVoice) =>
-    n(v).includes("female") || n(v).includes("woman") ||
-    n(v).includes("zira")   || n(v).includes("heera") ||
-    n(v).includes("lekha")  || n(v).includes("priya") ||
-    n(v).includes("veena")  || n(v).includes("kanya");
-
+    n(v).includes("female") || n(v).includes("woman") || n(v).includes("zira") ||
+    n(v).includes("heera") || n(v).includes("lekha") || n(v).includes("priya") ||
+    n(v).includes("veena") || n(v).includes("kanya");
   const pick =
-    voices.find((v) => n(v).includes("ravi"))                         ||
-    voices.find((v) => n(v).includes("google")  && v.lang === "hi-IN" && !isFemale(v)) ||
-    voices.find((v) => v.lang === "hi-IN"        && !isFemale(v))     ||
-    voices.find((v) => v.lang.startsWith("hi")   && !isFemale(v))     ||
-    voices.find((v) => v.lang === "en-IN"        && !isFemale(v))     ||
-    voices.find((v) => v.lang === "en-IN")        ||
-    voices.find((v) => v.lang === "hi-IN")        ||
-    voices.find((v) => v.lang.startsWith("hi"))   ||
+    voices.find((v) => n(v).includes("ravi")) ||
+    voices.find((v) => n(v).includes("google") && v.lang === "hi-IN" && !isFemale(v)) ||
+    voices.find((v) => v.lang === "hi-IN" && !isFemale(v)) ||
+    voices.find((v) => v.lang.startsWith("hi") && !isFemale(v)) ||
+    voices.find((v) => v.lang === "en-IN" && !isFemale(v)) ||
+    voices.find((v) => v.lang === "en-IN") ||
+    voices.find((v) => v.lang === "hi-IN") ||
     null;
-
-  if (pick) _cachedMaleVoice = pick; // only store a real voice
+  if (pick) _cachedMaleVoice = pick;
   return pick;
 }
 
-// ── System Prompt ────────────────────────────────────────────────────────────
+// ── ElevenLabs TTS ────────────────────────────────────────────────────────────
+let _elAudio: HTMLAudioElement | null = null;
+
+async function speakElevenLabs(
+  text: string,
+  onTimeUpdate: (current: number, total: number) => void,
+  onEnd: () => void
+): Promise<"ok" | "fallback"> {
+  if (!EL_KEY) return "fallback";
+  try {
+    const res = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${EL_VOICE}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "xi-api-key": EL_KEY },
+      body: JSON.stringify({
+        text,
+        model_id: "eleven_multilingual_v2",
+        voice_settings: { stability: 0.65, similarity_boost: 0.75, style: 0.45, use_speaker_boost: true },
+      }),
+    });
+    if (!res.ok) return "fallback";
+    const blob = await res.blob();
+    const url = URL.createObjectURL(blob);
+    if (_elAudio) { _elAudio.pause(); _elAudio = null; }
+    const audio = new Audio(url);
+    _elAudio = audio;
+    audio.ontimeupdate = () => onTimeUpdate(audio.currentTime, audio.duration || 1);
+    audio.onended = () => { URL.revokeObjectURL(url); _elAudio = null; onEnd(); };
+    audio.onerror = () => { URL.revokeObjectURL(url); _elAudio = null; onEnd(); };
+    await audio.play();
+    return "ok";
+  } catch {
+    return "fallback";
+  }
+}
+
+// ── Translation helper ────────────────────────────────────────────────────────
+async function translateText(text: string, targetLang: Language): Promise<string> {
+  const instruction =
+    targetLang === "english"
+      ? "Translate the following to natural Indian English. Preserve the spiritual, warm, compassionate tone. Output ONLY the translation, no explanation."
+      : targetLang === "hindi"
+      ? "Translate the following to natural Hindi written entirely in Roman letters — absolutely NO Devanagari script. Preserve the spiritual tone. Output ONLY the translation."
+      : "Translate the following to natural Hinglish — Hindi words in Roman letters mixed with English, as spoken in urban India. Preserve the spiritual tone. Output ONLY the translation.";
+  try {
+    const res = await fetch(GROQ_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${GROQ_API_KEY}` },
+      body: JSON.stringify({
+        model: "llama-3.3-70b-versatile",
+        temperature: 0.3,
+        max_tokens: 400,
+        messages: [
+          { role: "system", content: instruction },
+          { role: "user", content: text },
+        ],
+      }),
+    });
+    const data = await res.json();
+    return transliterateToRoman((data.choices?.[0]?.message?.content || "").trim()) || text;
+  } catch {
+    return text;
+  }
+}
+
+// ── System Prompt ─────────────────────────────────────────────────────────────
 const VOICE_SYSTEM_PROMPT = `You are Pandit Rameshwar Ji, a deeply compassionate spiritual guide with 40 years of Jyotish experience. A seeker is speaking to you and your words will be read aloud.
 
 You ONLY discuss: career, job, business, relationships, marriage, family, health, finances, stress, anxiety, spirituality, karma, life purpose, emotional struggles, inner peace, future guidance. Politely refuse every other topic.
@@ -126,21 +178,25 @@ RULES:
 - Never say you are artificial, a bot, or a program
 - You are Pandit Rameshwar Ji — a warm, wise human spiritual guide`;
 
-// ── Types ────────────────────────────────────────────────────────────────────
+// ── Types ─────────────────────────────────────────────────────────────────────
 type MicState = "idle" | "listening" | "processing" | "speaking" | "error";
 
 interface ConvEntry {
   role: "user" | "pandit";
-  text: string;
-  ttsLang: string;
+  text: string;          // original text in detectedLang
+  ttsLang: string;       // TTS lang for original
+  detectedLang: Language;
+  translations: Partial<Record<Language, string>>; // translation cache
+  displayLang: Language; // language shown in text bubble
+  audioLang: Language;   // language used for playback
 }
 
 interface AudioState {
   playingIdx: number | null;
   paused: boolean;
-  progress: number;   // 0–100
-  elapsed: number;    // seconds
-  duration: number;   // seconds (estimated)
+  progress: number;
+  elapsed: number;
+  duration: number;
 }
 
 // ── CSS ───────────────────────────────────────────────────────────────────────
@@ -151,7 +207,7 @@ const VC_CSS = `
 .vc-ctrl-btn{display:flex;align-items:center;gap:5px;padding:5px 11px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:7px;color:rgba(255,255,255,.6);font-size:12px;cursor:pointer;transition:all .2s;font-family:'Inter',sans-serif;white-space:nowrap;}
 .vc-ctrl-btn:hover{background:rgba(255,255,255,.1);color:#fff;}
 .vc-ctrl-btn.vc-muted{background:rgba(251,113,133,.08);border-color:rgba(251,113,133,.22);color:#fda4af;}
-.vc-history{flex:1;overflow-y:auto;padding:22px 26px;display:flex;flex-direction:column;gap:16px;}
+.vc-history{flex:1;overflow-y:auto;padding:22px 16px;display:flex;flex-direction:column;gap:16px;}
 .vc-history::-webkit-scrollbar{width:3px;}
 .vc-history::-webkit-scrollbar-thumb{background:rgba(255,255,255,.1);border-radius:2px;}
 .vc-welcome{text-align:center;padding:44px 24px 24px;max-width:480px;margin:auto;}
@@ -163,32 +219,38 @@ const VC_CSS = `
 .vc-msg-av{width:32px;height:32px;min-width:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:15px;margin-top:2px;flex-shrink:0;}
 .vc-msg-pandit .vc-msg-av{background:linear-gradient(135deg,rgba(139,92,246,.45),rgba(212,175,55,.2));border:1.5px solid rgba(212,175,55,.3);}
 .vc-msg-user .vc-msg-av{background:rgba(255,255,255,.1);border:1.5px solid rgba(255,255,255,.14);}
-.vc-msg-body{max-width:82%;display:flex;flex-direction:column;gap:8px;}
+.vc-msg-body{max-width:85%;display:flex;flex-direction:column;gap:6px;}
 .vc-msg-text{font-size:15px;line-height:1.78;padding:12px 16px;}
 .vc-msg-pandit .vc-msg-text{background:#14141c;border:1px solid rgba(255,255,255,.08);border-radius:4px 14px 14px 14px;color:#e8e8e8;}
 .vc-msg-user .vc-msg-text{background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.13);border-radius:14px 14px 4px 14px;color:#fff;}
-/* ── Audio Player ── */
+/* Language dropdown row */
+.vc-lang-row{display:flex;align-items:center;gap:7px;padding:2px 2px;}
+.vc-lang-label{font-size:11px;color:rgba(255,255,255,.38);font-family:'Space Mono',monospace;white-space:nowrap;}
+.vc-lang-select{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.16);border-radius:6px;color:rgba(255,255,255,.8);font-size:12px;padding:4px 8px;cursor:pointer;outline:none;max-width:120px;}
+.vc-lang-select:focus{border-color:rgba(212,175,55,.5);}
+.vc-lang-loading{font-size:11px;color:rgba(212,175,55,.55);font-style:italic;}
+/* Audio card */
 .vc-audio-card{background:rgba(18,12,28,1);border:1.5px solid rgba(251,113,133,.55);border-radius:12px;overflow:hidden;margin-top:2px;}
-.vc-audio-wave{display:flex;gap:2px;align-items:center;height:46px;padding:6px 14px;background:rgba(251,113,133,.08);}
+.vc-audio-lang-row{display:flex;align-items:center;gap:7px;padding:8px 14px 6px;border-bottom:1px solid rgba(255,255,255,.06);}
+.vc-audio-wave{display:flex;gap:2px;align-items:center;height:40px;padding:4px 14px;background:rgba(251,113,133,.07);}
 .vc-wave-bar{flex:1;background:rgba(251,113,133,.4);border-radius:2px;transform:scaleY(0.3);transform-origin:center;}
 .vc-wave-bar.vc-wave-on{animation:vc-wv .7s ease-in-out infinite;background:#fb7185;}
 @keyframes vc-wv{0%,100%{transform:scaleY(0.2);}50%{transform:scaleY(1);}}
 .vc-audio-prog-row{display:flex;align-items:center;gap:8px;padding:6px 14px 4px;}
 .vc-audio-time{font-size:11px;color:rgba(255,255,255,.6);font-family:'Space Mono',monospace;min-width:34px;}
-.vc-audio-track{flex:1;height:4px;background:rgba(255,255,255,.15);border-radius:2px;position:relative;cursor:pointer;}
+.vc-audio-track{flex:1;height:4px;background:rgba(255,255,255,.15);border-radius:2px;position:relative;}
 .vc-audio-fill{height:100%;background:linear-gradient(90deg,#fb7185,#D4AF37);border-radius:2px;position:relative;transition:width .1s linear;}
 .vc-audio-thumb{width:10px;height:10px;background:#fb7185;border-radius:50%;position:absolute;right:-5px;top:-3px;box-shadow:0 0 8px rgba(251,113,133,.9);}
-.vc-audio-btns{display:flex;gap:6px;padding:8px 12px 12px;flex-wrap:wrap;}
+.vc-audio-btns{display:flex;gap:6px;padding:8px 12px 10px;flex-wrap:wrap;}
 .vc-ab{display:inline-flex;align-items:center;gap:5px;padding:6px 13px;border-radius:7px;font-size:12px;font-weight:500;cursor:pointer;transition:all .18s;font-family:'Inter',sans-serif;border:1.5px solid;white-space:nowrap;}
 .vc-ab-play{background:rgba(251,113,133,.2);border-color:rgba(251,113,133,.6);color:#ff8fab;}
 .vc-ab-play:hover{background:rgba(251,113,133,.35);}
 .vc-ab-pause{background:rgba(251,113,133,.2);border-color:rgba(251,113,133,.6);color:#ff8fab;}
-.vc-ab-pause:hover{background:rgba(251,113,133,.35);}
 .vc-ab-stop{background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.25);color:rgba(255,255,255,.8);}
 .vc-ab-stop:hover{background:rgba(255,255,255,.2);}
 .vc-ab-replay{background:rgba(212,175,55,.15);border-color:rgba(212,175,55,.5);color:#D4AF37;}
 .vc-ab-replay:hover{background:rgba(212,175,55,.28);}
-/* ── Mic area ── */
+/* Mic area */
 .vc-mic-area{flex-shrink:0;padding:18px 24px 26px;display:flex;flex-direction:column;align-items:center;gap:11px;border-top:1px solid rgba(255,255,255,.06);background:rgba(8,8,14,.8);}
 .vc-mic-ring{width:88px;height:88px;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;position:relative;user-select:none;transition:background .3s,border-color .3s,box-shadow .3s;}
 .vc-mic-ring:not(.vc-mic-processing):active{transform:scale(.94);}
@@ -214,7 +276,6 @@ const VC_CSS = `
 @keyframes vc-sb{0%,100%{transform:scaleY(.3);opacity:.45;}50%{transform:scaleY(1);opacity:1;}}
 `;
 
-// Bar heights for waveform (static random-ish pattern that looks natural)
 const WAVE_HEIGHTS = [
   0.35,0.55,0.80,0.65,0.90,0.50,1.00,0.70,0.45,0.85,
   0.60,0.95,0.40,0.75,0.55,0.88,0.45,0.70,0.60,0.38,
@@ -222,36 +283,37 @@ const WAVE_HEIGHTS = [
 
 function fmtSec(s: number) {
   const m = Math.floor(s / 60);
-  return `${String(m).padStart(2, "0")}:${String(Math.floor(s % 60)).padStart(2, "0")}`;
+  return `${String(m).padStart(2,"0")}:${String(Math.floor(s%60)).padStart(2,"0")}`;
 }
-
 function estimateDuration(text: string) {
-  // ~130 words/min for slow speech; avg word ~5 chars
-  return Math.max((text.replace(/\s+/g, " ").length / 5) / (130 / 60), 2);
+  return Math.max((text.replace(/\s+/g," ").length / 5) / (130 / 60), 2);
 }
 
 // ── Component ─────────────────────────────────────────────────────────────────
 export default function VoiceConsultation() {
-  const [micState, setMicState] = useState<MicState>("idle");
-  const [transcript, setTranscript] = useState("");
+  const [micState, setMicState]       = useState<MicState>("idle");
+  const [transcript, setTranscript]   = useState("");
   const [conversation, setConversation] = useState<ConvEntry[]>([]);
-  const [errorMsg, setErrorMsg] = useState("");
-  const [audio, setAudio] = useState<AudioState>({
+  const [errorMsg, setErrorMsg]       = useState("");
+  const [audio, setAudio]             = useState<AudioState>({
     playingIdx: null, paused: false, progress: 0, elapsed: 0, duration: 0,
   });
+  const [translating, setTranslating] = useState<Record<string, boolean>>({});
 
-  const transcriptRef = useRef("");
-  const abortRef = useRef(false);
-  const historyRef = useRef<HTMLDivElement>(null);
-  const audioTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
-  const audioStartRef = useRef(0);
-  const audioPausedElapsedRef = useRef(0);
+  const transcriptRef  = useRef("");
+  const abortRef       = useRef(false);
+  const historyRef     = useRef<HTMLDivElement>(null);
+  const audioTimerRef  = useRef<ReturnType<typeof setInterval> | null>(null);
+  const audioStartRef  = useRef(0);
+  const audioPauseElRef = useRef(0);
+  const convRef        = useRef(conversation);
+  useEffect(() => { convRef.current = conversation; }, [conversation]);
 
   const tts = useTextToSpeech();
   const { detectLanguage, getTTSLang } = useLanguageDetection();
   const { isAllowedTopic, getRejectionMessage } = useConsultationGuard();
 
-  // Voices load asynchronously in Chrome — reset cache when they arrive
+  // Reset voice cache when browser loads new voices
   useEffect(() => {
     const onVoicesChanged = () => { _cachedMaleVoice = undefined; };
     window.speechSynthesis?.addEventListener("voiceschanged", onVoicesChanged);
@@ -274,7 +336,7 @@ export default function VoiceConsultation() {
     historyRef.current?.scrollTo({ top: historyRef.current.scrollHeight, behavior: "smooth" });
   }, [conversation]);
 
-  // ── Audio helpers ────────────────────────────────────────────────────────────
+  // ── Audio helpers ─────────────────────────────────────────────────────────
   const clearAudioTimer = useCallback(() => {
     if (audioTimerRef.current) { clearInterval(audioTimerRef.current); audioTimerRef.current = null; }
   }, []);
@@ -282,16 +344,18 @@ export default function VoiceConsultation() {
   const mutedRef = useRef(tts.muted);
   useEffect(() => { mutedRef.current = tts.muted; }, [tts.muted]);
 
-  const speakWithControls = useCallback((idx: number, text: string, ttsLang: string, onDone?: () => void) => {
+  const speakWithControls = useCallback((
+    idx: number, text: string, ttsLang: string, onDone?: () => void
+  ) => {
     clearAudioTimer();
-    window.speechSynthesis?.cancel(); // stop anything playing
+    if (_elAudio) { _elAudio.pause(); _elAudio = null; }
+    window.speechSynthesis?.cancel();
 
     const dur = estimateDuration(text);
-    audioPausedElapsedRef.current = 0;
+    audioPauseElRef.current = 0;
     audioStartRef.current = Date.now();
     setAudio({ playingIdx: idx, paused: false, progress: 0, elapsed: 0, duration: dur });
 
-    // If muted, advance UI state instantly without speaking
     if (mutedRef.current) {
       setTimeout(() => {
         setAudio((a) => ({ ...a, playingIdx: null, paused: false, progress: 100, elapsed: dur }));
@@ -300,84 +364,152 @@ export default function VoiceConsultation() {
       return;
     }
 
-    audioTimerRef.current = setInterval(() => {
-      const el = audioPausedElapsedRef.current + (Date.now() - audioStartRef.current) / 1000;
-      setAudio((a) => ({ ...a, elapsed: el, progress: Math.min((el / dur) * 100, 99) }));
-    }, 80);
+    // ── ElevenLabs path ──────────────────────────────────────────────────────
+    if (TTS_PROVIDER === "elevenlabs") {
+      speakElevenLabs(
+        text,
+        (current, total) => {
+          setAudio((a) => ({
+            ...a, elapsed: current,
+            progress: Math.min((current / total) * 100, 99),
+            duration: total,
+          }));
+        },
+        () => {
+          clearAudioTimer();
+          setAudio((a) => ({ ...a, playingIdx: null, paused: false, progress: 100 }));
+          onDone?.();
+        }
+      ).then((result) => {
+        if (result === "fallback") speakBrowser(idx, text, ttsLang, dur, onDone);
+      });
+      return;
+    }
 
-    if (typeof window !== "undefined" && window.speechSynthesis) {
-      // Try to get male voice; if voices not loaded yet, retry once after a short delay
-      let voice = getPreferredMaleVoice();
-      const speak = (v: SpeechSynthesisVoice | null) => {
-        const utt = new SpeechSynthesisUtterance(text);
-        utt.lang  = ttsLang;
-        utt.rate  = 0.82;  // measured, wise pace
-        utt.pitch = 0.72;  // deep masculine tone regardless of which voice is used
-        if (v) utt.voice = v;
+    // ── Browser path ─────────────────────────────────────────────────────────
+    speakBrowser(idx, text, ttsLang, dur, onDone);
+
+    function speakBrowser(
+      _idx: number, _text: string, _ttsLang: string, _dur: number, _onDone?: () => void
+    ) {
+      if (typeof window === "undefined" || !window.speechSynthesis) return;
+
+      audioTimerRef.current = setInterval(() => {
+        const el = audioPauseElRef.current + (Date.now() - audioStartRef.current) / 1000;
+        setAudio((a) => ({ ...a, elapsed: el, progress: Math.min((el / _dur) * 100, 99) }));
+      }, 80);
+
+      const doSpeak = (voice: SpeechSynthesisVoice | null) => {
+        const utt = new SpeechSynthesisUtterance(_text);
+        utt.lang  = _ttsLang;
+        utt.rate  = 0.82;
+        utt.pitch = 0.72;
+        if (voice) utt.voice = voice;
         utt.onend = () => {
           clearAudioTimer();
-          setAudio((a) => ({ ...a, playingIdx: null, paused: false, progress: 100, elapsed: dur }));
-          onDone?.();
+          setAudio((a) => ({ ...a, playingIdx: null, paused: false, progress: 100, elapsed: _dur }));
+          _onDone?.();
         };
         utt.onerror = () => {
           clearAudioTimer();
           setAudio((a) => ({ ...a, playingIdx: null, paused: false }));
-          onDone?.();
+          _onDone?.();
         };
         window.speechSynthesis.speak(utt);
       };
 
+      let voice = getPreferredMaleVoice();
       if (!voice) {
-        // Voices not loaded yet — wait for them once
         const retry = () => {
           window.speechSynthesis.removeEventListener("voiceschanged", retry);
-          voice = getPreferredMaleVoice();
-          speak(voice);
+          doSpeak(getPreferredMaleVoice());
         };
         window.speechSynthesis.addEventListener("voiceschanged", retry);
-        // Fallback: speak anyway after 400ms even if event never fires
         setTimeout(() => {
           window.speechSynthesis.removeEventListener("voiceschanged", retry);
-          if (!window.speechSynthesis.speaking) speak(getPreferredMaleVoice());
+          if (!window.speechSynthesis.speaking) doSpeak(getPreferredMaleVoice());
         }, 400);
       } else {
-        speak(voice);
+        doSpeak(voice);
       }
     }
   }, [clearAudioTimer]);
 
   const pauseAudio = useCallback(() => {
-    window.speechSynthesis?.pause();
+    if (_elAudio && !_elAudio.paused) _elAudio.pause();
+    else window.speechSynthesis?.pause();
     clearAudioTimer();
-    audioPausedElapsedRef.current += (Date.now() - audioStartRef.current) / 1000;
+    audioPauseElRef.current += (Date.now() - audioStartRef.current) / 1000;
     setAudio((a) => ({ ...a, paused: true }));
   }, [clearAudioTimer]);
 
   const resumeAudio = useCallback((idx: number, text: string, ttsLang: string) => {
-    if (window.speechSynthesis?.paused) {
-      window.speechSynthesis.resume();
+    if (_elAudio && _elAudio.paused) {
+      _elAudio.play();
       audioStartRef.current = Date.now();
-      const dur = audio.duration;
+      const dur = _elAudio.duration || estimateDuration(text);
       audioTimerRef.current = setInterval(() => {
-        const elapsed = audioPausedElapsedRef.current + (Date.now() - audioStartRef.current) / 1000;
-        setAudio((a) => ({ ...a, elapsed, progress: Math.min((elapsed / dur) * 100, 99) }));
+        const el = _elAudio ? _elAudio.currentTime : 0;
+        setAudio((a) => ({ ...a, elapsed: el, progress: Math.min((el / dur) * 100, 99) }));
       }, 80);
       setAudio((a) => ({ ...a, paused: false }));
+    } else if (window.speechSynthesis?.paused) {
+      window.speechSynthesis.resume();
+      audioStartRef.current = Date.now();
+      setAudio((a) => {
+        const dur = a.duration;
+        audioTimerRef.current = setInterval(() => {
+          const el = audioPauseElRef.current + (Date.now() - audioStartRef.current) / 1000;
+          setAudio((aa) => ({ ...aa, elapsed: el, progress: Math.min((el / dur) * 100, 99) }));
+        }, 80);
+        return { ...a, paused: false };
+      });
     } else {
-      // Some browsers don't support resume — replay instead
       speakWithControls(idx, text, ttsLang);
     }
-  }, [audio.duration, speakWithControls]);
+  }, [speakWithControls]);
 
   const stopAudio = useCallback(() => {
+    if (_elAudio) { _elAudio.pause(); _elAudio = null; }
     window.speechSynthesis?.cancel();
     clearAudioTimer();
-    audioPausedElapsedRef.current = 0;
+    audioPauseElRef.current = 0;
     setAudio({ playingIdx: null, paused: false, progress: 0, elapsed: 0, duration: 0 });
   }, [clearAudioTimer]);
 
-  // ── Speech Recognition ────────────────────────────────────────────────────────
-  // lang: "en-IN" ensures browser returns Roman-script output (not Devanagari).
+  // ── Language switching ────────────────────────────────────────────────────
+  const handleDisplayLangChange = useCallback(async (idx: number, lang: Language) => {
+    const entry = convRef.current[idx];
+    if (!entry) return;
+    // Already cached or it's the original
+    if (lang === entry.detectedLang || entry.translations[lang]) {
+      setConversation((c) => c.map((e, i) => i === idx ? { ...e, displayLang: lang } : e));
+      return;
+    }
+    setTranslating((t) => ({ ...t, [`${idx}-display`]: true }));
+    const translated = await translateText(entry.text, lang);
+    setConversation((c) => c.map((e, i) =>
+      i === idx ? { ...e, displayLang: lang, translations: { ...e.translations, [lang]: translated } } : e
+    ));
+    setTranslating((t) => { const n = { ...t }; delete n[`${idx}-display`]; return n; });
+  }, []);
+
+  const handleAudioLangChange = useCallback(async (idx: number, lang: Language) => {
+    const entry = convRef.current[idx];
+    if (!entry) return;
+    if (lang === entry.detectedLang || entry.translations[lang]) {
+      setConversation((c) => c.map((e, i) => i === idx ? { ...e, audioLang: lang } : e));
+      return;
+    }
+    setTranslating((t) => ({ ...t, [`${idx}-audio`]: true }));
+    const translated = await translateText(entry.text, lang);
+    setConversation((c) => c.map((e, i) =>
+      i === idx ? { ...e, audioLang: lang, translations: { ...e.translations, [lang]: translated } } : e
+    ));
+    setTranslating((t) => { const n = { ...t }; delete n[`${idx}-audio`]; return n; });
+  }, []);
+
+  // ── Speech recognition ─────────────────────────────────────────────────────
   const { start, stop, supported } = useSpeechRecognition({
     lang: "en-IN",
     onResult: (text) => {
@@ -402,21 +534,32 @@ export default function VoiceConsultation() {
     },
   });
 
-  // ── Main conversation handler ────────────────────────────────────────────────
+  // ── Main handler ──────────────────────────────────────────────────────────
   async function processUserSpeech(text: string) {
     if (abortRef.current) return;
-
     const lang = detectLanguage(text);
     const ttsLang = getTTSLang(lang);
-    const updatedConv: ConvEntry[] = [...conversation, { role: "user", text, ttsLang }];
+    const userEntry: ConvEntry = {
+      role: "user", text, ttsLang,
+      detectedLang: lang,
+      translations: { [lang]: text },
+      displayLang: lang,
+      audioLang: lang,
+    };
+    const updatedConv = [...convRef.current, userEntry];
     setConversation(updatedConv);
 
-    // Topic guard
     if (!isAllowedTopic(text)) {
       const rejection = getRejectionMessage(lang);
       if (abortRef.current) return;
       const newIdx = updatedConv.length;
-      setConversation((c) => [...c, { role: "pandit", text: rejection, ttsLang }]);
+      const pandEntry: ConvEntry = {
+        role: "pandit", text: rejection, ttsLang,
+        detectedLang: lang,
+        translations: { [lang]: rejection },
+        displayLang: lang, audioLang: lang,
+      };
+      setConversation((c) => [...c, pandEntry]);
       setMicState("speaking");
       speakWithControls(newIdx, rejection, ttsLang, () => {
         if (!abortRef.current) setMicState("idle");
@@ -425,7 +568,6 @@ export default function VoiceConsultation() {
     }
 
     setMicState("processing");
-
     try {
       const history = updatedConv.map((e) => ({
         role: e.role === "user" ? ("user" as const) : ("assistant" as const),
@@ -444,13 +586,18 @@ export default function VoiceConsultation() {
       if (abortRef.current) return;
       const data = await res.json();
       if (data.error) throw new Error(data.error.message);
-      // Always convert to Roman — guards against Llama responding in Devanagari despite the prompt
       const reply = transliterateToRoman((data.choices?.[0]?.message?.content || "").trim());
       if (!reply) throw new Error("Empty response");
       const replyLang = detectLanguage(reply);
       const replyTtsLang = getTTSLang(replyLang);
       const newIdx = updatedConv.length;
-      setConversation((c) => [...c, { role: "pandit", text: reply, ttsLang: replyTtsLang }]);
+      const pandEntry: ConvEntry = {
+        role: "pandit", text: reply, ttsLang: replyTtsLang,
+        detectedLang: replyLang,
+        translations: { [replyLang]: reply },
+        displayLang: replyLang, audioLang: replyLang,
+      };
+      setConversation((c) => [...c, pandEntry]);
       setMicState("speaking");
       speakWithControls(newIdx, reply, replyTtsLang, () => {
         if (!abortRef.current) setMicState("idle");
@@ -459,7 +606,13 @@ export default function VoiceConsultation() {
       if (abortRef.current) return;
       const fallback = "Kshama karein, kuch technical samasya aayi hai. Kripaya thodi der baad dobara prayaas karein.";
       const newIdx = updatedConv.length;
-      setConversation((c) => [...c, { role: "pandit", text: fallback, ttsLang: "hi-IN" }]);
+      const pandEntry: ConvEntry = {
+        role: "pandit", text: fallback, ttsLang: "hi-IN",
+        detectedLang: "hinglish",
+        translations: { hinglish: fallback },
+        displayLang: "hinglish", audioLang: "hinglish",
+      };
+      setConversation((c) => [...c, pandEntry]);
       setMicState("speaking");
       speakWithControls(newIdx, fallback, "hi-IN", () => {
         if (!abortRef.current) setMicState("idle");
@@ -467,7 +620,7 @@ export default function VoiceConsultation() {
     }
   }
 
-  // ── Mic controls ─────────────────────────────────────────────────────────────
+  // ── Mic controls ──────────────────────────────────────────────────────────
   const handleMicClick = () => {
     if (!supported) {
       setErrorMsg("Speech recognition requires Chrome or Edge browser.");
@@ -498,7 +651,7 @@ export default function VoiceConsultation() {
     setTimeout(() => { abortRef.current = false; }, 60);
   };
 
-  // ── Derived display values ────────────────────────────────────────────────────
+  // ── Display ───────────────────────────────────────────────────────────────
   const MIC_ICONS: Record<MicState, string> = {
     idle: "🎤", listening: "🔴", processing: "🔮", speaking: "🕉️", error: "⚠️",
   };
@@ -507,35 +660,33 @@ export default function VoiceConsultation() {
     processing: "#c4b5fd", speaking: "#6EE7F9", error: "#f87171",
   };
   const micLabel =
-    micState === "error" ? (errorMsg || "⚠️ Please try again") :
-    micState === "idle" ? "🎤 Tap to Speak" :
-    micState === "listening" ? "🌟 I am listening..." :
+    micState === "error"      ? (errorMsg || "⚠️ Please try again") :
+    micState === "idle"       ? "🎤 Tap to Speak" :
+    micState === "listening"  ? "🌟 I am listening..." :
     micState === "processing" ? "🔮 Understanding your situation..." :
     "🕉️ Pandit Ji is speaking...";
 
   const WELCOME = "🕉️ Namaste.\n\nPlease share what troubles your heart — whether it is career, relationships, health, finances, or spiritual matters — and I will listen carefully.\n\nYou may speak in Hindi, English, or Hinglish.";
 
-  // ── Render ─────────────────────────────────────────────────────────────────
+  // ── Render ────────────────────────────────────────────────────────────────
   return (
     <div className="vc-root">
-      {/* Top controls */}
       <div className="vc-topbar">
         <span className="vc-topbar-title">Voice Session</span>
         <button className={`vc-ctrl-btn${tts.muted ? " vc-muted" : ""}`} onClick={tts.toggleMute}>
           {tts.muted ? "🔇 Unmute" : "🔊 Voice On"}
         </button>
         {micState === "listening" && (
-          <button className="vc-ctrl-btn" onClick={() => stop()}>⏹ Stop Listening</button>
+          <button className="vc-ctrl-btn" onClick={() => stop()}>⏹ Stop</button>
         )}
         {micState === "speaking" && (
-          <button className="vc-ctrl-btn" onClick={() => { stopAudio(); setMicState("idle"); }}>⏹ Stop Speaking</button>
+          <button className="vc-ctrl-btn" onClick={() => { stopAudio(); setMicState("idle"); }}>⏹ Stop</button>
         )}
         {conversation.length > 0 && (
-          <button className="vc-ctrl-btn" onClick={newSession}>🔄 New Consultation</button>
+          <button className="vc-ctrl-btn" onClick={newSession}>🔄 New</button>
         )}
       </div>
 
-      {/* Conversation history */}
       <div className="vc-history" ref={historyRef}>
         {conversation.length === 0 ? (
           <div className="vc-welcome">
@@ -543,31 +694,58 @@ export default function VoiceConsultation() {
             <div className="vc-welcome-text">{WELCOME}</div>
           </div>
         ) : (
-          conversation.map((entry, i) => (
-            <div key={i} className={`vc-msg vc-msg-${entry.role}`}>
-              <div className="vc-msg-av">{entry.role === "user" ? "🙏" : "🧘"}</div>
-              <div className="vc-msg-body">
-                <div className="vc-msg-text">{entry.text}</div>
-                {/* Audio player for every Pandit Ji response */}
-                {entry.role === "pandit" && (
-                  <AudioPlayer
-                    idx={i}
-                    text={entry.text}
-                    audio={audio}
-                    onPlay={() => speakWithControls(i, entry.text, entry.ttsLang)}
-                    onPause={pauseAudio}
-                    onResume={() => resumeAudio(i, entry.text, entry.ttsLang)}
-                    onStop={stopAudio}
-                    onReplay={() => speakWithControls(i, entry.text, entry.ttsLang)}
-                  />
-                )}
+          conversation.map((entry, i) => {
+            const displayText = entry.role === "pandit"
+              ? (entry.translations[entry.displayLang] ?? entry.text)
+              : entry.text;
+            return (
+              <div key={i} className={`vc-msg vc-msg-${entry.role}`}>
+                <div className="vc-msg-av">{entry.role === "user" ? "🙏" : "🧘"}</div>
+                <div className="vc-msg-body">
+                  <div className="vc-msg-text">{displayText}</div>
+
+                  {entry.role === "pandit" && (
+                    <>
+                      {/* Text language selector */}
+                      <div className="vc-lang-row">
+                        <span className="vc-lang-label">🌐</span>
+                        <select
+                          className="vc-lang-select"
+                          value={entry.displayLang}
+                          onChange={(e) => handleDisplayLangChange(i, e.target.value as Language)}
+                        >
+                          <option value="english">English</option>
+                          <option value="hinglish">Hinglish</option>
+                          <option value="hindi">Hindi</option>
+                        </select>
+                        {translating[`${i}-display`] && (
+                          <span className="vc-lang-loading">translating…</span>
+                        )}
+                      </div>
+
+                      {/* Audio player with language selector */}
+                      <AudioPlayer
+                        idx={i}
+                        entry={entry}
+                        audio={audio}
+                        translatingAudio={!!translating[`${i}-audio`]}
+                        getTTSLangFn={getTTSLang}
+                        onPlay={(text, lang) => speakWithControls(i, text, lang)}
+                        onPause={pauseAudio}
+                        onResume={(text, lang) => resumeAudio(i, text, lang)}
+                        onStop={stopAudio}
+                        onReplay={(text, lang) => speakWithControls(i, text, lang)}
+                        onAudioLangChange={(lang) => handleAudioLangChange(i, lang)}
+                      />
+                    </>
+                  )}
+                </div>
               </div>
-            </div>
-          ))
+            );
+          })
         )}
       </div>
 
-      {/* Mic area */}
       <div className="vc-mic-area">
         {micState === "speaking" && (
           <div className="vc-speak-bars">
@@ -577,7 +755,12 @@ export default function VoiceConsultation() {
         {transcript && micState === "listening" && (
           <div className="vc-transcript-box">{transcript}</div>
         )}
-        <div className={`vc-mic-ring vc-mic-${micState}`} onClick={handleMicClick} role="button" aria-label={micLabel}>
+        <div
+          className={`vc-mic-ring vc-mic-${micState}`}
+          onClick={handleMicClick}
+          role="button"
+          aria-label={micLabel}
+        >
           <span className="vc-mic-icon">{MIC_ICONS[micState]}</span>
         </div>
         <div className="vc-mic-label" style={{ color: MIC_COLORS[micState] }}>{micLabel}</div>
@@ -586,29 +769,53 @@ export default function VoiceConsultation() {
   );
 }
 
-// ── AudioPlayer sub-component ─────────────────────────────────────────────────
+// ── AudioPlayer ───────────────────────────────────────────────────────────────
 interface AudioPlayerProps {
   idx: number;
-  text: string;
+  entry: ConvEntry;
   audio: AudioState;
-  onPlay: () => void;
+  translatingAudio: boolean;
+  getTTSLangFn: (lang: Language) => string;
+  onPlay: (text: string, ttsLang: string) => void;
   onPause: () => void;
-  onResume: () => void;
+  onResume: (text: string, ttsLang: string) => void;
   onStop: () => void;
-  onReplay: () => void;
+  onReplay: (text: string, ttsLang: string) => void;
+  onAudioLangChange: (lang: Language) => void;
 }
 
-function AudioPlayer({ idx, text, audio, onPlay, onPause, onResume, onStop, onReplay }: AudioPlayerProps) {
+function AudioPlayer({
+  idx, entry, audio, translatingAudio, getTTSLangFn,
+  onPlay, onPause, onResume, onStop, onReplay, onAudioLangChange,
+}: AudioPlayerProps) {
   const isThisActive = audio.playingIdx === idx;
-  const isPlaying = isThisActive && !audio.paused;
-  const isPaused = isThisActive && audio.paused;
+  const isPlaying    = isThisActive && !audio.paused;
+  const isPaused     = isThisActive && audio.paused;
+
+  const audioText    = entry.translations[entry.audioLang] ?? entry.text;
+  const audioTtsLang = getTTSLangFn(entry.audioLang);
 
   const progress = isThisActive ? audio.progress : 0;
-  const elapsed = isThisActive ? audio.elapsed : 0;
-  const duration = isThisActive ? audio.duration : estimateDuration(text);
+  const elapsed  = isThisActive ? audio.elapsed  : 0;
+  const duration = isThisActive ? audio.duration : estimateDuration(entry.translations[entry.audioLang] ?? entry.text);
 
   return (
     <div className="vc-audio-card">
+      {/* Audio language selector */}
+      <div className="vc-audio-lang-row">
+        <span className="vc-lang-label">🎧 Listen in:</span>
+        <select
+          className="vc-lang-select"
+          value={entry.audioLang}
+          onChange={(e) => onAudioLangChange(e.target.value as Language)}
+        >
+          <option value="english">English</option>
+          <option value="hinglish">Hinglish</option>
+          <option value="hindi">Hindi</option>
+        </select>
+        {translatingAudio && <span className="vc-lang-loading">loading…</span>}
+      </div>
+
       {/* Waveform */}
       <div className="vc-audio-wave">
         {WAVE_HEIGHTS.map((h, i) => (
@@ -624,7 +831,7 @@ function AudioPlayer({ idx, text, audio, onPlay, onPause, onResume, onStop, onRe
         ))}
       </div>
 
-      {/* Progress bar */}
+      {/* Progress */}
       <div className="vc-audio-prog-row">
         <span className="vc-audio-time">{fmtSec(elapsed)}</span>
         <div className="vc-audio-track">
@@ -638,18 +845,24 @@ function AudioPlayer({ idx, text, audio, onPlay, onPause, onResume, onStop, onRe
       {/* Controls */}
       <div className="vc-audio-btns">
         {!isThisActive && (
-          <button className="vc-ab vc-ab-play" onClick={onPlay}>▶ Play</button>
+          <button className="vc-ab vc-ab-play" onClick={() => onPlay(audioText, audioTtsLang)}>
+            ▶ Play
+          </button>
         )}
         {isPlaying && (
           <button className="vc-ab vc-ab-pause" onClick={onPause}>⏸ Pause</button>
         )}
         {isPaused && (
-          <button className="vc-ab vc-ab-play" onClick={onResume}>▶ Resume</button>
+          <button className="vc-ab vc-ab-play" onClick={() => onResume(audioText, audioTtsLang)}>
+            ▶ Resume
+          </button>
         )}
         {isThisActive && (
           <button className="vc-ab vc-ab-stop" onClick={onStop}>⏹ Stop</button>
         )}
-        <button className="vc-ab vc-ab-replay" onClick={onReplay}>🔁 Replay</button>
+        <button className="vc-ab vc-ab-replay" onClick={() => onReplay(audioText, audioTtsLang)}>
+          🔁 Replay
+        </button>
       </div>
     </div>
   );
