@@ -32,7 +32,7 @@ export default async function handler(req: any, res: any) {
         loudness: 1.5,
         speech_sample_rate: 22050,
         enable_preprocessing: true,
-        model: "bulbul:v1",
+        model: "bulbul:v2",
       }),
     });
 
