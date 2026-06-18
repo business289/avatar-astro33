@@ -39,7 +39,7 @@ export default async function handler(req: any, res: any) {
     if (!sarvamRes.ok) {
       const errText = await sarvamRes.text();
       console.error("Sarvam TTS error:", sarvamRes.status, errText);
-      return res.status(502).json({ error: "Sarvam TTS failed", status: sarvamRes.status });
+      return res.status(502).json({ error: "Sarvam TTS failed", sarvamStatus: sarvamRes.status, sarvamError: errText });
     }
 
     const data = await sarvamRes.json() as any;
