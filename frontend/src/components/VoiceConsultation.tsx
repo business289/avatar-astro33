@@ -8,12 +8,10 @@ import { useConsultationGuard } from "../hooks/useConsultationGuard";
 const GROQ_API_KEY = import.meta.env.VITE_GROQ_API_KEY;
 const GROQ_URL = "https://api.groq.com/openai/v1/chat/completions";
 
-// ElevenLabs — set VITE_ELEVENLABS_API_KEY in .env to activate.
-// To use "Pandit Rameshwar Ji" voice: create it on ElevenLabs dashboard,
-// then set VITE_ELEVENLABS_VOICE_ID to that voice's ID.
-const EL_KEY = import.meta.env.VITE_ELEVENLABS_API_KEY as string | undefined;
-const EL_VOICE = (import.meta.env.VITE_ELEVENLABS_VOICE_ID as string) || "pNInz6obpgDQGcFmaJgB"; // Adam (deep male)
-export const TTS_PROVIDER: "elevenlabs" | "browser" = EL_KEY ? "elevenlabs" : "browser";
+// Sarvam AI TTS — set VITE_SARVAM_API_KEY in .env to activate.
+// Uses the "shubh" male voice via bulbul:v1 for natural Hindi/Hinglish/English.
+const SARVAM_KEY = import.meta.env.VITE_SARVAM_API_KEY as string | undefined;
+export const TTS_PROVIDER: "sarvam" | "browser" = SARVAM_KEY ? "sarvam" : "browser";
 
 // ── Transliteration ──────────────────────────────────────────────────────────
 const DEVA_WORDS: Record<string, string> = {
@@ -91,34 +89,54 @@ function getPreferredMaleVoice(): SpeechSynthesisVoice | null {
   return pick;
 }
 
-// ── ElevenLabs TTS ────────────────────────────────────────────────────────────
-let _elAudio: HTMLAudioElement | null = null;
+// ── Sarvam AI TTS ─────────────────────────────────────────────────────────────
+let _sarvamAudio: HTMLAudioElement | null = null;
 
-async function speakElevenLabs(
+function sarvamLangCode(ttsLang: string): string {
+  return ttsLang.startsWith("en") ? "en-IN" : "hi-IN";
+}
+
+async function speakSarvam(
   text: string,
+  ttsLang: string,
   onTimeUpdate: (current: number, total: number) => void,
   onEnd: () => void
 ): Promise<"ok" | "fallback"> {
-  if (!EL_KEY) return "fallback";
+  if (!SARVAM_KEY) return "fallback";
   try {
-    const res = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${EL_VOICE}`, {
+    const res = await fetch("https://api.sarvam.ai/text-to-speech", {
       method: "POST",
-      headers: { "Content-Type": "application/json", "xi-api-key": EL_KEY },
+      headers: {
+        "Content-Type": "application/json",
+        "API-Subscription-Key": SARVAM_KEY,
+      },
       body: JSON.stringify({
-        text,
-        model_id: "eleven_multilingual_v2",
-        voice_settings: { stability: 0.82, similarity_boost: 0.80, style: 0.18, use_speaker_boost: true, speed: 0.87 },
+        inputs: [text.slice(0, 500)],
+        target_language_code: sarvamLangCode(ttsLang),
+        speaker: "shubh",
+        pitch: 0,
+        pace: 0.9,
+        loudness: 1.5,
+        speech_sample_rate: 22050,
+        enable_preprocessing: true,
+        model: "bulbul:v1",
       }),
     });
     if (!res.ok) return "fallback";
-    const blob = await res.blob();
+    const data = await res.json();
+    const b64 = data.audios?.[0];
+    if (!b64) return "fallback";
+    const binary = atob(b64);
+    const bytes = new Uint8Array(binary.length);
+    for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+    const blob = new Blob([bytes], { type: "audio/wav" });
     const url = URL.createObjectURL(blob);
-    if (_elAudio) { _elAudio.pause(); _elAudio = null; }
+    if (_sarvamAudio) { _sarvamAudio.pause(); _sarvamAudio = null; }
     const audio = new Audio(url);
-    _elAudio = audio;
+    _sarvamAudio = audio;
     audio.ontimeupdate = () => onTimeUpdate(audio.currentTime, audio.duration || 1);
-    audio.onended = () => { URL.revokeObjectURL(url); _elAudio = null; onEnd(); };
-    audio.onerror = () => { URL.revokeObjectURL(url); _elAudio = null; onEnd(); };
+    audio.onended = () => { URL.revokeObjectURL(url); _sarvamAudio = null; onEnd(); };
+    audio.onerror = () => { URL.revokeObjectURL(url); _sarvamAudio = null; onEnd(); };
     await audio.play();
     return "ok";
   } catch {
@@ -358,7 +376,7 @@ export default function VoiceConsultation() {
     idx: number, text: string, ttsLang: string, onDone?: () => void
   ) => {
     clearAudioTimer();
-    if (_elAudio) { _elAudio.pause(); _elAudio = null; }
+    if (_sarvamAudio) { _sarvamAudio.pause(); _sarvamAudio = null; }
     window.speechSynthesis?.cancel();
 
     const dur = estimateDuration(text);
@@ -374,10 +392,11 @@ export default function VoiceConsultation() {
       return;
     }
 
-    // ── ElevenLabs path ──────────────────────────────────────────────────────
-    if (TTS_PROVIDER === "elevenlabs") {
-      speakElevenLabs(
+    // ── Sarvam AI path ───────────────────────────────────────────────────────
+    if (TTS_PROVIDER === "sarvam") {
+      speakSarvam(
         text,
+        ttsLang,
         (current, total) => {
           setAudio((a) => ({
             ...a, elapsed: current,
@@ -446,7 +465,7 @@ export default function VoiceConsultation() {
   }, [clearAudioTimer]);
 
   const pauseAudio = useCallback(() => {
-    if (_elAudio && !_elAudio.paused) _elAudio.pause();
+    if (_sarvamAudio && !_sarvamAudio.paused) _sarvamAudio.pause();
     else window.speechSynthesis?.pause();
     clearAudioTimer();
     audioPauseElRef.current += (Date.now() - audioStartRef.current) / 1000;
@@ -454,12 +473,12 @@ export default function VoiceConsultation() {
   }, [clearAudioTimer]);
 
   const resumeAudio = useCallback((idx: number, text: string, ttsLang: string) => {
-    if (_elAudio && _elAudio.paused) {
-      _elAudio.play();
+    if (_sarvamAudio && _sarvamAudio.paused) {
+      _sarvamAudio.play();
       audioStartRef.current = Date.now();
-      const dur = _elAudio.duration || estimateDuration(text);
+      const dur = _sarvamAudio.duration || estimateDuration(text);
       audioTimerRef.current = setInterval(() => {
-        const el = _elAudio ? _elAudio.currentTime : 0;
+        const el = _sarvamAudio ? _sarvamAudio.currentTime : 0;
         setAudio((a) => ({ ...a, elapsed: el, progress: Math.min((el / dur) * 100, 99) }));
       }, 80);
       setAudio((a) => ({ ...a, paused: false }));
@@ -480,7 +499,7 @@ export default function VoiceConsultation() {
   }, [speakWithControls]);
 
   const stopAudio = useCallback(() => {
-    if (_elAudio) { _elAudio.pause(); _elAudio = null; }
+    if (_sarvamAudio) { _sarvamAudio.pause(); _sarvamAudio = null; }
     window.speechSynthesis?.cancel();
     clearAudioTimer();
     audioPauseElRef.current = 0;
