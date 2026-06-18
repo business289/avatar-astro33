@@ -102,10 +102,14 @@ async function speakSarvam(
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ text, language: ttsLang }),
     });
-    if (!res.ok) return "fallback";
+    if (!res.ok) {
+      const errBody = await res.json().catch(() => ({}));
+      console.error("[Sarvam TTS] HTTP", res.status, errBody);
+      return "fallback";
+    }
     const data = await res.json();
     const b64 = data.audio;
-    if (!b64) return "fallback";
+    if (!b64) { console.error("[Sarvam TTS] No audio field in response", data); return "fallback"; }
     const binary = atob(b64);
     const bytes = new Uint8Array(binary.length);
     for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
@@ -119,7 +123,8 @@ async function speakSarvam(
     audio.onerror = () => { URL.revokeObjectURL(url); _sarvamAudio = null; onEnd(); };
     await audio.play();
     return "ok";
-  } catch {
+  } catch (err) {
+    console.error("[Sarvam TTS] fetch failed:", err);
     return "fallback";
   }
 }
