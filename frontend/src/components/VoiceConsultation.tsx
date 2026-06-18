@@ -8,9 +8,9 @@ import { useConsultationGuard } from "../hooks/useConsultationGuard";
 const GROQ_API_KEY = import.meta.env.VITE_GROQ_API_KEY;
 const GROQ_URL = "https://api.groq.com/openai/v1/chat/completions";
 
-// Sarvam AI TTS — proxied through backend to avoid CORS. Uses "shubh" male voice.
-const TTS_API = `${(import.meta.env.VITE_API_URL as string) || "http://localhost:5000/api"}/inner-voice/tts`;
-export const TTS_PROVIDER = "sarvam" as const;
+// Sarvam AI TTS — set VITE_SARVAM_API_KEY in your deployment env to activate.
+const SARVAM_KEY = import.meta.env.VITE_SARVAM_API_KEY as string | undefined;
+export const TTS_PROVIDER: "sarvam" | "browser" = SARVAM_KEY ? "sarvam" : "browser";
 
 // ── Transliteration ──────────────────────────────────────────────────────────
 const DEVA_WORDS: Record<string, string> = {
@@ -88,8 +88,12 @@ function getPreferredMaleVoice(): SpeechSynthesisVoice | null {
   return pick;
 }
 
-// ── Sarvam AI TTS (via backend proxy) ────────────────────────────────────────
+// ── Sarvam AI TTS ─────────────────────────────────────────────────────────────
 let _sarvamAudio: HTMLAudioElement | null = null;
+
+function sarvamLangCode(ttsLang: string): string {
+  return ttsLang.startsWith("en") ? "en-IN" : "hi-IN";
+}
 
 async function speakSarvam(
   text: string,
@@ -97,15 +101,29 @@ async function speakSarvam(
   onTimeUpdate: (current: number, total: number) => void,
   onEnd: () => void
 ): Promise<"ok" | "fallback"> {
+  if (!SARVAM_KEY) return "fallback";
   try {
-    const res = await fetch(TTS_API, {
+    const res = await fetch("https://api.sarvam.ai/text-to-speech", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ text, language: ttsLang }),
+      headers: {
+        "Content-Type": "application/json",
+        "api-subscription-key": SARVAM_KEY,
+      },
+      body: JSON.stringify({
+        inputs: [text.slice(0, 500)],
+        target_language_code: sarvamLangCode(ttsLang),
+        speaker: "shubh",
+        pitch: 0,
+        pace: 0.9,
+        loudness: 1.5,
+        speech_sample_rate: 22050,
+        enable_preprocessing: true,
+        model: "bulbul:v1",
+      }),
     });
     if (!res.ok) return "fallback";
     const data = await res.json();
-    const b64 = data.audio;
+    const b64 = data.audios?.[0];
     if (!b64) return "fallback";
     const binary = atob(b64);
     const bytes = new Uint8Array(binary.length);
