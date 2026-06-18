@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, memo, Suspense } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link } from "react-router-dom";
-import { ArrowRight, ChevronDown } from "lucide-react";
+import { ChevronDown } from "lucide-react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { InteractiveSolarSystem } from "./InteractiveSolarSystem";
@@ -210,17 +210,6 @@ export const ScrollytellingHero = () => {
               Discover daily planetary wisdom aligned with your zodiac sign
             </p>
 
-            <div className="flex flex-col sm:flex-row gap-3 justify-center pointer-events-auto">
-              <Link
-                to="/zodiac"
-                className="btn-cosmic btn-pulse px-7 py-3 rounded-lg inline-flex items-center gap-2"
-              >
-                Explore Your Sign <ArrowRight className="w-4 h-4" />
-              </Link>
-              <Link to="/horoscopes" className="btn-outline-cosmic px-7 py-3 rounded-lg">
-                Daily Horoscope
-              </Link>
-            </div>
           </motion.div>
         </div>
 
