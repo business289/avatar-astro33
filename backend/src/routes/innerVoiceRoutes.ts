@@ -191,4 +191,51 @@ Respond ONLY with valid JSON (no markdown, no code fences) in EXACTLY this struc
   }
 });
 
+// ── POST /api/inner-voice/tts ─────────────────────────────────────────────────
+router.post("/tts", async (req: Request, res: Response) => {
+  try {
+    const { text, language } = req.body;
+    if (!text?.trim()) return res.status(400).json({ error: "text is required" });
+
+    const apiKey = process.env.SARVAM_API_KEY;
+    if (!apiKey) return res.status(500).json({ error: "SARVAM_API_KEY not configured" });
+
+    const langCode = (language as string)?.startsWith("en") ? "en-IN" : "hi-IN";
+
+    const sarvamRes = await fetch("https://api.sarvam.ai/text-to-speech", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "api-subscription-key": apiKey,
+      },
+      body: JSON.stringify({
+        inputs: [text.slice(0, 500)],
+        target_language_code: langCode,
+        speaker: "shubh",
+        pitch: 0,
+        pace: 0.9,
+        loudness: 1.5,
+        speech_sample_rate: 22050,
+        enable_preprocessing: true,
+        model: "bulbul:v1",
+      }),
+    });
+
+    if (!sarvamRes.ok) {
+      const errText = await sarvamRes.text();
+      console.error("Sarvam TTS error:", sarvamRes.status, errText);
+      return res.status(502).json({ error: "Sarvam TTS request failed" });
+    }
+
+    const data = await sarvamRes.json() as any;
+    const audio = data.audios?.[0];
+    if (!audio) return res.status(502).json({ error: "No audio in Sarvam response" });
+
+    return res.json({ audio });
+  } catch (err: any) {
+    console.error("TTS proxy error:", err.message);
+    return res.status(500).json({ error: "TTS proxy failed" });
+  }
+});
+
 export default router;
