@@ -9,7 +9,7 @@ export default async function handler(req: any, res: any) {
     return res.status(400).json({ error: "text is required" });
   }
 
-  const apiKey = process.env.SARVAM_API_KEY;
+  const apiKey = process.env.SARVAM_API_KEY || process.env.VITE_SARVAM_API_KEY;
   if (!apiKey) {
     return res.status(500).json({ error: "SARVAM_API_KEY not configured" });
   }
