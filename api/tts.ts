@@ -26,7 +26,7 @@ export default async function handler(req: any, res: any) {
       body: JSON.stringify({
         inputs: [String(text).slice(0, 500)],
         target_language_code: langCode,
-        speaker: "shubh",
+        speaker: "abhilash",
         pitch: 0,
         pace: 0.9,
         loudness: 1.5,

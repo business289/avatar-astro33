@@ -72,7 +72,7 @@ async function speakSarvam(
   onEnd: () => void
 ): Promise<"ok" | "error"> {
   try {
-    console.log("[Sarvam TTS] Requesting — provider: sarvam, speaker: shubh, lang:", ttsLang, "chars:", text.length);
+    console.log("[Sarvam TTS] Requesting — provider: sarvam, speaker: abhilash, lang:", ttsLang, "chars:", text.length);
     const res = await fetch("/api/tts", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -357,7 +357,7 @@ export default function VoiceConsultation() {
       return;
     }
 
-    console.log("[TTS] Invoking Sarvam AI — speaker: shubh, lang:", ttsLang);
+    console.log("[TTS] Invoking Sarvam AI — speaker: abhilash, lang:", ttsLang);
     speakSarvam(
       text,
       ttsLang,

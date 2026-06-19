@@ -201,7 +201,7 @@ router.post("/tts", async (req: Request, res: Response) => {
     if (!apiKey) return res.status(500).json({ error: "SARVAM_API_KEY not configured" });
 
     const langCode = (language as string)?.startsWith("en") ? "en-IN" : "hi-IN";
-    console.log("[Sarvam TTS] Request — speaker: shubh, model: bulbul:v2, lang:", langCode, "chars:", text.trim().length);
+    console.log("[Sarvam TTS] Request — speaker: abhilash, model: bulbul:v2, lang:", langCode, "chars:", text.trim().length);
 
     const sarvamRes = await fetch("https://api.sarvam.ai/text-to-speech", {
       method: "POST",
@@ -212,7 +212,7 @@ router.post("/tts", async (req: Request, res: Response) => {
       body: JSON.stringify({
         inputs: [text.slice(0, 500)],
         target_language_code: langCode,
-        speaker: "shubh",
+        speaker: "abhilash",
         pitch: 0,
         pace: 0.9,
         loudness: 1.5,

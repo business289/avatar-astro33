@@ -782,7 +782,7 @@ function MantraCard({m,onSave}){
     if(playing)return;
     setPlaying(true);
     try{
-      console.log("[Sarvam TTS] Mantra request — speaker: shubh, rate:", rate);
+      console.log("[Sarvam TTS] Mantra request — speaker: abhilash, rate:", rate);
       const res=await fetch("/api/tts",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({text:text.slice(0,500),language:"hi-IN"})});
       if(!res.ok){console.error("[Sarvam TTS] Mantra HTTP error",res.status);setPlaying(false);return;}
       const data=await res.json();
