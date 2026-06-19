@@ -113,13 +113,11 @@ app.post('/api/tts', async (req: Request, res: Response) => {
       body: JSON.stringify({
         inputs: [String(text).slice(0, 500)],
         target_language_code: langCode,
-        speaker: 'abhilash',
-        pitch: 0,
-        pace: 0.9,
-        loudness: 1.5,
+        speaker: 'manan',
+        pace: 0.85,
         speech_sample_rate: 22050,
-        enable_preprocessing: true,
-        model: 'bulbul:v2',
+        model: 'bulbul:v3',
+        temperature: 0.4,
       }),
     });
     if (!sarvamRes.ok) {

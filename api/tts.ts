@@ -15,6 +15,7 @@ export default async function handler(req: any, res: any) {
   }
 
   const langCode = String(language ?? "").startsWith("en") ? "en-IN" : "hi-IN";
+  console.log("[Sarvam TTS] Request — model: bulbul:v3, speaker: manan, lang:", langCode, "chars:", String(text).trim().length);
 
   try {
     const sarvamRes = await fetch("https://api.sarvam.ai/text-to-speech", {
@@ -26,31 +27,35 @@ export default async function handler(req: any, res: any) {
       body: JSON.stringify({
         inputs: [String(text).slice(0, 500)],
         target_language_code: langCode,
-        speaker: "abhilash",
-        pitch: 0,
-        pace: 0.9,
-        loudness: 1.5,
+        speaker: "manan",
+        pace: 0.85,
         speech_sample_rate: 22050,
-        enable_preprocessing: true,
-        model: "bulbul:v2",
+        model: "bulbul:v3",
+        temperature: 0.4,
       }),
     });
 
     if (!sarvamRes.ok) {
-      const errText = await sarvamRes.text();
-      console.error("Sarvam TTS error:", sarvamRes.status, errText);
-      return res.status(502).json({ error: "Sarvam TTS failed", sarvamStatus: sarvamRes.status, sarvamError: errText });
+      const errBody = await sarvamRes.text();
+      console.error("[Sarvam TTS] HTTP", sarvamRes.status, errBody);
+      return res.status(502).json({
+        error: "Sarvam TTS failed",
+        sarvamStatus: sarvamRes.status,
+        sarvamError: errBody,
+      });
     }
 
     const data = await sarvamRes.json() as any;
     const audio = data.audios?.[0];
     if (!audio) {
+      console.error("[Sarvam TTS] No audio in response:", data);
       return res.status(502).json({ error: "No audio in Sarvam response" });
     }
 
+    console.log("[Sarvam TTS] Success — audio returned");
     return res.status(200).json({ audio });
   } catch (err: any) {
-    console.error("TTS proxy error:", err.message);
+    console.error("[Sarvam TTS] Proxy error:", err.message);
     return res.status(500).json({ error: err.message });
   }
 }
