@@ -777,18 +777,28 @@ function MantraCard({m,onSave}){
   const [chantCount,setChantCount]=useState(0);
   if(!m) return null;
   const target=parseInt(m.count)||108;
-  const speak=(rate)=>{
+  const speak=async(rate)=>{
     const text=m.transliteration||m.sanskrit||"";if(!text)return;
-    window.speechSynthesis?.cancel();
-    const utt=new SpeechSynthesisUtterance(text);
-    utt.rate=rate;utt.pitch=0.85;utt.volume=1;
-    const voices=window.speechSynthesis?.getVoices()||[];
-    const hi=voices.find(v=>v.lang.startsWith("hi")||v.lang.includes("IN")||v.lang.startsWith("sa"));
-    if(hi)utt.voice=hi;
-    utt.onend=()=>setPlaying(false);utt.onerror=()=>setPlaying(false);
-    window.speechSynthesis?.speak(utt);setPlaying(true);
+    if(playing)return;
+    setPlaying(true);
+    try{
+      console.log("[Sarvam TTS] Mantra request — speaker: shubh, rate:", rate);
+      const res=await fetch("/api/tts",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({text:text.slice(0,500),language:"hi-IN"})});
+      if(!res.ok){console.error("[Sarvam TTS] Mantra HTTP error",res.status);setPlaying(false);return;}
+      const data=await res.json();
+      const b64=data.audio;if(!b64){setPlaying(false);return;}
+      const binary=atob(b64);const bytes=new Uint8Array(binary.length);
+      for(let i=0;i<binary.length;i++)bytes[i]=binary.charCodeAt(i);
+      const blob=new Blob([bytes],{type:"audio/wav"});
+      const url=URL.createObjectURL(blob);
+      const audio=new Audio(url);
+      audio.playbackRate=rate;
+      audio.onended=()=>{URL.revokeObjectURL(url);setPlaying(false);};
+      audio.onerror=()=>{URL.revokeObjectURL(url);setPlaying(false);};
+      await audio.play();
+    }catch(e){console.error("[Sarvam TTS] Mantra error:",e);setPlaying(false);}
   };
-  const stop=()=>{window.speechSynthesis?.cancel();setPlaying(false);};
+  const stop=()=>{setPlaying(false);};
   const copyMantra=()=>{navigator.clipboard?.writeText(`${m.sanskrit}\n${m.transliteration}`);};
   const pct=Math.min(100,(chantCount/target)*100);
   return(

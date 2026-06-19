@@ -62,31 +62,6 @@ function transliterateToRoman(text: string): string {
   return result.replace(/\s{2,}/g, " ").trim();
 }
 
-// ── Male Voice (browser fallback) ─────────────────────────────────────────────
-let _cachedMaleVoice: SpeechSynthesisVoice | null | undefined = undefined;
-function getPreferredMaleVoice(): SpeechSynthesisVoice | null {
-  if (_cachedMaleVoice) return _cachedMaleVoice;
-  if (typeof window === "undefined" || !window.speechSynthesis) return null;
-  const voices = window.speechSynthesis.getVoices();
-  if (!voices.length) return null;
-  const n = (v: SpeechSynthesisVoice) => v.name.toLowerCase();
-  const isFemale = (v: SpeechSynthesisVoice) =>
-    n(v).includes("female") || n(v).includes("woman") || n(v).includes("zira") ||
-    n(v).includes("heera") || n(v).includes("lekha") || n(v).includes("priya") ||
-    n(v).includes("veena") || n(v).includes("kanya");
-  const pick =
-    voices.find((v) => n(v).includes("ravi")) ||
-    voices.find((v) => n(v).includes("google") && v.lang === "hi-IN" && !isFemale(v)) ||
-    voices.find((v) => v.lang === "hi-IN" && !isFemale(v)) ||
-    voices.find((v) => v.lang.startsWith("hi") && !isFemale(v)) ||
-    voices.find((v) => v.lang === "en-IN" && !isFemale(v)) ||
-    voices.find((v) => v.lang === "en-IN") ||
-    voices.find((v) => v.lang === "hi-IN") ||
-    null;
-  if (pick) _cachedMaleVoice = pick;
-  return pick;
-}
-
 // ── Sarvam AI TTS ─────────────────────────────────────────────────────────────
 let _sarvamAudio: HTMLAudioElement | null = null;
 
@@ -95,8 +70,9 @@ async function speakSarvam(
   ttsLang: string,
   onTimeUpdate: (current: number, total: number) => void,
   onEnd: () => void
-): Promise<"ok" | "fallback"> {
+): Promise<"ok" | "error"> {
   try {
+    console.log("[Sarvam TTS] Requesting — provider: sarvam, speaker: shubh, lang:", ttsLang, "chars:", text.length);
     const res = await fetch("/api/tts", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -104,28 +80,33 @@ async function speakSarvam(
     });
     if (!res.ok) {
       const errBody = await res.json().catch(() => ({}));
-      console.error("[Sarvam TTS] HTTP", res.status, errBody);
-      return "fallback";
+      console.error("[Sarvam TTS] HTTP error", res.status, errBody);
+      return "error";
     }
     const data = await res.json();
     const b64 = data.audio;
-    if (!b64) { console.error("[Sarvam TTS] No audio field in response", data); return "fallback"; }
+    if (!b64) {
+      console.error("[Sarvam TTS] No audio field in response", data);
+      return "error";
+    }
     const binary = atob(b64);
     const bytes = new Uint8Array(binary.length);
     for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
     const blob = new Blob([bytes], { type: "audio/wav" });
     const url = URL.createObjectURL(blob);
+    console.log("[Sarvam TTS] Audio received, playing blob URL:", url);
     if (_sarvamAudio) { _sarvamAudio.pause(); _sarvamAudio = null; }
     const audio = new Audio(url);
     _sarvamAudio = audio;
     audio.ontimeupdate = () => onTimeUpdate(audio.currentTime, audio.duration || 1);
     audio.onended = () => { URL.revokeObjectURL(url); _sarvamAudio = null; onEnd(); };
-    audio.onerror = () => { URL.revokeObjectURL(url); _sarvamAudio = null; onEnd(); };
+    audio.onerror = (e) => { console.error("[Sarvam TTS] Audio playback error:", e); URL.revokeObjectURL(url); _sarvamAudio = null; onEnd(); };
     await audio.play();
+    console.log("[Sarvam TTS] Playback started successfully");
     return "ok";
   } catch (err) {
     console.error("[Sarvam TTS] fetch failed:", err);
-    return "fallback";
+    return "error";
   }
 }
 
@@ -333,13 +314,6 @@ export default function VoiceConsultation() {
   const { detectLanguage, getTTSLang } = useLanguageDetection();
   const { isAllowedTopic, getRejectionMessage } = useConsultationGuard();
 
-  // Reset voice cache when browser loads new voices
-  useEffect(() => {
-    const onVoicesChanged = () => { _cachedMaleVoice = undefined; };
-    window.speechSynthesis?.addEventListener("voiceschanged", onVoicesChanged);
-    return () => window.speechSynthesis?.removeEventListener("voiceschanged", onVoicesChanged);
-  }, []);
-
   // CSS injection
   useEffect(() => {
     const id = "vc-style-tag";
@@ -369,7 +343,6 @@ export default function VoiceConsultation() {
   ) => {
     clearAudioTimer();
     if (_sarvamAudio) { _sarvamAudio.pause(); _sarvamAudio = null; }
-    window.speechSynthesis?.cancel();
 
     const dur = estimateDuration(text);
     audioPauseElRef.current = 0;
@@ -384,81 +357,33 @@ export default function VoiceConsultation() {
       return;
     }
 
-    // ── Sarvam AI path ───────────────────────────────────────────────────────
-    if (TTS_PROVIDER === "sarvam") {
-      speakSarvam(
-        text,
-        ttsLang,
-        (current, total) => {
-          setAudio((a) => ({
-            ...a, elapsed: current,
-            progress: Math.min((current / total) * 100, 99),
-            duration: total,
-          }));
-        },
-        () => {
-          clearAudioTimer();
-          setAudio((a) => ({ ...a, playingIdx: null, paused: false, progress: 100 }));
-          onDone?.();
-        }
-      ).then((result) => {
-        if (result === "fallback") speakBrowser(idx, text, ttsLang, dur, onDone);
-      });
-      return;
-    }
-
-    // ── Browser path ─────────────────────────────────────────────────────────
-    speakBrowser(idx, text, ttsLang, dur, onDone);
-
-    function speakBrowser(
-      _idx: number, _text: string, _ttsLang: string, _dur: number, _onDone?: () => void
-    ) {
-      if (typeof window === "undefined" || !window.speechSynthesis) return;
-
-      audioTimerRef.current = setInterval(() => {
-        const el = audioPauseElRef.current + (Date.now() - audioStartRef.current) / 1000;
-        setAudio((a) => ({ ...a, elapsed: el, progress: Math.min((el / _dur) * 100, 99) }));
-      }, 80);
-
-      const doSpeak = (voice: SpeechSynthesisVoice | null) => {
-        const utt = new SpeechSynthesisUtterance(_text);
-        utt.lang  = _ttsLang;
-        utt.rate  = 0.82;
-        utt.pitch = 0.72;
-        if (voice) utt.voice = voice;
-        utt.onend = () => {
-          clearAudioTimer();
-          setAudio((a) => ({ ...a, playingIdx: null, paused: false, progress: 100, elapsed: _dur }));
-          _onDone?.();
-        };
-        utt.onerror = () => {
-          clearAudioTimer();
-          setAudio((a) => ({ ...a, playingIdx: null, paused: false }));
-          _onDone?.();
-        };
-        window.speechSynthesis.speak(utt);
-      };
-
-      let voice = getPreferredMaleVoice();
-      if (!voice) {
-        const retry = () => {
-          window.speechSynthesis.removeEventListener("voiceschanged", retry);
-          doSpeak(getPreferredMaleVoice());
-        };
-        window.speechSynthesis.addEventListener("voiceschanged", retry);
-        setTimeout(() => {
-          window.speechSynthesis.removeEventListener("voiceschanged", retry);
-          if (!window.speechSynthesis.speaking) doSpeak(getPreferredMaleVoice());
-        }, 400);
-      } else {
-        doSpeak(voice);
+    console.log("[TTS] Invoking Sarvam AI — speaker: shubh, lang:", ttsLang);
+    speakSarvam(
+      text,
+      ttsLang,
+      (current, total) => {
+        setAudio((a) => ({
+          ...a, elapsed: current,
+          progress: Math.min((current / total) * 100, 99),
+          duration: total,
+        }));
+      },
+      () => {
+        clearAudioTimer();
+        setAudio((a) => ({ ...a, playingIdx: null, paused: false, progress: 100 }));
+        onDone?.();
       }
-    }
+    ).then((result) => {
+      if (result === "error") {
+        console.error("[TTS] Sarvam TTS failed — no fallback voice used.");
+        setAudio((a) => ({ ...a, playingIdx: null, paused: false }));
+        onDone?.();
+      }
+    });
   }, [clearAudioTimer]);
 
   const pauseAudio = useCallback(() => {
     if (_sarvamAudio && !_sarvamAudio.paused) _sarvamAudio.pause();
-    else window.speechSynthesis?.pause();
     clearAudioTimer();
     audioPauseElRef.current += (Date.now() - audioStartRef.current) / 1000;
     setAudio((a) => ({ ...a, paused: true }));
@@ -474,25 +399,14 @@ export default function VoiceConsultation() {
         setAudio((a) => ({ ...a, elapsed: el, progress: Math.min((el / dur) * 100, 99) }));
       }, 80);
       setAudio((a) => ({ ...a, paused: false }));
-    } else if (window.speechSynthesis?.paused) {
-      window.speechSynthesis.resume();
-      audioStartRef.current = Date.now();
-      setAudio((a) => {
-        const dur = a.duration;
-        audioTimerRef.current = setInterval(() => {
-          const el = audioPauseElRef.current + (Date.now() - audioStartRef.current) / 1000;
-          setAudio((aa) => ({ ...aa, elapsed: el, progress: Math.min((el / dur) * 100, 99) }));
-        }, 80);
-        return { ...a, paused: false };
-      });
     } else {
+      // Re-request from Sarvam if audio element is gone
       speakWithControls(idx, text, ttsLang);
     }
   }, [speakWithControls]);
 
   const stopAudio = useCallback(() => {
     if (_sarvamAudio) { _sarvamAudio.pause(); _sarvamAudio = null; }
-    window.speechSynthesis?.cancel();
     clearAudioTimer();
     audioPauseElRef.current = 0;
     setAudio({ playingIdx: null, paused: false, progress: 0, elapsed: 0, duration: 0 });
