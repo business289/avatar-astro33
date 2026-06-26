@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { AnimatePresence } from "framer-motion";
 import Layout from "./components/Layout";
+import { NavigationProvider } from "./context/NavigationContext";
 import PageTransition from "./components/PageTransition";
 import Index from "./pages/Index";
 import DailyHoroscopes from "./pages/DailyHoroscopes";
@@ -21,6 +22,7 @@ import InnerVoiceChat from "./pages/InnerVoiceChat";
 import InnerVoiceDashboard from "./pages/InnerVoiceDashboard";
 import InnerVoiceJournal from "./pages/InnerVoiceJournal";
 import InnerVoiceWisdom from "./pages/InnerVoiceWisdom";
+import TarotExperience from "./pages/TarotExperience";
 import NotFound from "./pages/NotFound";
 import CosmicBackground from "./components/CosmicBackground";
 
@@ -153,6 +155,14 @@ const AnimatedRoutes = () => {
           }
         />
         <Route
+          path="/tarot"
+          element={
+            <PageTransition>
+              <TarotExperience />
+            </PageTransition>
+          }
+        />
+        <Route
           path="*"
           element={
             <PageTransition>
@@ -172,9 +182,11 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
-        <Layout>
-          <AnimatedRoutes />
-        </Layout>
+        <NavigationProvider>
+          <Layout>
+            <AnimatedRoutes />
+          </Layout>
+        </NavigationProvider>
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>

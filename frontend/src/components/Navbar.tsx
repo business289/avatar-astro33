@@ -5,6 +5,7 @@ import gsap from "gsap";
 
 // ── Nav config — add items here, nothing else needs changing ──────────────────
 const astrologyTools = [
+  { name: "Tarot Experience", path: "/tarot" },
   { name: "Zodiac Signs",     path: "/zodiac" },
   { name: "Daily Horoscopes", path: "/horoscopes" },
   { name: "Birth Chart",      path: "/birth-chart" },

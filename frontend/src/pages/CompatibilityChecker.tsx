@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from "react";
+import { useBackOverride } from "../context/NavigationContext";
 
 const fontLink = document.createElement("link");
 fontLink.rel = "stylesheet";
@@ -952,6 +953,12 @@ export default function App() {
   const [phase,setPhase] = useState("form");
   const [report,setReport] = useState(null);
   const [error,setError] = useState("");
+
+  // Back button returns to form from loading/results phases
+  useBackOverride(
+    phase !== "form" ? () => { setPhase("form"); setReport(null); setError(""); } : null,
+    [phase],
+  );
 
   const compute = useCallback(async () => {
     setError("");

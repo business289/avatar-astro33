@@ -1,4 +1,5 @@
 import { useState, useRef, useCallback } from "react";
+import { useBackOverride } from "../context/NavigationContext";
 
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -157,6 +158,16 @@ export default function PalmReading() {
   const [result, setResult]         = useState<PalmResult | null>(null);
   const [activeLineTab, setActiveLineTab] = useState<"heart"|"head"|"life"|"fate">("heart");
   const fileRef = useRef<HTMLInputElement>(null);
+
+  // Back button returns to landing from any non-landing stage
+  const resetToLanding = useCallback(() => {
+    setStage("landing");
+    setResult(null);
+    setImageUrl(null);
+    setScanStep(0);
+    setScanPct(0);
+  }, []);
+  useBackOverride(stage !== "landing" ? resetToLanding : null, [stage]);
 
   const startScan = useCallback((url: string) => {
     setImageUrl(url);

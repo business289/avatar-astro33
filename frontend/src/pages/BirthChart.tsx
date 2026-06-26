@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from "react";
+import { useBackOverride } from "../context/NavigationContext";
 
 // ── Google Fonts ─────────────────────────────────────────────────────────────
 const fl = document.createElement("link"); fl.rel="stylesheet";
@@ -931,6 +932,12 @@ export default function App(){
   const [phase,setPhase]=useState("form");
   const [chartData,setChartData]=useState(null);
   const [error,setError]=useState("");
+
+  // Back button returns to form from loading/results phases
+  useBackOverride(
+    phase !== "form" ? () => { setPhase("form"); setChartData(null); setError(""); } : null,
+    [phase],
+  );
   const up=(k,v)=>setForm(f=>({...f,[k]:v}));
 
   const generate=useCallback(async()=>{

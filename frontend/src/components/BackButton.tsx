@@ -1,0 +1,110 @@
+import { useNavigate, useLocation } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
+import { ChevronLeft } from 'lucide-react';
+import { useNavigation } from '../context/NavigationContext';
+
+// Defines the logical parent for each route. Used as fallback when there
+// is no browser history (e.g. user navigated directly to a deep URL).
+const PARENT_ROUTES: Record<string, string> = {
+  '/horoscopes':            '/',
+  '/zodiac':                '/',
+  '/compatibility':         '/',
+  '/birth-chart':           '/',
+  '/palm-reading':          '/',
+  '/tarot':                 '/',
+  '/blog':                  '/',
+  '/about':                 '/',
+  '/contact':               '/',
+  '/inner-voice':           '/',
+  '/inner-voice/chat':      '/inner-voice',
+  '/inner-voice/dashboard': '/inner-voice',
+  '/inner-voice/journal':   '/inner-voice',
+  '/inner-voice/wisdom':    '/inner-voice',
+};
+
+const getFallback = (pathname: string): string => {
+  // Dynamic route: /zodiac/:sign → /zodiac
+  if (pathname.startsWith('/zodiac/') && pathname !== '/zodiac') return '/zodiac';
+  return PARENT_ROUTES[pathname] ?? '/';
+};
+
+const BackButton = () => {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { historyStack, onBackOverride } = useNavigation();
+
+  // Never render on the home page
+  if (location.pathname === '/') return null;
+
+  const handleBack = () => {
+    if (onBackOverride) {
+      onBackOverride();
+      return;
+    }
+    // Prefer real browser / SPA history when available
+    if (historyStack.length > 0 || window.history.length > 1) {
+      navigate(-1);
+    } else {
+      navigate(getFallback(location.pathname));
+    }
+  };
+
+  return (
+    // Fixed below the navbar (navbar is ~64-72px tall).
+    // pointer-events-none on the wrapper so it never blocks scroll events outside the button.
+    <div className="fixed top-[76px] left-4 md:left-6 z-40 pointer-events-none">
+      <AnimatePresence mode="wait">
+        <motion.button
+          key={location.pathname}
+          initial={{ opacity: 0, x: -14 }}
+          animate={{ opacity: 1, x: 0 }}
+          exit={{ opacity: 0, x: -14 }}
+          transition={{ duration: 0.28, ease: [0.25, 0.46, 0.45, 0.94] }}
+          onClick={handleBack}
+          aria-label="Go back to previous page"
+          className={[
+            'pointer-events-auto',
+            'group flex items-center gap-1.5',
+            'px-3.5 py-2.5 rounded-xl',
+            // glass surface
+            'bg-[rgba(8,10,18,0.62)] backdrop-blur-md',
+            // border — dim gold that brightens on hover
+            'border border-[rgba(255,215,0,0.16)]',
+            'hover:border-[rgba(255,215,0,0.44)]',
+            // text — dim gold → full gold
+            'text-[rgba(255,215,0,0.50)]',
+            'hover:text-[#FFD700]',
+            // glow on hover
+            'hover:bg-[rgba(8,10,18,0.82)]',
+            'hover:shadow-[0_0_18px_rgba(255,215,0,0.10)]',
+            // transitions
+            'transition-all duration-300 ease-out',
+            // accessibility
+            'cursor-pointer select-none',
+            'focus:outline-none',
+            'focus-visible:ring-2 focus-visible:ring-[rgba(255,215,0,0.48)]',
+            'focus-visible:ring-offset-2 focus-visible:ring-offset-transparent',
+            // minimum touch target
+            'min-h-[44px] min-w-[44px]',
+          ].join(' ')}
+        >
+          {/* Arrow slides left on hover */}
+          <ChevronLeft
+            size={15}
+            aria-hidden="true"
+            className="flex-shrink-0 transition-transform duration-300 ease-out group-hover:-translate-x-0.5"
+          />
+          {/* Label */}
+          <span
+            className="text-[10px] tracking-[3px] uppercase leading-none"
+            style={{ fontFamily: "'Space Mono', monospace" }}
+          >
+            Back
+          </span>
+        </motion.button>
+      </AnimatePresence>
+    </div>
+  );
+};
+
+export default BackButton;

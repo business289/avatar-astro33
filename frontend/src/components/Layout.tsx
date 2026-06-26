@@ -1,7 +1,7 @@
 import { ReactNode } from 'react';
 import Navbar from './Navbar';
 import Footer from './Footer';
-import CosmicCursor from './CosmicCursor';
+import BackButton from './BackButton';
 
 interface LayoutProps {
   children: ReactNode;
@@ -10,12 +10,11 @@ interface LayoutProps {
 const Layout = ({ children }: LayoutProps) => {
   return (
     <div className="relative min-h-screen overflow-x-hidden bg-transparent">
-      <CosmicCursor />
-
       <div className="grain-overlay" />
 
       <div className="relative z-20">
         <Navbar />
+        <BackButton />
 
         <main className="pt-8">
           {children}

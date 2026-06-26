@@ -67,6 +67,7 @@ const FloatingPlanets = () => {
           boxShadow: '0 0 50px hsl(15, 70%, 40%, 0.4), inset -12px -12px 25px hsl(10, 60%, 15%)',
         }}
       />
+      
 
       {/* Glowing moon */}
       <div 

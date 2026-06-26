@@ -135,6 +135,97 @@ app.post('/api/tts', async (req: Request, res: Response) => {
   }
 });
 
+// ── Tarot Reading ────────────────────────────────────────────────────────────
+app.post('/api/tarot/reading', async (req: Request, res: Response) => {
+  const { mode, question, cards } = req.body;
+  if (!mode || !cards || !Array.isArray(cards)) {
+    return res.status(400).json({ success: false, error: 'mode and cards are required' });
+  }
+
+  const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY;
+  if (!OPENROUTER_API_KEY) {
+    return res.status(500).json({ success: false, error: 'OPENROUTER_API_KEY not configured' });
+  }
+
+  const cardList = (cards as any[]).map((c, i) => `Card ${i + 1}: ${c.name} — ${c.meaning} (Keywords: ${c.keywords?.join(', ')})`).join('\n');
+
+  const timelinePrompt = `You are a master tarot reader blending Vedic wisdom, Jungian psychology, and cosmic astrology. The seeker is asking about: ${question || 'their life path'}.
+
+Their 5-card Life Timeline spread:
+${cardList}
+
+Return ONLY valid JSON (no markdown, no fences) with this exact structure:
+{
+  "currentLifeStage": "2-3 sentence description of where the seeker is right now in their life journey",
+  "mainOpportunity": "2-3 sentences describing the biggest opening available to them",
+  "hiddenChallenge": "2-3 sentences about the hidden obstacle or pattern affecting them",
+  "nextMajorTurningPoint": "2-3 sentences about the pivotal shift approaching in the next 3-6 months",
+  "recommendedAction": "1-2 sentences of specific, actionable spiritual guidance",
+  "spiritualGuidance": "2-3 sentences of deeper cosmic or karmic wisdom for this seeker",
+  "probabilityScore": 78,
+  "timelineNarrative": [
+    {"position": "Past Energy", "card": "${(cards[0] as any)?.name}", "insight": "2-3 sentences connecting this card's energy to how the seeker's past has shaped their now"},
+    {"position": "Current Energy", "card": "${(cards[1] as any)?.name}", "insight": "2-3 sentences about what this card reveals about the seeker's current reality"},
+    {"position": "Hidden Influence", "card": "${(cards[2] as any)?.name}", "insight": "2-3 sentences about the unseen force or pattern operating behind the scenes"},
+    {"position": "Next 6 Months", "card": "${(cards[3] as any)?.name}", "insight": "2-3 sentences about what to expect and prepare for in the near future"},
+    {"position": "Future Potential", "card": "${(cards[4] as any)?.name}", "insight": "2-3 sentences about the highest possible outcome if the seeker aligns with their path"}
+  ],
+  "overallMessage": "3-4 powerful sentences synthesizing the entire reading into one cohesive spiritual message"
+}`;
+
+  const karmaPrompt = `You are a master karmic guide who reads the soul's patterns through tarot. The seeker has drawn these 3 Karma Mirror cards:
+${cardList}
+
+Return ONLY valid JSON (no markdown, no fences):
+{
+  "currentKarmaTheme": "2-3 sentences naming and describing the central karmic pattern at play",
+  "rootCause": "2-3 sentences tracing this pattern to its deeper source — past conditioning, beliefs, or soul lessons",
+  "lifeAreasAffected": ["Career", "Love", "Health"],
+  "energyScore": 68,
+  "karmaBlockScore": 72,
+  "spiritualGrowthScore": 61,
+  "dailyAction": "One specific daily practice to shift the karmic pattern",
+  "weeklyAction": "One deeper weekly action for healing and integration",
+  "spiritualPractice": "A specific meditation, mantra, or ritual aligned with the Healing Path card",
+  "recommendedHabit": "One new habit to cultivate for long-term karmic clearing",
+  "reflectionQuestion": "A powerful introspective question for the seeker to sit with",
+  "positiveAffirmation": "A personalized affirmation based on the Healing Path card energy",
+  "cardInsights": [
+    {"position": "Current Karma", "card": "${(cards[0] as any)?.name}", "insight": "2-3 sentences about what karmic energy this card reveals"},
+    {"position": "Hidden Blockage", "card": "${(cards[1] as any)?.name}", "insight": "2-3 sentences revealing the unconscious block"},
+    {"position": "Healing Path", "card": "${(cards[2] as any)?.name}", "insight": "2-3 sentences describing the path of healing and integration"}
+  ]
+}`;
+
+  try {
+    const response = await axios.post(
+      'https://openrouter.ai/api/v1/chat/completions',
+      {
+        model: 'google/gemma-3-27b-it',
+        max_tokens: 2000,
+        messages: [{ role: 'user', content: mode === 'timeline' ? timelinePrompt : karmaPrompt }],
+      },
+      {
+        headers: {
+          'Authorization': `Bearer ${OPENROUTER_API_KEY}`,
+          'Content-Type': 'application/json',
+          'HTTP-Referer': 'http://localhost:8081',
+          'X-Title': 'Spiritual AI Tarot Reading',
+        },
+      }
+    );
+
+    const text = response.data.choices[0].message.content || '';
+    const jsonMatch = text.match(/\{[\s\S]*\}/);
+    if (!jsonMatch) throw new Error('Could not parse JSON from AI response');
+    const result = JSON.parse(jsonMatch[0]);
+    res.json({ success: true, data: result });
+  } catch (err: any) {
+    console.error('Tarot reading error:', err.response?.data || err.message);
+    res.status(500).json({ success: false, error: err.response?.data?.error?.message || err.message });
+  }
+});
+
 // ── Palm Reading ────────────────────────────────────────────────────────────
 app.post('/api/palm-reading', async (req: Request, res: Response) => {
   const { imageBase64, imageType, fingerprint } = req.body;
