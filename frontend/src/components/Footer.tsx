@@ -32,7 +32,7 @@ const Footer = () => {
   ];
 
   return (
-    <footer style={{ background: '#040C25', width: '100%' }}>
+    <footer style={{ background: 'rgba(5, 11, 24, 0.96)', width: '100%' }}>
       <div style={{ width: '100%', padding: '60px 72px 40px 72px' }}>
 
         {/* ── 4-column top area ── */}

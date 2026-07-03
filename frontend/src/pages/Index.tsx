@@ -56,14 +56,14 @@ const howItWorks = [
 
 const offerRows = [
   [
-    { title: "", description: "", image: zodiacAnalysisImg, flex: 722, height: 486, path: "/zodiac",          imgFit: "contain" as const },
+    { title: "", description: "", image: zodiacAnalysisImg, flex: 722, height: 486, path: "/zodiac" },
     { title: "", description: "", image: loveImg,           flex: 498, height: 486, path: "/compatibility" },
     { title: "", description: "", image: careerImg,         flex: 498, height: 486, path: "/horoscopes" },
   ],
   [
     { title: "", description: "", image: birthChartImg, flex: 498, height: 486, path: "/birth-chart" },
-    { title: "", description: "", image: weeklyImg,     flex: 498, height: 486, path: "/horoscopes",  imgFit: "contain" as const },
-    { title: "", description: "", image: dailyImg,      flex: 722, height: 486, path: "/horoscopes",  imgFit: "contain" as const },
+    { title: "", description: "", image: weeklyImg,     flex: 498, height: 486, path: "/horoscopes" },
+    { title: "", description: "", image: dailyImg,      flex: 722, height: 486, path: "/horoscopes" },
   ],
 ];
 
@@ -231,7 +231,7 @@ const Index = () => {
           <div
             className="relative w-full max-w-4xl mx-auto rounded-2xl overflow-hidden flex flex-col items-center justify-center py-16 px-8"
             style={{
-              background: "linear-gradient(135deg, rgba(2,11,31,0.85) 0%, rgba(11,42,91,0.6) 50%, rgba(2,11,31,0.85) 100%)",
+              background: "linear-gradient(135deg, rgba(8,20,38,0.85) 0%, rgba(11,42,91,0.6) 50%, rgba(8,20,38,0.85) 100%)",
               border: "1px solid rgba(196,154,108,0.18)",
               boxShadow: "0 0 80px rgba(11,42,91,0.4)",
             }}
@@ -315,7 +315,6 @@ const Index = () => {
                         <img
                           src={item.image}
                           alt={item.title.replace("\n", " ")}
-                          style={item.imgFit ? { objectFit: item.imgFit } : undefined}
                         />
                       </div>
 
@@ -464,7 +463,7 @@ const Index = () => {
               aria-hidden="true"
               style={{
                 position: 'absolute',
-                bottom: -90,
+                bottom: 0,
                 left: '50%',
                 transform: 'translateX(-50%)',
                 width: 720,

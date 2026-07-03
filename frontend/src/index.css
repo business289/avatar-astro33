@@ -67,7 +67,7 @@
   }
 
   body {
-    background: #020B1F;
+    background: #081426;
     margin: 0;
     @apply text-foreground antialiased;
     font-family: 'Iceland', sans-serif;
@@ -98,6 +98,7 @@
   /* Offer card — zoom is isolated to .offer-card-img-wrap */
   .offer-card {
     isolation: isolate;
+    background: #08111f;
   }
   .offer-card-img-wrap {
     position: absolute;
@@ -109,7 +110,7 @@
   .offer-card-img-wrap img {
     width: 100%;
     height: 100%;
-    object-fit: cover;
+    object-fit: contain;
     object-position: center center;
     display: block;
     transform: scale(1);
@@ -117,7 +118,7 @@
     will-change: transform;
   }
   .offer-card:hover .offer-card-img-wrap img {
-    transform: scale(1.02);
+    transform: scale(1.06);
   }
   /* Content layer always above the image */
   .offer-card-content {

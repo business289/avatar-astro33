@@ -81,7 +81,7 @@ export const ZodiacWheelSection = () => {
   return (
     <section
       className="relative z-10 overflow-hidden"
-      style={{ background: '#040C25', padding: '80px 0 100px' }}
+      style={{ background: 'transparent', padding: '80px 0 100px' }}
     >
       {/* Fixed ambient glow — same blue for every sign */}
       <div className="absolute inset-0 pointer-events-none">
