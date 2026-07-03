@@ -85,10 +85,10 @@ const NavDropdown = ({ label, menuId, items, currentPath }: DropdownProps) => {
         aria-controls={menuId}
         onKeyDown={onTriggerKey}
         onClick={() => setOpen((v) => !v)}
-        className={`relative flex items-center gap-1 font-body text-sm tracking-wide transition-colors duration-300
-          focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2
+        className={`relative flex items-center gap-1.5 font-sans text-xs font-semibold tracking-wider transition-colors duration-300
+          focus:outline-none focus-visible:ring-2 focus-visible:ring-[#BC6A4D] focus-visible:ring-offset-2
           focus-visible:ring-offset-background rounded-sm
-          ${isActive ? "text-primary" : "text-foreground/70 hover:text-primary"}`}
+          ${isActive ? "text-[#BC6A4D]" : "text-foreground/70 hover:text-[#BC6A4D]"}`}
       >
         {label}
         <ChevronDown
@@ -97,7 +97,7 @@ const NavDropdown = ({ label, menuId, items, currentPath }: DropdownProps) => {
           className={`transition-transform duration-200 ${open ? "rotate-180" : ""}`}
         />
         {isActive && (
-          <span className="absolute -bottom-1 left-0 right-0 h-px bg-primary opacity-60" />
+          <span className="absolute -bottom-1 left-0 right-0 h-[2px] bg-[#BC6A4D] rounded-full" />
         )}
       </button>
 
@@ -120,10 +120,10 @@ const NavDropdown = ({ label, menuId, items, currentPath }: DropdownProps) => {
                 tabIndex={open ? 0 : -1}
                 onKeyDown={(e) => onItemKey(e, i)}
                 className={`block px-4 py-2.5 font-body text-sm tracking-wide transition-colors duration-200
-                  focus:outline-none focus-visible:bg-primary/10
+                  focus:outline-none focus-visible:bg-[#BC6A4D]/10
                   ${currentPath === item.path
-                    ? "text-primary bg-primary/10"
-                    : "text-foreground/70 hover:text-primary hover:bg-primary/10"
+                    ? "text-[#BC6A4D] bg-[#BC6A4D]/10"
+                    : "text-foreground/70 hover:text-[#BC6A4D] hover:bg-[#BC6A4D]/10"
                   }`}
               >
                 {item.name}
@@ -153,9 +153,9 @@ const MobileAccordion = ({ label, items, currentPath, onNavigate }: MobileAccord
       <button
         aria-expanded={open}
         onClick={() => setOpen((v) => !v)}
-        className={`w-full flex items-center justify-between font-body text-lg px-2 py-2 rounded-lg
+        className={`w-full flex items-center justify-between font-sans text-base font-medium px-2 py-2 rounded-lg
           transition-colors duration-300 focus:outline-none
-          ${isActive ? "text-primary" : "text-foreground/70 hover:text-primary"}`}
+          ${isActive ? "text-[#BC6A4D]" : "text-foreground/70 hover:text-[#BC6A4D]"}`}
       >
         {label}
         <ChevronDown
@@ -171,8 +171,8 @@ const MobileAccordion = ({ label, items, currentPath, onNavigate }: MobileAccord
               key={item.path}
               to={item.path}
               onClick={onNavigate}
-              className={`font-body text-base py-1.5 transition-colors duration-300 ${
-                currentPath === item.path ? "text-primary" : "text-foreground/70 hover:text-primary"
+              className={`font-sans text-sm py-1.5 transition-colors duration-300 ${
+                currentPath === item.path ? "text-[#BC6A4D]" : "text-foreground/70 hover:text-[#BC6A4D]"
               }`}
             >
               {item.name}
@@ -211,8 +211,8 @@ const Navbar = () => {
   }, [location.pathname]);
 
   const desktopLinkCls = (active: boolean) =>
-    `relative font-body text-sm tracking-wide transition-colors duration-300 ${
-      active ? "text-primary" : "text-foreground/70 hover:text-primary"
+    `relative font-sans text-xs font-semibold tracking-wider transition-colors duration-300 ${
+      active ? "text-[#BC6A4D]" : "text-foreground/70 hover:text-[#BC6A4D]"
     }`;
 
   return (
@@ -225,10 +225,16 @@ const Navbar = () => {
         <div className="flex items-center justify-between">
 
           {/* Logo */}
-          <Link to="/" className="flex items-center gap-2 group">
-            <Sparkles className="w-8 h-8 text-primary transition-transform duration-300 group-hover:rotate-12" />
-            <span className="font-display text-xl md:text-2xl text-glow text-primary">
-              S P I R I T U A L
+          <Link to="/" className="flex items-center gap-2 group select-none">
+            <svg
+              viewBox="0 0 24 24"
+              fill="currentColor"
+              className="w-5 h-5 text-[#BC6A4D] transition-transform duration-500 group-hover:rotate-90"
+            >
+              <path d="M12 2L14.8 9.2L22 12L14.8 14.8L12 22L9.2 14.8L2 12L9.2 9.2L12 2Z" />
+            </svg>
+            <span className="font-sans text-lg font-bold tracking-[0.25em] text-[#BC6A4D]">
+              SPIRITUAL
             </span>
           </Link>
 
@@ -238,7 +244,7 @@ const Navbar = () => {
             <Link to="/" className={desktopLinkCls(location.pathname === "/")}>
               Home
               {location.pathname === "/" && (
-                <span className="absolute -bottom-1 left-0 right-0 h-px bg-primary opacity-60" />
+                <span className="absolute -bottom-1 left-0 right-0 h-[2px] bg-[#BC6A4D] rounded-full" />
               )}
             </Link>
 
@@ -260,7 +266,7 @@ const Navbar = () => {
               <Link key={link.path} to={link.path} className={desktopLinkCls(location.pathname === link.path)}>
                 {link.name}
                 {location.pathname === link.path && (
-                  <span className="absolute -bottom-1 left-0 right-0 h-px bg-primary opacity-60" />
+                  <span className="absolute -bottom-1 left-0 right-0 h-[2px] bg-[#BC6A4D] rounded-full" />
                 )}
               </Link>
             ))}
@@ -286,8 +292,8 @@ const Navbar = () => {
               <Link
                 to="/"
                 onClick={() => setIsOpen(false)}
-                className={`mobile-nav-link font-body text-lg px-2 py-2 rounded-lg transition-colors duration-300 ${
-                  location.pathname === "/" ? "text-primary" : "text-foreground/70 hover:text-primary"
+                className={`mobile-nav-link font-sans text-base font-medium px-2 py-2 rounded-lg transition-colors duration-300 ${
+                  location.pathname === "/" ? "text-[#BC6A4D]" : "text-foreground/70 hover:text-[#BC6A4D]"
                 }`}
               >
                 Home
@@ -312,8 +318,8 @@ const Navbar = () => {
                   key={link.path}
                   to={link.path}
                   onClick={() => setIsOpen(false)}
-                  className={`mobile-nav-link font-body text-lg px-2 py-2 rounded-lg transition-colors duration-300 ${
-                    location.pathname === link.path ? "text-primary" : "text-foreground/70 hover:text-primary"
+                  className={`mobile-nav-link font-sans text-base font-medium px-2 py-2 rounded-lg transition-colors duration-300 ${
+                    location.pathname === link.path ? "text-[#BC6A4D]" : "text-foreground/70 hover:text-[#BC6A4D]"
                   }`}
                 >
                   {link.name}

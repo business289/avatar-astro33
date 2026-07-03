@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400" width="600" height="400">
+  <defs>
+    <radialGradient id="bg" cx="50%" cy="50%" r="70%">
+      <stop offset="0%" stop-color="#0e1a2a"/>
+      <stop offset="100%" stop-color="#0b0d15"/>
+    </radialGradient>
+    <radialGradient id="glow" cx="50%" cy="50%" r="45%">
+      <stop offset="0%" stop-color="#3a6ea8" stop-opacity="0.3"/>
+      <stop offset="100%" stop-color="#3a6ea8" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="600" height="400" fill="url(#bg)"/>
+  <circle cx="300" cy="200" r="170" fill="url(#glow)"/>
+  <!-- Outer square frame -->
+  <rect x="100" y="30" width="400" height="340" fill="none" stroke="#3a6ea8" stroke-width="0.8" stroke-opacity="0.5"/>
+  <!-- Inner circles (traditional chart) -->
+  <circle cx="300" cy="200" r="150" fill="none" stroke="#3a6ea8" stroke-width="0.8" stroke-opacity="0.6"/>
+  <circle cx="300" cy="200" r="120" fill="none" stroke="#3a6ea8" stroke-width="0.5" stroke-opacity="0.4"/>
+  <circle cx="300" cy="200" r="90" fill="none" stroke="#3a6ea8" stroke-width="0.5" stroke-opacity="0.35"/>
+  <circle cx="300" cy="200" r="55" fill="none" stroke="#3a6ea8" stroke-width="0.5" stroke-opacity="0.3"/>
+  <!-- Cross lines in center -->
+  <line x1="150" y1="200" x2="450" y2="200" stroke="#3a6ea8" stroke-width="0.6" stroke-opacity="0.4"/>
+  <line x1="300" y1="50" x2="300" y2="350" stroke="#3a6ea8" stroke-width="0.6" stroke-opacity="0.4"/>
+  <line x1="194" y1="94" x2="406" y2="306" stroke="#3a6ea8" stroke-width="0.5" stroke-opacity="0.3"/>
+  <line x1="406" y1="94" x2="194" y2="306" stroke="#3a6ea8" stroke-width="0.5" stroke-opacity="0.3"/>
+  <!-- Corner diagonal lines to center (traditional chart houses) -->
+  <line x1="100" y1="30" x2="300" y2="200" stroke="#3a6ea8" stroke-width="0.5" stroke-opacity="0.25"/>
+  <line x1="500" y1="30" x2="300" y2="200" stroke="#3a6ea8" stroke-width="0.5" stroke-opacity="0.25"/>
+  <line x1="100" y1="370" x2="300" y2="200" stroke="#3a6ea8" stroke-width="0.5" stroke-opacity="0.25"/>
+  <line x1="500" y1="370" x2="300" y2="200" stroke="#3a6ea8" stroke-width="0.5" stroke-opacity="0.25"/>
+  <!-- Midpoint lines -->
+  <line x1="100" y1="200" x2="300" y2="200" stroke="#3a6ea8" stroke-width="0.4" stroke-opacity="0.2"/>
+  <line x1="500" y1="200" x2="300" y2="200" stroke="#3a6ea8" stroke-width="0.4" stroke-opacity="0.2"/>
+  <line x1="300" y1="30" x2="300" y2="200" stroke="#3a6ea8" stroke-width="0.4" stroke-opacity="0.2"/>
+  <line x1="300" y1="370" x2="300" y2="200" stroke="#3a6ea8" stroke-width="0.4" stroke-opacity="0.2"/>
+  <!-- Planet positions (dots with symbols) -->
+  <circle cx="300" cy="70" r="4" fill="#f5c36a" fill-opacity="0.9"/>
+  <text x="310" y="68" font-size="10" fill="#f5c36a" fill-opacity="0.8" font-family="serif">☉</text>
+  <circle cx="420" cy="130" r="3" fill="#f5c36a" fill-opacity="0.7"/>
+  <text x="428" y="128" font-size="10" fill="#f5c36a" fill-opacity="0.7" font-family="serif">☽</text>
+  <circle cx="200" cy="290" r="3" fill="#f5c36a" fill-opacity="0.7"/>
+  <text x="208" y="288" font-size="10" fill="#f5c36a" fill-opacity="0.7" font-family="serif">♀</text>
+  <circle cx="380" cy="310" r="3" fill="#f5c36a" fill-opacity="0.7"/>
+  <text x="388" y="308" font-size="10" fill="#f5c36a" fill-opacity="0.7" font-family="serif">♂</text>
+  <circle cx="170" cy="150" r="3" fill="#f5c36a" fill-opacity="0.7"/>
+  <text x="178" y="148" font-size="10" fill="#f5c36a" fill-opacity="0.7" font-family="serif">♃</text>
+  <!-- Aspect lines between planets -->
+  <line x1="300" y1="70" x2="420" y2="130" stroke="#f5c36a" stroke-width="0.5" stroke-opacity="0.3"/>
+  <line x1="300" y1="70" x2="200" y2="290" stroke="#3a6ea8" stroke-width="0.5" stroke-opacity="0.3"/>
+  <line x1="420" y1="130" x2="380" y2="310" stroke="#f5c36a" stroke-width="0.5" stroke-opacity="0.25"/>
+  <!-- Center symbol -->
+  <text x="300" y="210" text-anchor="middle" font-size="20" fill="#3a6ea8" fill-opacity="0.8" font-family="serif">✦</text>
+  <!-- Stars background -->
+  <circle cx="80" cy="60" r="1.5" fill="#f5c36a" fill-opacity="0.6"/>
+  <circle cx="520" cy="340" r="1.5" fill="#f5c36a" fill-opacity="0.5"/>
+  <circle cx="550" cy="80" r="1" fill="#f5c36a" fill-opacity="0.5"/>
+  <circle cx="60" cy="320" r="1" fill="#f5c36a" fill-opacity="0.5"/>
+</svg>

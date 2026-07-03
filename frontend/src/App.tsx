@@ -23,6 +23,7 @@ import InnerVoiceDashboard from "./pages/InnerVoiceDashboard";
 import InnerVoiceJournal from "./pages/InnerVoiceJournal";
 import InnerVoiceWisdom from "./pages/InnerVoiceWisdom";
 import TarotExperience from "./pages/TarotExperience";
+import SolarSystem from "./pages/SolarSystem";
 import NotFound from "./pages/NotFound";
 import CosmicBackground from "./components/CosmicBackground";
 
@@ -178,15 +179,28 @@ const AnimatedRoutes = () => {
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
-      <CosmicBackground />
-      <Toaster />
-      <Sonner />
       <BrowserRouter>
-        <NavigationProvider>
-          <Layout>
-            <AnimatedRoutes />
-          </Layout>
-        </NavigationProvider>
+        <Routes>
+          {/* Full-screen standalone pages (no Layout/Navbar) */}
+          <Route path="/solar-system" element={<SolarSystem />} />
+
+          {/* All other pages with Layout */}
+          <Route
+            path="*"
+            element={
+              <>
+                <CosmicBackground />
+                <Toaster />
+                <Sonner />
+                <NavigationProvider>
+                  <Layout>
+                    <AnimatedRoutes />
+                  </Layout>
+                </NavigationProvider>
+              </>
+            }
+          />
+        </Routes>
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>

@@ -88,6 +88,8 @@ const RealisticStarfield = () => {
         }
       });
 
+      
+
       for (let i = 0; i < 5; i++) {
         heroStarsRef.current.push({
           x: (Math.random() - 0.5) * width * 0.45,

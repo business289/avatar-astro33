@@ -33,6 +33,28 @@ export interface Planet {
 
 export const PLANETS: Planet[] = [
   {
+    id: 'sun',
+    name: 'Sun',
+    color: '#fff8e0',
+    size: 109,
+    orbitRadius: 0,
+    speed: 0.01,
+    rotationTilt: 0.127,
+    spiritualMeaning: 'Soul, self-expression, vitality, and divine consciousness (Surya)',
+    ruledZodiacs: ['leo'],
+  },
+  {
+    id: 'moon',
+    name: 'Moon',
+    color: '#d8d8d8',
+    size: 0.27,
+    orbitRadius: 0,
+    speed: 0.3,
+    rotationTilt: 0.026,
+    spiritualMeaning: 'Mind, emotions, intuition, and divine feminine energy (Chandra)',
+    ruledZodiacs: ['cancer'],
+  },
+  {
     id: 'mercury',
     name: 'Mercury',
     color: '#b8a898',

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Send, Check } from 'lucide-react';
+import { Check } from 'lucide-react';
 
 const NewsletterForm = () => {
   const [email, setEmail] = useState('');
@@ -9,45 +9,65 @@ const NewsletterForm = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email) return;
-
     setIsLoading(true);
-    // Simulate API call
     await new Promise(resolve => setTimeout(resolve, 1000));
     setIsLoading(false);
     setIsSubmitted(true);
     setEmail('');
-
-    // Reset after 3 seconds
     setTimeout(() => setIsSubmitted(false), 3000);
   };
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
+    <form
+      onSubmit={handleSubmit}
+      style={{ display: 'flex', flexDirection: 'row', gap: 16, alignItems: 'center' }}
+    >
       <input
         type="email"
         value={email}
         onChange={(e) => setEmail(e.target.value)}
         placeholder="Enter your email"
-        className="input-cosmic flex-1 px-4 py-3 rounded-lg text-foreground placeholder:text-muted-foreground"
         required
+        style={{
+          width: 380,
+          height: 60,
+          padding: '0 24px',
+          borderRadius: 12,
+          border: '1px solid #BC6A4D',
+          background: 'rgba(255,255,255,0.04)',
+          color: '#ffffff',
+          fontSize: 16,
+          outline: 'none',
+        }}
+        className="placeholder:text-white/35"
       />
       <button
         type="submit"
         disabled={isLoading || isSubmitted}
-        className="btn-cosmic px-6 py-3 rounded-lg inline-flex items-center justify-center gap-2 disabled:opacity-70"
+        style={{
+          width: 180,
+          height: 60,
+          borderRadius: 12,
+          background: '#BC6A4D',
+          color: '#ffffff',
+          fontSize: 16,
+          fontWeight: 500,
+          border: 'none',
+          cursor: 'pointer',
+          flexShrink: 0,
+          opacity: isLoading || isSubmitted ? 0.75 : 1,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          gap: 8,
+        }}
       >
         {isSubmitted ? (
-          <>
-            <Check className="w-4 h-4" />
-            Subscribed!
-          </>
+          <><Check size={16} /> Subscribed!</>
         ) : isLoading ? (
           <span className="animate-spin">✦</span>
         ) : (
-          <>
-            <Send className="w-4 h-4" />
-            Subscribe
-          </>
+          'Subscribe'
         )}
       </button>
     </form>

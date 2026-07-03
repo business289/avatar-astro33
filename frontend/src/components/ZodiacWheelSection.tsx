@@ -1,11 +1,9 @@
-import { useState, useRef, useEffect, useCallback } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import gsap from 'gsap';
-import { ArrowRight, Flame, Mountain, Wind, Droplets } from 'lucide-react';
+import { ArrowRight, ChevronLeft, ChevronRight } from 'lucide-react';
 import { zodiacSigns, ZodiacSign } from '@/data/zodiacData';
 
-// Import zodiac line-art images
 import ariesImg from '@/assets/zodiac/aries.png';
 import taurusImg from '@/assets/zodiac/taurus.png';
 import geminiImg from '@/assets/zodiac/gemini.png';
@@ -19,363 +17,284 @@ import capricornImg from '@/assets/zodiac/capricorn.png';
 import aquariusImg from '@/assets/zodiac/aquarius.png';
 import piscesImg from '@/assets/zodiac/pisces.png';
 
-// Zodiac images mapping
 const zodiacImages: Record<string, string> = {
-  Aries: ariesImg,
-  Taurus: taurusImg,
-  Gemini: geminiImg,
-  Cancer: cancerImg,
-  Leo: leoImg,
-  Virgo: virgoImg,
-  Libra: libraImg,
-  Scorpio: scorpioImg,
-  Sagittarius: sagittariusImg,
-  Capricorn: capricornImg,
-  Aquarius: aquariusImg,
-  Pisces: piscesImg,
+  Aries: ariesImg, Taurus: taurusImg, Gemini: geminiImg, Cancer: cancerImg,
+  Leo: leoImg, Virgo: virgoImg, Libra: libraImg, Scorpio: scorpioImg,
+  Sagittarius: sagittariusImg, Capricorn: capricornImg, Aquarius: aquariusImg, Pisces: piscesImg,
 };
 
-// Element icons mapping
-const elementIcons = {
-  Fire: Flame,
-  Earth: Mountain,
-  Air: Wind,
-  Water: Droplets,
-};
+const wrap = (index: number, length: number) => ((index % length) + length) % length;
 
-// Element colors
-const elementColors = {
-  Fire: 'text-orange-400',
-  Earth: 'text-green-400',
-  Air: 'text-sky-400',
-  Water: 'text-blue-400',
-};
+const AUTO_SLIDE_DELAY = 4500;
 
-const AUTO_CYCLE_INTERVAL = 5000; // 5 seconds between auto-cycles
-const INACTIVITY_TIMEOUT = 12000; // 12 seconds before resuming auto mode
+// Consistent blue glow — matches Capricorn reference image, identical for every sign
+const GLOW = '132, 168, 255';
+
+// Card position & style for each offset from center (-2 … +2)
+function getSlotAnimate(offset: number) {
+  if (offset === 0)             return { x: 0,    scale: 1.00, opacity: 1.00 };
+  if (Math.abs(offset) === 1)   return { x: offset * 295, scale: 0.72, opacity: 0.50 };
+  return                               { x: offset < 0 ? -640 : 640, scale: 0.55, opacity: 0.00 };
+}
 
 export const ZodiacWheelSection = () => {
   const navigate = useNavigate();
-  const [selectedSign, setSelectedSign] = useState<ZodiacSign>(zodiacSigns[0]);
-  const [isAutoMode, setIsAutoMode] = useState(true);
-  const [isAnimating, setIsAnimating] = useState(false);
-  
-  const wheelRef = useRef<HTMLDivElement>(null);
-  const rotationRef = useRef<gsap.core.Tween | null>(null);
-  const autoIntervalRef = useRef<NodeJS.Timeout | null>(null);
-  const inactivityTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-  const sectionRef = useRef<HTMLElement>(null);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [direction, setDirection]       = useState(1);
+  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  // Track direction in a ref so AnimatePresence initial/exit closures always read the latest value
+  const dirRef = useRef(1);
 
-  // Initialize continuous wheel rotation
-  useEffect(() => {
-    if (wheelRef.current) {
-      rotationRef.current = gsap.to(wheelRef.current, {
-        rotation: 360,
-        duration: 90,
-        ease: 'none',
-        repeat: -1,
-        transformOrigin: 'center center',
-      });
-    }
+  const current: ZodiacSign = zodiacSigns[currentIndex];
 
-    return () => {
-      rotationRef.current?.kill();
-    };
+  // ── Auto-slide ──────────────────────────────────────────────────────────────
+  const startAutoSlide = useCallback(() => {
+    if (timerRef.current) clearInterval(timerRef.current);
+    timerRef.current = setInterval(() => {
+      dirRef.current = 1;
+      setDirection(1);
+      setCurrentIndex(i => wrap(i + 1, zodiacSigns.length));
+    }, AUTO_SLIDE_DELAY);
   }, []);
 
-  // Get random zodiac (different from current)
-  const getRandomSign = useCallback(() => {
-    let newSign: ZodiacSign;
-    do {
-      const randomIndex = Math.floor(Math.random() * zodiacSigns.length);
-      newSign = zodiacSigns[randomIndex];
-    } while (newSign.name === selectedSign.name);
-    return newSign;
-  }, [selectedSign]);
-
-  // Auto-cycling logic
   useEffect(() => {
-    if (isAutoMode) {
-      autoIntervalRef.current = setInterval(() => {
-        if (!isAnimating) {
-          setIsAnimating(true);
-          const newSign = getRandomSign();
-          setTimeout(() => {
-            setSelectedSign(newSign);
-            setIsAnimating(false);
-          }, 150);
-        }
-      }, AUTO_CYCLE_INTERVAL);
-    }
+    startAutoSlide();
+    return () => { if (timerRef.current) clearInterval(timerRef.current); };
+  }, [startAutoSlide]);
 
-    return () => {
-      if (autoIntervalRef.current) {
-        clearInterval(autoIntervalRef.current);
-      }
-    };
-  }, [isAutoMode, getRandomSign, isAnimating]);
+  // ── Navigation ──────────────────────────────────────────────────────────────
+  const paginate = useCallback((dir: number) => {
+    dirRef.current = dir;
+    setDirection(dir);
+    setCurrentIndex(i => wrap(i + dir, zodiacSigns.length));
+    startAutoSlide();
+  }, [startAutoSlide]);
 
-  // Reset inactivity timeout
-  const resetInactivityTimeout = useCallback(() => {
-    if (inactivityTimeoutRef.current) {
-      clearTimeout(inactivityTimeoutRef.current);
-    }
-    inactivityTimeoutRef.current = setTimeout(() => {
-      setIsAutoMode(true);
-    }, INACTIVITY_TIMEOUT);
-  }, []);
-
-  // Handle sign click
-  const handleSignClick = useCallback((sign: ZodiacSign) => {
-    setIsAutoMode(false);
-    setIsAnimating(true);
-    
-    setTimeout(() => {
-      setSelectedSign(sign);
-      setIsAnimating(false);
-    }, 100);
-    
-    resetInactivityTimeout();
-  }, [resetInactivityTimeout]);
-
-  // Navigate to detail page with transition
-  const handleReadMore = useCallback(() => {
-    navigate(`/zodiac/${selectedSign.name.toLowerCase()}`);
-  }, [navigate, selectedSign]);
-
-  const ElementIcon = elementIcons[selectedSign.element];
+  const goToIndex = useCallback((target: number, from: number) => {
+    const d = target > from ? 1 : -1;
+    dirRef.current = d;
+    setDirection(d);
+    setCurrentIndex(target);
+    startAutoSlide();
+  }, [startAutoSlide]);
 
   return (
-    <section ref={sectionRef} className="relative z-10 py-16 bg-transparent overflow-hidden">
-      {/* Background cosmic effects */}
-      <div className="absolute inset-0 opacity-30 pointer-events-none">
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/5 rounded-full blur-[100px]" />
-        <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-primary/3 rounded-full blur-[80px]" />
+    <section
+      className="relative z-10 overflow-hidden"
+      style={{ background: '#040C25', padding: '80px 0 100px' }}
+    >
+      {/* Fixed ambient glow — same blue for every sign */}
+      <div className="absolute inset-0 pointer-events-none">
+        <div
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] rounded-full blur-[160px]"
+          style={{ background: `rgba(${GLOW}, 0.06)` }}
+        />
       </div>
 
-      <div className="container mx-auto px-4">
-        {/* Section header */}
-        <div className="text-center mb-12">
-          <h2 className="font-display text-4xl md:text-5xl lg:text-6xl tracking-wider text-glow text-primary mb-4">
-            The Twelve Zodiac Signs
-          </h2>
-          <p className="text-muted-foreground text-lg md:text-xl max-w-xl mx-auto tracking-wide">
-            Explore the cosmic wisdom of each celestial sign
-          </p>
-        </div>
+      {/* ── Header ── */}
+      <div className="text-center mb-16 px-4">
+        <h2
+          className="font-display tracking-wider leading-tight mb-4"
+          style={{ fontSize: 'clamp(40px, 6vw, 72px)' }}
+        >
+          <span className="text-white block">THE TWELVE</span>
+          <span className="block" style={{ color: '#BC6A4D' }}>ZODIAC SIGNS</span>
+        </h2>
+        <p className="text-white/55 text-lg tracking-wide">
+          Explore the cosmic wisdom of each celestial sign
+        </p>
+      </div>
 
-        {/* Main content - Left info + Right wheel */}
-        <div className="grid lg:grid-cols-2 gap-8 lg:gap-16 items-center min-h-[550px]">
-          {/* Left: Info Panel */}
-          <div className="order-2 lg:order-1">
-            <div className="rounded-3xl p-8 md:p-10 min-h-[420px] flex flex-col justify-center relative overflow-hidden bg-transparent border border-white/15" style={{ textShadow: '0 1px 8px hsla(0, 0%, 0%, 0.9)' }}>
-              {/* Decorative corners */}
-              <div className="absolute top-4 left-4 w-6 h-6 border-l border-t border-primary/40" />
-              <div className="absolute top-4 right-4 w-6 h-6 border-r border-t border-primary/40" />
-              <div className="absolute bottom-4 left-4 w-6 h-6 border-l border-b border-primary/40" />
-              <div className="absolute bottom-4 right-4 w-6 h-6 border-r border-b border-primary/40" />
+      {/* ── Carousel ── */}
+      <div className="relative">
 
-              {/* Auto mode indicator */}
-              <div className="absolute top-4 left-1/2 -translate-x-1/2">
-                <div className={`flex items-center gap-2 text-xs uppercase tracking-widest transition-opacity duration-300 ${isAutoMode ? 'opacity-60' : 'opacity-0'}`}>
-                  <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
-                  <span className="text-muted-foreground">Auto-exploring</span>
-                </div>
-              </div>
+        {/* Navigation arrows — outside overflow:hidden so they're never clipped */}
+        <button
+          onClick={() => paginate(-1)}
+          aria-label="Previous sign"
+          className="absolute left-4 md:left-10 z-30 w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300 hover:scale-110"
+          style={{
+            top: 130,
+            border: '1px solid rgba(188,106,77,0.4)',
+            background: 'rgba(188,106,77,0.08)',
+          }}
+        >
+          <ChevronLeft className="w-6 h-6" style={{ color: '#BC6A4D' }} />
+        </button>
+        <button
+          onClick={() => paginate(1)}
+          aria-label="Next sign"
+          className="absolute right-4 md:right-10 z-30 w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300 hover:scale-110"
+          style={{
+            top: 130,
+            border: '1px solid rgba(188,106,77,0.4)',
+            background: 'rgba(188,106,77,0.08)',
+          }}
+        >
+          <ChevronRight className="w-6 h-6" style={{ color: '#BC6A4D' }} />
+        </button>
 
-              <AnimatePresence mode="wait">
+        {/* Physical sliding card track — overflow:hidden clips off-screen cards */}
+        <div style={{ overflow: 'hidden', position: 'relative', height: 310 }}>
+          <AnimatePresence initial={false}>
+            {([-2, -1, 0, 1, 2] as const).map(offset => {
+              const idx    = wrap(currentIndex + offset, zodiacSigns.length);
+              const sign   = zodiacSigns[idx];
+              const isCenter = offset === 0;
+              const slotAnim = getSlotAnimate(offset);
+
+              return (
                 <motion.div
-                  key={selectedSign.name}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -10 }}
-                  transition={{ duration: 0.4, ease: 'easeOut' }}
-                  className="flex flex-col"
+                  key={sign.name}
+                  // Framer Motion smoothly transitions each card to its new slot position
+                  animate={slotAnim}
+                  // New cards entering the DOM start from off-screen in the direction of travel
+                  initial={{
+                    x: dirRef.current > 0 ? 720 : -720,
+                    scale: 0.50,
+                    opacity: 0,
+                  }}
+                  // Removed cards exit in the direction of travel
+                  exit={{
+                    x: dirRef.current > 0 ? -720 : 720,
+                    scale: 0.50,
+                    opacity: 0,
+                  }}
+                  transition={{ duration: 0.60, ease: [0.25, 0.10, 0.25, 1.00] }}
+                  onClick={!isCenter ? () => paginate(offset > 0 ? 1 : -1) : undefined}
+                  style={{
+                    position: 'absolute',
+                    top: '50%',
+                    left: '50%',
+                    width: 280,
+                    height: 280,
+                    marginLeft: -140,
+                    marginTop: -140,
+                    zIndex: isCenter ? 10 : Math.abs(offset) === 1 ? 5 : 1,
+                    cursor: !isCenter ? 'pointer' : 'default',
+                    // Off-screen cards: disable pointer events to avoid invisible click targets
+                    pointerEvents: Math.abs(offset) >= 2 ? 'none' : 'auto',
+                    borderRadius: 20,
+                    border: isCenter
+                      ? `1px solid rgba(${GLOW}, 0.35)`
+                      : `1px solid rgba(${GLOW}, 0.10)`,
+                    boxShadow: isCenter
+                      ? [
+                          `0 0 12px rgba(${GLOW}, 0.18)`,
+                          `0 0 30px rgba(${GLOW}, 0.10)`,
+                          `inset 0 0 10px rgba(${GLOW}, 0.05)`,
+                        ].join(', ')
+                      : 'none',
+                    background: isCenter
+                      ? `rgba(${GLOW}, 0.04)`
+                      : `rgba(${GLOW}, 0.01)`,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}
                 >
-                  {/* Element badge */}
-                  <div className="flex items-center gap-2 mb-4">
-                    <ElementIcon className={`w-5 h-5 ${elementColors[selectedSign.element]}`} />
-                    <span className={`text-base uppercase tracking-[0.2em] ${elementColors[selectedSign.element]}`}>
-                      {selectedSign.element} Element
-                    </span>
-                  </div>
-
-                  {/* Zodiac image + name */}
-                  <div className="flex items-center gap-5 mb-4">
-                    <div className="w-20 h-20 relative flex-shrink-0">
-                      <img 
-                        src={zodiacImages[selectedSign.name]} 
-                        alt={selectedSign.name}
-                        className="w-full h-full object-contain filter drop-shadow-[0_0_10px_rgba(245,195,106,0.4)]"
-                      />
-                    </div>
-                    <div>
-                      <h3 className="font-display text-3xl md:text-4xl tracking-wider text-foreground">
-                        {selectedSign.name}
-                      </h3>
-                      <p className="text-muted-foreground text-lg tracking-wide">
-                        {selectedSign.dates}
-                      </p>
-                    </div>
-                  </div>
-
-                  {/* Ruling planet */}
-                  <div className="text-base text-muted-foreground mb-4">
-                    Ruled by <span className="text-primary">{selectedSign.ruling}</span>
-                  </div>
-
-                  {/* Description */}
-                  <p className="text-foreground/90 text-base md:text-lg leading-relaxed mb-6">
-                    {selectedSign.description}
-                  </p>
-
-                  {/* Traits preview */}
-                  <div className="flex flex-wrap gap-2 mb-8">
-                    {selectedSign.traits.slice(0, 4).map((trait, index) => (
-                      <span 
-                        key={index}
-                        className="px-3 py-1 text-sm rounded-full border border-primary/30 text-primary/80 bg-primary/5"
-                      >
-                        {trait}
-                      </span>
-                    ))}
-                  </div>
-
-                  {/* Read more button */}
-                  <motion.button
-                    onClick={handleReadMore}
-                    className="btn-outline-cosmic btn-pulse px-6 py-3 rounded-lg inline-flex items-center gap-2 w-fit group"
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                  >
-                    <span>Read Full Profile</span>
-                    <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                  </motion.button>
-                </motion.div>
-              </AnimatePresence>
-            </div>
-          </div>
-
-          {/* Right: Zodiac Wheel */}
-          <div className="order-1 lg:order-2 flex items-center justify-center">
-            <div className="relative w-full max-w-[520px] aspect-square">
-              {/* Outer static decorative ring */}
-              <div className="absolute inset-0 rounded-full border border-primary/10" />
-              <div className="absolute inset-[5%] rounded-full border border-primary/15" />
-              
-              {/* Rotating wheel container */}
-              <div 
-                ref={wheelRef}
-                className="absolute inset-[10%] rounded-full"
-              >
-                {/* Inner circles */}
-                <div className="absolute inset-0 rounded-full border border-primary/20" />
-                <div className="absolute inset-[15%] rounded-full border border-primary/15 border-dashed" />
-                <div className="absolute inset-[35%] rounded-full border border-primary/10" />
-                
-                {/* Division lines */}
-                {Array.from({ length: 12 }).map((_, i) => (
-                  <div
-                    key={`line-${i}`}
-                    className="absolute top-1/2 left-1/2 w-1/2 h-px bg-gradient-to-r from-transparent via-primary/15 to-primary/5 origin-left"
-                    style={{ transform: `rotate(${i * 30}deg)` }}
+                  <img
+                    src={zodiacImages[sign.name]}
+                    alt={sign.name}
+                    draggable={false}
+                    style={{
+                      width: '92%',
+                      height: '92%',
+                      objectFit: 'contain',
+                      mixBlendMode: 'screen',
+                      userSelect: 'none',
+                      filter: isCenter
+                        ? `drop-shadow(0 0 18px rgba(${GLOW}, 0.35))`
+                        : undefined,
+                    }}
                   />
-                ))}
-
-                {/* Center glow */}
-                <div className="absolute inset-[40%] rounded-full bg-gradient-radial from-primary/10 to-transparent" />
-                
-                {/* Zodiac icons positioned in a proper circle */}
-                {zodiacSigns.map((sign, index) => {
-                  const angle = (index * 30 - 90) * (Math.PI / 180);
-                  const radius = 42; // percentage from center
-                  const x = 50 + Math.cos(angle) * radius;
-                  const y = 50 + Math.sin(angle) * radius;
-                  const isSelected = selectedSign.name === sign.name;
-                  
-                  return (
-                    <button
-                      key={sign.name}
-                      onClick={() => handleSignClick(sign)}
-                      className="absolute -translate-x-1/2 -translate-y-1/2 transition-all duration-300 focus:outline-none group"
-                      style={{
-                        left: `${x}%`,
-                        top: `${y}%`,
-                      }}
-                    >
-                      {/* Just the icon with glow - no card */}
-                      <img 
-                        src={zodiacImages[sign.name]}
-                        alt={sign.name}
-                        className={`
-                          w-10 h-10 md:w-12 md:h-12 object-contain
-                          transition-all duration-300
-                          ${isSelected 
-                            ? 'scale-125 filter brightness-125' 
-                            : 'scale-100 filter brightness-90 group-hover:brightness-110 group-hover:scale-110'
-                          }
-                        `}
-                        style={{
-                          filter: isSelected 
-                            ? 'drop-shadow(0 0 15px rgba(245, 195, 106, 0.7)) drop-shadow(0 0 30px rgba(245, 195, 106, 0.4))' 
-                            : 'drop-shadow(0 0 6px rgba(245, 195, 106, 0.3))'
-                        }}
-                      />
-                    </button>
-                  );
-                })}
-              </div>
-
-              {/* Center sun icon (static) */}
-              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-16 h-16 rounded-full bg-gradient-radial from-primary/20 to-transparent flex items-center justify-center">
-                <span className="text-3xl text-primary drop-shadow-[0_0_10px_rgba(245,195,106,0.5)]">☉</span>
-              </div>
-
-              {/* Outer zodiac name labels (static) */}
-              <div className="absolute inset-0 pointer-events-none">
-                {zodiacSigns.map((sign, index) => {
-                  const angle = index * 30 - 90;
-                  const radius = 49;
-                  const x = 50 + Math.cos(angle * Math.PI / 180) * radius;
-                  const y = 50 + Math.sin(angle * Math.PI / 180) * radius;
-                  const isSelected = selectedSign.name === sign.name;
-                  
-                  return (
-                    <span
-                      key={`label-${sign.name}`}
-                      className={`
-                        absolute font-display text-[10px] uppercase tracking-[0.1em]
-                        transition-all duration-300
-                        ${isSelected ? 'text-primary' : 'text-primary/40'}
-                      `}
-                      style={{
-                        left: `${x}%`,
-                        top: `${y}%`,
-                        transform: 'translate(-50%, -50%)',
-                      }}
-                    >
-                      {sign.name}
-                    </span>
-                  );
-                })}
-              </div>
-
-              {/* Decorative corner stars */}
-              {[
-                { top: '5%', left: '10%' },
-                { top: '8%', right: '15%' },
-                { bottom: '10%', left: '8%' },
-                { bottom: '15%', right: '12%' },
-              ].map((pos, i) => (
-                <div 
-                  key={`star-${i}`}
-                  className="absolute w-1.5 h-1.5 rounded-full bg-primary/50 animate-pulse"
-                  style={{ ...pos, animationDelay: `${i * 0.5}s` }}
-                />
-              ))}
-            </div>
-          </div>
+                </motion.div>
+              );
+            })}
+          </AnimatePresence>
         </div>
+
+        {/* Text content — fades independently so it doesn't interfere with card physics */}
+        <div className="relative text-center" style={{ zIndex: 20, marginTop: 28 }}>
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={current.name + '-text'}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.38, ease: 'easeInOut' }}
+            >
+              {/* Sign name */}
+              <h3
+                className="font-display text-white tracking-[0.2em] mb-1"
+                style={{ fontSize: 36 }}
+              >
+                {current.name.toUpperCase()}
+              </h3>
+
+              {/* Dates */}
+              <p
+                className="tracking-widest uppercase mb-6 text-sm"
+                style={{ color: 'rgba(255,255,255,0.5)' }}
+              >
+                {current.dates}
+              </p>
+
+              {/* Trait pills */}
+              <div className="flex flex-wrap justify-center gap-2 mb-8">
+                {current.traits.slice(0, 4).map((trait, i) => (
+                  <span
+                    key={i}
+                    className="px-4 py-1.5 text-sm rounded-full"
+                    style={{
+                      border: '1px solid rgba(188,106,77,0.35)',
+                      color: 'rgba(188,106,77,0.9)',
+                      background: 'rgba(188,106,77,0.08)',
+                      fontFamily: "'Iceland', 'Cinzel', sans-serif",
+                      letterSpacing: '0.08em',
+                    }}
+                  >
+                    {trait}
+                  </span>
+                ))}
+              </div>
+
+              {/* Read full profile */}
+              <button
+                onClick={() => navigate(`/zodiac/${current.name.toLowerCase()}`)}
+                className="inline-flex items-center gap-2 transition-opacity hover:opacity-70"
+                style={{
+                  color: 'white',
+                  fontFamily: "'Iceland', 'Cinzel', sans-serif",
+                  fontSize: 16,
+                  letterSpacing: '0.1em',
+                }}
+              >
+                Read Full Profile
+                <ArrowRight className="w-4 h-4" />
+              </button>
+            </motion.div>
+          </AnimatePresence>
+        </div>
+      </div>
+
+      {/* ── Dot indicators ── */}
+      <div className="flex justify-center gap-2 mt-10">
+        {zodiacSigns.map((_, i) => (
+          <button
+            key={i}
+            onClick={() => goToIndex(i, currentIndex)}
+            aria-label={zodiacSigns[i].name}
+            className="rounded-full transition-all duration-300"
+            style={{
+              width: i === currentIndex ? 24 : 6,
+              height: 6,
+              background: i === currentIndex
+                ? '#BC6A4D'
+                : 'rgba(188,106,77,0.25)',
+            }}
+          />
+        ))}
       </div>
     </section>
   );

@@ -39,15 +39,15 @@ const StarField = () => {
     };
 
     const initStars = () => {
-      const starCount = Math.floor((canvas.width * canvas.height) / 8000);
+      const starCount = Math.floor((canvas.width * canvas.height) / 26000);
       starsRef.current = [];
-      
+
       for (let i = 0; i < starCount; i++) {
         starsRef.current.push({
           x: Math.random() * canvas.width,
           y: Math.random() * canvas.height,
-          size: Math.random() * 1.5 + 0.5,
-          opacity: Math.random() * 0.8 + 0.2,
+          size: Math.random() * 1.2 + 0.3,
+          opacity: Math.random() * 0.5 + 0.15,
           twinkleSpeed: Math.random() * 0.02 + 0.005,
         });
       }
@@ -55,20 +55,20 @@ const StarField = () => {
 
     const initConstellations = () => {
       constellationLinesRef.current = [];
-      const lineCount = Math.floor((canvas.width * canvas.height) / 100000);
-      
+      const lineCount = Math.floor((canvas.width * canvas.height) / 400000);
+
       for (let i = 0; i < lineCount; i++) {
         const x1 = Math.random() * canvas.width;
         const y1 = Math.random() * canvas.height;
         const angle = Math.random() * Math.PI * 2;
         const length = Math.random() * 100 + 50;
-        
+
         constellationLinesRef.current.push({
           x1,
           y1,
           x2: x1 + Math.cos(angle) * length,
           y2: y1 + Math.sin(angle) * length,
-          opacity: Math.random() * 0.15 + 0.05,
+          opacity: Math.random() * 0.07 + 0.02,
         });
       }
     };
@@ -81,7 +81,7 @@ const StarField = () => {
       // Draw constellation lines
       constellationLinesRef.current.forEach((line) => {
         ctx.beginPath();
-        ctx.strokeStyle = `rgba(245, 195, 106, ${line.opacity})`;
+        ctx.strokeStyle = `rgba(188, 106, 77, ${line.opacity})`;
         ctx.lineWidth = 0.5;
         ctx.setLineDash([4, 8]);
         ctx.moveTo(line.x1, line.y1);
@@ -109,9 +109,9 @@ const StarField = () => {
             star.x + parallaxX, star.y + parallaxY, 0,
             star.x + parallaxX, star.y + parallaxY, star.size * 3
           );
-          gradient.addColorStop(0, `rgba(245, 195, 106, ${opacity})`);
-          gradient.addColorStop(0.5, `rgba(245, 195, 106, ${opacity * 0.3})`);
-          gradient.addColorStop(1, 'rgba(245, 195, 106, 0)');
+          gradient.addColorStop(0, `rgba(188, 106, 77, ${opacity})`);
+          gradient.addColorStop(0.5, `rgba(188, 106, 77, ${opacity * 0.3})`);
+          gradient.addColorStop(1, 'rgba(188, 106, 77, 0)');
           ctx.fillStyle = gradient;
           ctx.arc(star.x + parallaxX, star.y + parallaxY, star.size * 3, 0, Math.PI * 2);
         } else {

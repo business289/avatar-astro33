@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400" width="600" height="400">
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#0b0d15"/>
+      <stop offset="60%" stop-color="#111827"/>
+      <stop offset="100%" stop-color="#1a0f05"/>
+    </linearGradient>
+    <radialGradient id="moonGlow" cx="70%" cy="20%" r="25%">
+      <stop offset="0%" stop-color="#f5c36a" stop-opacity="0.3"/>
+      <stop offset="100%" stop-color="#f5c36a" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="600" height="400" fill="url(#sky)"/>
+  <circle cx="420" cy="80" r="60" fill="url(#moonGlow)"/>
+  <!-- Stars -->
+  <circle cx="60" cy="40" r="1.5" fill="#f5c36a" fill-opacity="0.9"/>
+  <circle cx="180" cy="25" r="1" fill="#f5c36a" fill-opacity="0.7"/>
+  <circle cx="300" cy="50" r="2" fill="#f5c36a" fill-opacity="0.8"/>
+  <circle cx="140" cy="70" r="1" fill="#f5c36a" fill-opacity="0.6"/>
+  <circle cx="480" cy="30" r="1.5" fill="#f5c36a" fill-opacity="0.7"/>
+  <circle cx="540" cy="60" r="1" fill="#f5c36a" fill-opacity="0.5"/>
+  <circle cx="80" cy="120" r="1" fill="#f5c36a" fill-opacity="0.5"/>
+  <circle cx="350" cy="20" r="1.5" fill="#f5c36a" fill-opacity="0.8"/>
+  <circle cx="250" cy="80" r="1" fill="#f5c36a" fill-opacity="0.5"/>
+  <circle cx="500" cy="110" r="1" fill="#f5c36a" fill-opacity="0.4"/>
+  <!-- Constellation: Orion-like -->
+  <circle cx="100" cy="150" r="1.5" fill="#f5c36a" fill-opacity="0.7"/>
+  <circle cx="130" cy="130" r="2" fill="#f5c36a" fill-opacity="0.8"/>
+  <circle cx="160" cy="155" r="1.5" fill="#f5c36a" fill-opacity="0.7"/>
+  <circle cx="115" cy="175" r="1" fill="#f5c36a" fill-opacity="0.5"/>
+  <circle cx="145" cy="175" r="1" fill="#f5c36a" fill-opacity="0.5"/>
+  <line x1="100" y1="150" x2="130" y2="130" stroke="#f5c36a" stroke-width="0.5" stroke-opacity="0.35"/>
+  <line x1="130" y1="130" x2="160" y2="155" stroke="#f5c36a" stroke-width="0.5" stroke-opacity="0.35"/>
+  <line x1="100" y1="150" x2="115" y2="175" stroke="#f5c36a" stroke-width="0.5" stroke-opacity="0.25"/>
+  <line x1="160" y1="155" x2="145" y2="175" stroke="#f5c36a" stroke-width="0.5" stroke-opacity="0.25"/>
+  <!-- Moon -->
+  <circle cx="420" cy="80" r="32" fill="#1a1225"/>
+  <circle cx="432" cy="74" r="30" fill="#f5c36a" fill-opacity="0.12"/>
+  <path d="M420,48 Q395,80 420,112 Q450,80 420,48" fill="#f5c36a" fill-opacity="0.7"/>
+  <!-- Mountain silhouettes -->
+  <polygon points="0,400 120,200 240,400" fill="#0d0f1a"/>
+  <polygon points="100,400 240,180 380,400" fill="#0f1220"/>
+  <polygon points="220,400 360,210 500,400" fill="#0d0f1a"/>
+  <polygon points="350,400 480,220 600,400" fill="#0f1220"/>
+  <!-- Lighter ridge highlight -->
+  <polyline points="0,400 120,200 240,400" fill="none" stroke="#f5c36a" stroke-width="0.8" stroke-opacity="0.25"/>
+  <polyline points="100,400 240,180 380,400" fill="none" stroke="#f5c36a" stroke-width="0.8" stroke-opacity="0.2"/>
+  <polyline points="220,400 360,210 500,400" fill="none" stroke="#f5c36a" stroke-width="0.8" stroke-opacity="0.25"/>
+  <polyline points="350,400 480,220 600,400" fill="none" stroke="#f5c36a" stroke-width="0.8" stroke-opacity="0.2"/>
+  <!-- Human silhouette on peak -->
+  <ellipse cx="240" cy="175" rx="5" ry="7" fill="#f5c36a" fill-opacity="0.6"/>
+  <line x1="240" y1="182" x2="240" y2="196" stroke="#f5c36a" stroke-width="2" stroke-opacity="0.6"/>
+  <line x1="240" y1="186" x2="233" y2="193" stroke="#f5c36a" stroke-width="1.5" stroke-opacity="0.6"/>
+  <line x1="240" y1="186" x2="247" y2="193" stroke="#f5c36a" stroke-width="1.5" stroke-opacity="0.6"/>
+  <line x1="240" y1="196" x2="235" y2="206" stroke="#f5c36a" stroke-width="1.5" stroke-opacity="0.6"/>
+  <line x1="240" y1="196" x2="245" y2="206" stroke="#f5c36a" stroke-width="1.5" stroke-opacity="0.6"/>
+</svg>

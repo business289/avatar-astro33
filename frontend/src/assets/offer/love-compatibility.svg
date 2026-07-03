@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400" width="600" height="400">
+  <defs>
+    <radialGradient id="bg" cx="50%" cy="50%" r="70%">
+      <stop offset="0%" stop-color="#2a0e1e"/>
+      <stop offset="100%" stop-color="#0b0d15"/>
+    </radialGradient>
+    <radialGradient id="glowL" cx="35%" cy="50%" r="40%">
+      <stop offset="0%" stop-color="#c04060" stop-opacity="0.4"/>
+      <stop offset="100%" stop-color="#c04060" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="glowR" cx="65%" cy="50%" r="40%">
+      <stop offset="0%" stop-color="#c47a1a" stop-opacity="0.3"/>
+      <stop offset="100%" stop-color="#c47a1a" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="600" height="400" fill="url(#bg)"/>
+  <circle cx="210" cy="200" r="150" fill="url(#glowL)"/>
+  <circle cx="390" cy="200" r="150" fill="url(#glowR)"/>
+  <!-- Connecting orbit lines -->
+  <circle cx="210" cy="200" r="120" fill="none" stroke="#c04060" stroke-width="0.8" stroke-opacity="0.4" stroke-dasharray="3 5"/>
+  <circle cx="390" cy="200" r="120" fill="none" stroke="#c47a1a" stroke-width="0.8" stroke-opacity="0.4" stroke-dasharray="3 5"/>
+  <!-- Stars scattered -->
+  <circle cx="100" cy="80" r="1.5" fill="#f5c36a" fill-opacity="0.8"/>
+  <circle cx="500" cy="320" r="1.5" fill="#f5c36a" fill-opacity="0.7"/>
+  <circle cx="300" cy="50" r="2" fill="#f5c36a" fill-opacity="0.6"/>
+  <circle cx="80" cy="300" r="1" fill="#f5c36a" fill-opacity="0.5"/>
+  <circle cx="520" cy="100" r="1" fill="#f5c36a" fill-opacity="0.5"/>
+  <circle cx="300" cy="360" r="1.5" fill="#f5c36a" fill-opacity="0.6"/>
+  <circle cx="150" cy="350" r="1" fill="#f5c36a" fill-opacity="0.4"/>
+  <circle cx="450" cy="60" r="1" fill="#f5c36a" fill-opacity="0.4"/>
+  <!-- Two zodiac signs connected -->
+  <text x="155" y="215" text-anchor="middle" font-size="60" fill="#c04060" fill-opacity="0.85" font-family="serif">♀</text>
+  <text x="445" y="215" text-anchor="middle" font-size="60" fill="#c47a1a" fill-opacity="0.85" font-family="serif">♂</text>
+  <!-- Connecting line with heart -->
+  <line x1="210" y1="200" x2="390" y2="200" stroke="url(#glowL)" stroke-width="1" stroke-opacity="0.5" stroke-dasharray="4 4"/>
+  <text x="300" y="215" text-anchor="middle" font-size="28" fill="#c04060" fill-opacity="0.9" font-family="serif">♥</text>
+  <!-- Constellation dots -->
+  <circle cx="120" cy="140" r="2" fill="#f5c36a" fill-opacity="0.6"/>
+  <circle cx="180" cy="120" r="1.5" fill="#f5c36a" fill-opacity="0.5"/>
+  <circle cx="140" cy="160" r="1" fill="#f5c36a" fill-opacity="0.4"/>
+  <line x1="120" y1="140" x2="180" y2="120" stroke="#f5c36a" stroke-width="0.5" stroke-opacity="0.3"/>
+  <circle cx="420" cy="280" r="2" fill="#f5c36a" fill-opacity="0.6"/>
+  <circle cx="480" cy="260" r="1.5" fill="#f5c36a" fill-opacity="0.5"/>
+  <line x1="420" y1="280" x2="480" y2="260" stroke="#f5c36a" stroke-width="0.5" stroke-opacity="0.3"/>
+</svg>

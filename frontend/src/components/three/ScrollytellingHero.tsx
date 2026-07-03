@@ -4,11 +4,12 @@ import { Link } from "react-router-dom";
 import { ChevronDown } from "lucide-react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { useGSAP } from "@gsap/react";
 import { InteractiveSolarSystem } from "./InteractiveSolarSystem";
 import { PlanetInfoPanel } from "../PlanetInfoPanel";
 import { Planet, getDailyInfluence, PlanetaryInfluence, ZodiacSign } from "@/data/planetaryData";
 
-gsap.registerPlugin(ScrollTrigger);
+gsap.registerPlugin(ScrollTrigger, useGSAP);
 
 class PanelBoundary extends React.Component<
   { children: React.ReactNode },
@@ -96,17 +97,17 @@ export const ScrollytellingHero = () => {
   }, [selectedPlanet, userZodiac]);
 
   // ── GSAP pin + scroll-driven animation ──────────────────────────────
-  useEffect(() => {
+  useGSAP(() => {
     const section = sectionRef.current;
     if (!section) return;
 
-    const st = ScrollTrigger.create({
+    ScrollTrigger.create({
       trigger:    section,
       start:      "top top",
-      end:        "+=3000",       // 3 000 px of scroll while pinned
+      end:        "+=9000",       // 1 500 px × 6 transitions (Mercury → Sun → Moon → Mars → Saturn → Venus → Jupiter)
       pin:        true,
       pinSpacing: true,
-      scrub:      1,
+      scrub:      true,           // direct 1:1 mapping; Three.js lerp handles visual smoothing
       onUpdate:   (self) => {
         // ── Write progress directly — zero React overhead ──
         scrollRef.current.progress = self.progress;
@@ -143,8 +144,9 @@ export const ScrollytellingHero = () => {
       },
     });
 
-    return () => st.kill();
-  }, []);
+    // Recalculate positions after any layout shift (fonts, canvas, etc.)
+    ScrollTrigger.refresh();
+  });
 
   return (
     <>
@@ -192,7 +194,7 @@ export const ScrollytellingHero = () => {
         {/* ── Hero text (fades via direct DOM) ── */}
         <div
           ref={heroTextRef}
-          className="absolute inset-0 z-20 flex flex-col items-center justify-start pt-20 px-4 pointer-events-none"
+          className="absolute inset-0 z-20 flex flex-col items-center justify-start pt-32 md:pt-44 px-4 pointer-events-none"
         >
           <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -200,15 +202,39 @@ export const ScrollytellingHero = () => {
             transition={{ duration: 0.9, delay: 0.25, ease: "easeOut" }}
             className="text-center"
           >
-            <h1 className="font-display text-5xl md:text-7xl lg:text-8xl tracking-wider mb-4 leading-none">
-              <span className="text-primary text-glow">Journey Through</span>
-              <br />
-              <span className="text-foreground">The Cosmos</span>
+            <h1
+              className="text-center select-none uppercase mx-auto mb-6 flex flex-col justify-between w-full max-w-[1438px] lg:h-[200px] text-[48px] md:text-[68px] lg:text-[88px] leading-[58px] md:leading-[82px] lg:leading-[104px] tracking-[2.4px] md:tracking-[3.6px] lg:tracking-[4.8px] font-bold"
+              style={{
+                fontFamily: "'Astra', 'Iceland', sans-serif",
+              }}
+            >
+              <span className="text-[#D16B3C] block">
+                Journey Through
+              </span>
+              <span className="text-white block">
+                The Cosmos
+              </span>
             </h1>
 
-            <p className="text-base md:text-xl text-muted-foreground max-w-xl mx-auto mb-8 tracking-wide">
+            <p className="text-sm md:text-base text-foreground/80 font-sans font-normal max-w-xl mx-auto tracking-wider mb-6">
               Discover daily planetary wisdom aligned with your zodiac sign
             </p>
+
+            {/* Sub-navigation tags */}
+            <div className="flex items-center justify-center gap-10 font-display text-xs tracking-[0.25em] uppercase pointer-events-auto mt-8 select-none">
+              <Link
+                to="/birth-chart"
+                className="text-foreground/30 hover:text-foreground/75 transition-colors duration-300"
+              >
+                My Celestial Chart
+              </Link>
+              <Link
+                to="/horoscopes"
+                className="text-foreground border-b border-foreground/50 pb-1 hover:text-foreground/80 transition-colors duration-300"
+              >
+                Daily Horoscope
+              </Link>
+            </div>
 
           </motion.div>
         </div>
@@ -219,7 +245,7 @@ export const ScrollytellingHero = () => {
           className="absolute bottom-8 left-1/2 -translate-x-1/2 z-20 pointer-events-none flex flex-col items-center gap-2"
         >
           <span className="text-xs text-muted-foreground font-display tracking-widest uppercase">
-            Scroll to explore
+            Scroll Downward
           </span>
           <motion.div
             animate={{ y: [0, 7, 0] }}

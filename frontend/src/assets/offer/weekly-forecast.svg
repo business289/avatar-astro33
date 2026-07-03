@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400" width="600" height="400">
+  <defs>
+    <radialGradient id="bg" cx="50%" cy="50%" r="70%">
+      <stop offset="0%" stop-color="#1a1535"/>
+      <stop offset="100%" stop-color="#0b0d15"/>
+    </radialGradient>
+    <radialGradient id="glow" cx="50%" cy="50%" r="45%">
+      <stop offset="0%" stop-color="#7a4ac4" stop-opacity="0.3"/>
+      <stop offset="100%" stop-color="#7a4ac4" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="600" height="400" fill="url(#bg)"/>
+  <circle cx="300" cy="200" r="165" fill="url(#glow)"/>
+  <!-- 7-segment calendar wheel for 7 days -->
+  <circle cx="300" cy="200" r="155" fill="none" stroke="#7a4ac4" stroke-width="1" stroke-opacity="0.6"/>
+  <circle cx="300" cy="200" r="125" fill="none" stroke="#7a4ac4" stroke-width="0.5" stroke-opacity="0.4" stroke-dasharray="3 5"/>
+  <circle cx="300" cy="200" r="90" fill="none" stroke="#7a4ac4" stroke-width="0.5" stroke-opacity="0.35"/>
+  <circle cx="300" cy="200" r="55" fill="none" stroke="#7a4ac4" stroke-width="0.5" stroke-opacity="0.3"/>
+  <!-- 7 division lines for days of week -->
+  <line x1="300" y1="45" x2="300" y2="355" stroke="#7a4ac4" stroke-width="0.5" stroke-opacity="0.3"/>
+  <line x1="145" y1="122" x2="455" y2="278" stroke="#7a4ac4" stroke-width="0.5" stroke-opacity="0.3"/>
+  <line x1="152" y1="278" x2="448" y2="122" stroke="#7a4ac4" stroke-width="0.5" stroke-opacity="0.3"/>
+  <line x1="145" y1="200" x2="455" y2="200" stroke="#7a4ac4" stroke-width="0.5" stroke-opacity="0.3"/>
+  <!-- Day labels -->
+  <text x="300" y="56" text-anchor="middle" font-size="11" fill="#7a4ac4" fill-opacity="0.9" font-family="sans-serif" letter-spacing="1">MON</text>
+  <text x="418" y="98" text-anchor="middle" font-size="11" fill="#7a4ac4" fill-opacity="0.8" font-family="sans-serif" letter-spacing="1">TUE</text>
+  <text x="454" y="220" text-anchor="middle" font-size="11" fill="#7a4ac4" fill-opacity="0.8" font-family="sans-serif" letter-spacing="1">WED</text>
+  <text x="390" y="335" text-anchor="middle" font-size="11" fill="#7a4ac4" fill-opacity="0.8" font-family="sans-serif" letter-spacing="1">THU</text>
+  <text x="210" y="335" text-anchor="middle" font-size="11" fill="#f5c36a" fill-opacity="0.9" font-family="sans-serif" letter-spacing="1">FRI</text>
+  <text x="148" y="220" text-anchor="middle" font-size="11" fill="#7a4ac4" fill-opacity="0.8" font-family="sans-serif" letter-spacing="1">SAT</text>
+  <text x="182" y="98" text-anchor="middle" font-size="11" fill="#7a4ac4" fill-opacity="0.8" font-family="sans-serif" letter-spacing="1">SUN</text>
+  <!-- Active day highlight -->
+  <path d="M300,200 L268,59 A155,155 0 0,0 168,278 Z" fill="#f5c36a" fill-opacity="0.06"/>
+  <!-- Center symbol -->
+  <circle cx="300" cy="200" r="30" fill="#7a4ac4" fill-opacity="0.15"/>
+  <text x="300" y="208" text-anchor="middle" font-size="22" fill="#f5c36a" fill-opacity="0.9" font-family="serif">★</text>
+  <!-- Stars -->
+  <circle cx="80" cy="50" r="1.5" fill="#f5c36a" fill-opacity="0.7"/>
+  <circle cx="520" cy="80" r="1.5" fill="#f5c36a" fill-opacity="0.6"/>
+  <circle cx="550" cy="330" r="1" fill="#f5c36a" fill-opacity="0.5"/>
+  <circle cx="60" cy="360" r="1.5" fill="#f5c36a" fill-opacity="0.5"/>
+  <circle cx="90" cy="200" r="1" fill="#f5c36a" fill-opacity="0.4"/>
+  <circle cx="520" cy="200" r="1" fill="#f5c36a" fill-opacity="0.4"/>
+</svg>

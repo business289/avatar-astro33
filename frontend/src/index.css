@@ -7,7 +7,7 @@
 @layer base {
   :root {
     /* Premium Dark Charcoal Palette - NO PURPLE */
-    --background: 215 25% 6%;
+    --background: 226 80% 8%;
     --foreground: 40 20% 92%;
 
     --card: 215 20% 8%;
@@ -16,17 +16,17 @@
     --popover: 215 20% 8%;
     --popover-foreground: 40 20% 92%;
 
-    /* Golden Yellow Accent */
-    --primary: 50 100% 52%;
+    /* Burnt-terracotta Accent #BC6A4D */
+    --primary: 16 45% 52%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 50 100% 62%;
+    --secondary: 16 45% 62%;
     --secondary-foreground: 0 0% 100%;
 
     --muted: 215 15% 12%;
     --muted-foreground: 0 0% 92%;
 
-    --accent: 50 100% 65%;
+    --accent: 16 50% 60%;
     --accent-foreground: 0 0% 100%;
 
     --destructive: 0 84% 60%;
@@ -34,17 +34,17 @@
 
     --border: 215 15% 18%;
     --input: 215 15% 12%;
-    --ring: 50 100% 52%;
+    --ring: 16 45% 52%;
 
     --radius: 0.75rem;
 
-    /* Custom Cosmic Colors - Golden Theme */
+    /* Custom Cosmic Colors - Terracotta Theme */
     --cosmic-dark: 215 30% 5%;
     --cosmic-charcoal: 215 20% 10%;
     --star-white: 40 30% 95%;
-    --gold: 50 100% 52%;
-    --gold-dim: 50 90% 52%;
-    --gold-glow: 50 100% 65%;
+    --gold: 16 45% 52%;
+    --gold-dim: 16 40% 44%;
+    --gold-glow: 16 50% 60%;
 
     /* Gradients */
     --gradient-cosmic: linear-gradient(180deg, hsl(215 30% 5%) 0%, hsl(215 20% 8%) 50%, hsl(215 25% 10%) 100%);
@@ -67,7 +67,7 @@
   }
 
   body {
-    background: rgb(11, 13, 21);
+    background: #020B1F;
     margin: 0;
     @apply text-foreground antialiased;
     font-family: 'Iceland', sans-serif;
@@ -82,6 +82,51 @@
 }
 
 @layer components {
+  /* Offer row — CSS Grid, columns driven by --cols custom property */
+  .offer-row {
+    display: grid;
+    gap: 44.75px;
+    align-items: start;
+    grid-template-columns: 1fr;   /* mobile: single column */
+  }
+  @media (min-width: 768px) {
+    .offer-row {
+      grid-template-columns: var(--cols); /* desktop: proportional columns */
+    }
+  }
+
+  /* Offer card — zoom is isolated to .offer-card-img-wrap */
+  .offer-card {
+    isolation: isolate;
+  }
+  .offer-card-img-wrap {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    border-radius: inherit;
+    z-index: 0;
+  }
+  .offer-card-img-wrap img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center center;
+    display: block;
+    transform: scale(1);
+    transition: transform 450ms ease;
+    will-change: transform;
+  }
+  .offer-card:hover .offer-card-img-wrap img {
+    transform: scale(1.02);
+  }
+  /* Content layer always above the image */
+  .offer-card-content {
+    position: absolute;
+    inset: 0;
+    z-index: 10;
+    pointer-events: none;
+  }
+
   /* Cosmic glass card effect */
   .glass-card {
     background: linear-gradient(180deg, hsl(215 15% 10% / 0.6) 0%, hsl(215 15% 6% / 0.8) 100%);

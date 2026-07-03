@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400" width="600" height="400">
+  <defs>
+    <radialGradient id="bg" cx="50%" cy="30%" r="80%">
+      <stop offset="0%" stop-color="#0e1525"/>
+      <stop offset="100%" stop-color="#0b0d15"/>
+    </radialGradient>
+    <radialGradient id="starGlow" cx="50%" cy="25%" r="30%">
+      <stop offset="0%" stop-color="#4a8ac4" stop-opacity="0.35"/>
+      <stop offset="100%" stop-color="#4a8ac4" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="600" height="400" fill="url(#bg)"/>
+  <circle cx="300" cy="120" r="200" fill="url(#starGlow)"/>
+  <!-- Constellation: Orion-like, large -->
+  <circle cx="220" cy="80" r="4" fill="#f5c36a" fill-opacity="0.95"/>
+  <circle cx="380" cy="75" r="3.5" fill="#f5c36a" fill-opacity="0.9"/>
+  <circle cx="260" cy="150" r="3" fill="#f5c36a" fill-opacity="0.85"/>
+  <circle cx="340" cy="145" r="3" fill="#f5c36a" fill-opacity="0.85"/>
+  <circle cx="300" cy="165" r="2.5" fill="#f5c36a" fill-opacity="0.8"/>
+  <circle cx="230" cy="230" r="4" fill="#f5c36a" fill-opacity="0.9"/>
+  <circle cx="370" cy="225" r="3.5" fill="#f5c36a" fill-opacity="0.85"/>
+  <circle cx="180" cy="290" r="3" fill="#f5c36a" fill-opacity="0.7"/>
+  <circle cx="420" cy="285" r="3" fill="#f5c36a" fill-opacity="0.7"/>
+  <!-- Constellation lines -->
+  <line x1="220" y1="80" x2="380" y2="75" stroke="#4a8ac4" stroke-width="0.7" stroke-opacity="0.45"/>
+  <line x1="220" y1="80" x2="260" y2="150" stroke="#4a8ac4" stroke-width="0.7" stroke-opacity="0.4"/>
+  <line x1="380" y1="75" x2="340" y2="145" stroke="#4a8ac4" stroke-width="0.7" stroke-opacity="0.4"/>
+  <line x1="260" y1="150" x2="300" y2="165" stroke="#4a8ac4" stroke-width="0.6" stroke-opacity="0.35"/>
+  <line x1="340" y1="145" x2="300" y2="165" stroke="#4a8ac4" stroke-width="0.6" stroke-opacity="0.35"/>
+  <line x1="260" y1="150" x2="230" y2="230" stroke="#4a8ac4" stroke-width="0.6" stroke-opacity="0.35"/>
+  <line x1="340" y1="145" x2="370" y2="225" stroke="#4a8ac4" stroke-width="0.6" stroke-opacity="0.35"/>
+  <line x1="230" y1="230" x2="370" y2="225" stroke="#4a8ac4" stroke-width="0.5" stroke-opacity="0.3"/>
+  <line x1="230" y1="230" x2="180" y2="290" stroke="#4a8ac4" stroke-width="0.5" stroke-opacity="0.3"/>
+  <line x1="370" y1="225" x2="420" y2="285" stroke="#4a8ac4" stroke-width="0.5" stroke-opacity="0.3"/>
+  <!-- Random background stars -->
+  <circle cx="60" cy="30" r="1.5" fill="#f5c36a" fill-opacity="0.7"/>
+  <circle cx="520" cy="50" r="1.5" fill="#f5c36a" fill-opacity="0.6"/>
+  <circle cx="100" cy="150" r="1" fill="#f5c36a" fill-opacity="0.5"/>
+  <circle cx="490" cy="170" r="1" fill="#f5c36a" fill-opacity="0.5"/>
+  <circle cx="150" cy="340" r="1.5" fill="#f5c36a" fill-opacity="0.5"/>
+  <circle cx="450" cy="350" r="1" fill="#f5c36a" fill-opacity="0.4"/>
+  <circle cx="550" cy="250" r="1.5" fill="#f5c36a" fill-opacity="0.5"/>
+  <circle cx="50" cy="250" r="1" fill="#f5c36a" fill-opacity="0.4"/>
+  <circle cx="300" cy="360" r="1.5" fill="#f5c36a" fill-opacity="0.4"/>
+  <circle cx="400" cy="40" r="1" fill="#f5c36a" fill-opacity="0.6"/>
+  <circle cx="140" cy="60" r="1" fill="#f5c36a" fill-opacity="0.5"/>
+  <!-- Sunrise glow at bottom -->
+  <ellipse cx="300" cy="420" rx="250" ry="80" fill="#c47a1a" fill-opacity="0.12"/>
+  <!-- Horizon line -->
+  <line x1="0" y1="380" x2="600" y2="380" stroke="#c47a1a" stroke-width="0.5" stroke-opacity="0.2"/>
+</svg>
