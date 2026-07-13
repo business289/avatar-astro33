@@ -1,3 +1,4 @@
+import { lazy, Suspense } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -26,6 +27,19 @@ import TarotExperience from "./pages/TarotExperience";
 import SolarSystem from "./pages/SolarSystem";
 import NotFound from "./pages/NotFound";
 import CosmicBackground from "./components/CosmicBackground";
+
+const PujaPage      = lazy(() => import("./pages/Puja/index"));
+const PujaDetail    = lazy(() => import("./pages/Puja/PujaDetail"));
+const ChadhawaPage  = lazy(() => import("./pages/Chadhawa/index"));
+const ChadhawaDetail = lazy(() => import("./pages/Chadhawa/ChadhawaDetail"));
+const ShopPage      = lazy(() => import("./pages/Shop/index"));
+const ShopDetail    = lazy(() => import("./pages/Shop/ShopDetail"));
+const AvatarLivePage   = lazy(() => import("./pages/AvatarLive/index"));
+const DarshanPage      = lazy(() => import("./pages/AvatarLive/DarshanPage"));
+const DarshanDetail    = lazy(() => import("./pages/AvatarLive/DarshanDetail"));
+const FamilyPage       = lazy(() => import("./pages/AvatarLive/FamilyPage"));
+
+const LazyFallback = () => <div className="min-h-screen" />;
 
 const queryClient = new QueryClient();
 
@@ -160,6 +174,106 @@ const AnimatedRoutes = () => {
           element={
             <PageTransition>
               <TarotExperience />
+            </PageTransition>
+          }
+        />
+        <Route
+          path="/puja"
+          element={
+            <PageTransition>
+              <Suspense fallback={<LazyFallback />}>
+                <PujaPage />
+              </Suspense>
+            </PageTransition>
+          }
+        />
+        <Route
+          path="/puja/:slug"
+          element={
+            <PageTransition>
+              <Suspense fallback={<LazyFallback />}>
+                <PujaDetail />
+              </Suspense>
+            </PageTransition>
+          }
+        />
+        <Route
+          path="/chadhawa"
+          element={
+            <PageTransition>
+              <Suspense fallback={<LazyFallback />}>
+                <ChadhawaPage />
+              </Suspense>
+            </PageTransition>
+          }
+        />
+        <Route
+          path="/chadhawa/:slug"
+          element={
+            <PageTransition>
+              <Suspense fallback={<LazyFallback />}>
+                <ChadhawaDetail />
+              </Suspense>
+            </PageTransition>
+          }
+        />
+        <Route
+          path="/shop"
+          element={
+            <PageTransition>
+              <Suspense fallback={<LazyFallback />}>
+                <ShopPage />
+              </Suspense>
+            </PageTransition>
+          }
+        />
+        <Route
+          path="/shop/:slug"
+          element={
+            <PageTransition>
+              <Suspense fallback={<LazyFallback />}>
+                <ShopDetail />
+              </Suspense>
+            </PageTransition>
+          }
+        />
+        <Route
+          path="/avatar-live"
+          element={
+            <PageTransition>
+              <Suspense fallback={<LazyFallback />}>
+                <AvatarLivePage />
+              </Suspense>
+            </PageTransition>
+          }
+        />
+        <Route
+          path="/avatar-live/darshan"
+          element={
+            <PageTransition>
+              <Suspense fallback={<LazyFallback />}>
+                <DarshanPage />
+              </Suspense>
+            </PageTransition>
+          }
+        />
+        <Route
+          path="/avatar-live/darshan/:slug"
+          element={
+            <PageTransition>
+              <Suspense fallback={<LazyFallback />}>
+                <DarshanDetail />
+              </Suspense>
+            </PageTransition>
+          }
+        />
+        <Route
+          path="/avatar-live/family"
+          element={
+            <PageTransition>
+              <Suspense fallback={<LazyFallback />}>
+                <FamilyPage />
+              </Suspense>
             </PageTransition>
           }
         />

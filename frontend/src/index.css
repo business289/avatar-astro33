@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Iceland&family=Cinzel:wght@400;600;700;900&family=Inter:wght@300;400;500;600;700&family=Montserrat:wght@300;400;500;600;700&family=Lato:ital,wght@0,300;0,400;0,700;1,300&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Astra&family=Iceland&family=Cinzel:wght@400;600;700;900&family=Inter:wght@300;400;500;600;700&family=Montserrat:wght@300;400;500;600;700&family=Lato:ital,wght@0,300;0,400;0,700;1,300&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -82,12 +82,143 @@
 }
 
 @layer components {
+  /* ── ElementSelector ──────────────────────────────────────────────────── */
+  .element-selector {
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    gap: 48px;
+    flex-wrap: wrap;
+  }
+
+  .element-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 8px;
+    transition: none;
+  }
+
+  /* icon-wrap: hover scale + glow (transition). No animation here — avoids
+     transform conflicts with the floating animation on .element-float below. */
+  .element-icon-wrap {
+    width: 84px;
+    height: 84px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 260ms cubic-bezier(0.34, 1.40, 0.64, 1),
+                filter  260ms ease;
+  }
+
+  .element-btn:hover .element-icon-wrap,
+  .element-btn:focus-visible .element-icon-wrap {
+    transform: scale(1.08);
+    filter: drop-shadow(0 0 10px rgba(188,106,77,0.55))
+            drop-shadow(0 0 22px rgba(188,106,77,0.22));
+  }
+
+  .element-btn--active .element-icon-wrap {
+    filter: drop-shadow(0 0 12px rgba(188,106,77,0.70))
+            drop-shadow(0 0 28px rgba(188,106,77,0.30));
+  }
+
+  .element-btn--active:hover .element-icon-wrap {
+    transform: scale(1.10);
+  }
+
+  /* element-float: the animation layer — isolated so scale/filter on
+     icon-wrap can transition cleanly without fighting the keyframe. */
+  .element-float {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    will-change: transform;
+  }
+
+  .element-float img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+  }
+
+  /* Pause floating on hover / focus — lets scale take over cleanly */
+  .element-btn:hover       .element-float,
+  .element-btn:focus-visible .element-float {
+    animation-play-state: paused;
+  }
+
+  /* Per-icon floating animations (assigned by child order) */
+  .element-btn:nth-child(1) .element-float {
+    animation: el-float-fire  5.0s ease-in-out infinite 0.0s;
+  }
+  .element-btn:nth-child(2) .element-float {
+    animation: el-float-earth 6.5s ease-in-out infinite 0.9s;
+  }
+  .element-btn:nth-child(3) .element-float {
+    animation: el-float-air   4.5s ease-in-out infinite 1.7s;
+  }
+  .element-btn:nth-child(4) .element-float {
+    animation: el-float-water 7.0s ease-in-out infinite 0.4s;
+  }
+
+  .element-label {
+    font-family: 'Iceland', 'Cinzel', sans-serif;
+    font-size: 13px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.80);
+    padding: 5px 18px;
+    border-radius: 99px;
+    border: 1px solid rgba(188,106,77,0.32);
+    background: rgba(8, 20, 38, 0.65);
+    transition: border-color 260ms ease, background 260ms ease, color 260ms ease;
+    white-space: nowrap;
+    pointer-events: none;
+  }
+
+  .element-btn:hover .element-label {
+    border-color: rgba(188,106,77,0.65);
+    background: rgba(8, 20, 38, 0.85);
+    color: #fff;
+  }
+
+  .element-label--active {
+    border-color: rgba(188,106,77,0.90);
+    background: rgba(188,106,77,0.12);
+    color: #fff;
+  }
+
+  .element-btn:focus-visible .element-label {
+    outline: 2px solid rgba(188,106,77,0.80);
+    outline-offset: 3px;
+  }
+
+  @media (max-width: 600px) {
+    .element-selector { gap: 24px; }
+    .element-icon-wrap { width: 64px; height: 64px; }
+    .element-label { font-size: 11px; padding: 4px 12px; }
+  }
+
   /* Offer row — CSS Grid, columns driven by --cols custom property */
   .offer-row {
     display: grid;
-    gap: 44.75px;
+    gap: 18px;                     /* desktop: tight premium spacing */
     align-items: start;
     grid-template-columns: 1fr;   /* mobile: single column */
+  }
+  @media (min-width: 768px) and (max-width: 1023px) {
+    .offer-row { gap: 16px; }     /* tablet */
+  }
+  @media (max-width: 767px) {
+    .offer-row { gap: 13px; }     /* mobile */
   }
   @media (min-width: 768px) {
     .offer-row {
@@ -95,10 +226,9 @@
     }
   }
 
-  /* Offer card — zoom is isolated to .offer-card-img-wrap */
+  /* Offer card — no background; card sits on the cosmic page background */
   .offer-card {
     isolation: isolate;
-    background: #08111f;
   }
   .offer-card-img-wrap {
     position: absolute;
@@ -319,6 +449,204 @@
     to {
       stroke-dashoffset: -100;
     }
+  }
+}
+
+/* ── ZodiacCard premium gradient background ───────────────────────────────── */
+/*
+  Five layers, back → front:
+  5 (base)   solid #040C25           — deep navy foundation
+  4          bronze radial @ 55%     — warm glow behind content, centered mid-card
+  3          top seal linear         — keeps illustration zone dark navy
+  2          bottom seal linear      — returns very bottom to dark navy
+  1 (front)  edge vignette radial    — darkens corners / sides
+*/
+.zodiac-card-body {
+  background:
+    /* Layer 1 — edge vignette */
+    radial-gradient(
+      ellipse 115% 115% at 50% 50%,
+      transparent 50%,
+      rgba(4, 12, 37, 0.58) 100%
+    ),
+    /* Layer 2 — bottom seal: bottom 20% fades back to deep navy */
+    linear-gradient(
+      to top,
+      rgba(4, 12, 37, 0.68) 0%,
+      rgba(4, 12, 37, 0.22) 14%,
+      transparent           26%
+    ),
+    /* Layer 3 — top seal: keeps illustration zone (top ~35%) predominantly dark */
+    linear-gradient(
+      180deg,
+      rgba(9, 18, 47, 0.68) 0%,
+      rgba(9, 18, 47, 0.26) 28%,
+      transparent           46%
+    ),
+    /* Layer 4 — core bronze radial: centered at 55% height, fills middle 50-60% */
+    radial-gradient(
+      ellipse 135% 70% at 50% 55%,
+      #4E2F24                0%,
+      rgba(78, 47, 36, 0.84) 16%,
+      rgba(78, 47, 36, 0.46) 38%,
+      rgba(78, 47, 36, 0.14) 58%,
+      transparent            72%
+    ),
+    /* Layer 5 — base */
+    #040C25;
+}
+
+/* Very faint warm haze behind zodiac illustration (top ~26% of card) */
+.zodiac-card-art-glow {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background: radial-gradient(
+    ellipse 68% 44% at 50% 22%,
+    rgba(78, 47, 36, 0.07) 0%,
+    transparent 68%
+  );
+}
+
+/* ZodiacCard dimensions — 412px max-width, always at least 530px tall */
+.zodiac-card-body {
+  width: 100%;
+  max-width: 412px;
+  min-height: 530px;
+}
+
+/* Zodiac name — Astra, large bold uppercase, the visual focal point */
+.zodiac-card-name {
+  font-family: 'Astra', 'Cinzel', serif;
+  font-size: 30px;
+  font-weight: 700;
+  letter-spacing: 0.10em;
+  text-transform: uppercase;
+  line-height: 1.1;
+}
+
+/* Description — readable size, 4-line max */
+.zodiac-card-desc {
+  font-size: 15px;
+  font-weight: 400;
+  line-height: 1.55;
+  text-align: center;
+  width: 83%;
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* ── Zodiac Wheel enhancements ─────────────────────────────────────────────── */
+
+/* Base state — brighter, subtle blue-white + bronze glow */
+.zodiac-wheel-icon {
+  transition: filter 400ms ease, transform 400ms ease, opacity 400ms ease;
+  filter:
+    brightness(1.12)
+    drop-shadow(0 0 5px rgba(180, 210, 255, 0.28))
+    drop-shadow(0 0 9px rgba(245, 195, 106, 0.22));
+}
+
+/* Selected / active state */
+.zodiac-wheel-icon--selected {
+  filter:
+    brightness(1.38)
+    drop-shadow(0 0 12px rgba(245, 195, 106, 0.90))
+    drop-shadow(0 0 28px rgba(245, 195, 106, 0.48))
+    drop-shadow(0 0 3px rgba(220, 235, 255, 0.55)) !important;
+  transform: scale(1.12);
+}
+
+/* Dimmed state — inactive icons when a sign is highlighted */
+.zodiac-wheel--active .zodiac-wheel-icon:not(.zodiac-wheel-icon--selected) {
+  opacity: 0.60;
+  filter: brightness(0.82) drop-shadow(0 0 3px rgba(180, 210, 255, 0.08));
+}
+
+/* Hover — un-dim and brighten any icon */
+.zodiac-wheel-btn:hover .zodiac-wheel-icon:not(.zodiac-wheel-icon--selected) {
+  opacity: 1 !important;
+  filter:
+    brightness(1.22)
+    drop-shadow(0 0 10px rgba(245, 195, 106, 0.68))
+    drop-shadow(0 0 22px rgba(245, 195, 106, 0.30))
+    drop-shadow(0 0 2px rgba(220, 235, 255, 0.50)) !important;
+  transform: scale(1.07);
+}
+
+/* Radial glow behind the active constellation */
+.zodiac-wheel-glow {
+  position: absolute;
+  width: 112px;
+  height: 112px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    rgba(180, 210, 255, 0.26) 0%,
+    rgba(245, 195, 106, 0.14) 38%,
+    transparent 68%
+  );
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 450ms ease;
+}
+.zodiac-wheel-glow--active {
+  opacity: 1;
+}
+
+/* Center focal pulse — slow, elegant */
+@keyframes wheel-center-pulse {
+  0%, 100% { transform: scale(1);   opacity: 0.65; }
+  50%       { transform: scale(1.7); opacity: 0;    }
+}
+
+/* ── ElementSelector floating keyframes ───────────────────────────────────── */
+
+/* Fire: brisk, slightly asymmetric — energetic */
+@keyframes el-float-fire {
+  0%   { transform: translate3d( 0px,   0px, 0) rotate( 0.0deg); }
+  20%  { transform: translate3d( 2px,  -5px, 0) rotate( 1.2deg); }
+  50%  { transform: translate3d( 3px,  -8px, 0) rotate( 2.0deg); }
+  75%  { transform: translate3d( 1px,  -4px, 0) rotate( 0.6deg); }
+  100% { transform: translate3d( 0px,   0px, 0) rotate( 0.0deg); }
+}
+
+/* Earth: slow, minimal — grounded */
+@keyframes el-float-earth {
+  0%   { transform: translate3d( 0px,   0px, 0) rotate( 0.0deg);  }
+  35%  { transform: translate3d(-2px,  -5px, 0) rotate(-1.0deg);  }
+  65%  { transform: translate3d(-3px,  -7px, 0) rotate(-1.8deg);  }
+  100% { transform: translate3d( 0px,   0px, 0) rotate( 0.0deg);  }
+}
+
+/* Air: light, more horizontal drift — breezy */
+@keyframes el-float-air {
+  0%   { transform: translate3d( 0px,   0px, 0) rotate( 0.0deg); }
+  25%  { transform: translate3d( 3px,  -4px, 0) rotate( 1.0deg); }
+  55%  { transform: translate3d( 4px,  -8px, 0) rotate( 2.0deg); }
+  80%  { transform: translate3d( 2px,  -6px, 0) rotate( 1.4deg); }
+  100% { transform: translate3d( 0px,   0px, 0) rotate( 0.0deg); }
+}
+
+/* Water: flowing, wave-like — undulating */
+@keyframes el-float-water {
+  0%   { transform: translate3d( 0px,   0px, 0) rotate( 0.0deg);  }
+  30%  { transform: translate3d(-2px,  -6px, 0) rotate(-1.5deg);  }
+  60%  { transform: translate3d(-1px,  -8px, 0) rotate(-2.0deg);  }
+  80%  { transform: translate3d(-3px,  -5px, 0) rotate(-1.0deg);  }
+  100% { transform: translate3d( 0px,   0px, 0) rotate( 0.0deg);  }
+}
+
+/* Respect reduced-motion preference */
+@media (prefers-reduced-motion: reduce) {
+  .element-float {
+    animation: none !important;
   }
 }
 
@@ -759,4 +1087,107 @@
   }
 
   .tarot-mode-card { transition: none !important; }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   LIGHT PAGE THEME — Chadhawa · Puja · Shop
+   Overrides dark CSS variables and glass-card styles for warm cream pages.
+   Apply the .page-light class to the outer page wrapper div only.
+   ═══════════════════════════════════════════════════════════════════════════════ */
+
+.page-light {
+  /* Warm cream background */
+  background: linear-gradient(180deg, #FAF8F5 0%, #F8F3EC 50%, #F3EDE4 100%);
+}
+
+.page-light,
+.devotion-bg {
+  /* Re-map CSS custom properties so every Tailwind util auto-adapts */
+  --foreground:       20 35% 13%;    /* deep warm brown — readable on cream */
+  --card:             36 50% 99%;
+  --card-foreground:  20 35% 13%;
+  --muted:            36 25% 93%;
+  --muted-foreground: 20 18% 42%;   /* medium warm brown */
+  --border:           16 22% 80%;   /* light terracotta-tinted border */
+  --input:            36 30% 96%;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+   DEVOTION MODULE BACKGROUND — Puja · Chadhawa · Shop (list pages)
+   Same starry CosmicBackground canvas used behind the Home navbar, kept
+   visible through a translucent warm-cream overlay instead of the solid
+   .page-light fill, so the texture reads through the whole page/scroll.
+   Applied via <DevotionLayout>; text contrast is unaffected since the
+   --foreground/--card variables above stay identical to .page-light.
+   ───────────────────────────────────────────────────────────────────────── */
+.devotion-bg {
+  background: linear-gradient(
+    180deg,
+    rgba(250, 248, 245, 0.74) 0%,
+    rgba(248, 243, 236, 0.74) 50%,
+    rgba(243, 237, 228, 0.78) 100%
+  );
+}
+
+/* Glass cards → white-cream on light background */
+.page-light .glass-card,
+.devotion-bg .glass-card {
+  background: rgba(255, 252, 248, 0.82);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(188, 106, 77, 0.14);
+  box-shadow: 0 4px 20px rgba(120, 60, 20, 0.07), inset 0 1px 0 rgba(255, 255, 255, 0.9);
+}
+
+.page-light .glass-card-hover,
+.devotion-bg .glass-card-hover {
+  background: rgba(255, 252, 248, 0.82);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(188, 106, 77, 0.12);
+  box-shadow: 0 4px 20px rgba(120, 60, 20, 0.07);
+  transition: all 0.5s;
+}
+
+.page-light .glass-card-hover:hover,
+.devotion-bg .glass-card-hover:hover {
+  border-color: rgba(188, 106, 77, 0.42);
+  box-shadow:
+    0 14px 40px rgba(120, 60, 20, 0.12),
+    0 0 28px rgba(188, 106, 77, 0.10),
+    inset 0 1px 0 rgba(255, 255, 255, 0.95);
+  transform: translateY(-4px);
+}
+
+/* Input fields → white with warm border */
+.page-light .input-cosmic,
+.devotion-bg .input-cosmic {
+  background: rgba(255, 255, 255, 0.88);
+  border: 1px solid rgba(188, 106, 77, 0.24);
+  color: hsl(20 35% 13%);
+}
+
+.page-light .input-cosmic::placeholder,
+.devotion-bg .input-cosmic::placeholder {
+  color: hsl(20 18% 55%);
+}
+
+.page-light .input-cosmic:focus,
+.devotion-bg .input-cosmic:focus {
+  border-color: rgba(188, 106, 77, 0.55);
+  box-shadow: 0 0 18px rgba(188, 106, 77, 0.14);
+  outline: none;
+}
+
+/* Soften the text-glow so it reads on cream instead of looking washed out */
+.page-light .text-glow,
+.devotion-bg .text-glow {
+  text-shadow:
+    0 0 18px rgba(188, 106, 77, 0.38),
+    0 0 36px rgba(188, 106, 77, 0.18);
+}
+
+/* Textarea inherits same light treatment */
+.page-light textarea.input-cosmic,
+.devotion-bg textarea.input-cosmic {
+  background: rgba(255, 255, 255, 0.88);
+  color: hsl(20 35% 13%);
 }
