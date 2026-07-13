@@ -12,8 +12,7 @@ export const config = {
 
   // Database
   mongodb: {
-    uri: process.env.MONGODB_URI || 'mongodb+srv://spiritual_ai:lmzJShTDaiGjGRwJye@spirituality.ystdrnv.mongodb.net/premium-astrology-app'
-  },
+    uri: process.env.MONGODB_URI
 
   // JWT
   jwt: {
