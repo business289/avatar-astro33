@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowRight, Flame, Mountain, Wind, Droplets } from 'lucide-react';
 import { zodiacSigns, ZodiacSign } from '@/data/zodiacData';
 import ZodiacCard from '@/components/ZodiacCard';
+import ElementSelector from '@/components/astrology/ElementSelector';
 
 // Import zodiac line-art images
 import ariesImg from '@/assets/zodiac/aries.png';
@@ -55,8 +56,8 @@ const elementColors = {
   Water: 'text-blue-400',
 };
 
-const AUTO_CYCLE_INTERVAL = 5000;
-const INACTIVITY_TIMEOUT = 12000;
+const AUTO_CYCLE_INTERVAL = 2500;  // ms each sign stays highlighted
+const INACTIVITY_TIMEOUT = 10000; // resume auto after 10s of no interaction
 
 const ZodiacSigns = () => {
   const navigate = useNavigate();
@@ -65,10 +66,17 @@ const ZodiacSigns = () => {
   const rotationRef = useRef<gsap.core.Tween | null>(null);
   const autoIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const inactivityTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  // Tracks index into zodiacSigns[] for clockwise stepping (avoids stale closure)
+  const autoIndexRef = useRef(0);
+  const isAnimatingRef = useRef(false);
+  // Single label element tracked via RAF — follows the rotating icon
+  const activeLabelRef = useRef<HTMLSpanElement | null>(null);
+  const labelRafRef = useRef<number | null>(null);
 
   const [selectedSign, setSelectedSign] = useState<ZodiacSign>(zodiacSigns[0]);
   const [isAutoMode, setIsAutoMode] = useState(true);
   const [isAnimating, setIsAnimating] = useState(false);
+  const [selectedElement, setSelectedElement] = useState<string | null>(null);
 
   // Initialize continuous wheel rotation
   useEffect(() => {
@@ -87,37 +95,32 @@ const ZodiacSigns = () => {
     };
   }, []);
 
-  // Get random zodiac (different from current)
-  const getRandomSign = useCallback(() => {
-    let newSign: ZodiacSign;
-    do {
-      const randomIndex = Math.floor(Math.random() * zodiacSigns.length);
-      newSign = zodiacSigns[randomIndex];
-    } while (newSign.name === selectedSign.name);
-    return newSign;
-  }, [selectedSign]);
-
-  // Auto-cycling logic
+  // Sequential clockwise auto-cycle
+  // zodiacSigns order: Aries(0) Taurus(1) ... Pisces(11)
+  // Clockwise step: (index + 1) % 12
+  // Sequence: Aries→Taurus→Gemini→Cancer→...→Pisces→Aries
   useEffect(() => {
-    if (isAutoMode) {
-      autoIntervalRef.current = setInterval(() => {
-        if (!isAnimating) {
-          setIsAnimating(true);
-          const newSign = getRandomSign();
-          setTimeout(() => {
-            setSelectedSign(newSign);
-            setIsAnimating(false);
-          }, 150);
-        }
-      }, AUTO_CYCLE_INTERVAL);
-    }
+    if (!isAutoMode) return;
+
+    autoIntervalRef.current = setInterval(() => {
+      if (isAnimatingRef.current) return;
+
+      isAnimatingRef.current = true;
+      setIsAnimating(true);
+
+      setTimeout(() => {
+        const nextIndex = (autoIndexRef.current + 1) % 12;
+        autoIndexRef.current = nextIndex;
+        setSelectedSign(zodiacSigns[nextIndex]);
+        isAnimatingRef.current = false;
+        setIsAnimating(false);
+      }, 400);
+    }, AUTO_CYCLE_INTERVAL);
 
     return () => {
-      if (autoIntervalRef.current) {
-        clearInterval(autoIntervalRef.current);
-      }
+      if (autoIntervalRef.current) clearInterval(autoIntervalRef.current);
     };
-  }, [isAutoMode, getRandomSign, isAnimating]);
+  }, [isAutoMode]);
 
   // Reset inactivity timeout
   const resetInactivityTimeout = useCallback(() => {
@@ -129,16 +132,23 @@ const ZodiacSigns = () => {
     }, INACTIVITY_TIMEOUT);
   }, []);
 
-  // Handle sign click
+  // Handle sign click — pause auto, jump to sign, resume after inactivity
   const handleSignClick = useCallback((sign: ZodiacSign) => {
     setIsAutoMode(false);
+    if (isAnimatingRef.current) return;
+
+    isAnimatingRef.current = true;
     setIsAnimating(true);
-    
+
+    const clickedIndex = zodiacSigns.findIndex(s => s.name === sign.name);
+    autoIndexRef.current = clickedIndex;
+
     setTimeout(() => {
       setSelectedSign(sign);
+      isAnimatingRef.current = false;
       setIsAnimating(false);
-    }, 100);
-    
+    }, 400);
+
     resetInactivityTimeout();
   }, [resetInactivityTimeout]);
 
@@ -146,6 +156,29 @@ const ZodiacSigns = () => {
   const handleReadMore = useCallback(() => {
     navigate(`/zodiac/${selectedSign.name.toLowerCase()}`);
   }, [navigate, selectedSign]);
+
+  // RAF loop: recompute label position every frame from GSAP's live rotation.
+  // Icons sit at radius 42% of the INNER container (wheelRef, inset-[10%] = 80% of outer).
+  // Icon radius in outer-container coordinates: 42 × 0.80 = 33.6 %.
+  // We place the label at LABEL_RADIUS % in outer coords — just past the icon edge.
+  useEffect(() => {
+    const selectedIndex = zodiacSigns.findIndex(s => s.name === selectedSign.name);
+    const baseAngleDeg = selectedIndex * 30 - 90; // icon's rest angle
+    const LABEL_RADIUS = 47; // outer-container %, ~15px past icon edge at new size
+
+    const tick = () => {
+      if (wheelRef.current && activeLabelRef.current) {
+        const rot = (gsap.getProperty(wheelRef.current, 'rotation') as number) || 0;
+        const angleRad = (baseAngleDeg + rot) * (Math.PI / 180);
+        activeLabelRef.current.style.left = `${50 + Math.cos(angleRad) * LABEL_RADIUS}%`;
+        activeLabelRef.current.style.top  = `${50 + Math.sin(angleRad) * LABEL_RADIUS}%`;
+      }
+      labelRafRef.current = requestAnimationFrame(tick);
+    };
+
+    labelRafRef.current = requestAnimationFrame(tick);
+    return () => { if (labelRafRef.current) cancelAnimationFrame(labelRafRef.current); };
+  }, [selectedSign]);
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -184,9 +217,9 @@ const ZodiacSigns = () => {
         {/* Interactive Zodiac Wheel Section - Same as Homepage */}
         <section className="relative py-8 mb-16 overflow-hidden">
           {/* Background cosmic effects */}
-          <div className="absolute inset-0 opacity-30 pointer-events-none">
-            <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/5 rounded-full blur-[100px]" />
-            <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-primary/3 rounded-full blur-[80px]" />
+          <div className="absolute inset-0 pointer-events-none">
+            <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/12 rounded-full blur-[100px]" />
+            <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-primary/8 rounded-full blur-[80px]" />
           </div>
 
           {/* Section header */}
@@ -293,106 +326,114 @@ const ZodiacSigns = () => {
 
             {/* Right: Zodiac Wheel */}
             <div className="order-1 lg:order-2 flex items-center justify-center">
-              <div className="relative w-full max-w-[520px] aspect-square">
-                {/* Outer static decorative ring */}
-                <div className="absolute inset-0 rounded-full border border-primary/10" />
-                <div className="absolute inset-[5%] rounded-full border border-primary/15" />
-                
+              <div className="zodiac-wheel--active relative w-full max-w-[680px] aspect-square">
+
+                {/* Ambient glow behind the entire wheel */}
+                <div
+                  className="absolute inset-[-8%] rounded-full pointer-events-none"
+                  style={{
+                    background: 'radial-gradient(ellipse 75% 75% at 50% 50%, rgba(188,106,77,0.14) 0%, rgba(188,106,77,0.05) 55%, transparent 75%)',
+                  }}
+                />
+
+                {/* Outer static decorative rings */}
+                <div className="absolute inset-0 rounded-full border border-primary/25" style={{ boxShadow: '0 0 18px rgba(188,106,77,0.10) inset' }} />
+                <div className="absolute inset-[5%] rounded-full border border-primary/32" />
+
                 {/* Rotating wheel container */}
-                <div 
+                <div
                   ref={wheelRef}
                   className="absolute inset-[10%] rounded-full"
                 >
                   {/* Inner circles */}
-                  <div className="absolute inset-0 rounded-full border border-primary/20" />
-                  <div className="absolute inset-[15%] rounded-full border border-primary/15 border-dashed" />
-                  <div className="absolute inset-[35%] rounded-full border border-primary/10" />
-                  
+                  <div className="absolute inset-0 rounded-full border border-primary/38" style={{ boxShadow: '0 0 12px rgba(188,106,77,0.12) inset' }} />
+                  <div className="absolute inset-[15%] rounded-full border border-primary/28 border-dashed" />
+                  <div className="absolute inset-[35%] rounded-full border border-primary/22" />
+
                   {/* Division lines */}
                   {Array.from({ length: 12 }).map((_, i) => (
                     <div
                       key={`line-${i}`}
-                      className="absolute top-1/2 left-1/2 w-1/2 h-px bg-gradient-to-r from-transparent via-primary/15 to-primary/5 origin-left"
+                      className="absolute top-1/2 left-1/2 w-1/2 h-px bg-gradient-to-r from-transparent via-primary/30 to-primary/12 origin-left"
                       style={{ transform: `rotate(${i * 30}deg)` }}
                     />
                   ))}
 
                   {/* Center glow */}
-                  <div className="absolute inset-[40%] rounded-full bg-gradient-radial from-primary/10 to-transparent" />
-                  
+                  <div
+                    className="absolute inset-[36%] rounded-full pointer-events-none"
+                    style={{
+                      background: 'radial-gradient(circle, rgba(245,195,106,0.28) 0%, rgba(188,106,77,0.14) 45%, transparent 70%)',
+                    }}
+                  />
+
                   {/* Zodiac icons positioned in a proper circle */}
                   {zodiacSigns.map((sign, index) => {
                     const angle = (index * 30 - 90) * (Math.PI / 180);
-                    const radius = 42;
+                    const radius = 43; // slightly wider orbit for larger icons
                     const x = 50 + Math.cos(angle) * radius;
                     const y = 50 + Math.sin(angle) * radius;
                     const isSelected = selectedSign.name === sign.name;
-                    
+
                     return (
                       <button
                         key={sign.name}
                         onClick={() => handleSignClick(sign)}
-                        className="absolute -translate-x-1/2 -translate-y-1/2 transition-all duration-300 focus:outline-none group"
-                        style={{
-                          left: `${x}%`,
-                          top: `${y}%`,
-                        }}
+                        className="zodiac-wheel-btn absolute -translate-x-1/2 -translate-y-1/2 focus:outline-none"
+                        style={{ left: `${x}%`, top: `${y}%` }}
                       >
-                        <img 
-                          src={zodiacImages[sign.name]}
-                          alt={sign.name}
-                          className={`
-                            w-10 h-10 md:w-12 md:h-12 object-contain
-                            transition-all duration-300
-                            ${isSelected 
-                              ? 'scale-125 filter brightness-125' 
-                              : 'scale-100 filter brightness-90 group-hover:brightness-110 group-hover:scale-110'
-                            }
-                          `}
-                          style={{
-                            filter: isSelected 
-                              ? 'drop-shadow(0 0 15px rgba(245, 195, 106, 0.7)) drop-shadow(0 0 30px rgba(245, 195, 106, 0.4))' 
-                              : 'drop-shadow(0 0 6px rgba(245, 195, 106, 0.3))'
-                          }}
-                        />
+                        <span className="relative block">
+                          {/* Radial glow behind active constellation */}
+                          <span className={`zodiac-wheel-glow${isSelected ? ' zodiac-wheel-glow--active' : ''}`} />
+                          <img
+                            src={zodiacImages[sign.name]}
+                            alt={sign.name}
+                            className={`w-12 h-12 md:w-14 md:h-14 object-contain zodiac-wheel-icon${isSelected ? ' zodiac-wheel-icon--selected' : ''}`}
+                          />
+                        </span>
                       </button>
                     );
                   })}
                 </div>
 
-                {/* Center sun icon (static) */}
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-16 h-16 rounded-full bg-gradient-radial from-primary/20 to-transparent flex items-center justify-center">
-                  <span className="text-3xl text-primary drop-shadow-[0_0_10px_rgba(245,195,106,0.5)]">☉</span>
+                {/* Center sun icon with pulse ring */}
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
+                  {/* Slow pulse ring */}
+                  <div
+                    className="absolute inset-[-50%] rounded-full pointer-events-none"
+                    style={{
+                      background: 'radial-gradient(circle, rgba(245,195,106,0.22) 0%, transparent 65%)',
+                      animation: 'wheel-center-pulse 4s ease-in-out infinite',
+                    }}
+                  />
+                  <div className="relative w-16 h-16 rounded-full flex items-center justify-center"
+                    style={{ background: 'radial-gradient(circle, rgba(188,106,77,0.28) 0%, transparent 70%)' }}
+                  >
+                    <span
+                      className="text-3xl text-primary"
+                      style={{ filter: 'drop-shadow(0 0 10px rgba(245,195,106,0.75)) drop-shadow(0 0 22px rgba(245,195,106,0.38))' }}
+                    >
+                      ☉
+                    </span>
+                  </div>
                 </div>
 
-                {/* Outer zodiac name labels (static) */}
-                <div className="absolute inset-0 pointer-events-none">
-                  {zodiacSigns.map((sign, index) => {
-                    const angle = index * 30 - 90;
-                    const radius = 49;
-                    const x = 50 + Math.cos(angle * Math.PI / 180) * radius;
-                    const y = 50 + Math.sin(angle * Math.PI / 180) * radius;
-                    const isSelected = selectedSign.name === sign.name;
-                    
-                    return (
-                      <span
-                        key={`label-${sign.name}`}
-                        className={`
-                          absolute font-display text-[10px] uppercase tracking-[0.1em]
-                          transition-all duration-300
-                          ${isSelected ? 'text-primary' : 'text-primary/40'}
-                        `}
-                        style={{
-                          left: `${x}%`,
-                          top: `${y}%`,
-                          transform: 'translate(-50%, -50%)',
-                        }}
-                      >
-                        {sign.name}
-                      </span>
-                    );
-                  })}
-                </div>
+                {/* Single active-sign label — position driven by RAF, zero React re-renders */}
+                <span
+                  ref={activeLabelRef}
+                  className="absolute font-display text-[11px] font-semibold uppercase tracking-[0.15em] pointer-events-none whitespace-nowrap"
+                  style={{
+                    transform: 'translate(-50%, -50%)',
+                    color: '#F4B26A',
+                    opacity: isAnimating ? 0 : 1,
+                    transition: 'opacity 350ms ease',
+                    textShadow:
+                      '0 0 12px rgba(244,178,106,0.90), 0 0 24px rgba(244,178,106,0.40), 0 1px 4px rgba(4,12,37,0.96)',
+                    willChange: 'opacity, left, top',
+                  }}
+                >
+                  {selectedSign.name}
+                </span>
 
                 {/* Decorative corner stars */}
                 {[
@@ -401,10 +442,10 @@ const ZodiacSigns = () => {
                   { bottom: '10%', left: '8%' },
                   { bottom: '15%', right: '12%' },
                 ].map((pos, i) => (
-                  <div 
+                  <div
                     key={`star-${i}`}
-                    className="absolute w-1.5 h-1.5 rounded-full bg-primary/50 animate-pulse"
-                    style={{ ...pos, animationDelay: `${i * 0.5}s` }}
+                    className="absolute w-1.5 h-1.5 rounded-full bg-primary/65 animate-pulse"
+                    style={{ ...pos, animationDelay: `${i * 0.5}s`, boxShadow: '0 0 6px rgba(245,195,106,0.5)' }}
                   />
                 ))}
               </div>
@@ -412,34 +453,24 @@ const ZodiacSigns = () => {
           </div>
         </section>
 
-        {/* Element Legend */}
-        <div className="flex flex-wrap justify-center gap-4 mb-12">
-          {[
-            { name: 'Fire', color: '#ef4444' },
-            { name: 'Earth', color: '#22c55e' },
-            { name: 'Air', color: '#facc15' },
-            { name: 'Water', color: '#3b82f6' }
-          ].map((element) => (
-            <div 
-              key={element.name} 
-              className="flex items-center gap-2 px-4 py-2 rounded-full border border-primary/20 bg-card/50"
-            >
-              <div 
-                className="w-2 h-2 rounded-full"
-                style={{ backgroundColor: element.color, boxShadow: `0 0 8px ${element.color}` }}
-              />
-              <span className="text-base text-muted-foreground">{element.name}</span>
-            </div>
-          ))}
+        {/* Element Selector */}
+        <div className="mb-14">
+          <ElementSelector
+            selectedElement={selectedElement}
+            onSelect={setSelectedElement}
+          />
         </div>
 
-        {/* Zodiac Grid */}
-        <div className="zodiac-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {zodiacSigns.map((sign, index) => (
-            <div key={sign.name} className="zodiac-card">
-              <ZodiacCard sign={sign} index={index} />
-            </div>
-          ))}
+        {/* Zodiac Grid — filtered by element when one is selected */}
+        <div className="zodiac-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 justify-items-center">
+          {zodiacSigns
+            .filter(sign => !selectedElement || sign.element === selectedElement)
+            .map((sign, index) => (
+              <div key={sign.name} className="zodiac-card">
+                <ZodiacCard sign={sign} index={index} />
+              </div>
+            ))
+          }
         </div>
       </div>
     </div>

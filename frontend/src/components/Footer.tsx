@@ -209,7 +209,7 @@ const Footer = () => {
             fontWeight: 400,
             letterSpacing: 10.4,
             textTransform: 'uppercase',
-            color: '#FFFFFF',
+            color: '#BC6A4D',
             lineHeight: 1,
             marginBottom: 14,
           }}>
