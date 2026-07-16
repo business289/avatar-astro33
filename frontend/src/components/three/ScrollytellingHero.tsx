@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef, memo, Suspense } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Link } from "react-router-dom";
 import { ChevronDown } from "lucide-react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -219,22 +218,6 @@ export const ScrollytellingHero = () => {
             <p className="text-sm md:text-base text-foreground/80 font-sans font-normal max-w-xl mx-auto tracking-wider mb-6">
               Discover daily planetary wisdom aligned with your zodiac sign
             </p>
-
-            {/* Sub-navigation tags */}
-            <div className="flex items-center justify-center gap-10 font-display text-xs tracking-[0.25em] uppercase pointer-events-auto mt-8 select-none">
-              <Link
-                to="/birth-chart"
-                className="text-foreground/30 hover:text-foreground/75 transition-colors duration-300"
-              >
-                My Celestial Chart
-              </Link>
-              <Link
-                to="/horoscopes"
-                className="text-foreground border-b border-foreground/50 pb-1 hover:text-foreground/80 transition-colors duration-300"
-              >
-                Daily Horoscope
-              </Link>
-            </div>
 
           </motion.div>
         </div>

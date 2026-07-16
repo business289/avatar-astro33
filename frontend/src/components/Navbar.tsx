@@ -7,7 +7,7 @@ import gsap from "gsap";
 const astrologyTools = [
   { name: "Tarot Experience", path: "/tarot" },
   { name: "Zodiac Signs",     path: "/zodiac" },
-  { name: "Daily Horoscopes", path: "/horoscopes" },
+  // { name: "Daily Horoscopes", path: "/horoscopes" },
   { name: "Birth Chart",      path: "/birth-chart" },
   { name: "Compatibility",    path: "/compatibility" },
   { name: "Palm Reading",     path: "/palm-reading" },

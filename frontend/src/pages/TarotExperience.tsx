@@ -1,7 +1,8 @@
-import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useLayoutEffect, useRef, useCallback, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { RotateCcw } from 'lucide-react';
-import { TarotCard, ALL_CARDS, shuffleDeck } from '../data/tarotData';
+import gsap from 'gsap';
+import { RotateCcw, Sprout, Sparkles, EyeOff, Star, Zap, Flame } from 'lucide-react';
+import { TarotCard, ALL_CARDS, MAJOR_ARCANA, shuffleDeck, getCategoryCardImage } from '../data/tarotData';
 import { TarotLandingScene } from '../components/tarot/TarotLandingScene';
 import { useBackOverride } from '../context/NavigationContext';
 
@@ -94,10 +95,28 @@ const CardBackSVG = () => (
   </svg>
 );
 
+/** Real card-back artwork, falling back to the drawn SVG if the asset isn't present yet */
+const CARD_BACK_SRC = '/images/tarot/cards/tarot-card-back.png';
+const CardBackImage: React.FC = () => {
+  const [failed, setFailed] = useState(false);
+  if (failed) return <CardBackSVG />;
+  return (
+    <img
+      src={CARD_BACK_SRC}
+      alt=""
+      draggable={false}
+      onError={() => setFailed(true)}
+      style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+    />
+  );
+};
+
 // ─── Card Face component ──────────────────────────────────────────────────────
-const CardFace = ({ card, size = 'md' }: { card: TarotCard; size?: 'sm' | 'md' | 'lg' }) => {
+const CardFace = ({ card, size = 'md', category }: { card: TarotCard; size?: 'sm' | 'md' | 'lg'; category?: string }) => {
   const theme = getCardTheme(card);
   const isMajor = card.arcana === 'major';
+  const [imgFailed, setImgFailed] = useState(false);
+  const imgSrc = !imgFailed ? getCategoryCardImage(category, card) : null;
 
   const cfg = {
     sm: { symbol: 28, name: 8,  sub: 7,  kw: 6.5, pad: '5px 4px', numSize: 8  },
@@ -106,6 +125,25 @@ const CardFace = ({ card, size = 'md' }: { card: TarotCard; size?: 'sm' | 'md' |
   }[size];
 
   const topLabel = isMajor ? card.number : (card.suit || '');
+
+  if (imgSrc) {
+    return (
+      <div style={{ position: 'relative', width: '100%', height: '100%', borderRadius: '7px', overflow: 'hidden', border: `1.5px solid ${theme.border}`, background: theme.bg }}>
+        <img
+          src={imgSrc}
+          alt={card.name}
+          onError={() => setImgFailed(true)}
+          style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center', display: 'block' }}
+        />
+        <div style={{ position: 'absolute', top: 0, left: 0, right: 0, padding: size === 'sm' ? '4px 0' : '6px 0', textAlign: 'center', background: 'linear-gradient(to bottom, rgba(0,0,0,0.65), transparent)' }}>
+          <span style={{ fontSize: `${cfg.numSize}px`, color: '#fff', letterSpacing: '2px', fontFamily: "'Astra','Iceland',sans-serif", textTransform: 'uppercase', fontWeight: 600 }}>{topLabel}</span>
+        </div>
+        <div style={{ position: 'absolute', left: 0, right: 0, bottom: 0, padding: size === 'sm' ? '4px 3px 5px' : '8px 6px 10px', textAlign: 'center', background: 'linear-gradient(to top, rgba(0,0,0,0.82) 0%, transparent 100%)' }}>
+          <span style={{ fontSize: `${cfg.name}px`, color: '#fff', fontFamily: "'Astra','Iceland',sans-serif", textTransform: 'uppercase', letterSpacing: '1px', lineHeight: 1.2 }}>{card.name}</span>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div style={{
@@ -303,18 +341,28 @@ const QuestionSelectScene = ({ onSelect }: { onSelect: (q: string) => void }) =>
   }, []);
 
   const meta: Record<string,{icon:string;bg:string;color:string}> = {
-    'Career':      {icon:'💼',bg:'#120a00',color:'#FFD700'},
+    'Career':      {icon:'📈',bg:'#120a00',color:'#FFD700'},
     'Love':        {icon:'❤️',bg:'#1a0015',color:'#FF6B9D'},
     'Marriage':    {icon:'💍',bg:'#150a00',color:'#FFB6C1'},
     'Business':    {icon:'🚀',bg:'#001520',color:'#4FC3F7'},
-    'Finance':     {icon:'$', bg:'#120e00',color:'#FFAB40'},
-    'Health':      {icon:'🌸',bg:'#001208',color:'#80DEEA'},
+    'Finance':     {icon:'🪙',bg:'#120e00',color:'#FFAB40'},
+    'Health':      {icon:'🧘',bg:'#001208',color:'#80DEEA'},
     'Life Purpose':{icon:'✦', bg:'#0d0020',color:'#CE93D8'},
+  };
+
+  const cardArt: Record<string,string> = {
+    'Career':       '/images/tarot-categories/careers.png',
+    'Love':         '/images/tarot-categories/loves.png',
+    'Marriage':     '/images/tarot-categories/marriage.png',
+    'Business':     '/images/tarot-categories/business.png',
+    'Finance':      '/images/tarot-categories/finance.png',
+    'Health':       '/images/tarot-categories/health.png',
+    'Life Purpose': '/images/tarot-categories/lifepurpose.png',
   };
 
   const scenes: Record<string, React.ReactNode> = {
     'Career': (
-      <svg viewBox="0 0 210 155" style={{width:'100%',height:'100%',display:'block'}}>
+      <svg viewBox="0 0 210 155" preserveAspectRatio="xMidYMid slice" style={{width:'100%',height:'100%',display:'block'}}>
         <defs>
           <linearGradient id="qsCrBg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#030818"/><stop offset="70%" stopColor="#0c1840"/><stop offset="100%" stopColor="#1a2860"/></linearGradient>
           <radialGradient id="qsCrGl" cx="50%" cy="68%" r="40%"><stop offset="0%" stopColor="#FFD700" stopOpacity="0.75"/><stop offset="100%" stopColor="#FF8C00" stopOpacity="0"/></radialGradient>
@@ -342,7 +390,7 @@ const QuestionSelectScene = ({ onSelect }: { onSelect: (q: string) => void }) =>
       </svg>
     ),
     'Love': (
-      <svg viewBox="0 0 210 155" style={{width:'100%',height:'100%',display:'block'}}>
+      <svg viewBox="0 0 210 155" preserveAspectRatio="xMidYMid slice" style={{width:'100%',height:'100%',display:'block'}}>
         <defs>
           <radialGradient id="qsLvBg" cx="50%" cy="35%" r="65%"><stop offset="0%" stopColor="#3d0a50"/><stop offset="100%" stopColor="#090318"/></radialGradient>
           <radialGradient id="qsLvMn" cx="50%" cy="50%" r="50%"><stop offset="0%" stopColor="#FF69B4" stopOpacity="0.75"/><stop offset="55%" stopColor="#9B59B6" stopOpacity="0.4"/><stop offset="100%" stopColor="#3d0a50" stopOpacity="0"/></radialGradient>
@@ -365,7 +413,7 @@ const QuestionSelectScene = ({ onSelect }: { onSelect: (q: string) => void }) =>
       </svg>
     ),
     'Marriage': (
-      <svg viewBox="0 0 210 155" style={{width:'100%',height:'100%',display:'block'}}>
+      <svg viewBox="0 0 210 155" preserveAspectRatio="xMidYMid slice" style={{width:'100%',height:'100%',display:'block'}}>
         <defs>
           <radialGradient id="qsMrBg" cx="50%" cy="50%" r="60%"><stop offset="0%" stopColor="#1c1035"/><stop offset="100%" stopColor="#06040e"/></radialGradient>
           <radialGradient id="qsMrGl" cx="50%" cy="50%" r="50%"><stop offset="0%" stopColor="#FFD700" stopOpacity="0.5"/><stop offset="100%" stopColor="#FF8C00" stopOpacity="0"/></radialGradient>
@@ -389,7 +437,7 @@ const QuestionSelectScene = ({ onSelect }: { onSelect: (q: string) => void }) =>
       </svg>
     ),
     'Business': (
-      <svg viewBox="0 0 210 155" style={{width:'100%',height:'100%',display:'block'}}>
+      <svg viewBox="0 0 210 155" preserveAspectRatio="xMidYMid slice" style={{width:'100%',height:'100%',display:'block'}}>
         <defs>
           <linearGradient id="qsBsBg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#01060e"/><stop offset="100%" stopColor="#040f1e"/></linearGradient>
           <radialGradient id="qsBsEx" cx="50%" cy="85%" r="40%"><stop offset="0%" stopColor="#FF6600" stopOpacity="0.85"/><stop offset="100%" stopColor="#FF2200" stopOpacity="0"/></radialGradient>
@@ -416,7 +464,7 @@ const QuestionSelectScene = ({ onSelect }: { onSelect: (q: string) => void }) =>
       </svg>
     ),
     'Finance': (
-      <svg viewBox="0 0 210 155" style={{width:'100%',height:'100%',display:'block'}}>
+      <svg viewBox="0 0 210 155" preserveAspectRatio="xMidYMid slice" style={{width:'100%',height:'100%',display:'block'}}>
         <defs>
           <radialGradient id="qsFnBg" cx="50%" cy="80%" r="70%"><stop offset="0%" stopColor="#1c1200"/><stop offset="100%" stopColor="#060408"/></radialGradient>
           <radialGradient id="qsFnGl" cx="50%" cy="40%" r="55%"><stop offset="0%" stopColor="#FFD700" stopOpacity="0.65"/><stop offset="100%" stopColor="#CC8800" stopOpacity="0"/></radialGradient>
@@ -441,7 +489,7 @@ const QuestionSelectScene = ({ onSelect }: { onSelect: (q: string) => void }) =>
       </svg>
     ),
     'Health': (
-      <svg viewBox="0 0 210 155" style={{width:'100%',height:'100%',display:'block'}}>
+      <svg viewBox="0 0 210 155" preserveAspectRatio="xMidYMid slice" style={{width:'100%',height:'100%',display:'block'}}>
         <defs>
           <radialGradient id="qsHlBg" cx="50%" cy="80%" r="70%"><stop offset="0%" stopColor="#021a0a"/><stop offset="100%" stopColor="#020806"/></radialGradient>
           <radialGradient id="qsHlGl" cx="50%" cy="60%" r="42%"><stop offset="0%" stopColor="#00FF88" stopOpacity="0.52"/><stop offset="100%" stopColor="#00CC44" stopOpacity="0"/></radialGradient>
@@ -466,7 +514,7 @@ const QuestionSelectScene = ({ onSelect }: { onSelect: (q: string) => void }) =>
       </svg>
     ),
     'Life Purpose': (
-      <svg viewBox="0 0 210 155" style={{width:'100%',height:'100%',display:'block'}}>
+      <svg viewBox="0 0 210 155" preserveAspectRatio="xMidYMid slice" style={{width:'100%',height:'100%',display:'block'}}>
         <defs>
           <radialGradient id="qsLpBg" cx="50%" cy="50%" r="60%"><stop offset="0%" stopColor="#1a0a38"/><stop offset="100%" stopColor="#040312"/></radialGradient>
           <radialGradient id="qsLpGl" cx="50%" cy="50%" r="50%"><stop offset="0%" stopColor="#9B59D0" stopOpacity="0.82"/><stop offset="55%" stopColor="#5B2D90" stopOpacity="0.38"/><stop offset="100%" stopColor="#1a0a38" stopOpacity="0"/></radialGradient>
@@ -486,16 +534,22 @@ const QuestionSelectScene = ({ onSelect }: { onSelect: (q: string) => void }) =>
     ),
   };
 
-  const rows = [['Career','Love','Marriage','Business'],['Finance','Health','Life Purpose']];
+  const allIds = ['Career','Love','Marriage','Business','Finance','Health','Life Purpose'];
 
   return (
     <div style={{
       minHeight:'100vh', position:'relative', overflow:'hidden',
       background:'linear-gradient(175deg,#030818 0%,#050522 40%,#070318 100%)',
       display:'flex', flexDirection:'column', alignItems:'center',
-      paddingTop:64, paddingBottom:44,
+      paddingTop:70, paddingBottom:50,
     }}>
       <canvas ref={canRef} style={{position:'fixed',inset:0,pointerEvents:'none',zIndex:0}}/>
+
+      {/* soft nebula glow — kept minimal, no bright purple blobs */}
+      <div style={{position:'absolute',inset:0,pointerEvents:'none',zIndex:0,
+        background:'radial-gradient(ellipse 50% 32% at 50% 0%, rgba(201,139,42,0.05) 0%, transparent 70%),'
+                  +'radial-gradient(ellipse 45% 30% at 15% 90%, rgba(120,60,20,0.05) 0%, transparent 70%),'
+                  +'radial-gradient(ellipse 45% 30% at 85% 90%, rgba(80,40,110,0.045) 0%, transparent 70%)'}}/>
 
       <svg style={{position:'absolute',bottom:0,left:0,width:'100%',height:'32%',pointerEvents:'none',zIndex:1}} preserveAspectRatio="none">
         <defs><linearGradient id="qsMtW" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#0a0530" stopOpacity="0.5"/><stop offset="100%" stopColor="#030818" stopOpacity="0.95"/></linearGradient></defs>
@@ -503,81 +557,117 @@ const QuestionSelectScene = ({ onSelect }: { onSelect: (q: string) => void }) =>
         <rect x="0" y="68%" width="100%" height="32%" fill="url(#qsMtW)"/>
       </svg>
 
-      <div style={{position:'relative',zIndex:10,width:'100%',maxWidth:1100,padding:'0 20px'}}>
-        <div style={{textAlign:'center',marginBottom:38}}>
-          <p style={{fontFamily:"'Montserrat',sans-serif",fontWeight:600,fontSize:11,letterSpacing:'0.26em',color:'rgba(201,139,42,0.82)',textTransform:'uppercase',marginBottom:14}}>
-            ✦ Life Timeline Tarot™ ✦
-          </p>
-          <h1 style={{fontFamily:"'Cinzel',serif",fontWeight:700,margin:'0 0 10px',lineHeight:1.04,textAlign:'center'}}>
-            <span style={{display:'block',fontSize:'clamp(36px,5.8vw,74px)',color:'#FFFFFF',letterSpacing:'0.02em'}}>What calls to</span>
-            <span style={{display:'block',fontSize:'clamp(36px,5.8vw,74px)',background:'linear-gradient(180deg,#F0D080 0%,#C98B2A 100%)',WebkitBackgroundClip:'text',WebkitTextFillColor:'transparent',backgroundClip:'text',letterSpacing:'0.02em'}}>your soul?</span>
+      <div style={{position:'relative',zIndex:10,width:'100%',maxWidth:1300,padding:'0 20px'}}>
+        <div style={{textAlign:'center',marginBottom:50}}>
+          <div style={{display:'flex',alignItems:'center',justifyContent:'center',flexWrap:'wrap',gap:'10px 16px',marginBottom:20,padding:'0 12px'}}>
+            <div style={{width:'clamp(24px,6vw,52px)',height:1,background:'linear-gradient(to right,transparent,rgba(188,106,77,0.6))'}}/>
+            <p style={{fontFamily:"'Montserrat',sans-serif",fontWeight:600,fontSize:12,letterSpacing:'clamp(0.14em,1.4vw,0.5em)',color:'#BC6A4D',textTransform:'uppercase',margin:0,whiteSpace:'nowrap'}}>
+              ✦&nbsp; Life Timeline Tarot &nbsp;✦
+            </p>
+            <div style={{width:'clamp(24px,6vw,52px)',height:1,background:'linear-gradient(to left,transparent,rgba(188,106,77,0.6))'}}/>
+          </div>
+
+          <h1 style={{fontFamily:"'Astra','Iceland',sans-serif",fontWeight:700,margin:'0 auto',lineHeight:1.3,textAlign:'center',maxWidth:840}}>
+            <span style={{display:'block',fontSize:36,color:'#FFFFFF',letterSpacing:0}}>What Calls To</span>
+            <span style={{display:'block',fontSize:36,color:'#BC6A4D',letterSpacing:0}}>Your Soul</span>
           </h1>
-          <div style={{display:'flex',alignItems:'center',justifyContent:'center',gap:14,margin:'12px 0 4px'}}>
-            <div style={{width:44,height:1,background:'linear-gradient(to right,transparent,rgba(201,139,42,0.5))'}}/>
-            <p style={{fontFamily:"'Lato',sans-serif",fontSize:15,color:'rgba(220,210,238,0.68)',letterSpacing:'0.08em',margin:0}}>Choose the area of life you wish to illuminate</p>
-            <div style={{width:44,height:1,background:'linear-gradient(to left,transparent,rgba(201,139,42,0.5))'}}/>
+
+          <div style={{display:'flex',alignItems:'center',justifyContent:'center',gap:14,marginTop:25}}>
+            <div style={{width:48,height:1,background:'linear-gradient(to right,transparent,rgba(201,139,42,0.5))'}}/>
+            <p style={{fontFamily:"'Lato',sans-serif",fontSize:19,color:'rgba(222,222,232,0.72)',letterSpacing:'0.04em',margin:0}}>Choose the area of life you wish to illuminate</p>
+            <div style={{width:48,height:1,background:'linear-gradient(to left,transparent,rgba(201,139,42,0.5))'}}/>
           </div>
         </div>
 
-        {rows.map((row, ri) => (
-          <div key={ri} style={{display:'flex',justifyContent:'center',gap:16,marginBottom:ri===0?18:0}}>
-            {row.map(id => {
-              const m = meta[id];
-              const isHov = hov === id;
-              return (
-                <div key={id}
-                  onMouseEnter={() => setHov(id)}
-                  onMouseLeave={() => setHov(null)}
-                  onClick={() => onSelect(id)}
-                  style={{width:216,flexShrink:0,position:'relative',cursor:'pointer',
-                    transition:'transform 0.3s ease',
-                    transform: isHov ? 'translateY(-7px) scale(1.035)' : 'translateY(0) scale(1)'}}>
-                  <div style={{
-                    position:'absolute',top:-19,left:'50%',transform:'translateX(-50%)',
-                    width:38,height:38,borderRadius:'50%',zIndex:4,
+        {(() => {
+          const renderCard = (id: string, idx: number) => {
+            const m = meta[id];
+            const isHov = hov === id;
+            return (
+              <motion.div key={id}
+                onMouseEnter={() => setHov(id)}
+                onMouseLeave={() => setHov(null)}
+                onClick={() => onSelect(id)}
+                animate={{ y: isHov ? -8 : 0 }}
+                transition={{ duration: 0.3, ease: 'easeOut' }}
+                style={{width:232,flexShrink:0,position:'relative',cursor:'pointer'}}>
+                <motion.div
+                  animate={{ y: [0, -4, 0] }}
+                  transition={{ duration: 3.2, repeat: Infinity, ease: 'easeInOut', delay: (idx % 4) * 0.25 }}
+                  style={{
+                    position:'absolute',top:-23,left:'50%',x:'-50%',zIndex:4,
+                    width:46,height:46,borderRadius:'50%',
                     background:m.bg,
-                    border:`1.5px solid ${isHov ? m.color : 'rgba(201,139,42,0.58)'}`,
-                    boxShadow:isHov?`0 0 18px ${m.color}55`:'none',
+                    border:`1.5px solid ${isHov ? m.color : 'rgba(201,139,42,0.55)'}`,
+                    boxShadow:isHov?`0 0 22px ${m.color}66,0 0 8px ${m.color}33`:`0 0 10px rgba(201,139,42,0.18)`,
                     display:'flex',alignItems:'center',justifyContent:'center',
-                    fontSize:17,transition:'border-color 0.3s,box-shadow 0.3s',
+                    fontSize:19,transition:'border-color 0.3s,box-shadow 0.3s',
                   }}>
-                    {m.icon==='$'
-                      ? <span style={{fontFamily:"'Cinzel',serif",fontSize:15,color:'#FFD700',fontWeight:700}}>$</span>
-                      : m.icon==='✦'
-                      ? <span style={{color:'#9B59D0',fontSize:15}}>✦</span>
-                      : <span>{m.icon}</span>}
+                  {m.icon==='✦'
+                    ? <span style={{color:'#9B59D0',fontSize:17}}>✦</span>
+                    : <span>{m.icon}</span>}
+                </motion.div>
+                <div style={{
+                  borderRadius:16,overflow:'hidden',
+                  border:`1px solid ${isHov ? m.color+'bb' : 'rgba(201,139,42,0.3)'}`,
+                  boxShadow: isHov
+                    ? `0 0 34px ${m.color}40,0 14px 34px rgba(0,0,0,0.6)`
+                    : '0 0 12px rgba(201,139,42,0.10),0 6px 20px rgba(0,0,0,0.45)',
+                  transition:'box-shadow 0.35s,border-color 0.35s',
+                  paddingTop:26,
+                  background:'rgba(5,3,18,0.72)',
+                }}>
+                  <div style={{height:200,overflow:'hidden',position:'relative'}}>
+                    {cardArt[id]
+                      ? <img src={cardArt[id]} alt={id} style={{width:'100%',height:'100%',objectFit:'cover',objectPosition:'center',display:'block'}}/>
+                      : scenes[id]}
+                    <div style={{position:'absolute',left:0,right:0,bottom:0,height:40,
+                      background:'linear-gradient(to bottom, transparent, rgba(4,2,14,0.9))',pointerEvents:'none'}}/>
                   </div>
-                  <div style={{
-                    borderRadius:14,overflow:'hidden',
-                    border:`1.5px solid ${isHov ? m.color+'bb' : 'rgba(201,139,42,0.32)'}`,
-                    boxShadow: isHov
-                      ? `0 0 32px ${m.color}44,0 10px 32px rgba(0,0,0,0.65)`
-                      : '0 0 14px rgba(201,139,42,0.12),0 4px 18px rgba(0,0,0,0.52)',
-                    transition:'box-shadow 0.35s,border-color 0.35s',
-                    paddingTop:20,
-                    background:'rgba(5,3,18,0.72)',
-                  }}>
-                    <div style={{height:155,overflow:'hidden'}}>
-                      {scenes[id]}
-                    </div>
-                    <div style={{padding:'12px 8px 14px',textAlign:'center',background:'rgba(4,2,14,0.88)'}}>
-                      <span style={{
-                        fontFamily:"'Cinzel',serif",fontSize:14,fontWeight:600,letterSpacing:'0.08em',
-                        textTransform:'uppercase',transition:'color 0.3s',
-                        color: isHov ? m.color : 'rgba(255,248,235,0.82)',
-                      }}>{id}</span>
-                    </div>
+                  <div style={{padding:'16px 12px 20px',textAlign:'center',background:'rgba(4,2,14,0.9)',minHeight:64,display:'flex',alignItems:'center',justifyContent:'center'}}>
+                    <span style={{
+                      fontFamily:"'Cinzel',serif",fontSize:24,fontWeight:700,letterSpacing:'0.02em',
+                      textTransform:'uppercase',transition:'color 0.3s',lineHeight:1.15,
+                      color: isHov ? m.color : '#FFFFFF',
+                    }}>{id}</span>
                   </div>
                 </div>
-              );
-            })}
-          </div>
-        ))}
+              </motion.div>
+            );
+          };
 
-        <div style={{textAlign:'center',marginTop:38}}>
-          <div style={{display:'flex',alignItems:'center',justifyContent:'center',gap:14,marginBottom:12,opacity:0.62}}>
+          const topRow = allIds.slice(0, 4);
+          const bottomRow = allIds.slice(4);
+
+          return (
+            <>
+              <div className="qs-tarot-row" style={{marginBottom:32}}>
+                {topRow.map((id, idx) => renderCard(id, idx))}
+              </div>
+              <div className="qs-tarot-row">
+                {bottomRow.map((id, idx) => renderCard(id, idx + 4))}
+              </div>
+            </>
+          );
+        })()}
+
+        <style>{`
+          .qs-tarot-row {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 32px;
+          }
+          @media (max-width: 560px) {
+            .qs-tarot-row { gap: 24px; }
+            .qs-tarot-row > div { width: 100% !important; max-width: 232px; }
+          }
+        `}</style>
+
+        <div style={{textAlign:'center',marginTop:50}}>
+          <div style={{display:'flex',alignItems:'center',justifyContent:'center',gap:14,opacity:0.62}}>
             <div style={{width:55,height:1,background:'linear-gradient(to right,transparent,rgba(201,139,42,0.55))'}}/>
-            <span style={{fontFamily:"'Lato',sans-serif",fontSize:12,color:'rgba(201,139,42,0.78)',letterSpacing:'0.2em',whiteSpace:'nowrap'}}>Your answers are within...</span>
+            <span style={{fontFamily:"'Lato',sans-serif",fontSize:14,color:'rgba(201,139,42,0.78)',letterSpacing:'0.2em',whiteSpace:'nowrap'}}>Your answers are within...</span>
             <div style={{width:55,height:1,background:'linear-gradient(to left,transparent,rgba(201,139,42,0.55))'}}/>
           </div>
         </div>
@@ -587,103 +677,456 @@ const QuestionSelectScene = ({ onSelect }: { onSelect: (q: string) => void }) =>
 };
 
 // ─── Card Spread Scene ────────────────────────────────────────────────────────
-const CardSpreadScene = ({ numCards, positions, onComplete }: { numCards: number; positions: string[]; onComplete: (cards: TarotCard[]) => void }) => {
-  const [fanCards] = useState(() => shuffleDeck(ALL_CARDS).slice(0, 21));
+type UIPhase = 'animating' | 'idle';
+type ButtonLabel = 'Shuffle Cards' | 'Shuffling…' | 'The Cards Are Ready';
+type ShuffleStyle =
+  | 'Casino Riffle Shuffle' | 'Hindu Shuffle' | 'Overhand Shuffle' | 'Bridge Shuffle'
+  | 'Waterfall Shuffle' | 'Spiral Shuffle' | 'Arc Toss' | 'Circular Orbit'
+  | 'Double Split Shuffle' | 'Flying Cards' | 'Magic Levitation' | 'Cosmic Shuffle';
+
+const COMMON_STYLES: Exclude<ShuffleStyle, 'Cosmic Shuffle'>[] = [
+  'Casino Riffle Shuffle', 'Hindu Shuffle', 'Overhand Shuffle', 'Bridge Shuffle',
+  'Waterfall Shuffle', 'Spiral Shuffle', 'Arc Toss', 'Circular Orbit',
+  'Double Split Shuffle', 'Flying Cards', 'Magic Levitation',
+];
+const COSMIC_PROBABILITY = 0.05;
+
+const FAN_W = 200;
+const FAN_H = 302;
+const FAN_COUNT = 20;
+const FAN_CONTAINER_H = 460;
+const X_STEP = 54;      // ~27% of card width stays visible per step (70-75% overlap)
+const BASE_GAP = 16;    // half-gap between the two center cards — "almost touching"
+const RISE_STEP = 11;   // px, linear staircase rise per step outward
+const ANGLE_STEP = 2;   // deg, linear rotation step outward (center-left = -2°, next -4°, ...)
+
+/** Pure function — the resting "staircase" transform for card index i. y is up-negative. */
+const getRestTransform = (i: number, total: number) => {
+  const half = i < total / 2 ? -1 : 1;
+  const step = i < total / 2 ? (total / 2 - 1 - i) : (i - total / 2);
+  return {
+    x: half * (BASE_GAP + step * X_STEP),
+    y: -(20 + step * RISE_STEP),
+    rot: half * (step + 1) * ANGLE_STEP,
+    step, half,
+  };
+};
+
+interface ShuffleStep {
+  x: (i: number) => number;
+  y: (i: number) => number;
+  rot: (i: number) => number;
+  scale?: (i: number) => number;
+  dur: number;
+  ease: string;
+}
+
+/** Three-ish keyframe choreography per named shuffle style — momentum out, momentum back, spring settle. */
+const buildShuffleSteps = (style: ShuffleStyle, rotMult: number): ShuffleStep[] => {
+  const T = FAN_COUNT;
+  switch (style) {
+    case 'Casino Riffle Shuffle': return [
+      { x: i => (i < T / 2 ? -1 : 1) * 46, y: () => -16, rot: i => (i < T / 2 ? -1 : 1) * 11 * rotMult, dur: 0.5, ease: 'power2.out' },
+      { x: i => (i < T / 2 ? -1 : 1) * 16, y: () => -8, rot: i => (i < T / 2 ? -1 : 1) * 5 * rotMult, dur: 0.42, ease: 'power1.inOut' },
+      { x: () => 0, y: () => -2, rot: () => 0, dur: 0.5, ease: 'back.out(1.6)' },
+    ];
+    case 'Hindu Shuffle': return [
+      { x: i => Math.sin(i * 0.7) * 11, y: i => -18 - (i % 5) * 3, rot: i => Math.sin(i * 0.7) * 6 * rotMult, dur: 0.46, ease: 'power2.out' },
+      { x: i => Math.sin(i * 0.7 + 2) * 10, y: () => -10, rot: () => 0, dur: 0.44, ease: 'power2.inOut' },
+      { x: () => 0, y: () => -3, rot: () => 0, dur: 0.44, ease: 'sine.out' },
+    ];
+    case 'Overhand Shuffle': return [
+      { x: i => Math.sin((i / T) * Math.PI * 2) * 17, y: i => -Math.abs(Math.sin((i / T) * Math.PI * 2)) * 20, rot: i => Math.sin((i / T) * Math.PI * 2) * 7 * rotMult, dur: 0.46, ease: 'power2.out' },
+      { x: i => Math.sin((i / T) * Math.PI * 2 + 2.4) * 15, y: () => -12, rot: () => 0, dur: 0.44, ease: 'power2.inOut' },
+      { x: () => 0, y: () => -2, rot: () => 0, dur: 0.42, ease: 'sine.out' },
+    ];
+    case 'Bridge Shuffle': return [
+      { x: () => 0, y: i => -32 - Math.abs(i - T / 2 + 0.5) * 0.7, rot: i => (i < T / 2 ? -1 : 1) * 7 * rotMult, dur: 0.5, ease: 'power2.out' },
+      { x: () => 0, y: () => -6, rot: () => 0, dur: 0.58, ease: 'elastic.out(1, 0.5)' },
+    ];
+    case 'Waterfall Shuffle': return [
+      { x: i => (i < T / 2 ? -1 : 1) * 7, y: i => -40 * (1 - i / T), rot: i => (i < T / 2 ? -1 : 1) * 9 * rotMult * (1 - i / T), dur: 0.56, ease: 'power2.in' },
+      { x: () => 0, y: () => -4, rot: () => 0, dur: 0.5, ease: 'bounce.out' },
+    ];
+    case 'Spiral Shuffle': return [
+      { x: i => Math.cos((i / T) * Math.PI * 4) * 22, y: i => -Math.abs(Math.sin((i / T) * Math.PI * 4)) * 22 - 4, rot: i => (((i / T) * 360 * rotMult) % 40) - 20, dur: 0.5, ease: 'power2.inOut' },
+      { x: i => Math.cos((i / T) * Math.PI * 2) * 11, y: () => -8, rot: () => 0, dur: 0.46, ease: 'power2.out' },
+      { x: () => 0, y: () => -2, rot: () => 0, dur: 0.42, ease: 'back.out(1.4)' },
+    ];
+    case 'Arc Toss': return [
+      { x: i => (i - T / 2 + 0.5) * 4.4, y: i => -76 - Math.abs(i - T / 2 + 0.5) * 2, rot: i => (i - T / 2 + 0.5) * 3 * rotMult, dur: 0.54, ease: 'power2.out' },
+      { x: () => 0, y: () => -4, rot: () => 0, dur: 0.56, ease: 'bounce.out' },
+    ];
+    case 'Circular Orbit': return [
+      { x: i => Math.cos((i / T) * Math.PI * 2) * 28, y: i => -Math.abs(Math.sin((i / T) * Math.PI * 2)) * 24 - 6, rot: i => ((i / T) * 360 * 0.3 * rotMult) % 360, dur: 0.56, ease: 'power1.inOut' },
+      { x: i => Math.cos((i / T) * Math.PI * 2 + Math.PI) * 20, y: i => -Math.abs(Math.sin((i / T) * Math.PI * 2 + Math.PI)) * 18 - 4, rot: () => 0, dur: 0.52, ease: 'power1.inOut' },
+      { x: () => 0, y: () => -2, rot: () => 0, dur: 0.42, ease: 'back.out(1.3)' },
+    ];
+    case 'Double Split Shuffle': return [
+      { x: i => (i < T * 0.25 ? -1 : i < T * 0.5 ? -0.4 : i < T * 0.75 ? 0.4 : 1) * 54, y: () => -16, rot: () => 0, dur: 0.46, ease: 'power2.out' },
+      { x: i => (i < T * 0.25 ? 0.4 : i < T * 0.5 ? -1 : i < T * 0.75 ? 1 : -0.4) * 42, y: () => -10, rot: () => 0, dur: 0.44, ease: 'power2.inOut' },
+      { x: () => 0, y: () => -2, rot: () => 0, dur: 0.48, ease: 'back.out(1.5)' },
+    ];
+    case 'Flying Cards': return [
+      { x: i => (i < T / 2 ? -1 : 1) * (72 + (i % (T / 2)) * 4), y: i => -44 - (i % (T / 2)) * 3, rot: i => (i < T / 2 ? -1 : 1) * 15 * rotMult, dur: 0.5, ease: 'power2.out' },
+      { x: () => 0, y: () => -6, rot: () => 0, dur: 0.56, ease: 'elastic.out(1, 0.55)' },
+    ];
+    case 'Magic Levitation': return [
+      { x: () => 0, y: i => -54 - (i % 4) * 9, rot: i => (((i * 53) % 13) - 6) * rotMult, scale: () => 0.92, dur: 0.5, ease: 'sine.inOut' },
+      { x: () => 0, y: i => -32 - (i % 4) * 4, rot: () => 0, scale: () => 0.9, dur: 0.46, ease: 'sine.inOut' },
+      { x: () => 0, y: () => -4, rot: () => 0, scale: () => 1, dur: 0.42, ease: 'power2.out' },
+    ];
+    default: return [];
+  }
+};
+
+const CardSpreadScene = ({ numCards, positions, question, onComplete }: { numCards: number; positions: string[]; question?: string; onComplete: (cards: TarotCard[]) => void }) => {
+  const [fanCards, setFanCards] = useState(() => shuffleDeck(MAJOR_ARCANA).slice(0, FAN_COUNT));
   const [selected, setSelected] = useState<{ card: TarotCard; fanIdx: number }[]>([]);
   const [hovered, setHovered] = useState<number | null>(null);
+  const [uiPhase, setUiPhase] = useState<UIPhase>('animating');
+  const [buttonLabel, setButtonLabel] = useState<ButtonLabel>('Shuffle Cards');
+  const [cosmicBurst, setCosmicBurst] = useState(false);
+  const [sparkleRun, setSparkleRun] = useState(0);
 
-  const handleSelect = (card: TarotCard, fanIdx: number) => {
-    if (selected.length >= numCards) return;
-    if (selected.some(s => s.fanIdx === fanIdx)) return;
-    const next = [...selected, { card, fanIdx }];
-    setSelected(next);
-    if (next.length === numCards) setTimeout(() => onComplete(next.map(s => s.card)), 700);
-  };
+  const cardRefs = useRef<Array<HTMLDivElement | null>>([]);
+  const cameraRef = useRef<HTMLDivElement | null>(null);
+  const glowRef = useRef<HTMLDivElement | null>(null);
+  const brightenRef = useRef<HTMLDivElement | null>(null);
+  const tlRef = useRef<gsap.core.Timeline | null>(null);
 
   const isSel = (i: number) => selected.some(s => s.fanIdx === i);
   const selIdx = (i: number) => selected.findIndex(s => s.fanIdx === i);
-  const containerW = Math.min(typeof window !== 'undefined' ? window.innerWidth - 48 : 900, 1000);
-  const cardW = 80;
-  const cardH = 124;
+  const slotW = 200;
+  const slotH = 300;
 
-  const getFanStyle = (i: number, total: number): React.CSSProperties => {
-    const center = (total - 1) / 2;
-    const offset = i - center;
-    const xStep = Math.min((containerW - cardW) / (total - 1), 64);
-    const x = offset * xStep;
-    const angle = offset * 3.2;
-    const arcY = Math.abs(offset) * 1.6;
+  // Load animation: cards slide + rotate in from a collapsed center stack.
+  useLayoutEffect(() => {
+    const els = cardRefs.current.filter((el): el is HTMLDivElement => !!el);
+    gsap.set(els, { x: 0, y: -20, rotation: 0, scale: 0.9, transformOrigin: '50% 100%' });
+    const tl = gsap.timeline({ onComplete: () => setUiPhase('idle') });
+    els.forEach((el, i) => {
+      const rest = getRestTransform(i, FAN_COUNT);
+      tl.to(el, { x: rest.x, y: rest.y, rotation: rest.rot, scale: 1, duration: 0.75, ease: 'back.out(1.15)' }, i * 0.018);
+    });
+    tlRef.current = tl;
+    return () => { tl.kill(); };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => () => { tlRef.current?.kill(); }, []);
+
+  const handleCardEnter = (i: number) => {
+    if (uiPhase !== 'idle' || isSel(i)) return;
+    setHovered(i);
+    const el = cardRefs.current[i];
+    if (!el) return;
+    const rest = getRestTransform(i, FAN_COUNT);
+    gsap.to(el, { y: rest.y - 12, scale: 1.03, duration: 0.25, ease: 'power2.out', overwrite: 'auto' });
+  };
+
+  const handleCardLeave = (i: number) => {
+    setHovered(h => (h === i ? null : h));
+    if (uiPhase !== 'idle' || isSel(i)) return;
+    const el = cardRefs.current[i];
+    if (!el) return;
+    const rest = getRestTransform(i, FAN_COUNT);
+    gsap.to(el, { y: rest.y, scale: 1, duration: 0.3, ease: 'power2.out', overwrite: 'auto' });
+  };
+
+  const handleSelect = (card: TarotCard, fanIdx: number) => {
+    if (uiPhase !== 'idle') return;
+    if (selected.length >= numCards) return;
+    if (isSel(fanIdx)) return;
+    const next = [...selected, { card, fanIdx }];
+    setSelected(next);
+    const el = cardRefs.current[fanIdx];
+    if (el) gsap.to(el, { x: 0, y: -170, rotation: 0, scale: 1.15, duration: 0.5, ease: 'back.out(1.3)', overwrite: 'auto' });
+    if (next.length === numCards) setTimeout(() => onComplete(next.map(s => s.card)), 700);
+  };
+
+  const handleShuffle = () => {
+    if (uiPhase !== 'idle') return;
+    setSelected([]);
+    setHovered(null);
+    setUiPhase('animating');
+    setButtonLabel('Shuffling…');
+    setSparkleRun(n => n + 1);
+
+    const els = cardRefs.current.filter((el): el is HTMLDivElement => !!el);
+    const isCosmic = Math.random() < COSMIC_PROBABILITY;
+    const style: ShuffleStyle = isCosmic ? 'Cosmic Shuffle' : COMMON_STYLES[Math.floor(Math.random() * COMMON_STYLES.length)];
+    const rotMult = 0.8 + Math.random() * 0.55;
+    const cardStagger = 0.018 + Math.random() * 0.024; // 18-42ms cascade for the big gather/rebuild beats
+    const stepStagger = cardStagger * 0.25;             // lighter ripple within each shuffle-style step, so multi-step styles don't balloon in total duration
+    const speed = 0.85 + Math.random() * 0.35;
+    const scaleDur = (d: number) => d / speed;
+
+    tlRef.current?.kill();
+    const tl = gsap.timeline({
+      onComplete: () => {
+        setButtonLabel('The Cards Are Ready');
+        setTimeout(() => { setButtonLabel('Shuffle Cards'); setUiPhase('idle'); }, 1000);
+      },
+    });
+
+    // Stage 1 — Deck Awakens (~0.5s)
+    if (cameraRef.current) tl.to(cameraRef.current, { scale: 1.04, duration: 0.5, ease: 'sine.out' }, 0);
+    if (glowRef.current) {
+      tl.to(glowRef.current, { opacity: 0.85, scale: 1.08, duration: 0.5, ease: 'sine.out' }, 0);
+      tl.to(glowRef.current, { opacity: 0.3, duration: 0.4, ease: 'sine.in' }, 0.5);
+    }
+    if (brightenRef.current) {
+      tl.to(brightenRef.current, { opacity: 0.16, duration: 0.5, ease: 'sine.out' }, 0);
+      tl.to(brightenRef.current, { opacity: 0, duration: 0.5, ease: 'sine.in' }, 0.5);
+    }
+
+    // Stage 2 — Cards Collapse (~0.8s), gathered from the edges inward
+    tl.to(els, {
+      x: i => (i - FAN_COUNT / 2 + 0.5) * 0.45,
+      y: -34,
+      rotation: i => ((i * 37) % 7) - 3,
+      scale: 0.88,
+      duration: scaleDur(0.8),
+      ease: 'power2.inOut',
+      stagger: { each: 0.015, from: 'edges' },
+    }, 0.35);
+
+    tl.addLabel('deckGathered');
+    tl.call(() => setFanCards(shuffleDeck(MAJOR_ARCANA).slice(0, FAN_COUNT)), undefined, 'deckGathered+=0.1');
+
+    // Stage 3 — Realistic Shuffle (style-specific, ~2-3s)
+    if (style === 'Cosmic Shuffle') {
+      tl.to(els, { opacity: 0, scale: 0.2, duration: scaleDur(0.42), ease: 'power2.in', stagger: { each: stepStagger, from: 'random' } });
+      tl.call(() => setCosmicBurst(true));
+      tl.to({}, { duration: scaleDur(1.0) });
+      tl.call(() => setCosmicBurst(false));
+      tl.to(els, { opacity: 1, scale: 0.88, duration: scaleDur(0.5), ease: 'power2.out', stagger: { each: stepStagger, from: 'random' } });
+    } else {
+      buildShuffleSteps(style, rotMult).forEach(step => {
+        tl.to(els, {
+          x: i => step.x(i),
+          y: i => step.y(i),
+          rotation: i => step.rot(i),
+          scale: step.scale ? (i: number) => step.scale!(i) : 0.88,
+          duration: scaleDur(step.dur),
+          ease: step.ease,
+          stagger: { each: stepStagger, from: 'random' },
+        });
+      });
+    }
+
+    // Stage 4 — Deck Rebuild, cascading out from center, no snapping
+    tl.to(els, {
+      x: i => getRestTransform(i, FAN_COUNT).x,
+      y: i => getRestTransform(i, FAN_COUNT).y,
+      rotation: i => getRestTransform(i, FAN_COUNT).rot,
+      scale: 1,
+      duration: 0.9,
+      ease: 'elastic.out(1, 0.68)',
+      stagger: { each: 0.022, from: 'center' },
+    });
+    if (cameraRef.current) tl.to(cameraRef.current, { scale: 1, duration: 0.4, ease: 'power2.out' }, '<');
+
+    // Stage 5 — Final Reveal: a golden pulse sweeps across the deck
+    tl.to(els, { opacity: 0.65, duration: 0.12, yoyo: true, repeat: 1, stagger: { each: 0.022, from: 'start' } }, '+=0.05');
+    if (glowRef.current) {
+      tl.to(glowRef.current, { opacity: 0.55, duration: 0.25 }, '<');
+      tl.to(glowRef.current, { opacity: 0, duration: 0.5 }, '+=0.15');
+    }
+
+    tlRef.current = tl;
+  };
+
+  const getCardChrome = (i: number): React.CSSProperties => {
     const s = isSel(i);
-    const h = hovered === i && !s;
+    const h = hovered === i && !s && uiPhase === 'idle';
     return {
-      position: 'absolute', width: `${cardW}px`, height: `${cardH}px`,
-      left: `calc(50% + ${x}px - ${cardW / 2}px)`,
-      bottom: s ? '180px' : h ? '28px' : `${4 - arcY}px`,
-      transform: `rotate(${s ? 0 : angle}deg) scale(${s ? 1.15 : h ? 1.1 : 1})`,
-      zIndex: s ? total + 50 + selIdx(i) : hovered === i ? total + 1 : total - Math.abs(offset),
-      transition: 'all 0.45s cubic-bezier(0.34, 1.56, 0.64, 1)',
-      cursor: isSel(i) ? 'default' : 'pointer',
-      borderRadius: '8px', overflow: 'hidden',
+      position: 'absolute', left: '50%', bottom: 0,
+      width: `${FAN_W}px`, height: `${FAN_H}px`, marginLeft: `${-FAN_W / 2}px`,
+      borderRadius: '14px',
+      zIndex: s ? FAN_COUNT + 50 + selIdx(i) : hovered === i ? FAN_COUNT + 1 : FAN_COUNT - getRestTransform(i, FAN_COUNT).step,
+      cursor: uiPhase !== 'idle' ? 'default' : (s ? 'default' : 'pointer'),
+      opacity: selected.length > 0 && !s ? 0.55 : 1,
+      transition: 'opacity 0.3s ease, box-shadow 0.3s ease',
       boxShadow: s
-        ? '0 0 35px rgba(255,215,0,0.7), 0 14px 45px rgba(0,0,0,0.7)'
-        : h ? '0 0 22px rgba(255,215,0,0.5), 0 10px 28px rgba(0,0,0,0.55)'
-        : '0 5px 18px rgba(0,0,0,0.55)',
+        ? '0 0 40px rgba(188,106,77,0.75), 0 16px 48px rgba(0,0,0,0.7)'
+        : h ? '0 0 26px rgba(188,106,77,0.55), 0 12px 30px rgba(0,0,0,0.55)'
+        : '0 6px 20px rgba(0,0,0,0.55), 0 0 14px rgba(188,106,77,0.15)',
+      willChange: 'transform',
     };
   };
 
-  return (
-    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-start', paddingTop: '80px', position: 'relative', overflow: 'hidden' }}>
-      <Particles count={20} />
+  const guidanceLabel = question || (numCards === 5 ? 'Life Timeline' : 'Karma Mirror');
 
-      <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} style={{ textAlign: 'center', zIndex: 10, marginBottom: '24px', padding: '0 24px' }}>
-        <p style={{ letterSpacing: '5px', fontSize: '12px', color: 'rgba(255,215,0,0.65)', textTransform: 'uppercase', fontFamily: 'Iceland, sans-serif', marginBottom: '10px' }}>
-          {selected.length}/{numCards} Cards Selected
-        </p>
-        <h2 style={{ fontSize: 'clamp(24px, 4vw, 40px)', fontFamily: 'Iceland, sans-serif', letterSpacing: '4px', textTransform: 'uppercase', color: '#FFD700' }}>
-          Choose Your {numCards === 5 ? 'Five' : 'Three'} Sacred Cards
+  return (
+    <div style={{
+      minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-start',
+      paddingTop: '56px', paddingBottom: '48px', position: 'relative', overflow: 'hidden',
+      background: 'linear-gradient(175deg,#030818 0%,#050522 40%,#070318 100%)',
+    }}>
+      <Particles count={32} />
+
+      <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} style={{ textAlign: 'center', zIndex: 10, marginBottom: '20px', padding: '0 24px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 14, marginBottom: 16 }}>
+          <div style={{ width: 44, height: 1, background: 'linear-gradient(to right,transparent,rgba(188,106,77,0.6))' }} />
+          <p style={{ letterSpacing: '0.4em', fontSize: '12px', color: '#BC6A4D', textTransform: 'uppercase', fontFamily: "'Astra','Iceland',sans-serif", margin: 0, whiteSpace: 'nowrap' }}>
+            ✦&nbsp; {selected.length} / {numCards} Cards Selected &nbsp;✦
+          </p>
+          <div style={{ width: 44, height: 1, background: 'linear-gradient(to left,transparent,rgba(188,106,77,0.6))' }} />
+        </div>
+        <h2 style={{ margin: 0, fontFamily: "'Astra','Iceland',sans-serif", fontWeight: 700, lineHeight: 1.3 }}>
+          <span style={{ display: 'block', fontSize: 'clamp(22px, 3.6vw, 34px)', textTransform: 'uppercase', color: '#FFFFFF' }}>
+            Select {numCards} Cards For
+          </span>
+          <span style={{ display: 'block', fontSize: 'clamp(22px, 3.6vw, 34px)', textTransform: 'uppercase', color: '#BC6A4D' }}>
+            Your {guidanceLabel} Guidance
+          </span>
         </h2>
-        <p style={{ color: 'rgba(255,248,220,0.55)', fontSize: '14px', marginTop: '10px', fontFamily: 'Iceland, sans-serif', letterSpacing: '1px' }}>
-          Hover over each card · Trust your intuition · Let the cards call to you
+        <p style={{ color: 'rgba(222,222,232,0.65)', fontSize: '14px', marginTop: '14px', fontFamily: "'Lato',sans-serif", letterSpacing: '0.02em', fontStyle: 'italic' }}>
+          Hover over each card · Trust your instinct · Let your next path reveal itself
         </p>
       </motion.div>
 
       {/* Selected card slots */}
-      <div style={{ display: 'flex', gap: '14px', justifyContent: 'center', flexWrap: 'wrap', marginBottom: '28px', padding: '0 24px', zIndex: 10 }}>
+      <div style={{ display: 'flex', gap: '20px', justifyContent: 'center', flexWrap: 'wrap', marginBottom: '90px', padding: '0 24px', zIndex: 10 }}>
         {positions.map((pos, i) => {
           const s = selected[i];
           const theme = s ? getCardTheme(s.card) : null;
           return (
             <motion.div key={pos} initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: i * 0.1 }}
               style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
-              <div style={{ width: `${cardW}px`, height: `${cardH}px`, borderRadius: '8px', border: s ? `1.5px solid ${theme!.border}` : '1.5px dashed rgba(255,215,0,0.25)', background: s ? 'transparent' : 'rgba(255,215,0,0.04)', position: 'relative', overflow: 'hidden', boxShadow: s ? `0 0 18px ${theme!.glow}` : 'none', transition: 'all 0.4s' }}>
-                {s && <CardFace card={s.card} size="md" />}
+              <div style={{ width: `${slotW}px`, height: `${slotH}px`, borderRadius: '14px', border: s ? `1.5px solid ${theme!.border}` : '1.5px dashed rgba(188,106,77,0.4)', background: s ? 'transparent' : 'rgba(188,106,77,0.05)', position: 'relative', overflow: 'hidden', boxShadow: s ? `0 0 22px ${theme!.glow}` : 'none', transition: 'all 0.4s' }}>
+                {s && <CardFace card={s.card} size="lg" category={question} />}
               </div>
-              <span style={{ fontSize: '10px', letterSpacing: '1.5px', color: s ? 'rgba(255,215,0,0.85)' : 'rgba(255,215,0,0.3)', fontFamily: 'Iceland, sans-serif', textTransform: 'uppercase', textAlign: 'center', maxWidth: '85px' }}>{pos}</span>
+              <span style={{ fontSize: '13px', letterSpacing: '1.5px', color: s ? '#BC6A4D' : 'rgba(188,106,77,0.55)', fontFamily: "'Lato',sans-serif", textTransform: 'uppercase', textAlign: 'center', maxWidth: `${slotW}px` }}>{pos}</span>
             </motion.div>
           );
         })}
       </div>
 
       {/* Fan spread */}
-      <div style={{ position: 'relative', width: '100%', height: '220px', flex: '0 0 220px' }}>
-        {fanCards.map((card, i) => (
-          <div key={card.id} style={getFanStyle(i, fanCards.length)}
-            onClick={() => handleSelect(card, i)}
-            onMouseEnter={() => !isSel(i) && setHovered(i)}
-            onMouseLeave={() => setHovered(null)}>
-            {isSel(i) ? <CardFace card={card} size="md" /> : <CardBackSVG />}
-            {hovered === i && !isSel(i) && (
-              <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse at center, rgba(255,215,0,0.18) 0%, transparent 70%)', borderRadius: '8px', pointerEvents: 'none' }} />
-            )}
-          </div>
-        ))}
+      <div className="qs-fan-scale" style={{ position: 'relative', width: '100%', height: `${FAN_CONTAINER_H}px`, flex: `0 0 ${FAN_CONTAINER_H}px`, zIndex: 5 }}>
+        {/* soft golden glow behind the deck — pulses during Awaken / Reveal */}
+        <div ref={glowRef} style={{
+          position: 'absolute', left: '50%', bottom: '10px', width: 460, height: 340,
+          transform: 'translateX(-50%)', borderRadius: '50%', opacity: 0, pointerEvents: 'none', zIndex: 0,
+          background: 'radial-gradient(ellipse at center, rgba(188,106,77,0.55) 0%, rgba(188,106,77,0.14) 45%, transparent 72%)',
+        }} />
+        {/* ambient star-brighten wash */}
+        <div ref={brightenRef} style={{
+          position: 'absolute', inset: 0, opacity: 0, pointerEvents: 'none', zIndex: 0,
+          background: 'radial-gradient(ellipse 60% 50% at 50% 60%, rgba(255,248,230,0.5) 0%, transparent 70%)',
+        }} />
+        {uiPhase === 'animating' && <ShuffleSparkles runKey={sparkleRun} cosmic={cosmicBurst} />}
+
+        <div ref={cameraRef} style={{ position: 'relative', width: '100%', height: '100%', transformOrigin: '50% 100%' }}>
+          {fanCards.map((card, i) => {
+            const s = isSel(i);
+            return (
+              <div
+                key={i}
+                ref={el => { cardRefs.current[i] = el; }}
+                style={getCardChrome(i)}
+                onClick={() => handleSelect(card, i)}
+                onMouseEnter={() => handleCardEnter(i)}
+                onMouseLeave={() => handleCardLeave(i)}
+              >
+                <div style={{ position: 'relative', width: '100%', height: '100%', perspective: 1200 }}>
+                  <motion.div
+                    animate={{ rotateY: s ? 180 : 0 }}
+                    transition={{ duration: 0.6, ease: 'easeInOut' }}
+                    style={{ position: 'relative', width: '100%', height: '100%', transformStyle: 'preserve-3d' }}
+                  >
+                    <div style={{ position: 'absolute', inset: 0, backfaceVisibility: 'hidden', borderRadius: 14, overflow: 'hidden' }}>
+                      <CardBackImage />
+                    </div>
+                    <div style={{ position: 'absolute', inset: 0, backfaceVisibility: 'hidden', transform: 'rotateY(180deg)', borderRadius: 14, overflow: 'hidden' }}>
+                      <CardFace card={card} size="lg" category={question} />
+                    </div>
+                  </motion.div>
+                </div>
+                {hovered === i && !s && uiPhase === 'idle' && (
+                  <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse at center, rgba(188,106,77,0.22) 0%, transparent 70%)', borderRadius: '14px', pointerEvents: 'none' }} />
+                )}
+              </div>
+            );
+          })}
+        </div>
       </div>
+
+      <motion.button
+        onClick={handleShuffle}
+        disabled={uiPhase !== 'idle'}
+        whileHover={uiPhase === 'idle' ? { scale: 1.04 } : {}}
+        whileTap={uiPhase === 'idle' ? { scale: 0.96 } : {}}
+        style={{
+          marginTop: '4px', zIndex: 20,
+          padding: '14px 42px',
+          borderRadius: 999,
+          border: '1.5px solid #BC6A4D',
+          background: 'rgba(8,6,18,0.85)',
+          color: '#E8B79A',
+          fontFamily: "'Astra','Iceland',sans-serif",
+          fontSize: '15px', letterSpacing: '0.18em', textTransform: 'uppercase', fontWeight: 700,
+          cursor: uiPhase === 'idle' ? 'pointer' : 'default',
+          boxShadow: '0 0 18px rgba(188,106,77,0.35), inset 0 0 12px rgba(188,106,77,0.08)',
+          opacity: uiPhase === 'idle' ? 1 : 0.6,
+          transition: 'box-shadow 0.3s ease, opacity 0.3s ease',
+        }}
+      >
+        {buttonLabel}
+      </motion.button>
+
+      <style>{`
+        .qs-fan-scale { transform-origin: 50% 100%; }
+        @media (max-width: 1100px) { .qs-fan-scale { transform: scale(0.82); } }
+        @media (max-width: 820px)  { .qs-fan-scale { transform: scale(0.62); } }
+        @media (max-width: 560px)  { .qs-fan-scale { transform: scale(0.42); } }
+        @keyframes qsSparkleDrift {
+          0%   { transform: translate(0,0) scale(0.6); opacity: 0; }
+          15%  { opacity: 1; }
+          50%  { transform: translate(var(--sx), var(--sy)) scale(1); opacity: 0.9; }
+          100% { transform: translate(calc(var(--sx) * 1.6), calc(var(--sy) * 1.6)) scale(0.4); opacity: 0; }
+        }
+      `}</style>
+    </div>
+  );
+};
+
+/** Floating gold-dust / star sparkles shown only while the deck is shuffling */
+const ShuffleSparkles: React.FC<{ runKey: number; cosmic: boolean }> = ({ runKey, cosmic }) => {
+  const dots = useMemo(() => Array.from({ length: cosmic ? 46 : 22 }, (_, i) => ({
+    id: i,
+    left: 50 + (Math.random() * 2 - 1) * 42,
+    top: 50 + (Math.random() * 2 - 1) * 40,
+    sx: `${(Math.random() * 2 - 1) * 80}px`,
+    sy: `${-Math.random() * 90 - 10}px`,
+    size: Math.random() * 3 + (cosmic ? 2 : 1),
+    delay: Math.random() * 1.4,
+    dur: 1.1 + Math.random() * 1.3,
+    color: cosmic ? (i % 2 === 0 ? '#D8A9FF' : '#BC6A4D') : '#E8B79A',
+  })), [runKey, cosmic]);
+
+  return (
+    <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', zIndex: 6, overflow: 'visible' }}>
+      {dots.map(d => (
+        <span key={d.id} style={{
+          position: 'absolute', left: `${d.left}%`, top: `${d.top}%`,
+          width: d.size, height: d.size, borderRadius: '50%',
+          background: d.color,
+          boxShadow: `0 0 ${d.size * 3}px ${d.color}`,
+          // @ts-expect-error custom CSS properties consumed by the keyframe above
+          '--sx': d.sx, '--sy': d.sy,
+          animation: `qsSparkleDrift ${d.dur}s ease-out ${d.delay}s infinite`,
+        }} />
+      ))}
     </div>
   );
 };
 
 // ─── Card Reveal Scene ────────────────────────────────────────────────────────
-const CardRevealScene = ({ cards, positions, onComplete }: { cards: TarotCard[]; positions: string[]; onComplete: () => void }) => {
+const CardRevealScene = ({ cards, positions, question, onComplete }: { cards: TarotCard[]; positions: string[]; question?: string; onComplete: () => void }) => {
   const [revealed, setRevealed] = useState<boolean[]>(new Array(cards.length).fill(false));
   const [current, setCurrent] = useState(0);
   const [autoReveal] = useState(true);
@@ -737,7 +1180,7 @@ const CardRevealScene = ({ cards, positions, onComplete }: { cards: TarotCard[];
                     <CardBackSVG />
                   </div>
                   <div style={{ position: 'absolute', inset: 0, backfaceVisibility: 'hidden', transform: 'rotateY(180deg)', borderRadius: '9px', overflow: 'hidden', boxShadow: `0 0 50px ${theme.glow}, 0 24px 60px rgba(0,0,0,0.8)` }}>
-                    <CardFace card={card} size="lg" />
+                    <CardFace card={card} size="lg" category={question} />
                   </div>
                 </div>
 
@@ -831,117 +1274,382 @@ const InsightCard = ({
 };
 
 // ─── Timeline Reading Display ─────────────────────────────────────────────────
-const TimelineReadingDisplay = ({
-  cards, positions, question, reading, onReset,
-}: { cards: TarotCard[]; positions: string[]; question: string; reading: AIReading; onReset: () => void }) => (
-  <div style={{ minHeight: '100vh', padding: 'clamp(80px,10vh,120px) clamp(16px,5vw,40px) 80px', maxWidth: '1160px', margin: '0 auto', position: 'relative' }}>
-    <Particles count={18} />
+const RESULT_LABELS = ['Past Soul Lesson', 'Current Path', 'Hidden Calling', 'Next Awakening', 'Purpose Guidance'];
 
-    {/* ── Header ─────────────────────────────────────────────────────── */}
-    <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }}
-      style={{ textAlign: 'center', marginBottom: '52px', position: 'relative', zIndex: 10 }}>
-      <p style={{ letterSpacing: '6px', fontSize: '12px', color: 'rgba(255,215,0,0.65)', textTransform: 'uppercase', fontFamily: 'Iceland, sans-serif', marginBottom: '10px' }}>
-        Life Timeline Tarot™ · {question}
-      </p>
-      <h2 style={{ fontSize: 'clamp(26px,5vw,52px)', fontFamily: 'Iceland, sans-serif', letterSpacing: '5px', textTransform: 'uppercase', color: '#FFD700', textShadow: '0 0 30px rgba(255,215,0,0.4)' }}>
-        Your Soul's Timeline
-      </h2>
-      <div style={{ width: '100px', height: '1px', background: 'linear-gradient(90deg,transparent,#FFD700,transparent)', margin: '14px auto 0' }} />
-    </motion.div>
-
-    {/* ── 5 cards strip ─────────────────────────────────────────────── */}
-    <div style={{ position: 'relative', zIndex: 10, marginBottom: '56px' }}>
-      <div style={{
-        display: 'flex', alignItems: 'flex-start', justifyContent: 'center',
-        flexWrap: 'wrap', gap: '0', overflowX: 'auto', paddingBottom: '8px',
-      }}>
-        {cards.map((card, i) => {
-          const theme = getCardTheme(card);
-          return (
-            <div key={card.id} style={{ display: 'flex', alignItems: 'center' }}>
-              <motion.div initial={{ opacity: 0, y: 28 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 + i * 0.14 }}
-                style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '10px', padding: '0 8px' }}>
-                <CardThumb card={card} width={110} height={170} size="md" />
-                <div style={{ width: '7px', height: '7px', borderRadius: '50%', background: theme.accent, boxShadow: `0 0 10px ${theme.accent}` }} />
-                <p style={{ fontSize: '10px', letterSpacing: '1.5px', color: 'rgba(255,215,0,0.65)', fontFamily: 'Iceland, sans-serif', textTransform: 'uppercase', textAlign: 'center', maxWidth: '100px', margin: 0 }}>{positions[i]}</p>
-                <p style={{ fontSize: '12px', color: theme.accent, fontFamily: 'Iceland, sans-serif', textTransform: 'uppercase', letterSpacing: '1px', textAlign: 'center', maxWidth: '100px', margin: 0, fontWeight: 600 }}>{card.name}</p>
-              </motion.div>
-              {i < cards.length - 1 && (
-                <motion.div initial={{ scaleX: 0 }} animate={{ scaleX: 1 }} transition={{ delay: 0.38 + i * 0.14, duration: 0.6 }}
-                  style={{ width: '28px', height: '1px', background: 'linear-gradient(90deg,rgba(255,215,0,0.5),rgba(255,215,0,0.15))', transformOrigin: 'left', flexShrink: 0, marginBottom: '80px' }} />
-              )}
-            </div>
-          );
-        })}
-      </div>
-    </div>
-
-    {/* ── Overall Message ────────────────────────────────────────────── */}
-    {(reading.overallMessage || reading.spiritualGuidance) && (
-      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.45 }}
+/** Uniform copper-on-navy tarot tile — lift + glow + sparkle + shine on hover, opens the detail panel on click */
+const ResultCard: React.FC<{
+  card: TarotCard; label: string; active: boolean; delay: number; onToggle: () => void; category?: string;
+}> = ({ card, label, active, delay, onToggle, category }) => {
+  const [hovered, setHovered] = useState(false);
+  const [imgFailed, setImgFailed] = useState(false);
+  const imgSrc = !imgFailed ? getCategoryCardImage(category, card) : null;
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 24 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay, duration: 0.5 }}
+      style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '14px' }}
+    >
+      <motion.button
+        onClick={onToggle}
+        onMouseEnter={() => setHovered(true)}
+        onMouseLeave={() => setHovered(false)}
+        animate={{ y: hovered ? -10 : 0, scale: hovered ? 1.05 : 1 }}
+        transition={{ duration: 0.25, ease: 'easeOut' }}
         style={{
-          display: 'flex', alignItems: 'center', gap: '28px', flexWrap: 'wrap',
-          padding: '32px 36px', marginBottom: '40px',
-          background: 'linear-gradient(135deg,rgba(255,215,0,0.1) 0%,rgba(255,180,0,0.04) 100%)',
-          border: '1px solid rgba(255,215,0,0.3)', borderRadius: '20px',
-          position: 'relative', zIndex: 10,
-        }}>
-        <div style={{ flexShrink: 0 }}>
-          <ScoreCircle score={reading.probabilityScore ?? 75} label="Path Probability" />
-        </div>
-        <div style={{ flex: '1 1 260px', minWidth: 0 }}>
-          <p style={{ fontSize: '11px', letterSpacing: '3px', color: 'rgba(255,215,0,0.65)', fontFamily: 'Iceland, sans-serif', textTransform: 'uppercase', marginBottom: '12px' }}>✨ Your Overall Reading</p>
-          <p style={{ margin: 0, color: 'rgba(255,248,220,0.9)', fontSize: '19px', lineHeight: 1.85, fontFamily: 'Iceland, sans-serif', wordBreak: 'break-word' }}>
-            {reading.overallMessage || reading.spiritualGuidance}
-          </p>
-        </div>
-      </motion.div>
-    )}
+          position: 'relative', width: 200, height: 300, padding: 0, cursor: 'pointer',
+          border: `1px solid ${active ? 'rgba(188,106,77,0.9)' : 'rgba(188,106,77,0.35)'}`,
+          borderRadius: '14px', background: 'linear-gradient(160deg,#0c1424 0%,#070d18 100%)',
+          overflow: 'hidden',
+          boxShadow: active
+            ? '0 0 32px rgba(188,106,77,0.55), 0 12px 26px rgba(0,0,0,0.55)'
+            : hovered
+            ? '0 0 26px rgba(188,106,77,0.45), 0 12px 24px rgba(0,0,0,0.5)'
+            : '0 4px 16px rgba(0,0,0,0.45)',
+        }}
+      >
+        {imgSrc && (
+          <>
+            <img
+              src={imgSrc}
+              alt={card.name}
+              onError={() => setImgFailed(true)}
+              style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center' }}
+            />
+            <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, rgba(7,13,24,0.6) 0%, transparent 26%, transparent 64%, rgba(7,13,24,0.88) 100%)' }} />
+          </>
+        )}
+        <span style={{ position: 'absolute', top: 14, left: 0, right: 0, textAlign: 'center', fontSize: 13, letterSpacing: 1.5, color: imgSrc ? 'rgba(255,255,255,0.85)' : 'rgba(188,106,77,0.7)', fontFamily: "'Astra','Iceland',sans-serif" }}>{card.number}</span>
+        {!imgSrc && <span style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%,-52%)', fontSize: 90, filter: 'drop-shadow(0 0 14px rgba(188,106,77,0.55))' }}>{card.symbol}</span>}
+        <span style={{ position: 'absolute', bottom: 16, left: 10, right: 10, textAlign: 'center', fontSize: 18, letterSpacing: 0.5, color: '#E8B79A', fontFamily: "'Astra','Iceland',sans-serif", lineHeight: 1.25, fontWeight: 600 }}>{card.name}</span>
 
-    {/* ── 6 insight sections ─────────────────────────────────────────── */}
-    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(290px,1fr))', gap: '18px', marginBottom: '44px', position: 'relative', zIndex: 10 }}>
-      <InsightCard icon="🌱" label="What This Means For You" value={reading.currentLifeStage}     delay={0.5}  />
-      <InsightCard icon="✨" label="What's Helping You"       value={reading.mainOpportunity}       delay={0.58} accent="#80DEEA" />
-      <InsightCard icon="🔮" label="What's Blocking You"      value={reading.hiddenChallenge}       delay={0.66} accent="#CE93D8" />
-      <InsightCard icon="⭐" label="What's Coming Next"       value={reading.nextMajorTurningPoint} delay={0.74} accent="#FFD700" />
-      <InsightCard icon="⚡" label="What To Do Right Now"     value={reading.recommendedAction}     delay={0.82} accent="#4FC3F7" />
-      <InsightCard icon="🕯" label="Guidance For This Week"   value={reading.spiritualGuidance}     delay={0.9}  accent="#F48FB1" />
-    </div>
+        {hovered && <span className="result-card-shine" />}
+        {hovered && Array.from({ length: 3 }).map((_, i) => (
+          <span key={i} className="result-card-sparkle" style={{ left: `${20 + i * 28}%`, animationDelay: `${i * 0.15}s` }} />
+        ))}
+      </motion.button>
+      <span style={{ fontSize: 16, letterSpacing: '1px', color: '#BC6A4D', fontFamily: "'Astra','Iceland',sans-serif", textTransform: 'uppercase', textAlign: 'center', maxWidth: 200 }}>{label}</span>
+    </motion.div>
+  );
+};
 
-    {/* ── Card-by-card narrative ─────────────────────────────────────── */}
-    {reading.timelineNarrative && reading.timelineNarrative.length > 0 && (
-      <div style={{ marginBottom: '48px', position: 'relative', zIndex: 10 }}>
-        <h3 style={{ fontFamily: 'Iceland, sans-serif', fontSize: '20px', letterSpacing: '4px', color: '#FFD700', textTransform: 'uppercase', marginBottom: '24px', textAlign: 'center' }}>
-          Your Card-by-Card Story
-        </h3>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-          {reading.timelineNarrative.map((n, i) => {
-            const card = cards[i];
-            const theme = card ? getCardTheme(card) : MAJOR_THEME;
-            return (
-              <motion.div key={i} initial={{ opacity: 0, x: -16 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 1.0 + i * 0.1 }}
-                style={{
-                  display: 'flex', alignItems: 'flex-start', gap: '18px',
-                  padding: '20px 22px',
-                  background: `linear-gradient(160deg,${theme.accent}0e 0%,rgba(0,0,0,0.01) 100%)`,
-                  border: `1px solid ${theme.accent}28`, borderRadius: '14px',
-                }}>
-                {card && <CardThumb card={card} width={56} height={86} size="sm" />}
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <p style={{ margin: '0 0 4px', fontSize: '11px', letterSpacing: '2px', color: `${theme.accent}99`, fontFamily: 'Iceland, sans-serif', textTransform: 'uppercase' }}>{n.position}</p>
-                  <p style={{ margin: '0 0 10px', fontSize: '15px', color: theme.accent, fontFamily: 'Iceland, sans-serif', fontWeight: 600 }}>{n.card}</p>
-                  <p style={{ margin: 0, fontSize: '16px', color: 'rgba(255,248,220,0.82)', lineHeight: 1.75, wordBreak: 'break-word' }}>{n.insight}</p>
-                </div>
-              </motion.div>
-            );
-          })}
+/** Large glowing copper ring — replaces the boxed probability panel */
+const ProbabilityRing: React.FC<{ score: number; delay: number }> = ({ score, delay }) => {
+  const [displayed, setDisplayed] = useState(0);
+  const r = 76;
+  const circ = 2 * Math.PI * r;
+  const offset = circ - (displayed / 100) * circ;
+
+  useEffect(() => {
+    let frame: number;
+    let current = 0;
+    const step = () => {
+      current += (score - current) * 0.06;
+      if (Math.abs(current - score) < 0.5) { setDisplayed(score); return; }
+      setDisplayed(Math.round(current));
+      frame = requestAnimationFrame(step);
+    };
+    frame = requestAnimationFrame(step);
+    return () => cancelAnimationFrame(frame);
+  }, [score]);
+
+  return (
+    <motion.div initial={{ opacity: 0, scale: 0.85 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay, duration: 0.6 }}
+      style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+      <div style={{ position: 'relative', width: 184, height: 184 }}>
+        <div style={{ position: 'absolute', inset: -18, borderRadius: '50%', background: 'radial-gradient(circle, rgba(188,106,77,0.32) 0%, transparent 70%)', filter: 'blur(6px)' }} />
+        <svg width="184" height="184" viewBox="0 0 184 184" style={{ position: 'relative', transform: 'rotate(-90deg)' }}>
+          <circle cx="92" cy="92" r={r} fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="4" />
+          <circle cx="92" cy="92" r={r} fill="none" stroke="#BC6A4D" strokeWidth="4"
+            strokeDasharray={circ} strokeDashoffset={offset} strokeLinecap="round"
+            style={{ filter: 'drop-shadow(0 0 10px rgba(188,106,77,0.85))' }} />
+        </svg>
+        <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+          <span style={{ fontSize: 44, fontWeight: 700, color: '#FFFFFF', fontFamily: "'Astra','Iceland',sans-serif", lineHeight: 1 }}>{displayed}</span>
+          <span style={{ fontSize: 13, letterSpacing: '1px', color: '#BC6A4D', textTransform: 'uppercase', fontFamily: "'Astra','Iceland',sans-serif", marginTop: 8, whiteSpace: 'nowrap' }}>Path Probability</span>
         </div>
       </div>
-    )}
+    </motion.div>
+  );
+};
 
-    <ResetButton onReset={onReset} />
+const DetailRow: React.FC<{ label: string; value: string }> = ({ label, value }) => (
+  <div style={{ marginBottom: 16 }}>
+    <p style={{ margin: '0 0 4px', fontSize: 13, letterSpacing: '1.5px', color: 'rgba(232,183,154,0.6)', textTransform: 'uppercase', fontFamily: "'Astra','Iceland',sans-serif" }}>{label}</p>
+    <p style={{ margin: 0, fontSize: 17, lineHeight: 1.75, color: 'rgba(255,248,220,0.88)', fontFamily: "'Astra','Iceland',sans-serif" }}>{value}</p>
   </div>
 );
+
+/** Small artwork tile used in the "Card-by-Card Story" strip — real category art with an emoji-symbol fallback */
+const StoryCardThumb: React.FC<{ card: TarotCard; category?: string }> = ({ card, category }) => {
+  const [imgFailed, setImgFailed] = useState(false);
+  const imgSrc = !imgFailed ? getCategoryCardImage(category, card) : null;
+  return (
+    <div style={{ width: 88, height: 132, margin: '0 auto 16px', borderRadius: 10, border: '1px solid rgba(188,106,77,0.4)', overflow: 'hidden', position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(188,106,77,0.05)' }}>
+      {imgSrc
+        ? <img src={imgSrc} alt={card.name} onError={() => setImgFailed(true)} style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center', display: 'block' }} />
+        : <span style={{ fontSize: 38 }}>{card.symbol}</span>}
+    </div>
+  );
+};
+
+/** Floating panel with the six requested reading fields for a single selected card */
+const CardDetailPanel: React.FC<{
+  card: TarotCard; label: string; insight?: string; guidance?: string;
+}> = ({ card, label, insight, guidance }) => (
+  <motion.div
+    initial={{ opacity: 0, y: 18 }}
+    animate={{ opacity: 1, y: 0 }}
+    exit={{ opacity: 0, y: 18 }}
+    transition={{ duration: 0.4, ease: 'easeOut' }}
+    style={{
+      width: '100%', maxWidth: 620, margin: '0 auto',
+      padding: '30px 34px', borderRadius: '16px',
+      background: 'linear-gradient(160deg,rgba(188,106,77,0.08) 0%,rgba(188,106,77,0.02) 100%)',
+      border: '1px solid rgba(188,106,77,0.3)',
+    }}
+  >
+    <p style={{ margin: '0 0 6px', fontSize: 13, letterSpacing: '2.5px', color: 'rgba(188,106,77,0.75)', textTransform: 'uppercase', fontFamily: "'Astra','Iceland',sans-serif" }}>{label}</p>
+    <h4 style={{ margin: '0 0 18px', fontSize: 28, color: '#BC6A4D', fontFamily: "'Astra','Iceland',sans-serif", letterSpacing: '2px' }}>{card.name}</h4>
+
+    <DetailRow label="Meaning" value={card.meaning} />
+    {insight && <DetailRow label="Interpretation" value={insight} />}
+    <DetailRow label="Positive Aspects" value={card.keywords.join(' · ')} />
+    <DetailRow label="Challenges" value={card.shadow} />
+    {guidance && <DetailRow label="Guidance" value={guidance} />}
+  </motion.div>
+);
+
+/** Centered white sub-heading, matching the main heading's font/weight but without the glow */
+const SectionHeading: React.FC<{ children: React.ReactNode }> = ({ children }) => (
+  <motion.h3
+    initial={{ opacity: 0, y: 24 }}
+    whileInView={{ opacity: 1, y: 0 }}
+    viewport={{ once: true, margin: '-80px' }}
+    transition={{ duration: 0.5 }}
+    style={{ margin: 0, fontSize: 30, fontWeight: 600, color: '#FFFFFF', fontFamily: "'Astra','Iceland',sans-serif", letterSpacing: '2px', textAlign: 'center', textTransform: 'uppercase' }}
+  >
+    {children}
+  </motion.h3>
+);
+
+/** Tiny copper celestial glyph used to separate the two insight-grid rows */
+const SacredDivider: React.FC = () => (
+  <div className="trd-divider" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 14, gridColumn: '1 / -1' }}>
+    <div style={{ width: 60, height: 1, background: 'linear-gradient(to right, transparent, rgba(188,106,77,0.45))' }} />
+    <svg width="16" height="16" viewBox="0 0 16 16" style={{ opacity: 0.7, flexShrink: 0 }}>
+      <circle cx="8" cy="8" r="6" fill="none" stroke="#BC6A4D" strokeWidth="0.6" strokeDasharray="2 3" />
+      <path d="M8,2 L8,14 M2,8 L14,8" stroke="#BC6A4D" strokeWidth="0.6" opacity="0.6" />
+      <circle cx="8" cy="8" r="1.8" fill="#BC6A4D" opacity="0.8" />
+    </svg>
+    <div style={{ width: 60, height: 1, background: 'linear-gradient(to left, transparent, rgba(188,106,77,0.45))' }} />
+  </div>
+);
+
+/** Insight-grid tile — same border/background/glow tokens as ResultCard, just larger */
+const InsightGridCard: React.FC<{ icon: React.ReactNode; title: string; value?: string; delay: number }> = ({ icon, title, value, delay }) => {
+  const [hovered, setHovered] = useState(false);
+  if (!value) return null;
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 24 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: '-60px' }}
+      whileHover={{ y: -8, scale: 1.02 }}
+      transition={{ duration: 0.5, delay }}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      style={{
+        position: 'relative', padding: '30px 28px', borderRadius: '19px',
+        background: 'linear-gradient(160deg,#0c1424 0%,#070d18 100%)',
+        border: `1px solid ${hovered ? 'rgba(188,106,77,0.6)' : 'rgba(188,106,77,0.35)'}`,
+        boxShadow: hovered ? '0 8px 26px rgba(0,0,0,0.5), 0 0 24px rgba(188,106,77,0.25)' : '0 4px 16px rgba(0,0,0,0.4)',
+        transition: 'border-color 0.3s ease, box-shadow 0.3s ease',
+        overflow: 'hidden',
+      }}
+    >
+      <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 14 }}>
+        <span style={{ color: '#BC6A4D', display: 'flex' }}>{icon}</span>
+        <span style={{ fontSize: 16, letterSpacing: '1.5px', textTransform: 'uppercase', color: '#BC6A4D', fontFamily: "'Astra','Iceland',sans-serif", fontWeight: 600 }}>{title}</span>
+      </div>
+      <p style={{ margin: 0, color: 'rgba(255,248,220,0.82)', fontSize: 18, lineHeight: 1.8, fontFamily: "'Astra','Iceland',sans-serif" }}>{value}</p>
+
+      {hovered && <span className="result-card-shine" />}
+      {hovered && Array.from({ length: 3 }).map((_, i) => (
+        <span key={i} className="result-card-sparkle" style={{ left: `${15 + i * 30}%`, animationDelay: `${i * 0.15}s` }} />
+      ))}
+    </motion.div>
+  );
+};
+
+const TimelineReadingDisplay = ({
+  cards, positions, question, reading, onReset,
+}: { cards: TarotCard[]; positions: string[]; question: string; reading: AIReading; onReset: () => void }) => {
+  const [activeIdx, setActiveIdx] = useState<number | null>(null);
+  const activeCard = activeIdx !== null ? cards[activeIdx] : null;
+  const activeInsight = activeIdx !== null ? reading.timelineNarrative?.[activeIdx]?.insight : undefined;
+  const guidance = reading.recommendedAction || reading.spiritualGuidance;
+
+  return (
+    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '48px 20px 100px', position: 'relative', background: '#071327', overflow: 'hidden' }}>
+      <Particles count={16} />
+
+      <motion.div initial={{ opacity: 0, y: -14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}
+        style={{ textAlign: 'center', zIndex: 10, marginBottom: 32 }}>
+        <p style={{ letterSpacing: '4px', fontSize: 16, color: '#BC6A4D', textTransform: 'none', fontFamily: "'Astra','Iceland',sans-serif", marginBottom: 14 }}>
+          Life Timeline Tarot™ • {question}
+        </p>
+        <h1 style={{ margin: '0 0 16px', fontSize: 'clamp(32px,5vw,48px)', fontFamily: "'Astra','Iceland',sans-serif", letterSpacing: '3px', textTransform: 'uppercase', fontWeight: 700 }}>
+          <span style={{ color: '#FFFFFF' }}>Your Soul&apos;s </span>
+          <span style={{ color: '#BC6A4D' }}>Timeline</span>
+        </h1>
+        <p style={{ margin: 0, fontSize: 18, fontStyle: 'italic', color: 'rgba(255,255,255,0.65)', fontFamily: "'Lato',sans-serif" }}>
+          Hover over each card · Trust your instinct · Let your next path reveal itself
+        </p>
+      </motion.div>
+
+      <div className="trd-cards-row" style={{ display: 'flex', justifyContent: 'center', gap: 'clamp(16px,3vw,32px)', flexWrap: 'wrap', zIndex: 10, marginBottom: 36 }}>
+        {cards.map((card, i) => (
+          <ResultCard key={card.id} card={card} label={RESULT_LABELS[i] ?? positions[i]} active={activeIdx === i}
+            delay={0.15 + i * 0.12} onToggle={() => setActiveIdx(cur => (cur === i ? null : i))} category={question} />
+        ))}
+      </div>
+
+      <AnimatePresence mode="wait">
+        {activeCard && (
+          <div key={activeIdx} style={{ zIndex: 10, marginBottom: 36, width: '100%', display: 'flex', justifyContent: 'center', padding: '0 20px' }}>
+            <CardDetailPanel card={activeCard} label={RESULT_LABELS[activeIdx!] ?? positions[activeIdx!]} insight={activeInsight} guidance={guidance} />
+          </div>
+        )}
+      </AnimatePresence>
+
+      <div style={{ zIndex: 10, marginBottom: 90 }}>
+        <ProbabilityRing score={reading.probabilityScore ?? 75} delay={0.15 + cards.length * 0.12 + 0.2} />
+      </div>
+
+      {/* ── Overall Reading ────────────────────────────────────────────── */}
+      {reading.overallMessage && (
+        <div style={{ zIndex: 10, width: '100%', marginBottom: 90 }}>
+          <SectionHeading>Overall Reading</SectionHeading>
+          <motion.p
+            initial={{ opacity: 0, y: 16 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: '-60px' }}
+            transition={{ duration: 0.5, delay: 0.1 }}
+            style={{ maxWidth: 700, margin: '24px auto 0', textAlign: 'center', fontSize: 18, lineHeight: 1.9, color: 'rgba(255,255,255,0.72)', fontFamily: "'Lato',sans-serif", padding: '0 20px' }}
+          >
+            {reading.overallMessage}
+          </motion.p>
+        </div>
+      )}
+
+      {/* ── Six insight cards, 3×2 with a sacred divider between the rows ── */}
+      <div className="trd-insight-grid" style={{ zIndex: 10, width: '100%', maxWidth: 1000, marginBottom: 90 }}>
+        <InsightGridCard icon={<Sprout size={18} />}  title="What This Means For You" value={reading.currentLifeStage}     delay={0} />
+        <InsightGridCard icon={<Sparkles size={18} />} title="What's Helping You"      value={reading.mainOpportunity}     delay={0.08} />
+        <InsightGridCard icon={<EyeOff size={18} />}  title="What's Blocking You"     value={reading.hiddenChallenge}     delay={0.16} />
+        <SacredDivider />
+        <InsightGridCard icon={<Star size={18} />}    title="What's Coming Next"      value={reading.nextMajorTurningPoint} delay={0.24} />
+        <InsightGridCard icon={<Zap size={18} />}     title="What To Do Right Now"    value={reading.recommendedAction}   delay={0.32} />
+        <InsightGridCard icon={<Flame size={18} />}   title="Guidance For This Week"  value={reading.spiritualGuidance}   delay={0.4} />
+      </div>
+
+      {/* ── Card-by-card story ─────────────────────────────────────────── */}
+      {reading.timelineNarrative && reading.timelineNarrative.length > 0 && (
+        <div style={{ zIndex: 10, width: '100%', maxWidth: 1100, marginBottom: 90 }}>
+          <SectionHeading>Your Card-by-Card Story</SectionHeading>
+          <div className="trd-story-row" style={{ display: 'flex', justifyContent: 'center', alignItems: 'flex-start', flexWrap: 'wrap', gap: '28px 0', maxWidth: 960, margin: '36px auto 0' }}>
+            {reading.timelineNarrative.map((n, i) => {
+              const card = cards[i];
+              if (!card) return null;
+              return (
+                <React.Fragment key={i}>
+                  <motion.div
+                    initial={{ opacity: 0, y: 24 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true, margin: '-60px' }}
+                    transition={{ duration: 0.5, delay: i * 0.1 }}
+                    style={{
+                      width: 260, boxSizing: 'border-box', padding: '32px 26px', borderRadius: '18px', textAlign: 'center',
+                      background: 'linear-gradient(160deg,#0c1424 0%,#070d18 100%)',
+                      border: '1px solid rgba(188,106,77,0.35)',
+                    }}
+                  >
+                    <StoryCardThumb card={card} category={question} />
+                    <p style={{ margin: '0 0 14px', fontSize: 21, color: '#BC6A4D', fontFamily: "'Astra','Iceland',sans-serif", fontWeight: 600, letterSpacing: '1px' }}>{card.name}</p>
+                    <p style={{ margin: '0 0 6px', fontSize: 14, letterSpacing: '1px', textTransform: 'uppercase', color: 'rgba(188,106,77,0.6)', fontFamily: "'Astra','Iceland',sans-serif" }}>Meaning</p>
+                    <p style={{ margin: '0 0 14px', fontSize: 16.5, lineHeight: 1.7, color: 'rgba(255,248,220,0.75)', fontFamily: "'Astra','Iceland',sans-serif" }}>{card.meaning}</p>
+                    <p style={{ margin: '0 0 6px', fontSize: 14, letterSpacing: '1px', textTransform: 'uppercase', color: 'rgba(188,106,77,0.6)', fontFamily: "'Astra','Iceland',sans-serif" }}>Interpretation</p>
+                    <p style={{ margin: 0, fontSize: 16.5, lineHeight: 1.7, color: 'rgba(255,248,220,0.75)', fontFamily: "'Astra','Iceland',sans-serif" }}>{n.insight}</p>
+                  </motion.div>
+                  {i < reading.timelineNarrative!.length - 1 && (
+                    <span className="trd-story-arrow" style={{ color: 'rgba(188,106,77,0.5)', fontSize: 26, alignSelf: 'center', padding: '0 12px' }}>→</span>
+                  )}
+                </React.Fragment>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      <ResetButton onReset={onReset} />
+
+      <style>{`
+        @keyframes resultCardShine {
+          0%   { transform: translateX(-120%) rotate(20deg); opacity: 0; }
+          15%  { opacity: 0.55; }
+          100% { transform: translateX(160%) rotate(20deg); opacity: 0; }
+        }
+        .result-card-shine {
+          position: absolute; top: -40%; left: 0; width: 30%; height: 180%;
+          background: linear-gradient(90deg, transparent, rgba(255,255,255,0.35), transparent);
+          animation: resultCardShine 1.1s ease forwards;
+          pointer-events: none;
+        }
+        @keyframes resultCardSparkle {
+          0%   { opacity: 0; transform: translateY(0) scale(0.4); }
+          40%  { opacity: 1; }
+          100% { opacity: 0; transform: translateY(-26px) scale(1); }
+        }
+        .result-card-sparkle {
+          position: absolute; bottom: 10px; width: 3px; height: 3px; border-radius: 50%;
+          background: #BC6A4D; box-shadow: 0 0 6px #BC6A4D;
+          animation: resultCardSparkle 1s ease-out forwards;
+          pointer-events: none;
+        }
+        @media (max-width: 600px) {
+          .trd-cards-row {
+            flex-wrap: nowrap;
+            justify-content: flex-start;
+            overflow-x: auto;
+            padding: 0 20px 8px;
+            -webkit-overflow-scrolling: touch;
+          }
+        }
+
+        .trd-insight-grid {
+          display: grid;
+          grid-template-columns: repeat(3, minmax(0, 1fr));
+          gap: 24px;
+          padding: 0 20px;
+        }
+        .trd-divider { display: flex; margin: 4px 0; }
+        @media (max-width: 900px) {
+          .trd-insight-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+          .trd-divider { display: none; }
+        }
+        @media (max-width: 560px) {
+          .trd-insight-grid { grid-template-columns: 1fr; }
+        }
+
+        @media (max-width: 700px) {
+          .trd-story-row { justify-content: flex-start; overflow-x: auto; padding: 0 20px 8px; -webkit-overflow-scrolling: touch; }
+          .trd-story-arrow { display: none; }
+        }
+      `}</style>
+    </div>
+  );
+};
 
 // ─── Karma Mirror Reading Display ─────────────────────────────────────────────
 const KarmaMirrorDisplay = ({
@@ -1284,13 +1992,13 @@ const TarotExperience = () => {
 
         {phase === 'spread' && (
           <motion.div key="spread" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.5 }}>
-            <CardSpreadScene numCards={numCards} positions={positions} onComplete={handleCardSpreadComplete} />
+            <CardSpreadScene numCards={numCards} positions={positions} question={question} onComplete={handleCardSpreadComplete} />
           </motion.div>
         )}
 
         {phase === 'revealing' && (
           <motion.div key="revealing" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.5 }}>
-            <CardRevealScene cards={selectedCards} positions={positions} onComplete={handleRevealComplete} />
+            <CardRevealScene cards={selectedCards} positions={positions} question={question} onComplete={handleRevealComplete} />
           </motion.div>
         )}
 

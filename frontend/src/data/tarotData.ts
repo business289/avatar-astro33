@@ -159,3 +159,23 @@ export const shuffleDeck = (cards: TarotCard[]): TarotCard[] => {
 export const drawCards = (count: number): TarotCard[] => {
   return shuffleDeck(ALL_CARDS).slice(0, count);
 };
+
+/** Maps a QuestionSelectScene category label to its image-folder key under /images/tarot/cards/ */
+export const CATEGORY_IMAGE_KEYS: Record<string, string> = {
+  'Career': 'career',
+  'Love': 'love',
+  'Marriage': 'marriage',
+  'Business': 'business',
+  'Finance': 'finance',
+  'Health': 'health',
+  'Life Purpose': 'lifepurpose',
+};
+
+/** Each category has its own re-illustrated art for the 22 Major Arcana cards, numbered 01.png-22.png. */
+export const getCategoryCardImage = (category: string | undefined, card: TarotCard): string | null => {
+  if (!category || card.arcana !== 'major') return null;
+  const key = CATEGORY_IMAGE_KEYS[category];
+  if (!key) return null;
+  const num = String(card.id + 1).padStart(2, '0');
+  return `/images/tarot/cards/${key}/${num}.png`;
+};
