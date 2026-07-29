@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import { apiService } from '@/lib/api';
+import { apiService, API_BASE_URL } from '@/lib/api';
 
 interface HumanReadableInterpretation {
   summary: string;
@@ -28,7 +28,7 @@ export function useInterpretBirthChart() {
   const interpret = useCallback(async (birthData: any) => {
     setState({ data: null, loading: true, error: null });
     try {
-      const response = await fetch('http://localhost:5000/api/interpretation/birth-chart', {
+      const response = await fetch(`${API_BASE_URL}/interpretation/birth-chart`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -65,7 +65,7 @@ export function useAIDailyHoroscope(sign: string) {
     if (!sign) return null;
     setState({ data: null, loading: true, error: null });
     try {
-      const response = await fetch(`http://localhost:5000/api/interpretation/horoscope/${sign}`);
+      const response = await fetch(`${API_BASE_URL}/interpretation/horoscope/${sign}`);
 
       if (!response.ok) {
         throw new Error('Failed to generate horoscope');
@@ -97,7 +97,7 @@ export function useAICompatibility(sign1: string, sign2: string) {
     setState({ data: null, loading: true, error: null });
     try {
       const response = await fetch(
-        `http://localhost:5000/api/interpretation/compatibility?sign1=${sign1}&sign2=${sign2}`
+        `${API_BASE_URL}/interpretation/compatibility?sign1=${sign1}&sign2=${sign2}`
       );
 
       if (!response.ok) {

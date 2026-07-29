@@ -1,4 +1,5 @@
 import { useState, useCallback } from 'react';
+import { API_BASE_URL } from '@/lib/api';
 
 interface ChatMessage {
   id: string;
@@ -39,7 +40,7 @@ export function useChartChat() {
     }));
 
     try {
-      const response = await fetch('http://localhost:5000/api/interpretation/chart-chat', {
+      const response = await fetch(`${API_BASE_URL}/interpretation/chart-chat`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
