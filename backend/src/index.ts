@@ -34,6 +34,7 @@ const EXPLICIT_ALLOWED_ORIGINS = [
   'http://127.0.0.1:3000',
   'http://localhost:8081',
   'http://192.168.1.126:8081',
+  'https://avatar-astro33.vercel.app',
 ];
 // This project's actual Vite dev port (see frontend/vite.config.ts) — kept
 // in addition to the explicit list above since that's what's really running.
