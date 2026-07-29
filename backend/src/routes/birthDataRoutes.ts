@@ -2,9 +2,9 @@ import { Router } from 'express';
 import {
   saveBirthData,
   getBirthData
-} from '../controllers/birthDataController';
-import { authMiddleware } from '../middleware/auth';
-import { validateBirthData } from '../middleware/birthDataValidation';
+} from '../controllers/birthDataController.js';
+import { authMiddleware } from '../middleware/auth.js';
+import { validateBirthData } from '../middleware/birthDataValidation.js';
 
 const router = Router();
 

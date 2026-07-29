@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import astroApiService from '../services/astroApiService';
+import astroApiService from '../services/astroApiService.js';
 
 /**
  * Get daily horoscope for a zodiac sign

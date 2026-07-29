@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { listTemples, getTempleBySlug } from '../controllers/darshanController';
+import { listTemples, getTempleBySlug } from '../controllers/darshanController.js';
 
 const router = Router();
 

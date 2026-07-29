@@ -1,5 +1,5 @@
 import mongoose, { Connection } from 'mongoose';
-import { config } from './environment';
+import { config } from './environment.js';
 
 let connection: Connection | null = null;
 

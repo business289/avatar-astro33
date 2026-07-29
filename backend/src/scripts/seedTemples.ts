@@ -8,8 +8,8 @@
 import dns from 'dns';
 import dotenv from 'dotenv';
 import mongoose from 'mongoose';
-import Temple from '../models/Temple';
-import temples from '../config/temples.json';
+import Temple from '../models/Temple.js';
+import temples from '../config/temples.json' with { type: 'json' };
 
 dotenv.config();
 

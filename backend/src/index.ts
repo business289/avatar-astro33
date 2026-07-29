@@ -4,12 +4,12 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import mongoose from 'mongoose';
 import axios from 'axios';
-import interpretationRoutes from './routes/interpretationRoutes';
-import compatibilityRoutes from './routes/compatibilityRoutes';
-import birthChartRoutes from './routes/birthChartRoutes';
-import innerVoiceRoutes from './routes/innerVoiceRoutes';
-import darshanRoutes from './routes/darshanRoutes';
-import { startDarshanRefreshLoop } from './services/darshanRefreshService';
+import interpretationRoutes from './routes/interpretationRoutes.js';
+import compatibilityRoutes from './routes/compatibilityRoutes.js';
+import birthChartRoutes from './routes/birthChartRoutes.js';
+import innerVoiceRoutes from './routes/innerVoiceRoutes.js';
+import darshanRoutes from './routes/darshanRoutes.js';
+import { startDarshanRefreshLoop } from './services/darshanRefreshService.js';
 
 dotenv.config();
 

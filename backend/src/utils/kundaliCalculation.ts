@@ -1,4 +1,4 @@
-import { IBirthChart, IPlanet, IHouse } from '../models/Kundali';
+import { IBirthChart, IPlanet, IHouse } from '../models/Kundali.js';
 
 /**
  * Simplified Kundali calculation based on birth data

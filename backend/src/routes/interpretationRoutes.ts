@@ -3,8 +3,8 @@ import {
   interpretBirthChart,
   generateAIDailyHoroscope,
   generateAICompatibility
-} from '../controllers/interpretationController';
-import { chartChat } from '../controllers/chartChatController';
+} from '../controllers/interpretationController.js';
+import { chartChat } from '../controllers/chartChatController.js';
 
 const router = Router();
 

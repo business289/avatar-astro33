@@ -1,5 +1,5 @@
-import Temple from '../models/Temple';
-import { checkChannelLive } from './youtubeLiveService';
+import Temple from '../models/Temple.js';
+import { checkChannelLive } from './youtubeLiveService.js';
 
 let refreshTimer: NodeJS.Timeout | null = null;
 

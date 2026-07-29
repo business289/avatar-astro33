@@ -3,7 +3,7 @@ import {
   generateHumanReadableInterpretation,
   generateDailyHoroscope,
   generateCompatibilityAnalysis
-} from '../services/chatgptService';
+} from '../services/chatgptService.js';
 
 // Generate human-readable birth chart interpretation
 export const interpretBirthChart = async (req: Request, res: Response) => {
