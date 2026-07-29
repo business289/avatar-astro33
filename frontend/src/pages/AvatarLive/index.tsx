@@ -112,7 +112,6 @@ const AvatarLivePage = () => {
 
             <h1 className="font-display font-bold tracking-widest uppercase leading-none mb-5"
               style={{ fontSize: 'clamp(52px, 8vw, 96px)' }}>
-              <span style={{ color: '#2C1810' }}>Avatar </span>
               <span style={{ background: 'linear-gradient(135deg, #BC6A4D 0%, #BC6A4D 60%, #BC6A4D 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
                 Live
               </span>

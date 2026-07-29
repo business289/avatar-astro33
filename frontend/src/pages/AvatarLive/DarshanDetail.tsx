@@ -512,7 +512,7 @@ const DarshanDetail = () => {
         {/* ── BREADCRUMB ──────────────────────────────────────────────── */}
         <div style={{ maxWidth: 1280, margin: '0 auto', padding: '24px 48px 0' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 12, color: '#9C7B62' }}>
-            <Link to="/avatar-live" style={{ color: '#BC6A4D', textDecoration: 'none' }}>Avatar Live</Link>
+            <Link to="/avatar-live" style={{ color: '#BC6A4D', textDecoration: 'none' }}>Live</Link>
             <span>/</span>
             <Link to="/avatar-live/darshan" style={{ color: '#BC6A4D', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 4 }}>
               <ArrowLeft style={{ width: 12, height: 12 }} /> Live Darshan

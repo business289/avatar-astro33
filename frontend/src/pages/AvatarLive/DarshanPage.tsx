@@ -147,7 +147,7 @@ const DarshanPage = () => {
         <section className="text-center" style={{ paddingTop: 56, paddingBottom: 56, paddingLeft: 48, paddingRight: 48 }}>
           <div style={{ maxWidth: 780, margin: '0 auto' }}>
             <Link to="/avatar-live" style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 12, color: '#BC6A4D', textDecoration: 'none', fontWeight: 600, marginBottom: 24, letterSpacing: '0.05em' }}>
-              ← Avatar Live
+              ← Live
             </Link>
 
             <div className="flex items-center justify-center gap-3 mb-5">
