@@ -12,7 +12,7 @@ export const config = {
 
   // Database
   mongodb: {
-    uri: process.env.MONGODB_URI
+    uri: process.env.MONGODB_URI},
 
   // JWT
   jwt: {
@@ -24,7 +24,7 @@ export const config = {
   cors: {
     origin: process.env.CORS_ORIGIN || 'http://localhost:3000'
   }
-};
+}
 
 // Validate required environment variables
 export const validateConfig = (): void => {
