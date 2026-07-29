@@ -1,14 +1,9 @@
-import React, { useState, useEffect, useRef, memo, Suspense } from "react";
+import React, { useState, useEffect, memo, Suspense } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronDown } from "lucide-react";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { useGSAP } from "@gsap/react";
 import { InteractiveSolarSystem } from "./InteractiveSolarSystem";
 import { PlanetInfoPanel } from "../PlanetInfoPanel";
 import { Planet, getDailyInfluence, PlanetaryInfluence, ZodiacSign } from "@/data/planetaryData";
-
-gsap.registerPlugin(ScrollTrigger, useGSAP);
 
 class PanelBoundary extends React.Component<
   { children: React.ReactNode },
@@ -64,18 +59,9 @@ const SceneLoader = memo(() => (
 SceneLoader.displayName = "SceneLoader";
 
 export const ScrollytellingHero = () => {
-  // ── Refs ────────────────────────────────────────────────────────────────
-  const sectionRef    = useRef<HTMLDivElement>(null);   // pinned element
-  const heroTextRef   = useRef<HTMLDivElement>(null);
-  const scrollHintRef = useRef<HTMLDivElement>(null);
-  const interactRef   = useRef<HTMLDivElement>(null);
+  // Planets are always interactive — there's no scroll-gated reveal stage.
+  const canInteract = true;
 
-  // shared scroll progress — updated by GSAP, read by Three.js useFrame
-  const scrollRef      = useRef({ progress: 0 });
-  const canInteractRef = useRef(false);
-
-  // ── State (only updated at threshold crossings) ──────────────────────
-  const [canInteract, setCanInteract]     = useState(false);
   const [selectedPlanet, setSelectedPlanet] = useState<Planet | null>(null);
   const [userZodiac, setUserZodiac]       = useState<ZodiacSign>("sagittarius");
   const [dailyInfluence, setDailyInfluence] = useState<PlanetaryInfluence | null>(null);
@@ -94,58 +80,6 @@ export const ScrollytellingHero = () => {
       setDailyInfluence(null);
     }
   }, [selectedPlanet, userZodiac]);
-
-  // ── GSAP pin + scroll-driven animation ──────────────────────────────
-  useGSAP(() => {
-    const section = sectionRef.current;
-    if (!section) return;
-
-    ScrollTrigger.create({
-      trigger:    section,
-      start:      "top top",
-      end:        "+=9000",       // 1 500 px × 6 transitions (Mercury → Sun → Moon → Mars → Saturn → Venus → Jupiter)
-      pin:        true,
-      pinSpacing: true,
-      scrub:      true,           // direct 1:1 mapping; Three.js lerp handles visual smoothing
-      onUpdate:   (self) => {
-        // ── Write progress directly — zero React overhead ──
-        scrollRef.current.progress = self.progress;
-
-        // Hero text: fade out + drift upward
-        if (heroTextRef.current) {
-          const op = Math.max(0, 1 - self.progress * 2.8);
-          heroTextRef.current.style.opacity   = String(op);
-          heroTextRef.current.style.transform = `translateY(${-self.progress * 52}px)`;
-        }
-
-        // Scroll hint: disappears quickly
-        if (scrollHintRef.current) {
-          scrollHintRef.current.style.opacity = String(
-            Math.max(0, 1 - self.progress * 5)
-          );
-        }
-
-        // Interact hint: fades in near end
-        if (interactRef.current) {
-          const op = self.progress > 0.8
-            ? Math.min(1, (self.progress - 0.8) / 0.18)
-            : 0;
-          interactRef.current.style.opacity = String(op);
-        }
-
-        // Interaction threshold
-        const nowInteract = self.progress > 0.8;
-        if (nowInteract !== canInteractRef.current) {
-          canInteractRef.current = nowInteract;
-          setCanInteract(nowInteract);
-          if (!nowInteract) setSelectedPlanet(null);
-        }
-      },
-    });
-
-    // Recalculate positions after any layout shift (fonts, canvas, etc.)
-    ScrollTrigger.refresh();
-  });
 
   return (
     <>
@@ -166,13 +100,11 @@ export const ScrollytellingHero = () => {
       </PanelBoundary>
 
       {/*
-        ── Pinned hero section ──────────────────────────────────────────
-        GSAP pins this element for 3 000 px of scroll.
-        Nothing inside should move with the scroll — all motion is
-        driven by `scrollRef.current.progress` inside Three.js useFrame.
+        ── Hero section ───────────────────────────────────────────────────
+        Planets rotate automatically in the background. Scrolling behaves
+        like a normal page — nothing here reacts to scroll input.
       */}
       <div
-        ref={sectionRef}
         className="relative w-full overflow-hidden"
         style={{ height: "100vh" }}
       >
@@ -183,16 +115,14 @@ export const ScrollytellingHero = () => {
               <InteractiveSolarSystem
                 selectedPlanet={selectedPlanet}
                 onPlanetSelect={setSelectedPlanet}
-                scrollRef={scrollRef}
                 canInteract={canInteract}
               />
             </SceneBoundary>
           </Suspense>
         </div>
 
-        {/* ── Hero text (fades via direct DOM) ── */}
+        {/* ── Hero text ── */}
         <div
-          ref={heroTextRef}
           className="absolute inset-0 z-20 flex flex-col items-center justify-start pt-32 md:pt-44 px-4 pointer-events-none"
         >
           <motion.div
@@ -215,16 +145,15 @@ export const ScrollytellingHero = () => {
               </span>
             </h1>
 
-            <p className="text-sm md:text-base text-foreground/80 font-sans font-normal max-w-xl mx-auto tracking-wider mb-6">
+            <p className="text-sm md:text-base text-foreground/80 font-display font-normal max-w-xl mx-auto tracking-wider mb-6">
               Discover daily planetary wisdom aligned with your zodiac sign
             </p>
 
           </motion.div>
         </div>
 
-        {/* ── Scroll indicator (disappears as soon as user starts scrolling) ── */}
+        {/* ── Scroll indicator ── */}
         <div
-          ref={scrollHintRef}
           className="absolute bottom-8 left-1/2 -translate-x-1/2 z-20 pointer-events-none flex flex-col items-center gap-2"
         >
           <span className="text-xs text-muted-foreground font-display tracking-widest uppercase">
@@ -238,11 +167,9 @@ export const ScrollytellingHero = () => {
           </motion.div>
         </div>
 
-        {/* ── Interact hint (appears when fully zoomed in) ── */}
+        {/* ── Interact hint ── */}
         <div
-          ref={interactRef}
           className="absolute bottom-14 left-1/2 -translate-x-1/2 z-20 pointer-events-none text-center whitespace-nowrap"
-          style={{ opacity: 0 }}
         >
           <p
             className="text-sm font-display tracking-[0.22em] uppercase"

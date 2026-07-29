@@ -1,3 +1,4 @@
+import dns from 'dns';
 import express, { Request, Response, NextFunction } from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
@@ -7,24 +8,48 @@ import interpretationRoutes from './routes/interpretationRoutes';
 import compatibilityRoutes from './routes/compatibilityRoutes';
 import birthChartRoutes from './routes/birthChartRoutes';
 import innerVoiceRoutes from './routes/innerVoiceRoutes';
+import darshanRoutes from './routes/darshanRoutes';
+import { startDarshanRefreshLoop } from './services/darshanRefreshService';
 
 dotenv.config();
+
+// Opt-in only: some local/router DNS resolvers refuse SRV queries from
+// Node's resolver (c-ares) even though the OS resolver handles them fine,
+// which breaks mongodb+srv:// lookups with "querySrv ECONNREFUSED".
+// Reproduced on this dev machine's network; not assumed to apply elsewhere,
+// so it only activates when MONGODB_DNS_SERVERS is explicitly set.
+if (process.env.MONGODB_DNS_SERVERS) {
+  dns.setServers(process.env.MONGODB_DNS_SERVERS.split(',').map((s) => s.trim()));
+}
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/astrology';
 
 // Middleware
+const EXPLICIT_ALLOWED_ORIGINS = [
+  'http://localhost:5173',
+  'http://127.0.0.1:5173',
+  'http://localhost:3000',
+  'http://127.0.0.1:3000',
+];
+// This project's actual Vite dev port (see frontend/vite.config.ts) — kept
+// in addition to the explicit list above since that's what's really running.
+const LOCAL_DEV_ORIGIN_REGEX = /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/;
+// Optional production origin, set via env — unrelated to local dev, unchanged.
+const PRODUCTION_ORIGIN = process.env.CORS_ORIGIN;
+
 app.use(cors({
   origin: (origin, callback) => {
     // Allow requests with no origin (server-to-server proxy, curl, mobile)
     if (!origin) return callback(null, true);
-    // Allow any localhost or 127.0.0.1 on any port during development
-    if (/^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(origin)) {
-      return callback(null, true);
-    }
+    if (EXPLICIT_ALLOWED_ORIGINS.includes(origin)) return callback(null, true);
+    if (LOCAL_DEV_ORIGIN_REGEX.test(origin)) return callback(null, true);
+    if (PRODUCTION_ORIGIN && origin === PRODUCTION_ORIGIN) return callback(null, true);
+    console.warn(`✗ CORS rejected origin: ${origin}`);
     callback(new Error('Not allowed by CORS'));
   },
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   credentials: true,
 }));
 app.use(express.json({ limit: '20mb' }));
@@ -94,6 +119,7 @@ app.use('/api/interpretation', interpretationRoutes);
 app.use('/api/compatibility', compatibilityRoutes);
 app.use('/api/birthchart', birthChartRoutes);
 app.use('/api/inner-voice', innerVoiceRoutes);
+app.use('/api/darshan', darshanRoutes);
 
 // TTS proxy — matches the /api/tts path used by VoiceConsultation.tsx
 app.post('/api/tts', async (req: Request, res: Response) => {
@@ -331,6 +357,7 @@ async function startServer() {
   try {
     await mongoose.connect(MONGODB_URI);
     console.log('✓ MongoDB connected');
+    startDarshanRefreshLoop();
   } catch (error) {
     console.warn('⚠ MongoDB not available — running without database');
   }

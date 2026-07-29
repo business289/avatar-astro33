@@ -94,7 +94,7 @@ const ChadhawaPage = () => {
             style={{ fontSize: 'clamp(54px, 8vw, 96px)' }}>
             <span style={{ color: '#2C1810' }}>Offer A </span>
             <span style={{
-              background: 'linear-gradient(135deg, #BC6A4D 0%, #D4854A 60%, #BC6A4D 100%)',
+              background: 'linear-gradient(135deg, #BC6A4D 0%, #BC6A4D 60%, #BC6A4D 100%)',
               WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text',
             }}>Chadhawa</span>
           </h1>
@@ -222,7 +222,7 @@ const ChadhawaPage = () => {
                       </div>
                       <span style={{
                         display: 'inline-flex', alignItems: 'center', gap: 7,
-                        background: 'linear-gradient(135deg, #BC6A4D 0%, #D4854A 100%)',
+                        background: 'linear-gradient(135deg, #BC6A4D 0%, #BC6A4D 100%)',
                         color: '#FFFFFF', fontSize: 13, fontWeight: 700,
                         letterSpacing: '0.10em', textTransform: 'uppercase',
                         padding: '12px 20px', borderRadius: 12, flexShrink: 0,

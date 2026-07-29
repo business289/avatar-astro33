@@ -64,7 +64,7 @@ const ShopPage = () => {
             style={{ fontSize: 'clamp(54px, 8vw, 96px)' }}>
             <span style={{ color: '#2C1810' }}>Divine </span>
             <span style={{
-              background: 'linear-gradient(135deg, #BC6A4D 0%, #D4854A 60%, #BC6A4D 100%)',
+              background: 'linear-gradient(135deg, #BC6A4D 0%, #BC6A4D 60%, #BC6A4D 100%)',
               WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text',
             }}>Shop</span>
           </h1>
@@ -108,7 +108,7 @@ const ShopPage = () => {
               <button
                 key={cat}
                 onClick={() => setActiveCategory(cat as ProductCategory | 'All')}
-                className={`flex-shrink-0 font-sans text-xs tracking-wider px-4 py-2 rounded-full border transition-all duration-200 ${
+                className={`flex-shrink-0 font-display text-xs tracking-wider px-4 py-2 rounded-full border transition-all duration-200 ${
                   activeCategory === cat
                     ? 'border-[#BC6A4D] text-[#BC6A4D]'
                     : 'border-[#D4B896] text-[#7A5C42] hover:border-[#BC6A4D] hover:text-[#BC6A4D]'

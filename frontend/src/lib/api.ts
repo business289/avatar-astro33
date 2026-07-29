@@ -14,6 +14,15 @@ interface ApiError {
   data?: any;
 }
 
+export interface DarshanTempleStatus {
+  name: string;
+  slug: string;
+  youtubeChannelId: string;
+  currentLiveVideoId: string | null;
+  isLive: boolean;
+  lastCheckedAt: string | null;
+}
+
 class ApiService {
   private baseURL: string;
 
@@ -143,6 +152,16 @@ class ApiService {
       method: 'POST',
       body: JSON.stringify({ email }),
     });
+  }
+
+  // Live Darshan endpoints — the only source of YouTube live-status data;
+  // the frontend never calls the YouTube API directly.
+  async getDarshanTemples() {
+    return this.request<ApiResponse<DarshanTempleStatus[]>>('/darshan/temples');
+  }
+
+  async getDarshanTemple(slug: string) {
+    return this.request<ApiResponse<DarshanTempleStatus>>(`/darshan/temples/${slug}`);
   }
 
   // Contact endpoints

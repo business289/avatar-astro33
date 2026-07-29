@@ -1,12 +1,13 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Search, Users, MapPin, Play, ArrowRight } from 'lucide-react';
 import { motion } from 'framer-motion';
 import DevotionLayout from '@/components/DevotionLayout';
-import { liveTemples, streamCategories, formatViewers, type StreamCategory } from '@/data/liveStreams';
+import { liveTemples as staticTemples, streamCategories, formatViewers, type StreamCategory, type LiveTemple } from '@/data/liveStreams';
+import { apiService } from '@/lib/api';
 
 // ── Temple card ────────────────────────────────────────────────────────────────
-const TempleCard = ({ temple, index }: { temple: (typeof liveTemples)[0]; index: number }) => (
+const TempleCard = ({ temple, index }: { temple: LiveTemple; index: number }) => (
   <motion.div
     initial={{ opacity: 0, y: 30 }}
     whileInView={{ opacity: 1, y: 0 }}
@@ -91,7 +92,7 @@ const TempleCard = ({ temple, index }: { temple: (typeof liveTemples)[0]; index:
           <p style={{ fontSize: 13, color: '#9C7B62' }}>Darshan: <span style={{ color: '#2C1810', fontWeight: 600 }}>{temple.darshanTimings.split('–')[0].trim()}</span></p>
           <span style={{
             display: 'inline-flex', alignItems: 'center', gap: 6,
-            background: temple.isLive ? 'linear-gradient(135deg, #BC6A4D 0%, #D4854A 100%)' : 'rgba(188,106,77,0.10)',
+            background: temple.isLive ? 'linear-gradient(135deg, #BC6A4D 0%, #BC6A4D 100%)' : 'rgba(188,106,77,0.10)',
             color: temple.isLive ? '#FFF' : '#BC6A4D',
             fontSize: 12, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase',
             padding: '9px 16px', borderRadius: 10, flexShrink: 0,
@@ -111,6 +112,24 @@ const TempleCard = ({ temple, index }: { temple: (typeof liveTemples)[0]; index:
 const DarshanPage = () => {
   const [query, setQuery]    = useState('');
   const [active, setActive]  = useState<StreamCategory | 'All'>('All');
+  // Static content (name, description, timings, images...) stays local;
+  // only `isLive` is overlaid from the backend, which is the sole source
+  // of truth for YouTube live status.
+  const [liveTemples, setLiveTemples] = useState<LiveTemple[]>(staticTemples);
+
+  useEffect(() => {
+    let cancelled = false;
+    apiService.getDarshanTemples()
+      .then(res => {
+        if (cancelled || !res.success || !res.data) return;
+        const statusBySlug = new Map(res.data.map(t => [t.slug, t.isLive]));
+        setLiveTemples(prev => prev.map(t =>
+          statusBySlug.has(t.slug) ? { ...t, isLive: statusBySlug.get(t.slug)! } : t
+        ));
+      })
+      .catch(() => { /* keep static fallback data on failure */ });
+    return () => { cancelled = true; };
+  }, []);
 
   const featured = liveTemples.find(t => t.isLive) ?? liveTemples[0];
 
@@ -140,7 +159,7 @@ const DarshanPage = () => {
             <h1 className="font-display font-bold tracking-widest uppercase leading-none mb-5"
               style={{ fontSize: 'clamp(72px, 11vw, 128px)' }}>
               <span style={{ color: '#2C1810' }}>Live </span>
-              <span style={{ background: 'linear-gradient(135deg, #BC6A4D 0%, #D4854A 60%, #BC6A4D 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
+              <span style={{ background: 'linear-gradient(135deg, #BC6A4D 0%, #BC6A4D 60%, #BC6A4D 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
                 Darshan
               </span>
             </h1>
@@ -181,7 +200,7 @@ const DarshanPage = () => {
                 style={{
                   flexShrink: 0,
                   padding: '8px 18px', borderRadius: 99, fontSize: 12, fontWeight: 600,
-                  fontFamily: 'sans-serif', letterSpacing: '0.04em', cursor: 'pointer',
+                  fontFamily: "'Astra','Iceland',sans-serif", letterSpacing: '0.04em', cursor: 'pointer',
                   border: active === cat ? '1.5px solid #BC6A4D' : '1.5px solid rgba(188,106,77,0.25)',
                   background: active === cat ? 'rgba(188,106,77,0.1)' : 'transparent',
                   color: active === cat ? '#BC6A4D' : '#7A5C42',
@@ -238,7 +257,7 @@ const DarshanPage = () => {
                   </p>
                   <div style={{
                     display: 'inline-flex', alignItems: 'center', gap: 8,
-                    background: 'linear-gradient(135deg, #BC6A4D 0%, #D4854A 100%)',
+                    background: 'linear-gradient(135deg, #BC6A4D 0%, #BC6A4D 100%)',
                     color: '#FFF', fontSize: 14, fontWeight: 700,
                     letterSpacing: '0.08em', padding: '14px 28px', borderRadius: 12,
                     fontFamily: 'Iceland, sans-serif', width: 'fit-content',
@@ -257,7 +276,7 @@ const DarshanPage = () => {
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 24 }}>
               <h2 className="font-display font-bold tracking-wide uppercase" style={{ fontSize: 32, color: '#2C1810' }}>
                 All Temples
-                <span style={{ fontSize: 16, color: '#9C7B62', fontWeight: 400, marginLeft: 12, fontFamily: 'sans-serif', textTransform: 'none', letterSpacing: 0 }}>
+                <span style={{ fontSize: 16, color: '#9C7B62', fontWeight: 400, marginLeft: 12, fontFamily: "'Astra','Iceland',sans-serif", textTransform: 'none', letterSpacing: 0 }}>
                   {filtered.length} streams
                 </span>
               </h2>
@@ -299,7 +318,7 @@ const DarshanPage = () => {
               </p>
               <button style={{
                 display: 'inline-flex', alignItems: 'center', gap: 8,
-                background: 'linear-gradient(135deg, #BC6A4D 0%, #D4854A 100%)',
+                background: 'linear-gradient(135deg, #BC6A4D 0%, #BC6A4D 100%)',
                 color: '#FFF', fontSize: 13, fontWeight: 700,
                 letterSpacing: '0.1em', textTransform: 'uppercase',
                 padding: '14px 28px', borderRadius: 12,

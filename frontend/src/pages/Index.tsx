@@ -169,7 +169,7 @@ const Index = () => {
                     <div className="flex items-center justify-between mb-3">
                       <span
                         className="font-display text-sm tracking-[0.28em] uppercase"
-                        style={{ color: "#c49a6c", opacity: 0.85 }}
+                        style={{ color: "#BC6A4D", opacity: 0.85 }}
                       >
                         [{item.step}]
                       </span>
@@ -177,34 +177,34 @@ const Index = () => {
                       {/* Circular step icon */}
                       <div
                         className="w-11 h-11 rounded-full flex items-center justify-center flex-shrink-0"
-                        style={{ border: "1px solid rgba(196,154,108,0.35)", background: "rgba(196,154,108,0.06)" }}
+                        style={{ border: "1px solid rgba(188,106,77,0.35)", background: "rgba(188,106,77,0.06)" }}
                       >
                         {index === 0 && (
                           <svg viewBox="0 0 36 36" className="w-6 h-6" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <circle cx="18" cy="18" r="10" stroke="#c49a6c" strokeWidth="1" strokeOpacity="0.9" />
-                            <circle cx="18" cy="18" r="2" fill="#c49a6c" fillOpacity="0.9" />
+                            <circle cx="18" cy="18" r="10" stroke="#BC6A4D" strokeWidth="1" strokeOpacity="0.9" />
+                            <circle cx="18" cy="18" r="2" fill="#BC6A4D" fillOpacity="0.9" />
                             {[0, 45, 90, 135, 180, 225, 270, 315].map(d => {
                               const a = d * Math.PI / 180;
-                              return <line key={d} x1={18 + Math.cos(a) * 4} y1={18 + Math.sin(a) * 4} x2={18 + Math.cos(a) * 8} y2={18 + Math.sin(a) * 8} stroke="#c49a6c" strokeWidth="1" strokeOpacity="0.8" />;
+                              return <line key={d} x1={18 + Math.cos(a) * 4} y1={18 + Math.sin(a) * 4} x2={18 + Math.cos(a) * 8} y2={18 + Math.sin(a) * 8} stroke="#BC6A4D" strokeWidth="1" strokeOpacity="0.8" />;
                             })}
                           </svg>
                         )}
                         {index === 1 && (
                           <svg viewBox="0 0 36 36" className="w-6 h-6" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <circle cx="18" cy="13" r="5" stroke="#c49a6c" strokeWidth="1" strokeOpacity="0.9" />
-                            <path d="M8,30 Q8,22 18,22 Q28,22 28,30" stroke="#c49a6c" strokeWidth="1" strokeOpacity="0.9" strokeLinecap="round" />
+                            <circle cx="18" cy="13" r="5" stroke="#BC6A4D" strokeWidth="1" strokeOpacity="0.9" />
+                            <path d="M8,30 Q8,22 18,22 Q28,22 28,30" stroke="#BC6A4D" strokeWidth="1" strokeOpacity="0.9" strokeLinecap="round" />
                           </svg>
                         )}
                         {index === 2 && (
                           <svg viewBox="0 0 36 36" className="w-6 h-6" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <circle cx="18" cy="18" r="7" stroke="#c49a6c" strokeWidth="1" strokeOpacity="0.9" />
-                            <ellipse cx="18" cy="18" rx="16" ry="6" stroke="#c49a6c" strokeWidth="1" strokeOpacity="0.7" transform="rotate(-20 18 18)" />
+                            <circle cx="18" cy="18" r="7" stroke="#BC6A4D" strokeWidth="1" strokeOpacity="0.9" />
+                            <ellipse cx="18" cy="18" rx="16" ry="6" stroke="#BC6A4D" strokeWidth="1" strokeOpacity="0.7" transform="rotate(-20 18 18)" />
                           </svg>
                         )}
                         {index === 3 && (
                           <svg viewBox="0 0 36 36" className="w-6 h-6" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M22,8 A12,12 0 1,0 22,28 A8,8 0 1,1 22,8 Z" fill="#c49a6c" fillOpacity="0.25" stroke="#c49a6c" strokeWidth="1" strokeOpacity="0.9" />
-                            <circle cx="26" cy="10" r="2" fill="#c49a6c" fillOpacity="0.8" />
+                            <path d="M22,8 A12,12 0 1,0 22,28 A8,8 0 1,1 22,8 Z" fill="#BC6A4D" fillOpacity="0.25" stroke="#BC6A4D" strokeWidth="1" strokeOpacity="0.9" />
+                            <circle cx="26" cy="10" r="2" fill="#BC6A4D" fillOpacity="0.8" />
                           </svg>
                         )}
                       </div>
@@ -232,7 +232,7 @@ const Index = () => {
             className="relative w-full max-w-4xl mx-auto rounded-2xl overflow-hidden flex flex-col items-center justify-center py-16 px-8"
             style={{
               background: "linear-gradient(135deg, rgba(8,20,38,0.85) 0%, rgba(11,42,91,0.6) 50%, rgba(8,20,38,0.85) 100%)",
-              border: "1px solid rgba(196,154,108,0.18)",
+              border: "1px solid rgba(188,106,77,0.18)",
               boxShadow: "0 0 80px rgba(11,42,91,0.4)",
             }}
           >
@@ -244,12 +244,12 @@ const Index = () => {
               }}
             />
 
-            <p className="text-xs font-display tracking-[0.35em] uppercase mb-4" style={{ color: "#c49a6c" }}>
+            <p className="text-xs font-display tracking-[0.35em] uppercase mb-4" style={{ color: "#BC6A4D" }}>
               Interactive Experience
             </p>
             <h2 className="font-display text-4xl md:text-5xl font-bold tracking-widest uppercase mb-4 leading-tight text-white">
               Explore the
-              <span className="block" style={{ color: "#c49a6c" }}>Solar System</span>
+              <span className="block" style={{ color: "#BC6A4D" }}>Solar System</span>
             </h2>
             <p className="text-muted-foreground text-sm md:text-base max-w-md mx-auto mb-10 leading-relaxed">
               Journey through our cosmic neighbourhood — orbit planets, discover their mysteries, and feel the scale of the universe.
@@ -259,10 +259,10 @@ const Index = () => {
               to="/solar-system"
               className="group relative inline-flex items-center gap-3 px-8 py-4 rounded-full font-display text-sm tracking-[0.22em] uppercase transition-all duration-300"
               style={{
-                background: "linear-gradient(135deg, #c49a6c, #e8b87a)",
+                background: "linear-gradient(135deg, #BC6A4D, #D9895F)",
                 color: "#020B1F",
                 fontWeight: 700,
-                boxShadow: "0 0 32px rgba(196,154,108,0.35)",
+                boxShadow: "0 0 32px rgba(188,106,77,0.35)",
               }}
             >
               <span>Launch Solar System</span>

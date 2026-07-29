@@ -1,4 +1,4 @@
-import { lazy, Suspense } from "react";
+import { lazy, Suspense, useEffect, useLayoutEffect } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -28,6 +28,7 @@ import SolarSystem from "./pages/SolarSystem";
 import NotFound from "./pages/NotFound";
 import CosmicBackground from "./components/CosmicBackground";
 
+
 const PujaPage      = lazy(() => import("./pages/Puja/index"));
 const PujaDetail    = lazy(() => import("./pages/Puja/PujaDetail"));
 const ChadhawaPage  = lazy(() => import("./pages/Chadhawa/index"));
@@ -43,8 +44,37 @@ const LazyFallback = () => <div className="min-h-screen" />;
 
 const queryClient = new QueryClient();
 
+// Forces the viewport to the top, then re-asserts it for a few more animation
+// frames. A single scrollTo call isn't reliable here: GSAP's ScrollTrigger
+// (used for scroll-reveal animations on several pages) resets
+// history.scrollRestoration back to "auto" on its own refresh cycle, which
+// re-enables the browser's native back/forward scroll restoration — that
+// native restore can land *after* a single corrective scrollTo call,
+// especially on the Back/Forward buttons. Repeating the correction across a
+// few frames wins that race regardless of exactly when it fires.
+const forceScrollTop = () => {
+  const toTop = () => window.scrollTo({ top: 0, left: 0, behavior: "instant" as ScrollBehavior });
+  toTop();
+  let frames = 4;
+  const reassert = () => {
+    toTop();
+    if (--frames > 0) requestAnimationFrame(reassert);
+  };
+  requestAnimationFrame(reassert);
+};
+
 const AnimatedRoutes = () => {
   const location = useLocation();
+
+  // Reset scroll to top on every route change, before the browser paints —
+  // so the new page always opens at its hero section, never at wherever the
+  // previous page happened to be scrolled to.
+  useLayoutEffect(() => {
+    if ("scrollRestoration" in window.history) {
+      window.history.scrollRestoration = "manual";
+    }
+    forceScrollTop();
+  }, [location.pathname]);
 
   return (
     <AnimatePresence mode="wait" initial={false}>
@@ -290,7 +320,18 @@ const AnimatedRoutes = () => {
   );
 };
 
-const App = () => (
+const App = () => {
+  // Backstop for the browser Back/Forward buttons: native popstate scroll
+  // restoration happens before any React re-render can run, so the
+  // per-route useLayoutEffect above can lose that race. A direct popstate
+  // listener corrects it immediately, independent of React's render timing.
+  useEffect(() => {
+    const handlePopState = () => forceScrollTop();
+    window.addEventListener("popstate", handlePopState);
+    return () => window.removeEventListener("popstate", handlePopState);
+  }, []);
+
+  return (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <BrowserRouter>
@@ -318,6 +359,7 @@ const App = () => (
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
-);
+  );
+};
 
 export default App;

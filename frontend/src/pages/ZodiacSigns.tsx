@@ -274,7 +274,7 @@ const ZodiacSigns = () => {
                         <img 
                           src={zodiacImages[selectedSign.name]} 
                           alt={selectedSign.name}
-                          className="w-full h-full object-contain filter drop-shadow-[0_0_10px_rgba(245,195,106,0.4)]"
+                          className="w-full h-full object-contain filter drop-shadow-[0_0_10px_rgba(188,106,77,0.4)]"
                         />
                       </div>
                       <div>
@@ -363,7 +363,7 @@ const ZodiacSigns = () => {
                   <div
                     className="absolute inset-[36%] rounded-full pointer-events-none"
                     style={{
-                      background: 'radial-gradient(circle, rgba(245,195,106,0.28) 0%, rgba(188,106,77,0.14) 45%, transparent 70%)',
+                      background: 'radial-gradient(circle, rgba(188,106,77,0.28) 0%, rgba(188,106,77,0.14) 45%, transparent 70%)',
                     }}
                   />
 
@@ -402,7 +402,7 @@ const ZodiacSigns = () => {
                   <div
                     className="absolute inset-[-50%] rounded-full pointer-events-none"
                     style={{
-                      background: 'radial-gradient(circle, rgba(245,195,106,0.22) 0%, transparent 65%)',
+                      background: 'radial-gradient(circle, rgba(188,106,77,0.22) 0%, transparent 65%)',
                       animation: 'wheel-center-pulse 4s ease-in-out infinite',
                     }}
                   />
@@ -411,7 +411,7 @@ const ZodiacSigns = () => {
                   >
                     <span
                       className="text-3xl text-primary"
-                      style={{ filter: 'drop-shadow(0 0 10px rgba(245,195,106,0.75)) drop-shadow(0 0 22px rgba(245,195,106,0.38))' }}
+                      style={{ filter: 'drop-shadow(0 0 10px rgba(188,106,77,0.75)) drop-shadow(0 0 22px rgba(188,106,77,0.38))' }}
                     >
                       ☉
                     </span>
@@ -424,7 +424,7 @@ const ZodiacSigns = () => {
                   className="absolute font-display text-[11px] font-semibold uppercase tracking-[0.15em] pointer-events-none whitespace-nowrap"
                   style={{
                     transform: 'translate(-50%, -50%)',
-                    color: '#F4B26A',
+                    color: '#BC6A4D',
                     opacity: isAnimating ? 0 : 1,
                     transition: 'opacity 350ms ease',
                     textShadow:
@@ -445,7 +445,7 @@ const ZodiacSigns = () => {
                   <div
                     key={`star-${i}`}
                     className="absolute w-1.5 h-1.5 rounded-full bg-primary/65 animate-pulse"
-                    style={{ ...pos, animationDelay: `${i * 0.5}s`, boxShadow: '0 0 6px rgba(245,195,106,0.5)' }}
+                    style={{ ...pos, animationDelay: `${i * 0.5}s`, boxShadow: '0 0 6px rgba(188,106,77,0.5)' }}
                   />
                 ))}
               </div>

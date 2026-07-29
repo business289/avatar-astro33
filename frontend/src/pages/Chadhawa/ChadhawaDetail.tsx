@@ -106,7 +106,7 @@ const ImageCarousel = ({ images, name, gradient }: { images: string[]; name: str
 
         {/* Counter */}
         {total > 1 && (
-          <div className="absolute top-4 right-4 z-20 bg-black/50 backdrop-blur-sm text-white text-xs px-3 py-1 rounded-full font-mono tracking-wider">
+          <div className="absolute top-4 right-4 z-20 bg-black/50 backdrop-blur-sm text-white text-xs px-3 py-1 rounded-full font-display tracking-wider">
             {current + 1} / {total}
           </div>
         )}
@@ -195,7 +195,7 @@ const ChadhawaDetail = () => {
       {/* ── Breadcrumb ────────────────────────────────────────────────────── */}
       <div className="border-b border-border/20">
         <div className="mx-auto px-6 lg:px-16 py-3" style={{ maxWidth: 1400 }}>
-          <div className="flex items-center gap-2 text-xs text-muted-foreground font-sans">
+          <div className="flex items-center gap-2 text-xs text-muted-foreground font-display">
             <Link to="/" className="hover:text-primary transition-colors">Home</Link>
             <span>/</span>
             <Link to="/chadhawa" className="hover:text-primary transition-colors">Mandir Chadhawa</Link>
@@ -297,7 +297,7 @@ const ChadhawaDetail = () => {
         {/* ── CHOOSE YOUR OFFERING ──────────────────────────────────────────── */}
         <section className="mb-16" id="offerings">
           <div className="text-center mb-10">
-            <p className="text-xs font-sans tracking-[0.3em] text-primary/70 uppercase mb-3">Sacred Items</p>
+            <p className="text-xs font-display tracking-[0.3em] text-primary/70 uppercase mb-3">Sacred Items</p>
             <h2 className="font-display text-3xl md:text-4xl tracking-widest uppercase">
               <span className="text-foreground">Choose Your </span>
               <span className="text-primary">Offering</span>
@@ -451,7 +451,7 @@ const ChadhawaDetail = () => {
         {/* ── CHADHAWA PROCESS TIMELINE ────────────────────────────────────── */}
         <section className="mb-16">
           <div className="text-center mb-12">
-            <p className="text-xs font-sans tracking-[0.3em] text-primary/70 uppercase mb-3">Step by Step</p>
+            <p className="text-xs font-display tracking-[0.3em] text-primary/70 uppercase mb-3">Step by Step</p>
             <h2 className="font-display text-3xl md:text-4xl tracking-widest uppercase">
               <span className="text-foreground">Chadhawa </span>
               <span className="text-primary">Process</span>
@@ -537,7 +537,7 @@ const ChadhawaDetail = () => {
         {/* ── ABOUT THIS TEMPLE ─────────────────────────────────────────────── */}
         <section className="mb-16">
           <div className="text-center mb-10">
-            <p className="text-xs font-sans tracking-[0.3em] text-primary/70 uppercase mb-3">Spiritual Significance</p>
+            <p className="text-xs font-display tracking-[0.3em] text-primary/70 uppercase mb-3">Spiritual Significance</p>
             <h2 className="font-display text-3xl md:text-4xl tracking-widest uppercase">
               <span className="text-foreground">More About </span>
               <span className="text-primary">Chadhawa</span>
@@ -593,7 +593,7 @@ const ChadhawaDetail = () => {
         {/* ── FAQ + ILLUSTRATION ────────────────────────────────────────────── */}
         <section className="mb-16">
           <div className="text-center mb-10">
-            <p className="text-xs font-sans tracking-[0.3em] text-primary/70 uppercase mb-3">Help Centre</p>
+            <p className="text-xs font-display tracking-[0.3em] text-primary/70 uppercase mb-3">Help Centre</p>
             <h2 className="font-display text-3xl md:text-4xl tracking-widest uppercase">
               <span className="text-foreground">Frequently Asked </span>
               <span className="text-primary">Questions</span>
@@ -689,7 +689,7 @@ const ChadhawaDetail = () => {
           <div className="glass-card rounded-3xl p-8 md:p-12 text-center border border-primary/15"
             style={{ background: 'linear-gradient(135deg, rgba(188,106,77,0.06) 0%, rgba(255,252,248,0.7) 100%)' }}
           >
-            <p className="text-xs font-sans tracking-[0.3em] text-primary/70 uppercase mb-3">Our Newsletter</p>
+            <p className="text-xs font-display tracking-[0.3em] text-primary/70 uppercase mb-3">Our Newsletter</p>
             <h2 className="font-display text-2xl md:text-3xl tracking-widest uppercase text-foreground mb-3">
               Sign Up Our Mailbox
             </h2>

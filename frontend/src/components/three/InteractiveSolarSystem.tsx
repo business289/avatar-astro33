@@ -58,11 +58,11 @@ const GLOW: Record<string, { core: string; mid: string }> = {
 
 // Balanced initial formation: Mercury at center, 3 planets on each side.
 // Physical left→right layout: Saturn · Venus · Jupiter | Mercury | Sun · Moon · Mars
-// The carousel auto-advances continuously (see carouselAutoRef in SolarSystemScene);
-// scrolling only speeds that advance up temporarily, it no longer sets position directly.
+// The carousel drifts continuously on its own (see carouselAutoRef in SolarSystemScene),
+// entirely independent of scroll input.
 const CAROUSEL_ORDER         = ['saturn', 'venus', 'jupiter', 'mercury', 'sun', 'moon', 'mars'];
 const CAROUSEL_CENTER_INDEX  = 3; // Mercury (index 3) starts centered
-const CAROUSEL_STEP_SECONDS  = 5; // baseline: one planet swap every 5s at rest
+const CAROUSEL_STEP_SECONDS  = 5; // one planet swap every 5s
 const CAROUSEL_X_SPACING = 7.0;  // uniform gap between planets
 const CAROUSEL_Z         = 16;   // base depth for all carousel planets
 const CAROUSEL_Z_FOCUS   = 2.5;  // how much closer the centered planet sits, for subtle 3D depth
@@ -309,10 +309,9 @@ interface PlanetProps {
   canInteract: boolean;
   carouselAutoRef: React.MutableRefObject<number>;
   carouselIndex: number;
-  rotationBoostRef: React.MutableRefObject<number>;
 }
 const PlanetComponent = ({
-  planet, texture, isSelected, anySelected, onSelect, canInteract, carouselAutoRef, carouselIndex, rotationBoostRef,
+  planet, texture, isSelected, anySelected, onSelect, canInteract, carouselAutoRef, carouselIndex,
 }: PlanetProps) => {
   const groupRef = useRef<THREE.Group>(null);
   const meshRef  = useRef<THREE.Mesh>(null);
@@ -351,7 +350,10 @@ const PlanetComponent = ({
     if (wrapped) {
       groupRef.current.position.copy(target); // snap off-screen → off-screen, never lerps across viewport
     } else {
-      groupRef.current.position.lerp(target, 0.12);
+      // Slightly tighter follow than before — the 2-transition scroll span covers less
+      // pixel distance per swap, so this keeps the visual position from lagging behind
+      // the (now faster) target while still staying smooth, not a hard snap.
+      groupRef.current.position.lerp(target, 0.16);
     }
 
     const scaleMultiplier = THREE.MathUtils.lerp(0.42, 1.75, focusBoost);
@@ -374,11 +376,9 @@ const PlanetComponent = ({
         meshRef.current.rotation.y += peakRate * Math.sin(p * Math.PI) * delta;
       }
     } else {
-      // Continuous auto-rotation, smoothly sped up while the user is scrolling
-      // and eased back down to baseline once scrolling stops (rotationBoostRef
-      // is a shared 0..N multiplier computed once per frame in SolarSystemScene).
+      // Continuous auto-rotation at a constant baseline rate.
       const baseRate = 0.012 / Math.max(planet.speed, 0.6);
-      meshRef.current.rotation.y += baseRate * (1 + rotationBoostRef.current);
+      meshRef.current.rotation.y += baseRate;
     }
 
     // Opacity: dim outer/non-focused planets
@@ -469,10 +469,9 @@ interface PlanetGroupProps {
   selectedPlanet: Planet | null;
   onPlanetSelect: (planet: Planet | null) => void;
   canInteract: boolean;
-  rotationBoostRef: React.MutableRefObject<number>;
   carouselAutoRef: React.MutableRefObject<number>;
 }
-const PlanetGroupWithTextures = ({ selectedPlanet, onPlanetSelect, canInteract, rotationBoostRef, carouselAutoRef }: PlanetGroupProps) => {
+const PlanetGroupWithTextures = ({ selectedPlanet, onPlanetSelect, canInteract, carouselAutoRef }: PlanetGroupProps) => {
   const textures = useTexture(PLANET_TEXTURE_PATHS) as Record<keyof typeof PLANET_TEXTURE_PATHS, THREE.Texture>;
   const { gl }   = useThree();
 
@@ -535,7 +534,6 @@ const PlanetGroupWithTextures = ({ selectedPlanet, onPlanetSelect, canInteract, 
           canInteract={canInteract}
           carouselAutoRef={carouselAutoRef}
           carouselIndex={CAROUSEL_ORDER.indexOf(p.id)}
-          rotationBoostRef={rotationBoostRef}
         />
       ))}
     </>
@@ -543,7 +541,7 @@ const PlanetGroupWithTextures = ({ selectedPlanet, onPlanetSelect, canInteract, 
 };
 
 // Fallback: render planets with solid colors while textures download
-const PlanetGroupFallback = ({ selectedPlanet, onPlanetSelect, canInteract, rotationBoostRef, carouselAutoRef }: PlanetGroupProps) => (
+const PlanetGroupFallback = ({ selectedPlanet, onPlanetSelect, canInteract, carouselAutoRef }: PlanetGroupProps) => (
   <>
     {PLANETS.filter(p => CAROUSEL_ORDER.includes(p.id)).map((p: Planet) => (
       <PlanetComponent
@@ -556,7 +554,6 @@ const PlanetGroupFallback = ({ selectedPlanet, onPlanetSelect, canInteract, rota
         canInteract={canInteract}
         carouselAutoRef={carouselAutoRef}
         carouselIndex={CAROUSEL_ORDER.indexOf(p.id)}
-        rotationBoostRef={rotationBoostRef}
       />
     ))}
   </>
@@ -566,10 +563,9 @@ const PlanetGroupFallback = ({ selectedPlanet, onPlanetSelect, canInteract, rota
 interface SceneProps {
   selectedPlanet: Planet | null;
   onPlanetSelect: (planet: Planet | null) => void;
-  scrollRef: React.MutableRefObject<{ progress: number }>;
   canInteract: boolean;
 }
-const SolarSystemScene = ({ selectedPlanet, onPlanetSelect, scrollRef, canInteract }: SceneProps) => {
+const SolarSystemScene = ({ selectedPlanet, onPlanetSelect, canInteract }: SceneProps) => {
   const { camera, mouse } = useThree();
   const selectedRef = useRef<Planet | null>(null);
   useEffect(() => { selectedRef.current = selectedPlanet; }, [selectedPlanet]);
@@ -577,7 +573,7 @@ const SolarSystemScene = ({ selectedPlanet, onPlanetSelect, scrollRef, canIntera
   useFrame(() => {
     const sel = selectedRef.current;
 
-    // Fixed camera — no zoom on scroll. Subtle mouse parallax only.
+    // Fixed camera — subtle mouse parallax only, never scroll-driven.
     const tx = sel ? -3 : mouse.x * 1.5;
     const ty = sel ?  1 : FIXED_CAM_Y + mouse.y * 1.0;
 
@@ -588,37 +584,19 @@ const SolarSystemScene = ({ selectedPlanet, onPlanetSelect, scrollRef, canIntera
     camera.lookAt(0, 6, 0);
   });
 
-  // ── Scroll-speed → planet rotation boost ──────────────────────────────────
-  // Tracks how fast scrollRef.current.progress is changing and turns that into
-  // a shared 0..N multiplier all planets read to spin faster while scrolling,
-  // then ease back down to their normal auto-rotation speed once it stops.
-  // The same boost also speeds up the carousel's continuous auto-advance below.
-  const rotationBoostRef = useRef(0);
-  const lastScrollProgressRef = useRef(0);
-
-  // ── Continuous carousel auto-advance ───────────────────────────────────────
-  // Runs forever on its own clock (one step every CAROUSEL_STEP_SECONDS at rest)
-  // so every planet keeps cycling through the center position with no scrolling
-  // required. Scrolling temporarily speeds this up via rotationBoostRef, then it
-  // eases back down to the baseline pace once scrolling stops.
+  // ── Carousel position: continuous idle drift ───────────────────────────────
+  // Ticks on its own clock (one step every CAROUSEL_STEP_SECONDS) so the
+  // carousel is always alive, independent of any scroll input.
+  const carouselIdleRef = useRef(0);
   const carouselAutoRef = useRef(0);
 
   useFrame((_, delta) => {
     const dt = Math.max(delta, 1 / 240);
-    const progressDelta = Math.abs(scrollRef.current.progress - lastScrollProgressRef.current);
-    lastScrollProgressRef.current = scrollRef.current.progress;
-
-    const instantVelocity = progressDelta / dt;
-    const targetBoost = Math.min(instantVelocity * 14, 6);
-
-    // Fast, smooth ramp-up while scrolling; slow, gentle decay back to baseline when idle.
-    const easeFactor = targetBoost > rotationBoostRef.current ? 0.35 : 0.045;
-    rotationBoostRef.current = THREE.MathUtils.lerp(rotationBoostRef.current, targetBoost, easeFactor);
-
-    carouselAutoRef.current += (1 / CAROUSEL_STEP_SECONDS) * (1 + rotationBoostRef.current) * dt;
+    carouselIdleRef.current += (1 / CAROUSEL_STEP_SECONDS) * dt;
+    carouselAutoRef.current = carouselIdleRef.current;
   });
 
-  const planetGroupProps: PlanetGroupProps = { selectedPlanet, onPlanetSelect, canInteract, rotationBoostRef, carouselAutoRef };
+  const planetGroupProps: PlanetGroupProps = { selectedPlanet, onPlanetSelect, canInteract, carouselAutoRef };
 
   return (
     <>
@@ -646,11 +624,10 @@ const SolarSystemScene = ({ selectedPlanet, onPlanetSelect, scrollRef, canIntera
 export interface InteractiveSolarSystemProps {
   selectedPlanet: Planet | null;
   onPlanetSelect: (planet: Planet | null) => void;
-  scrollRef: React.MutableRefObject<{ progress: number }>;
   canInteract: boolean;
 }
 export const InteractiveSolarSystem = ({
-  selectedPlanet, onPlanetSelect, scrollRef, canInteract,
+  selectedPlanet, onPlanetSelect, canInteract,
 }: InteractiveSolarSystemProps) => (
   <Canvas
     camera={{ position: [0, FIXED_CAM_Y, FIXED_CAM_Z], fov: 65 }}
@@ -661,7 +638,6 @@ export const InteractiveSolarSystem = ({
     <SolarSystemScene
       selectedPlanet={selectedPlanet}
       onPlanetSelect={onPlanetSelect}
-      scrollRef={scrollRef}
       canInteract={canInteract}
     />
   </Canvas>

@@ -1,9 +1,10 @@
 import { useState, useRef, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { ArrowLeft, Users, MapPin, Clock, Send, Heart, Globe, ExternalLink } from 'lucide-react';
+import { ArrowLeft, Users, MapPin, Clock, Send, Heart, Globe, ExternalLink, BellRing, Radio } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import DevotionLayout from '@/components/DevotionLayout';
 import { liveTemples, samplePrayers, formatViewers, type PrayerMessage } from '@/data/liveStreams';
+import { apiService, type DarshanTempleStatus } from '@/lib/api';
 
 // ── Prayer wall ────────────────────────────────────────────────────────────────
 const PrayerWall = ({ templeId }: { templeId: string }) => {
@@ -71,7 +72,7 @@ const PrayerWall = ({ templeId }: { templeId: string }) => {
               onClick={submit}
               style={{
                 width: 44, height: 44, borderRadius: 10, border: 'none', cursor: 'pointer',
-                background: 'linear-gradient(135deg, #BC6A4D 0%, #D4854A 100%)',
+                background: 'linear-gradient(135deg, #BC6A4D 0%, #BC6A4D 100%)',
                 color: '#FFF', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
               }}
             >
@@ -109,6 +110,244 @@ const PrayerWall = ({ templeId }: { templeId: string }) => {
   );
 };
 
+// ── Offline state (shown in place of the player when the temple isn't live) ────
+const OfflineDarshanState = ({ temple }: { temple: (typeof liveTemples)[0] }) => {
+  const [notifyRequested, setNotifyRequested] = useState(false);
+
+  return (
+    <div style={{
+      position: 'absolute', inset: 0,
+      background: `linear-gradient(rgba(10,8,6,0.62), rgba(10,8,6,0.62)), ${temple.gradient}`,
+      display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+      textAlign: 'center', padding: '32px 24px',
+    }}>
+      <Radio style={{ width: 34, height: 34, color: 'rgba(255,255,255,0.85)', marginBottom: 14 }} />
+      <h2 className="font-display uppercase tracking-wide" style={{ fontSize: 26, fontWeight: 800, color: '#FFF', marginBottom: 8 }}>
+        Live Darshan is Currently Offline
+      </h2>
+      <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.8)', marginBottom: 20 }}>
+        {temple.name} · {temple.deity} · {temple.city}, {temple.state}
+      </p>
+
+      {temple.aartTimings.length > 0 && (
+        <div style={{ marginBottom: 22, maxWidth: 480 }}>
+          <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.15em', color: 'rgba(255,255,255,0.65)', textTransform: 'uppercase', marginBottom: 10 }}>
+            Upcoming Aarti Timings
+          </p>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, justifyContent: 'center' }}>
+            {temple.aartTimings.map(t => (
+              <span key={t} style={{ fontSize: 12, color: '#FFF', background: 'rgba(255,255,255,0.14)', border: '1px solid rgba(255,255,255,0.2)', padding: '5px 12px', borderRadius: 99 }}>
+                {t}
+              </span>
+            ))}
+          </div>
+        </div>
+      )}
+
+      <button
+        onClick={() => setNotifyRequested(true)}
+        disabled={notifyRequested}
+        style={{
+          display: 'inline-flex', alignItems: 'center', gap: 8,
+          background: notifyRequested ? 'rgba(255,255,255,0.15)' : 'linear-gradient(135deg, #BC6A4D 0%, #BC6A4D 100%)',
+          color: '#FFF', fontSize: 13, fontWeight: 700, letterSpacing: '0.08em',
+          padding: '13px 26px', borderRadius: 12, border: 'none',
+          cursor: notifyRequested ? 'default' : 'pointer',
+          fontFamily: 'Iceland, sans-serif',
+        }}
+      >
+        <BellRing style={{ width: 15, height: 15 }} />
+        {notifyRequested ? "We'll Notify You" : 'Notify Me When Live'}
+      </button>
+    </div>
+  );
+};
+
+// ── Live embed with automatic retry ─────────────────────────────────────────────
+// Newly-started YouTube live broadcasts can briefly return a player
+// configuration error (e.g. "Error 153") before embedding fully propagates
+// on YouTube's side. We detect that via the IFrame Player API's onError
+// event (a plain <iframe> gives no signal — the HTTP request succeeds even
+// when YouTube's own player renders an error inside it) and retry with
+// backoff before falling back to a "watch on YouTube" link.
+declare global {
+  interface Window {
+    YT: any;
+    onYouTubeIframeAPIReady?: () => void;
+  }
+}
+
+const EMBED_RETRY_DELAYS_MS = [5000, 15000, 30000, 60000];
+const EMBED_ATTEMPT_TIMEOUT_MS = 8000;
+
+const YT_ERROR_REASONS: Record<number, string> = {
+  2: 'invalid video ID parameter',
+  5: 'HTML5 player error',
+  100: 'video not found (removed or private)',
+  101: 'embedding disabled by video owner',
+  150: 'embedding disabled by video owner',
+};
+
+const devLog = (...args: unknown[]) => {
+  if (import.meta.env.DEV) console.log(...args);
+};
+
+let ytApiPromise: Promise<any> | null = null;
+const loadYouTubeIframeAPI = (): Promise<any> => {
+  if (window.YT?.Player) return Promise.resolve(window.YT);
+  if (ytApiPromise) return ytApiPromise;
+  ytApiPromise = new Promise((resolve) => {
+    const previous = window.onYouTubeIframeAPIReady;
+    window.onYouTubeIframeAPIReady = () => {
+      previous?.();
+      resolve(window.YT);
+    };
+    if (!document.querySelector('script[src="https://www.youtube.com/iframe_api"]')) {
+      const tag = document.createElement('script');
+      tag.src = 'https://www.youtube.com/iframe_api';
+      document.head.appendChild(tag);
+    }
+  });
+  return ytApiPromise;
+};
+
+const LiveEmbedPlayer = ({ videoId }: { videoId: string }) => {
+  const containerRef  = useRef<HTMLDivElement>(null);
+  const playerRef     = useRef<any>(null);
+  const retryTimerRef   = useRef<number | null>(null);
+  const attemptTimerRef = useRef<number | null>(null);
+  const attemptRef    = useRef(0);
+  const [phase, setPhase] = useState<'connecting' | 'playing' | 'exhausted'>('connecting');
+
+  useEffect(() => {
+    let cancelled = false;
+    attemptRef.current = 0;
+    setPhase('connecting');
+
+    const clearTimers = () => {
+      if (retryTimerRef.current)   { window.clearTimeout(retryTimerRef.current);   retryTimerRef.current = null; }
+      if (attemptTimerRef.current) { window.clearTimeout(attemptTimerRef.current); attemptTimerRef.current = null; }
+    };
+
+    const destroyPlayer = () => {
+      if (playerRef.current) {
+        try { playerRef.current.destroy(); } catch { /* already gone */ }
+        playerRef.current = null;
+      }
+    };
+
+    const giveUpOrRetry = (reason: string) => {
+      if (cancelled) return;
+      clearTimers();
+      const delay = EMBED_RETRY_DELAYS_MS[attemptRef.current];
+      if (delay === undefined) {
+        devLog(`[LiveDarshan] Giving up after ${EMBED_RETRY_DELAYS_MS.length} retries for video ${videoId}. Last failure: ${reason}`);
+        setPhase('exhausted');
+        return;
+      }
+      devLog(`[LiveDarshan] Attempt #${attemptRef.current + 1} failed (${reason}). Retrying in ${delay / 1000}s...`);
+      retryTimerRef.current = window.setTimeout(() => {
+        attemptRef.current += 1;
+        runAttempt();
+      }, delay);
+    };
+
+    const runAttempt = () => {
+      if (cancelled || !containerRef.current) return;
+      let settled = false;
+      devLog(`[LiveDarshan] Embed attempt #${attemptRef.current + 1} for video ${videoId}`);
+      destroyPlayer();
+
+      attemptTimerRef.current = window.setTimeout(() => {
+        if (settled || cancelled) return;
+        settled = true;
+        giveUpOrRetry('no response from YouTube player within timeout');
+      }, EMBED_ATTEMPT_TIMEOUT_MS);
+
+      loadYouTubeIframeAPI().then((YT) => {
+        if (cancelled || settled || !containerRef.current) return;
+        playerRef.current = new YT.Player(containerRef.current, {
+          videoId,
+          playerVars: { autoplay: 1, mute: 1, rel: 0, modestbranding: 1 },
+          events: {
+            onReady: () => {
+              if (settled || cancelled) return;
+              settled = true;
+              if (attemptTimerRef.current) { window.clearTimeout(attemptTimerRef.current); attemptTimerRef.current = null; }
+              devLog(`[LiveDarshan] Embed succeeded on attempt #${attemptRef.current + 1}`);
+              setPhase('playing');
+            },
+            onError: (event: any) => {
+              if (settled || cancelled) return;
+              settled = true;
+              if (attemptTimerRef.current) { window.clearTimeout(attemptTimerRef.current); attemptTimerRef.current = null; }
+              const reason = YT_ERROR_REASONS[event?.data] ?? `unknown YouTube error code ${event?.data}`;
+              giveUpOrRetry(reason);
+            },
+          },
+        });
+      });
+    };
+
+    runAttempt();
+
+    return () => {
+      cancelled = true;
+      clearTimers();
+      destroyPlayer();
+    };
+  }, [videoId]);
+
+  return (
+    <>
+      <div ref={containerRef} style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }} />
+
+      {phase === 'connecting' && (
+        <div style={{
+          position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column',
+          alignItems: 'center', justifyContent: 'center', background: 'rgba(10,8,6,0.78)',
+        }}>
+          <div style={{
+            width: 40, height: 40, borderRadius: '50%',
+            border: '3px solid rgba(255,255,255,0.25)', borderTopColor: '#FFF',
+            animation: 'darshan-spin 0.9s linear infinite', marginBottom: 14,
+          }} />
+          <style>{`@keyframes darshan-spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}`}</style>
+          <p style={{ fontSize: 14, color: '#FFF', fontWeight: 600, letterSpacing: '0.03em' }}>
+            Connecting to Live Darshan...
+          </p>
+        </div>
+      )}
+
+      {phase === 'exhausted' && (
+        <div style={{
+          position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column',
+          alignItems: 'center', justifyContent: 'center', textAlign: 'center',
+          padding: '32px 24px', background: 'rgba(10,8,6,0.85)',
+        }}>
+          <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.9)', lineHeight: 1.6, marginBottom: 20, maxWidth: 420 }}>
+            The live stream is currently available on YouTube. The embedded player may take a few minutes to become available.
+          </p>
+          <a
+            href={`https://www.youtube.com/watch?v=${videoId}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+              display: 'inline-flex', alignItems: 'center', gap: 8,
+              background: 'linear-gradient(135deg, #BC6A4D 0%, #BC6A4D 100%)',
+              color: '#FFF', fontSize: 13, fontWeight: 700, letterSpacing: '0.08em',
+              padding: '13px 26px', borderRadius: 12, textDecoration: 'none',
+              fontFamily: 'Iceland, sans-serif',
+            }}
+          >
+            Watch on YouTube
+          </a>
+        </div>
+      )}
+    </>
+  );
+};
+
 // ── Donation card ──────────────────────────────────────────────────────────────
 const DonationCard = ({ templeName }: { templeName: string }) => {
   const [amount, setAmount] = useState<number | ''>('');
@@ -116,12 +355,12 @@ const DonationCard = ({ templeName }: { templeName: string }) => {
 
   return (
     <div style={{
-      background: 'linear-gradient(135deg, rgba(188,106,77,0.08) 0%, rgba(212,133,74,0.05) 100%)',
+      background: 'linear-gradient(135deg, rgba(188,106,77,0.08) 0%, rgba(188,106,77,0.05) 100%)',
       borderRadius: 20, border: '1.5px solid rgba(188,106,77,0.20)',
       boxShadow: '0 4px 20px rgba(120,60,20,0.06)',
       overflow: 'hidden',
     }}>
-      <div style={{ background: 'linear-gradient(135deg, #BC6A4D 0%, #D4854A 100%)', padding: '20px 24px' }}>
+      <div style={{ background: 'linear-gradient(135deg, #BC6A4D 0%, #BC6A4D 100%)', padding: '20px 24px' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
           <span style={{ fontSize: 24 }}>🪔</span>
           <div>
@@ -169,7 +408,7 @@ const DonationCard = ({ templeName }: { templeName: string }) => {
           onClick={() => {}}
           style={{
             width: '100%', padding: '14px', borderRadius: 12, border: 'none', cursor: 'pointer',
-            background: amount ? 'linear-gradient(135deg, #BC6A4D 0%, #D4854A 100%)' : 'rgba(188,106,77,0.15)',
+            background: amount ? 'linear-gradient(135deg, #BC6A4D 0%, #BC6A4D 100%)' : 'rgba(188,106,77,0.15)',
             color: amount ? '#FFF' : 'rgba(188,106,77,0.5)',
             fontSize: 14, fontWeight: 700, letterSpacing: '0.08em',
             fontFamily: 'Iceland, sans-serif', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
@@ -194,7 +433,62 @@ const DarshanDetail = () => {
   const temple    = liveTemples.find(t => t.slug === slug);
   const [liked, setLiked] = useState(false);
 
+  // Live status + videoId come exclusively from our backend, which is the
+  // only thing that talks to the YouTube Data API. Until it resolves (or if
+  // it fails), we never fall back to a hardcoded videoId — we just show the
+  // offline state, per the "never show a broken player" requirement.
+  const [liveStatus, setLiveStatus]         = useState<DarshanTempleStatus | null>(null);
+  const [statusLoaded, setStatusLoaded]     = useState(false);
+  const [othersLiveSlugs, setOthersLiveSlugs] = useState<Set<string>>(new Set());
+
   useEffect(() => { window.scrollTo(0, 0); }, [slug]);
+
+  // Polls the backend every 60s so a temple that goes live (or switches to a
+  // new broadcast) updates without a page refresh. State is only replaced
+  // when isLive or currentLiveVideoId actually changed — an unchanged poll
+  // result reuses the previous object reference so React skips the re-render
+  // (and, downstream, LiveEmbedPlayer's key={liveVideoId} doesn't remount).
+  useEffect(() => {
+    if (!slug) return;
+    setStatusLoaded(false);
+    setLiveStatus(null);
+    let cancelled = false;
+
+    const poll = (isInitial: boolean) => {
+      apiService.getDarshanTemple(slug)
+        .then(res => {
+          if (cancelled || !res.success || !res.data) return;
+          const next = res.data;
+          setLiveStatus(prev => {
+            if (prev && prev.isLive === next.isLive && prev.currentLiveVideoId === next.currentLiveVideoId) {
+              return prev;
+            }
+            return next;
+          });
+        })
+        .catch(() => { /* keep last known status on a transient poll failure */ })
+        .finally(() => { if (!cancelled && isInitial) setStatusLoaded(true); });
+    };
+
+    poll(true);
+    const intervalId = window.setInterval(() => poll(false), 60000);
+
+    return () => { cancelled = true; window.clearInterval(intervalId); };
+  }, [slug]);
+
+  useEffect(() => {
+    let cancelled = false;
+    apiService.getDarshanTemples()
+      .then(res => {
+        if (cancelled || !res.success || !res.data) return;
+        setOthersLiveSlugs(new Set(res.data.filter(t => t.isLive).map(t => t.slug)));
+      })
+      .catch(() => { /* "Also Live Now" simply shows nothing on failure */ });
+    return () => { cancelled = true; };
+  }, []);
+
+  const isLive       = statusLoaded && !!liveStatus?.isLive;
+  const liveVideoId   = liveStatus?.currentLiveVideoId ?? null;
 
   if (!temple) {
     return (
@@ -236,13 +530,20 @@ const DarshanDetail = () => {
               background: temple.gradient, borderRadius: 20, overflow: 'hidden',
               boxShadow: '0 16px 56px rgba(120,60,20,0.14)',
             }}>
-              <iframe
-                src={`https://www.youtube.com/embed/${temple.youtubeVideoId}?autoplay=1&mute=1&rel=0&modestbranding=1`}
-                title={`${temple.name} Live Darshan`}
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowFullScreen
-                style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', border: 'none' }}
-              />
+              {!statusLoaded ? (
+                <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <div style={{
+                    width: 40, height: 40, borderRadius: '50%',
+                    border: '3px solid rgba(255,255,255,0.25)', borderTopColor: '#FFF',
+                    animation: 'darshan-spin 0.9s linear infinite',
+                  }} />
+                  <style>{`@keyframes darshan-spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}`}</style>
+                </div>
+              ) : isLive && liveVideoId ? (
+                <LiveEmbedPlayer key={liveVideoId} videoId={liveVideoId} />
+              ) : (
+                <OfflineDarshanState temple={temple} />
+              )}
             </div>
 
             {/* Stream meta bar */}
@@ -252,15 +553,15 @@ const DarshanDetail = () => {
             }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
                 <div style={{
-                  background: temple.isLive ? '#E53935' : 'rgba(60,60,60,0.6)',
+                  background: isLive ? '#E53935' : 'rgba(60,60,60,0.6)',
                   color: '#FFF', fontSize: 11, fontWeight: 700,
                   padding: '5px 12px', borderRadius: 99, letterSpacing: '0.12em',
                   display: 'flex', alignItems: 'center', gap: 6,
                 }}>
-                  {temple.isLive && <span style={{ width: 6, height: 6, background: '#FFF', borderRadius: '50%' }} />}
-                  {temple.isLive ? 'LIVE' : 'OFFLINE'}
+                  {isLive && <span style={{ width: 6, height: 6, background: '#FFF', borderRadius: '50%' }} />}
+                  {isLive ? 'LIVE' : 'OFFLINE'}
                 </div>
-                {temple.isLive && (
+                {isLive && (
                   <span style={{ fontSize: 13, color: '#7A5C42', display: 'flex', alignItems: 'center', gap: 5 }}>
                     <Users style={{ width: 14, height: 14 }} /> {formatViewers(temple.viewers)} watching
                   </span>
@@ -389,7 +690,7 @@ const DarshanDetail = () => {
                   {[
                     { label: 'Category', value: temple.category },
                     { label: 'Location', value: `${temple.city}, ${temple.state}` },
-                    { label: 'Stream Status', value: temple.isLive ? '🔴 Live' : '⚫ Offline' },
+                    { label: 'Stream Status', value: isLive ? '🔴 Live' : '⚫ Offline' },
                   ].map(({ label, value }) => (
                     <div key={label} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                       <span style={{ fontSize: 12, color: '#9C7B62' }}>{label}</span>
@@ -415,7 +716,7 @@ const DarshanDetail = () => {
 
         {/* ── OTHER LIVE NOW ───────────────────────────────────────────── */}
         {(() => {
-          const others = liveTemples.filter(t => t.isLive && t.id !== temple.id).slice(0, 3);
+          const others = liveTemples.filter(t => othersLiveSlugs.has(t.slug) && t.id !== temple.id).slice(0, 3);
           if (others.length === 0) return null;
           return (
             <section style={{ padding: '0 48px 64px' }}>

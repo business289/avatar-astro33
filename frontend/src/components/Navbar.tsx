@@ -91,7 +91,7 @@ const NavDropdown = ({ label, menuId, items, currentPath, lightNav }: DropdownPr
         ref={triggerRef}
         aria-haspopup="true" aria-expanded={open} aria-controls={menuId}
         onKeyDown={onTriggerKey} onClick={() => setOpen((v) => !v)}
-        className={`relative flex items-center gap-1.5 font-sans text-xs font-semibold tracking-wider transition-colors duration-300
+        className={`relative flex items-center gap-1.5 font-display text-xs font-semibold tracking-wider transition-colors duration-300
           focus:outline-none focus-visible:ring-2 focus-visible:ring-[#BC6A4D] focus-visible:ring-offset-2
           focus-visible:ring-offset-background rounded-sm
           ${isActive ? "text-[#BC6A4D]" : lightNav ? "text-[#2C1810]/60 hover:text-[#BC6A4D]" : "text-foreground/70 hover:text-[#BC6A4D]"}`}
@@ -165,7 +165,7 @@ const AvatarLiveDropdown = ({ currentPath, lightNav }: AvatarLiveDropdownProps) 
         ref={triggerRef}
         aria-haspopup="true" aria-expanded={open} aria-controls="avatar-live-menu"
         onKeyDown={onTriggerKey} onClick={() => setOpen((v) => !v)}
-        className={`relative flex items-center gap-1.5 font-sans text-xs font-semibold tracking-wider transition-colors duration-300
+        className={`relative flex items-center gap-1.5 font-display text-xs font-semibold tracking-wider transition-colors duration-300
           focus:outline-none focus-visible:ring-2 focus-visible:ring-[#BC6A4D] focus-visible:ring-offset-2
           focus-visible:ring-offset-background rounded-sm
           ${isActive ? "text-[#BC6A4D]" : lightNav ? "text-[#2C1810]/60 hover:text-[#BC6A4D]" : "text-foreground/70 hover:text-[#BC6A4D]"}`}
@@ -197,7 +197,7 @@ const AvatarLiveDropdown = ({ currentPath, lightNav }: AvatarLiveDropdownProps) 
             onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
           >
             <Radio style={{ width: 13, height: 13, color: '#BC6A4D', flexShrink: 0 }} />
-            <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.2em', color: '#BC6A4D', textTransform: 'uppercase', fontFamily: 'sans-serif' }}>
+            <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.2em', color: '#BC6A4D', textTransform: 'uppercase', fontFamily: "'Astra','Iceland',sans-serif" }}>
               Avatar Live Hub
             </span>
             {/* Live pulse dot */}
@@ -228,7 +228,7 @@ const AvatarLiveDropdown = ({ currentPath, lightNav }: AvatarLiveDropdownProps) 
               <p style={{ fontSize: 15, fontWeight: 800, color: '#2C1810', marginBottom: 5, fontFamily: 'Iceland, sans-serif', letterSpacing: '0.04em', lineHeight: 1 }}>
                 Live Darshan
               </p>
-              <p style={{ fontSize: 12, color: 'rgba(44,24,16,0.55)', lineHeight: 1.55, fontFamily: 'sans-serif' }}>
+              <p style={{ fontSize: 12, color: 'rgba(44,24,16,0.55)', lineHeight: 1.55, fontFamily: "'Astra','Iceland',sans-serif" }}>
                 Watch live temple darshans, aartis, and spiritual broadcasts from famous temples across India.
               </p>
             </div>
@@ -255,7 +255,7 @@ const AvatarLiveDropdown = ({ currentPath, lightNav }: AvatarLiveDropdownProps) 
               <p style={{ fontSize: 15, fontWeight: 800, color: '#2C1810', marginBottom: 5, fontFamily: 'Iceland, sans-serif', letterSpacing: '0.04em', lineHeight: 1 }}>
                 Family Functions
               </p>
-              <p style={{ fontSize: 12, color: 'rgba(44,24,16,0.55)', lineHeight: 1.55, fontFamily: 'sans-serif' }}>
+              <p style={{ fontSize: 12, color: 'rgba(44,24,16,0.55)', lineHeight: 1.55, fontFamily: "'Astra','Iceland',sans-serif" }}>
                 Attend weddings, pujas, naming ceremonies, birthdays, memorials, and family celebrations online.
               </p>
             </div>
@@ -283,7 +283,7 @@ const MobileAccordion = ({ label, items, currentPath, onNavigate }: MobileAccord
       <button
         aria-expanded={open}
         onClick={() => setOpen((v) => !v)}
-        className={`w-full flex items-center justify-between font-sans text-base font-medium px-2 py-2 rounded-lg
+        className={`w-full flex items-center justify-between font-display text-base font-medium px-2 py-2 rounded-lg
           transition-colors duration-300 focus:outline-none
           ${isActive ? "text-[#BC6A4D]" : "text-foreground/70 hover:text-[#BC6A4D]"}`}
       >
@@ -295,7 +295,7 @@ const MobileAccordion = ({ label, items, currentPath, onNavigate }: MobileAccord
           {items.map((item) => (
             <Link
               key={item.path} to={item.path} onClick={onNavigate}
-              className={`font-sans text-sm py-1.5 transition-colors duration-300 ${
+              className={`font-display text-sm py-1.5 transition-colors duration-300 ${
                 currentPath === item.path ? "text-[#BC6A4D]" : "text-foreground/70 hover:text-[#BC6A4D]"
               }`}
             >
@@ -336,7 +336,7 @@ const Navbar = () => {
   const lightNav       = isDevotionPage;
 
   const desktopLinkCls = (active: boolean) =>
-    `relative font-sans text-xs font-semibold tracking-wider transition-colors duration-300 ${
+    `relative font-display text-xs font-semibold tracking-wider transition-colors duration-300 ${
       active
         ? "text-[#BC6A4D]"
         : lightNav
@@ -363,7 +363,7 @@ const Navbar = () => {
             <svg viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5 text-[#BC6A4D] transition-transform duration-500 group-hover:rotate-90">
               <path d="M12 2L14.8 9.2L22 12L14.8 14.8L12 22L9.2 14.8L2 12L9.2 9.2L12 2Z" />
             </svg>
-            <span className="font-sans text-lg font-bold tracking-[0.25em] text-[#BC6A4D]">SPIRITUAL</span>
+            <span className="font-display text-lg font-bold tracking-[0.25em] text-[#BC6A4D]">SPIRITUAL</span>
           </Link>
 
           {/* ── Desktop nav ─────────────────────────────────────────────── */}
@@ -409,7 +409,7 @@ const Navbar = () => {
               <Link
                 to="/"
                 onClick={() => setIsOpen(false)}
-                className={`mobile-nav-link font-sans text-base font-medium px-2 py-2 rounded-lg transition-colors duration-300 ${
+                className={`mobile-nav-link font-display text-base font-medium px-2 py-2 rounded-lg transition-colors duration-300 ${
                   location.pathname === "/" ? "text-[#BC6A4D]" : "text-foreground/70 hover:text-[#BC6A4D]"
                 }`}
               >
@@ -431,7 +431,7 @@ const Navbar = () => {
               {topLinks.map((link) => (
                 <Link
                   key={link.path} to={link.path} onClick={() => setIsOpen(false)}
-                  className={`mobile-nav-link font-sans text-base font-medium px-2 py-2 rounded-lg transition-colors duration-300 ${
+                  className={`mobile-nav-link font-display text-base font-medium px-2 py-2 rounded-lg transition-colors duration-300 ${
                     location.pathname === link.path ? "text-[#BC6A4D]" : "text-foreground/70 hover:text-[#BC6A4D]"
                   }`}
                 >

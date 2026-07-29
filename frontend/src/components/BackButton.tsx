@@ -33,8 +33,10 @@ const BackButton = () => {
   const location = useLocation();
   const { historyStack, onBackOverride } = useNavigation();
 
-  // Never render on the home page
-  if (location.pathname === '/') return null;
+  // Never render on the home page, or on pages that already have their own
+  // equivalent back navigation built into the layout (e.g. AI Guru's sidebar
+  // "← Inner Voice" link) — otherwise the two overlap.
+  if (location.pathname === '/' || location.pathname === '/inner-voice/chat') return null;
 
   const handleBack = () => {
     if (onBackOverride) {
@@ -68,21 +70,21 @@ const BackButton = () => {
             'px-3.5 py-2.5 rounded-xl',
             // glass surface
             'bg-[rgba(8,10,18,0.62)] backdrop-blur-md',
-            // border — dim gold that brightens on hover
-            'border border-[rgba(255,215,0,0.16)]',
-            'hover:border-[rgba(255,215,0,0.44)]',
-            // text — dim gold → full gold
-            'text-[rgba(255,215,0,0.50)]',
-            'hover:text-[#FFD700]',
+            // border — dim terracotta that brightens on hover
+            'border border-[rgba(188,106,77,0.16)]',
+            'hover:border-[rgba(188,106,77,0.44)]',
+            // text — dim terracotta → full terracotta
+            'text-[rgba(188,106,77,0.50)]',
+            'hover:text-[#BC6A4D]',
             // glow on hover
             'hover:bg-[rgba(8,10,18,0.82)]',
-            'hover:shadow-[0_0_18px_rgba(255,215,0,0.10)]',
+            'hover:shadow-[0_0_18px_rgba(188,106,77,0.10)]',
             // transitions
             'transition-all duration-300 ease-out',
             // accessibility
             'cursor-pointer select-none',
             'focus:outline-none',
-            'focus-visible:ring-2 focus-visible:ring-[rgba(255,215,0,0.48)]',
+            'focus-visible:ring-2 focus-visible:ring-[rgba(188,106,77,0.48)]',
             'focus-visible:ring-offset-2 focus-visible:ring-offset-transparent',
             // minimum touch target
             'min-h-[44px] min-w-[44px]',
@@ -97,7 +99,7 @@ const BackButton = () => {
           {/* Label */}
           <span
             className="text-[10px] tracking-[3px] uppercase leading-none"
-            style={{ fontFamily: "'Space Mono', monospace" }}
+            style={{ fontFamily: "'Astra','Iceland',sans-serif" }}
           >
             Back
           </span>

@@ -111,7 +111,7 @@ const FamilyCard = ({ event, index }: { event: (typeof familyEvents)[0]; index: 
           <span style={{
             display: 'inline-flex', alignItems: 'center', gap: 6,
             background: event.isLive
-              ? 'linear-gradient(135deg, #BC6A4D 0%, #D4854A 100%)'
+              ? 'linear-gradient(135deg, #BC6A4D 0%, #BC6A4D 100%)'
               : 'rgba(188,106,77,0.10)',
             color: event.isLive ? '#FFF' : '#BC6A4D',
             fontSize: 12, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase',
@@ -161,7 +161,7 @@ const FamilyPage = () => {
             <h1 className="font-display font-bold tracking-widest uppercase leading-none mb-5"
               style={{ fontSize: 'clamp(64px, 10vw, 116px)' }}>
               <span style={{ color: '#2C1810' }}>Family </span>
-              <span style={{ background: 'linear-gradient(135deg, #BC6A4D 0%, #D4854A 60%, #BC6A4D 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
+              <span style={{ background: 'linear-gradient(135deg, #BC6A4D 0%, #BC6A4D 60%, #BC6A4D 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
                 Functions
               </span>
             </h1>
@@ -238,7 +238,7 @@ const FamilyPage = () => {
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 24 }}>
               <h2 className="font-display font-bold tracking-wide uppercase" style={{ fontSize: 32, color: '#2C1810' }}>
                 All Events
-                <span style={{ fontSize: 16, color: '#9C7B62', fontWeight: 400, marginLeft: 12, fontFamily: 'sans-serif', textTransform: 'none', letterSpacing: 0 }}>
+                <span style={{ fontSize: 16, color: '#9C7B62', fontWeight: 400, marginLeft: 12, fontFamily: "'Astra','Iceland',sans-serif", textTransform: 'none', letterSpacing: 0 }}>
                   {filtered.length} events
                 </span>
               </h2>
@@ -264,7 +264,7 @@ const FamilyPage = () => {
           <div style={{ maxWidth: 1280, margin: '0 auto' }}>
             <div style={{
               borderRadius: 24, overflow: 'hidden',
-              background: 'linear-gradient(135deg, #BC6A4D 0%, #C97B3A 50%, #D4854A 100%)',
+              background: 'linear-gradient(135deg, #BC6A4D 0%, #BC6A4D 50%, #BC6A4D 100%)',
               padding: '56px 64px',
               display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between', gap: 32,
               boxShadow: '0 20px 60px rgba(120,60,20,0.2)',

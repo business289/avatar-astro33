@@ -113,7 +113,7 @@ const AvatarLivePage = () => {
             <h1 className="font-display font-bold tracking-widest uppercase leading-none mb-5"
               style={{ fontSize: 'clamp(52px, 8vw, 96px)' }}>
               <span style={{ color: '#2C1810' }}>Avatar </span>
-              <span style={{ background: 'linear-gradient(135deg, #BC6A4D 0%, #D4854A 60%, #BC6A4D 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
+              <span style={{ background: 'linear-gradient(135deg, #BC6A4D 0%, #BC6A4D 60%, #BC6A4D 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
                 Live
               </span>
             </h1>
@@ -150,7 +150,7 @@ const AvatarLivePage = () => {
                     borderRadius: 28, overflow: 'hidden',
                     position: 'relative',
                     minHeight: 480,
-                    background: 'linear-gradient(155deg, #C87030 0%, #D4844A 30%, #B85C28 65%, #8B3A14 100%)',
+                    background: 'linear-gradient(155deg, #BC6A4D 0%, #BC6A4D 30%, #BC6A4D 65%, #BC6A4D 100%)',
                     cursor: 'pointer',
                     boxShadow: '0 16px 56px rgba(120,60,20,0.22)',
                   }}>
@@ -195,7 +195,7 @@ const AvatarLivePage = () => {
                       {/* Temple tags */}
                       <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 18 }}>
                         {['Siddhivinayak', 'Kashi Vishwanath', 'Tirupati', 'Shirdi'].map(t => (
-                          <span key={t} style={{ fontSize: 11, color: 'rgba(255,255,255,0.80)', background: 'rgba(255,255,255,0.12)', border: '1px solid rgba(255,255,255,0.18)', borderRadius: 99, padding: '4px 11px', fontFamily: 'sans-serif', fontWeight: 600 }}>
+                          <span key={t} style={{ fontSize: 11, color: 'rgba(255,255,255,0.80)', background: 'rgba(255,255,255,0.12)', border: '1px solid rgba(255,255,255,0.18)', borderRadius: 99, padding: '4px 11px', fontFamily: "'Astra','Iceland',sans-serif", fontWeight: 600 }}>
                             {t}
                           </span>
                         ))}
@@ -237,7 +237,7 @@ const AvatarLivePage = () => {
                     borderRadius: 28, overflow: 'hidden',
                     position: 'relative',
                     minHeight: 480,
-                    background: 'linear-gradient(155deg, #7B4A28 0%, #A0622A 30%, #8B5230 65%, #5C3218 100%)',
+                    background: 'linear-gradient(155deg, #7B4A28 0%, #BC6A4D 30%, #8B5230 65%, #5C3218 100%)',
                     cursor: 'pointer',
                     boxShadow: '0 16px 56px rgba(80,40,10,0.24)',
                   }}>
@@ -253,7 +253,7 @@ const AvatarLivePage = () => {
                     {/* Event type badges top-left */}
                     <div style={{ position: 'absolute', top: 24, left: 24, display: 'flex', gap: 8, flexWrap: 'wrap', maxWidth: 240 }}>
                       {['Wedding', 'Naming Ceremony', 'Puja'].map(t => (
-                        <span key={t} style={{ fontSize: 10, color: 'rgba(255,255,255,0.85)', background: 'rgba(255,255,255,0.12)', border: '1px solid rgba(255,255,255,0.18)', borderRadius: 99, padding: '4px 11px', fontFamily: 'sans-serif', fontWeight: 600 }}>
+                        <span key={t} style={{ fontSize: 10, color: 'rgba(255,255,255,0.85)', background: 'rgba(255,255,255,0.12)', border: '1px solid rgba(255,255,255,0.18)', borderRadius: 99, padding: '4px 11px', fontFamily: "'Astra','Iceland',sans-serif", fontWeight: 600 }}>
                           {t}
                         </span>
                       ))}
@@ -439,7 +439,7 @@ const AvatarLivePage = () => {
         <section style={{ paddingLeft: 32, paddingRight: 32, paddingBottom: 80 }}>
           <div style={{ maxWidth: 1280, margin: '0 auto' }}>
             <div style={{
-              background: 'linear-gradient(135deg, #BC6A4D 0%, #D4854A 50%, #BC6A4D 100%)',
+              background: 'linear-gradient(135deg, #BC6A4D 0%, #BC6A4D 50%, #BC6A4D 100%)',
               borderRadius: 28, padding: '56px 48px', textAlign: 'center',
               position: 'relative', overflow: 'hidden',
             }}>

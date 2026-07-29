@@ -36,7 +36,7 @@ const ShopDetail = () => {
 
         <Link
           to="/shop"
-          className="inline-flex items-center gap-2 text-xs text-primary/70 hover:text-primary mb-10 transition-colors font-sans tracking-wider"
+          className="inline-flex items-center gap-2 text-xs text-primary/70 hover:text-primary mb-10 transition-colors font-display tracking-wider"
         >
           <ArrowLeft className="w-3 h-3" /> Back to shop
         </Link>
@@ -65,7 +65,7 @@ const ShopDetail = () => {
             <div className="mt-4 glass-card rounded-xl p-4 flex items-center gap-3">
               <Shield className="w-5 h-5 text-primary flex-shrink-0" />
               <div>
-                <p className="text-xs font-sans tracking-[0.15em] uppercase text-primary/70 mb-0.5">
+                <p className="text-xs font-display tracking-[0.15em] uppercase text-primary/70 mb-0.5">
                   Authenticity
                 </p>
                 <p className="text-xs text-foreground/65">{product.authenticity}</p>
@@ -75,7 +75,7 @@ const ShopDetail = () => {
 
           {/* ── Right — details ─────────────────────────────────────────── */}
           <div className="flex flex-col">
-            <span className="text-[11px] font-sans tracking-[0.2em] uppercase text-primary/70 bg-primary/10 border border-primary/30 px-3 py-1 rounded-full w-fit mb-4">
+            <span className="text-[11px] font-display tracking-[0.2em] uppercase text-primary/70 bg-primary/10 border border-primary/30 px-3 py-1 rounded-full w-fit mb-4">
               {product.category}
             </span>
 
@@ -101,7 +101,7 @@ const ShopDetail = () => {
 
             {/* Benefits */}
             <div className="glass-card rounded-2xl p-5 mb-8">
-              <p className="text-xs font-sans tracking-[0.2em] uppercase text-primary/70 mb-3">
+              <p className="text-xs font-display tracking-[0.2em] uppercase text-primary/70 mb-3">
                 Spiritual Benefits
               </p>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">

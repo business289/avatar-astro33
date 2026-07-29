@@ -11,16 +11,16 @@ const css = `
     --void: #03010a;
     --deep: #07030f;
     --nebula: #0d0520;
-    --aurora-1: #7b2fff;
-    --aurora-2: #ff2d78;
-    --aurora-3: #00e5ff;
-    --gold: #f5c842;
+    --aurora-1: #BC6A4D;
+    --aurora-2: #BC6A4D;
+    --aurora-3: #BC6A4D;
+    --gold: #BC6A4D;
     --stardust: rgba(255,255,255,0.07);
     --glass: rgba(255,255,255,0.05);
     --glass-border: rgba(255,255,255,0.12);
-    --font-display: 'Cinzel Decorative', serif;
-    --font-body: 'Cormorant Garamond', serif;
-    --font-mono: 'Space Mono', monospace;
+    --font-display: 'Astra','Iceland',sans-serif;
+    --font-body: 'Astra','Iceland',sans-serif;
+    --font-mono: 'Astra','Iceland',sans-serif;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   .universe-app {
@@ -42,36 +42,36 @@ const css = `
   @media(max-width:680px){.persons-grid{grid-template-columns:1fr;}}
   .person-card { background: var(--glass); border: 1px solid var(--glass-border); border-radius: 20px; padding: 28px 24px; backdrop-filter: blur(16px); position: relative; overflow: hidden; transition: border-color 0.3s, box-shadow 0.3s; }
   .person-card::before { content:''; position:absolute; inset:0; background:var(--grad); opacity:0.04; pointer-events:none; }
-  .person-card:hover { border-color: rgba(255,255,255,0.22); box-shadow: 0 0 40px rgba(123,47,255,0.15); }
+  .person-card:hover { border-color: rgba(255,255,255,0.22); box-shadow: 0 0 40px rgba(188,106,77,0.15); }
   .card-title { font-family: var(--font-display); font-size: 13px; letter-spacing: 2px; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
   .card-icon { font-size: 20px; }
   .field { margin-bottom: 16px; }
   .field label { font-family: var(--font-mono); font-size: 10px; letter-spacing: 3px; color: rgba(255,255,255,0.75); text-transform: uppercase; display: block; margin-bottom: 6px; }
   .field input,.field select { width:100%; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.1); border-radius:10px; padding:11px 14px; color:#e8e0f0; font-family:var(--font-body); font-size:16px; outline:none; transition:border 0.3s,box-shadow 0.3s; -webkit-appearance:none; }
-  .field input:focus,.field select:focus { border-color:var(--aurora-1); box-shadow:0 0 0 3px rgba(123,47,255,0.15); }
+  .field input:focus,.field select:focus { border-color:var(--aurora-1); box-shadow:0 0 0 3px rgba(188,106,77,0.15); }
   .field input::placeholder { color:rgba(232,224,240,0.25); }
   .field select option { background:#1a0a2e; }
   .date-row { display:grid; grid-template-columns:2fr 2fr 3fr; gap:8px; }
   .time-row { display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; }
   .place-wrap { position:relative; }
-  .place-dropdown { position:absolute; top:calc(100% + 6px); left:0; right:0; background:#1a0a2e; border:1px solid rgba(123,47,255,0.4); border-radius:10px; z-index:100; overflow:hidden; box-shadow:0 20px 60px rgba(0,0,0,0.6); }
+  .place-dropdown { position:absolute; top:calc(100% + 6px); left:0; right:0; background:#1a0a2e; border:1px solid rgba(188,106,77,0.4); border-radius:10px; z-index:100; overflow:hidden; box-shadow:0 20px 60px rgba(0,0,0,0.6); }
   .place-item { padding:10px 14px; cursor:pointer; font-size:15px; color:rgba(255,255,255,0.9); transition:background 0.2s; border-bottom:1px solid rgba(255,255,255,0.05); }
-  .place-item:hover { background:rgba(123,47,255,0.2); }
+  .place-item:hover { background:rgba(188,106,77,0.2); }
   .place-item small { display:block; font-size:12px; color:rgba(255,255,255,0.5); margin-top:2px; font-family:var(--font-mono); }
   .submit-btn { display:block; width:100%; max-width:400px; margin:0 auto; padding:18px 40px; background:linear-gradient(135deg,var(--aurora-1),var(--aurora-2)); border:none; border-radius:50px; color:white; font-family:var(--font-display); font-size:14px; letter-spacing:2px; cursor:pointer; position:relative; overflow:hidden; transition:transform 0.2s,box-shadow 0.3s; text-transform:uppercase; }
-  .submit-btn:hover { transform:translateY(-2px); box-shadow:0 20px 60px rgba(255,45,120,0.4); }
+  .submit-btn:hover { transform:translateY(-2px); box-shadow:0 20px 60px rgba(188,106,77,0.4); }
   .submit-btn:active { transform:translateY(0); }
   .submit-btn:disabled { opacity:0.5; cursor:not-allowed; transform:none; }
   .loading-screen { position:fixed; inset:0; background:var(--void); z-index:200; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:32px; }
   .loading-cosmos { width:180px; height:180px; position:relative; }
   .orbit-ring { position:absolute; border-radius:50%; border:1px solid transparent; animation:orbit-spin linear infinite; }
-  .orbit-ring:nth-child(1){inset:0;border-color:rgba(123,47,255,0.5);animation-duration:4s;}
-  .orbit-ring:nth-child(2){inset:20px;border-color:rgba(255,45,120,0.5);animation-duration:3s;animation-direction:reverse;}
-  .orbit-ring:nth-child(3){inset:40px;border-color:rgba(0,229,255,0.5);animation-duration:5s;}
+  .orbit-ring:nth-child(1){inset:0;border-color:rgba(188,106,77,0.5);animation-duration:4s;}
+  .orbit-ring:nth-child(2){inset:20px;border-color:rgba(188,106,77,0.5);animation-duration:3s;animation-direction:reverse;}
+  .orbit-ring:nth-child(3){inset:40px;border-color:rgba(188,106,77,0.5);animation-duration:5s;}
   .orbit-dot { position:absolute; width:8px; height:8px; border-radius:50%; top:-4px; left:50%; transform:translateX(-50%); }
   @keyframes orbit-spin{from{transform:rotate(0deg);}to{transform:rotate(360deg);}}
   .orbit-center { position:absolute; inset:60px; border-radius:50%; background:radial-gradient(circle,var(--aurora-1),var(--aurora-2)); display:flex; align-items:center; justify-content:center; font-size:24px; animation:pulse-glow 2s ease-in-out infinite; }
-  @keyframes pulse-glow{0%,100%{box-shadow:0 0 20px rgba(123,47,255,0.5);}50%{box-shadow:0 0 60px rgba(255,45,120,0.8),0 0 100px rgba(123,47,255,0.4);}}
+  @keyframes pulse-glow{0%,100%{box-shadow:0 0 20px rgba(188,106,77,0.5);}50%{box-shadow:0 0 60px rgba(188,106,77,0.8),0 0 100px rgba(188,106,77,0.4);}}
   .loading-steps { display:flex; flex-direction:column; gap:10px; text-align:center; }
   .loading-step { font-family:var(--font-mono); font-size:12px; letter-spacing:2px; color:rgba(255,255,255,0.65); transition:color 0.5s,opacity 0.5s; display:flex; align-items:center; gap:10px; justify-content:center; }
   .loading-step.active { color:var(--aurora-3); text-shadow:0 0 20px var(--aurora-3); }
@@ -90,7 +90,7 @@ const css = `
     background-clip: text;
     margin-bottom: 16px;
     display: block;
-    filter: drop-shadow(0 0 28px rgba(255,45,120,0.5));
+    filter: drop-shadow(0 0 28px rgba(188,106,77,0.5));
     line-height: 1.3;
     white-space: nowrap;
     overflow: hidden;
@@ -107,12 +107,12 @@ const css = `
   .score-track { fill:none; stroke:rgba(255,255,255,0.08); stroke-width:10; }
   .score-fill { fill:none; stroke-width:10; stroke-linecap:round; stroke:url(#scoreGrad); }
   .score-inner { display:flex; flex-direction:column; align-items:center; justify-content:center; position:relative; z-index:10; }
-  .score-num { font-family:var(--font-display); font-size:54px; font-weight:900; color:#f5c842; line-height:1; display:block; text-shadow:0 0 32px rgba(245,200,66,0.7); }
+  .score-num { font-family:var(--font-display); font-size:54px; font-weight:900; color:#BC6A4D; line-height:1; display:block; text-shadow:0 0 32px rgba(188,106,77,0.7); }
   .score-pct { font-family:var(--font-mono); font-size:18px; color:rgba(255,255,255,0.82); margin-top:4px; display:block; }
   .score-label { font-family:var(--font-display); font-size:15px; letter-spacing:2px; color:var(--gold); margin-bottom:4px; }
   .score-tag { font-family:var(--font-mono); font-size:11px; letter-spacing:3px; color:rgba(255,255,255,0.5); text-transform:uppercase; }
   .section-head { font-family:var(--font-display); font-size:13px; letter-spacing:3px; color:var(--aurora-3); text-transform:uppercase; margin-bottom:20px; display:flex; align-items:center; gap:12px; }
-  .section-head::after { content:''; flex:1; height:1px; background:linear-gradient(to right,rgba(0,229,255,0.3),transparent); }
+  .section-head::after { content:''; flex:1; height:1px; background:linear-gradient(to right,rgba(188,106,77,0.3),transparent); }
   .cards-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:16px; margin-bottom:40px; }
 
   /* ── COMPAT CARD — HOVER GLOW ── */
@@ -136,13 +136,13 @@ const css = `
     z-index: 0;
     pointer-events: none;
     border-radius: 16px;
-    background: var(--hov, linear-gradient(135deg,rgba(123,47,255,.2),rgba(255,45,120,.14)));
+    background: var(--hov, linear-gradient(135deg,rgba(188,106,77,.2),rgba(188,106,77,.14)));
   }
   .compat-card:hover::after { opacity: 1; }
   .compat-card:hover {
     transform: translateY(-8px) scale(1.025);
     border-color: rgba(255,255,255,0.4);
-    box-shadow: 0 24px 70px var(--hov-shadow, rgba(123,47,255,.45)), 0 0 50px rgba(255,45,120,.2);
+    box-shadow: 0 24px 70px var(--hov-shadow, rgba(188,106,77,.45)), 0 0 50px rgba(188,106,77,.2);
   }
   .compat-card > * { position: relative; z-index: 1; }
 
@@ -161,7 +161,7 @@ const css = `
   .sub-metric-fill { height:100%; border-radius:2px; background:var(--fill-c,var(--aurora-3)); transition:width 1.8s cubic-bezier(0.4,0,0.2,1); width:0; }
   .sub-metric-fill.animate { width:var(--w,0%); }
   .sub-metric-val { font-family:var(--font-mono); font-size:11px; color:var(--fill-c,var(--aurora-3)); width:32px; text-align:right; }
-  .insight-box { background:rgba(123,47,255,0.08); border:1px solid rgba(123,47,255,0.25); border-radius:12px; padding:14px 16px; margin-top:12px; font-size:14px; font-style:italic; color:rgba(255,255,255,0.82); line-height:1.6; }
+  .insight-box { background:rgba(188,106,77,0.08); border:1px solid rgba(188,106,77,0.25); border-radius:12px; padding:14px 16px; margin-top:12px; font-size:14px; font-style:italic; color:rgba(255,255,255,0.82); line-height:1.6; }
   .insight-label { font-family:var(--font-mono); font-size:9px; letter-spacing:3px; color:var(--aurora-1); text-transform:uppercase; margin-bottom:6px; }
   .planet-row { display:grid; grid-template-columns:repeat(auto-fill,minmax(100px,1fr)); gap:12px; margin-bottom:40px; }
   .planet-item { background:var(--glass); border:1px solid var(--glass-border); border-radius:14px; padding:14px 10px; text-align:center; backdrop-filter:blur(8px); transition:transform 0.2s; }
@@ -182,21 +182,21 @@ const css = `
   .flag-item { display:flex; align-items:flex-start; gap:10px; margin-bottom:10px; font-size:14px; color:rgba(255,255,255,0.85); font-style:italic; }
   .flag-icon { flex-shrink:0; font-size:16px; }
   .ai-insights-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:14px; margin-bottom:40px; }
-  .ai-card { background:linear-gradient(135deg,rgba(123,47,255,0.08),rgba(255,45,120,0.05)); border:1px solid rgba(123,47,255,0.2); border-radius:14px; padding:18px; }
+  .ai-card { background:linear-gradient(135deg,rgba(188,106,77,0.08),rgba(188,106,77,0.05)); border:1px solid rgba(188,106,77,0.2); border-radius:14px; padding:18px; }
   .ai-card-title { font-family:var(--font-mono); font-size:10px; letter-spacing:3px; color:var(--aurora-1); text-transform:uppercase; margin-bottom:10px; }
   .ai-card-text { font-size:15px; color:rgba(255,255,255,0.85); line-height:1.65; font-style:italic; }
   .reset-btn { display:block; margin:0 auto; padding:14px 40px; background:transparent; border:1px solid rgba(255,255,255,0.2); border-radius:50px; color:rgba(255,255,255,0.75); font-family:var(--font-mono); font-size:11px; letter-spacing:3px; text-transform:uppercase; cursor:pointer; transition:all 0.3s; }
-  .reset-btn:hover { border-color:var(--aurora-1); color:var(--aurora-3); box-shadow:0 0 30px rgba(123,47,255,0.2); }
-  .error-box { background:rgba(255,45,120,0.1); border:1px solid rgba(255,45,120,0.3); border-radius:12px; padding:14px 18px; color:#ff8ab0; font-family:var(--font-mono); font-size:12px; letter-spacing:1px; margin-bottom:20px; text-align:center; }
+  .reset-btn:hover { border-color:var(--aurora-1); color:var(--aurora-3); box-shadow:0 0 30px rgba(188,106,77,0.2); }
+  .error-box { background:rgba(188,106,77,0.1); border:1px solid rgba(188,106,77,0.3); border-radius:12px; padding:14px 18px; color:#ff8ab0; font-family:var(--font-mono); font-size:12px; letter-spacing:1px; margin-bottom:20px; text-align:center; }
   ::-webkit-scrollbar { width:6px; }
   ::-webkit-scrollbar-track { background:var(--void); }
-  ::-webkit-scrollbar-thumb { background:rgba(123,47,255,0.4); border-radius:3px; }
+  ::-webkit-scrollbar-thumb { background:rgba(188,106,77,0.4); border-radius:3px; }
 
   /* ── WHO LOVES MORE ── */
   .wlm-wrap { margin-bottom: 40px; }
   .wlm-card {
-    background: linear-gradient(135deg, rgba(255,45,120,.07), rgba(123,47,255,.07));
-    border: 1px solid rgba(255,45,120,.25);
+    background: linear-gradient(135deg, rgba(188,106,77,.07), rgba(188,106,77,.07));
+    border: 1px solid rgba(188,106,77,.25);
     border-radius: 20px;
     padding: 28px 24px;
     position: relative;
@@ -207,7 +207,7 @@ const css = `
     position: absolute;
     right: 24px; top: 16px;
     font-size: 80px;
-    color: rgba(255,45,120,.06);
+    color: rgba(188,106,77,.06);
     line-height: 1;
   }
   .wlm-disclaimer {
@@ -284,26 +284,26 @@ const css = `
   .wlm-vs-labels { display: flex; justify-content: space-between; font-family: var(--font-mono); font-size: 10px; color: rgba(255,255,255,.4); margin-bottom: 4px; }
   .wlm-insight {
     background: rgba(0,0,0,.25);
-    border: 1px solid rgba(255,45,120,.18);
+    border: 1px solid rgba(188,106,77,.18);
     border-radius: 12px;
     padding: 14px 16px;
     margin-bottom: 14px;
   }
-  .wlm-insight-lbl { font-family: var(--font-mono); font-size: 9px; letter-spacing: 2px; text-transform: uppercase; color: rgba(255,45,120,.7); margin-bottom: 6px; }
+  .wlm-insight-lbl { font-family: var(--font-mono); font-size: 9px; letter-spacing: 2px; text-transform: uppercase; color: rgba(188,106,77,.7); margin-bottom: 6px; }
   .wlm-insight-txt { font-size: 14px; color: rgba(255,255,255,.85); line-height: 1.7; font-style: italic; }
   .wlm-pattern-badge {
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    background: rgba(255,45,120,.1);
-    border: 1px solid rgba(255,45,120,.25);
+    background: rgba(188,106,77,.1);
+    border: 1px solid rgba(188,106,77,.25);
     border-radius: 50px;
     padding: 6px 16px;
     font-family: var(--font-mono);
     font-size: 10px;
     letter-spacing: 2px;
     text-transform: uppercase;
-    color: #ff2d78;
+    color: #BC6A4D;
     margin-bottom: 14px;
   }
   .wlm-confidence {
@@ -318,7 +318,7 @@ const css = `
     margin-top: 4px;
   }
   .wlm-conf-bar { flex: 1; height: 3px; background: rgba(255,255,255,.08); border-radius: 2px; overflow: hidden; }
-  .wlm-conf-fill { height: 100%; background: linear-gradient(to right, #7b2fff, #00e5ff); border-radius: 2px; transition: width 2s ease; width: 0; }
+  .wlm-conf-fill { height: 100%; background: linear-gradient(to right, #BC6A4D, #BC6A4D); border-radius: 2px; transition: width 2s ease; width: 0; }
   .wlm-conf-fill.animate { width: var(--w, 0%); }
 
 `;
@@ -434,9 +434,9 @@ function ScoreCircle({ score }) {
         <svg className="score-svg" viewBox="0 0 180 180">
           <defs>
             <linearGradient id="scoreGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-              <stop offset="0%" stopColor="#f5c842" />
-              <stop offset="50%" stopColor="#ff2d78" />
-              <stop offset="100%" stopColor="#7b2fff" />
+              <stop offset="0%" stopColor="#BC6A4D" />
+              <stop offset="50%" stopColor="#BC6A4D" />
+              <stop offset="100%" stopColor="#BC6A4D" />
             </linearGradient>
           </defs>
           <circle className="score-track" cx="90" cy="90" r={r} />
@@ -548,9 +548,9 @@ function LoadingScreen() {
   return (
     <div className="loading-screen">
       <div className="loading-cosmos">
-        <div className="orbit-ring"><div className="orbit-dot" style={{ background:"#7b2fff" }}/></div>
-        <div className="orbit-ring"><div className="orbit-dot" style={{ background:"#ff2d78" }}/></div>
-        <div className="orbit-ring"><div className="orbit-dot" style={{ background:"#00e5ff" }}/></div>
+        <div className="orbit-ring"><div className="orbit-dot" style={{ background:"#BC6A4D" }}/></div>
+        <div className="orbit-ring"><div className="orbit-dot" style={{ background:"#BC6A4D" }}/></div>
+        <div className="orbit-ring"><div className="orbit-dot" style={{ background:"#BC6A4D" }}/></div>
         <div className="orbit-center">💫</div>
       </div>
       <div className="loading-steps">
@@ -566,15 +566,15 @@ function LoadingScreen() {
 
 // Card hover colors config
 const CARD_HOVERS = {
-  love:     { hov:"linear-gradient(135deg,rgba(255,45,120,.22),rgba(245,200,66,.14))",  shadow:"rgba(255,45,120,.5)"  },
-  emo:      { hov:"linear-gradient(135deg,rgba(123,47,255,.24),rgba(0,229,255,.14))",   shadow:"rgba(123,47,255,.5)"  },
-  phys:     { hov:"linear-gradient(135deg,rgba(255,107,53,.24),rgba(255,45,120,.16))",  shadow:"rgba(255,107,53,.5)"  },
-  fri:      { hov:"linear-gradient(135deg,rgba(0,229,255,.22),rgba(123,47,255,.14))",   shadow:"rgba(0,229,255,.45)"  },
-  mar:      { hov:"linear-gradient(135deg,rgba(245,200,66,.22),rgba(255,45,120,.16))",  shadow:"rgba(245,200,66,.45)" },
-  fin:      { hov:"linear-gradient(135deg,rgba(46,204,113,.22),rgba(245,200,66,.14))",  shadow:"rgba(46,204,113,.45)" },
-  fam:      { hov:"linear-gradient(135deg,rgba(230,126,34,.22),rgba(245,200,66,.14))",  shadow:"rgba(230,126,34,.45)" },
-  fam2:     { hov:"linear-gradient(135deg,rgba(255,45,120,.2),rgba(245,200,66,.14))",   shadow:"rgba(255,45,120,.4)"  },
-  spi:      { hov:"linear-gradient(135deg,rgba(123,47,255,.24),rgba(0,229,255,.2))",    shadow:"rgba(123,47,255,.55)" },
+  love:     { hov:"linear-gradient(135deg,rgba(188,106,77,.22),rgba(188,106,77,.14))",  shadow:"rgba(188,106,77,.5)"  },
+  emo:      { hov:"linear-gradient(135deg,rgba(188,106,77,.24),rgba(188,106,77,.14))",   shadow:"rgba(188,106,77,.5)"  },
+  phys:     { hov:"linear-gradient(135deg,rgba(255,107,53,.24),rgba(188,106,77,.16))",  shadow:"rgba(255,107,53,.5)"  },
+  fri:      { hov:"linear-gradient(135deg,rgba(188,106,77,.22),rgba(188,106,77,.14))",   shadow:"rgba(188,106,77,.45)"  },
+  mar:      { hov:"linear-gradient(135deg,rgba(188,106,77,.22),rgba(188,106,77,.16))",  shadow:"rgba(188,106,77,.45)" },
+  fin:      { hov:"linear-gradient(135deg,rgba(46,204,113,.22),rgba(188,106,77,.14))",  shadow:"rgba(46,204,113,.45)" },
+  fam:      { hov:"linear-gradient(135deg,rgba(230,126,34,.22),rgba(188,106,77,.14))",  shadow:"rgba(230,126,34,.45)" },
+  fam2:     { hov:"linear-gradient(135deg,rgba(188,106,77,.2),rgba(188,106,77,.14))",   shadow:"rgba(188,106,77,.4)"  },
+  spi:      { hov:"linear-gradient(135deg,rgba(188,106,77,.24),rgba(188,106,77,.2))",    shadow:"rgba(188,106,77,.55)" },
 };
 
 function CC({ type, children }) {
@@ -682,7 +682,7 @@ function WhoLovesMore({ p1, p2, scores }) {
     return () => clearTimeout(timer);
   }, []);
 
-  const c1 = "#ff2d78", c2 = "#7b2fff";
+  const c1 = "#BC6A4D", c2 = "#BC6A4D";
 
   return (
     <div className="wlm-wrap">
@@ -731,8 +731,8 @@ function WhoLovesMore({ p1, p2, scores }) {
           <span style={{color:c2}}>{p2.name}</span>
         </div>
         <div className="wlm-vs">
-          <div className="wlm-vs-fill1" style={{width:`${wlm.pct1}%`, background:`linear-gradient(to right,${c1},rgba(255,45,120,.5))`}}/>
-          <div className="wlm-vs-fill2" style={{width:`${wlm.pct2}%`, background:`linear-gradient(to left,${c2},rgba(123,47,255,.5))`}}/>
+          <div className="wlm-vs-fill1" style={{width:`${wlm.pct1}%`, background:`linear-gradient(to right,${c1},rgba(188,106,77,.5))`}}/>
+          <div className="wlm-vs-fill2" style={{width:`${wlm.pct2}%`, background:`linear-gradient(to left,${c2},rgba(188,106,77,.5))`}}/>
         </div>
         <div style={{display:"flex",justifyContent:"space-between",fontFamily:"var(--font-mono)",fontSize:11,color:"rgba(255,255,255,.5)",marginBottom:20}}>
           <span style={{color:c1}}>{wlm.pct1}%</span>
@@ -756,7 +756,7 @@ function WhoLovesMore({ p1, p2, scores }) {
           <div className="wlm-conf-bar">
             <div ref={refConf} className="wlm-conf-fill" style={{"--w":`${wlm.confidence}%`}}/>
           </div>
-          <span style={{color:"#00e5ff",minWidth:32}}>{wlm.confidence}%</span>
+          <span style={{color:"#BC6A4D",minWidth:32}}>{wlm.confidence}%</span>
         </div>
       </div>
     </div>
@@ -777,12 +777,12 @@ function Results({ p1, p2, report, onReset }) {
     { symbol:"♄",  name:"Saturn",  score:deriveScore(s.marriage,  p1.name,p2.name,"sat")   },
   ];
   const TL = [
-    { phase:"First Attraction",   desc:report.timeline?.attraction,  c:"#7b2fff" },
-    { phase:"Connection Phase",   desc:report.timeline?.connection,   c:"#ff2d78" },
-    { phase:"Relationship Growth",desc:report.timeline?.growth,       c:"#f5c842" },
-    { phase:"Commitment Phase",   desc:report.timeline?.commitment,   c:"#00e5ff" },
-    { phase:"Marriage Potential", desc:report.timeline?.marriage,     c:"#7b2fff" },
-    { phase:"Long-Term Stability",desc:report.timeline?.stability,    c:"#ff2d78" },
+    { phase:"First Attraction",   desc:report.timeline?.attraction,  c:"#BC6A4D" },
+    { phase:"Connection Phase",   desc:report.timeline?.connection,   c:"#BC6A4D" },
+    { phase:"Relationship Growth",desc:report.timeline?.growth,       c:"#BC6A4D" },
+    { phase:"Commitment Phase",   desc:report.timeline?.commitment,   c:"#BC6A4D" },
+    { phase:"Marriage Potential", desc:report.timeline?.marriage,     c:"#BC6A4D" },
+    { phase:"Long-Term Stability",desc:report.timeline?.stability,    c:"#BC6A4D" },
   ];
   return (
     <div className="results">
@@ -802,31 +802,31 @@ function Results({ p1, p2, report, onReset }) {
       <div className="cards-grid">
         <CC type="love">
           <div className="card-head"><span className="card-emoji">💕</span><span className="card-name">Love Score</span><span className="card-score-num">{s.love}%</span></div>
-          <ProgBar value={s.love} color="linear-gradient(to right,#ff2d78,#f5c842)"/>
+          <ProgBar value={s.love} color="linear-gradient(to right,#BC6A4D,#BC6A4D)"/>
           <div className="sub-metrics" style={{marginTop:12}}>
-            <SubMetric label="Emotional Bond"     value={deriveScore(s.love,p1.name,p2.name,"bond")}  color="#ff2d78"/>
-            <SubMetric label="Romantic Spark"     value={deriveScore(s.love,p1.name,p2.name,"spark")} color="#f5c842"/>
-            <SubMetric label="Soulmate Potential" value={deriveScore(s.love,p1.name,p2.name,"soul")}  color="#7b2fff"/>
+            <SubMetric label="Emotional Bond"     value={deriveScore(s.love,p1.name,p2.name,"bond")}  color="#BC6A4D"/>
+            <SubMetric label="Romantic Spark"     value={deriveScore(s.love,p1.name,p2.name,"spark")} color="#BC6A4D"/>
+            <SubMetric label="Soulmate Potential" value={deriveScore(s.love,p1.name,p2.name,"soul")}  color="#BC6A4D"/>
           </div>
           {report.loveInsight && <div className="insight-box"><div className="insight-label">AI Insight</div>{report.loveInsight}</div>}
         </CC>
         <CC type="emo">
           <div className="card-head"><span className="card-emoji">🧠</span><span className="card-name">Emotional Compatibility</span><span className="card-score-num">{s.emotional}%</span></div>
-          <ProgBar value={s.emotional} color="linear-gradient(to right,#7b2fff,#00e5ff)"/>
+          <ProgBar value={s.emotional} color="linear-gradient(to right,#BC6A4D,#BC6A4D)"/>
           <div className="sub-metrics" style={{marginTop:12}}>
-            <SubMetric label="Understanding" value={deriveScore(s.emotional,p1.name,p2.name,"und")}   color="#00e5ff"/>
-            <SubMetric label="Trust"         value={deriveScore(s.emotional,p1.name,p2.name,"trust")} color="#7b2fff"/>
-            <SubMetric label="Communication" value={deriveScore(s.emotional,p1.name,p2.name,"comm")}  color="#ff2d78"/>
-            <SubMetric label="Loyalty"       value={deriveScore(s.emotional,p1.name,p2.name,"loyal")} color="#f5c842"/>
+            <SubMetric label="Understanding" value={deriveScore(s.emotional,p1.name,p2.name,"und")}   color="#BC6A4D"/>
+            <SubMetric label="Trust"         value={deriveScore(s.emotional,p1.name,p2.name,"trust")} color="#BC6A4D"/>
+            <SubMetric label="Communication" value={deriveScore(s.emotional,p1.name,p2.name,"comm")}  color="#BC6A4D"/>
+            <SubMetric label="Loyalty"       value={deriveScore(s.emotional,p1.name,p2.name,"loyal")} color="#BC6A4D"/>
           </div>
         </CC>
         <CC type="phys">
           <div className="card-head"><span className="card-emoji">🔥</span><span className="card-name">Physical Attraction</span><span className="card-score-num">{s.physical}%</span></div>
-          <ProgBar value={s.physical} color="linear-gradient(to right,#ff6b35,#ff2d78)"/>
+          <ProgBar value={s.physical} color="linear-gradient(to right,#ff6b35,#BC6A4D)"/>
           <div className="sub-metrics" style={{marginTop:12}}>
             <SubMetric label="Chemistry"       value={deriveScore(s.physical,p1.name,p2.name,"chem")} color="#ff6b35"/>
-            <SubMetric label="Passion Index"   value={deriveScore(s.physical,p1.name,p2.name,"pass")} color="#ff2d78"/>
-            <SubMetric label="Attraction Score"value={deriveScore(s.physical,p1.name,p2.name,"attr")} color="#f5c842"/>
+            <SubMetric label="Passion Index"   value={deriveScore(s.physical,p1.name,p2.name,"pass")} color="#BC6A4D"/>
+            <SubMetric label="Attraction Score"value={deriveScore(s.physical,p1.name,p2.name,"attr")} color="#BC6A4D"/>
           </div>
         </CC>
       </div>
@@ -835,30 +835,30 @@ function Results({ p1, p2, report, onReset }) {
       <div className="cards-grid">
         <CC type="fri">
           <div className="card-head"><span className="card-emoji">🤝</span><span className="card-name">Friendship Score</span><span className="card-score-num">{s.friendship}%</span></div>
-          <ProgBar value={s.friendship} color="linear-gradient(to right,#00e5ff,#7b2fff)"/>
+          <ProgBar value={s.friendship} color="linear-gradient(to right,#BC6A4D,#BC6A4D)"/>
           <div className="sub-metrics" style={{marginTop:12}}>
-            <SubMetric label="Support Level"  value={deriveScore(s.friendship,p1.name,p2.name,"sup")}  color="#00e5ff"/>
-            <SubMetric label="Long-Term Bond" value={deriveScore(s.friendship,p1.name,p2.name,"ltb")}  color="#7b2fff"/>
-            <SubMetric label="Teamwork"       value={deriveScore(s.friendship,p1.name,p2.name,"team")} color="#ff2d78"/>
+            <SubMetric label="Support Level"  value={deriveScore(s.friendship,p1.name,p2.name,"sup")}  color="#BC6A4D"/>
+            <SubMetric label="Long-Term Bond" value={deriveScore(s.friendship,p1.name,p2.name,"ltb")}  color="#BC6A4D"/>
+            <SubMetric label="Teamwork"       value={deriveScore(s.friendship,p1.name,p2.name,"team")} color="#BC6A4D"/>
           </div>
         </CC>
         <CC type="mar">
           <div className="card-head"><span className="card-emoji">💍</span><span className="card-name">Marriage Potential</span><span className="card-score-num">{s.marriage}%</span></div>
-          <ProgBar value={s.marriage} color="linear-gradient(to right,#f5c842,#ff2d78)"/>
+          <ProgBar value={s.marriage} color="linear-gradient(to right,#BC6A4D,#BC6A4D)"/>
           <div className="sub-metrics" style={{marginTop:12}}>
-            <SubMetric label="Marriage Readiness" value={deriveScore(s.marriage,p1.name,p2.name,"mrd")}  color="#f5c842"/>
-            <SubMetric label="Commitment Score"   value={deriveScore(s.marriage,p1.name,p2.name,"com")}  color="#ff2d78"/>
-            <SubMetric label="Stability"          value={deriveScore(s.marriage,p1.name,p2.name,"stab")} color="#7b2fff"/>
+            <SubMetric label="Marriage Readiness" value={deriveScore(s.marriage,p1.name,p2.name,"mrd")}  color="#BC6A4D"/>
+            <SubMetric label="Commitment Score"   value={deriveScore(s.marriage,p1.name,p2.name,"com")}  color="#BC6A4D"/>
+            <SubMetric label="Stability"          value={deriveScore(s.marriage,p1.name,p2.name,"stab")} color="#BC6A4D"/>
           </div>
           {report.marriageWindow && <div className="insight-box"><div className="insight-label">Most Favorable Period</div>{report.marriageWindow}</div>}
         </CC>
         <CC type="fin">
           <div className="card-head"><span className="card-emoji">💰</span><span className="card-name">Financial Compatibility</span><span className="card-score-num">{s.financial}%</span></div>
-          <ProgBar value={s.financial} color="linear-gradient(to right,#2ecc71,#f5c842)"/>
+          <ProgBar value={s.financial} color="linear-gradient(to right,#2ecc71,#BC6A4D)"/>
           <div className="sub-metrics" style={{marginTop:12}}>
             <SubMetric label="Wealth Building"  value={deriveScore(s.financial,p1.name,p2.name,"wb")} color="#2ecc71"/>
-            <SubMetric label="Money Management" value={deriveScore(s.financial,p1.name,p2.name,"mm")} color="#f5c842"/>
-            <SubMetric label="Spending Style"   value={deriveScore(s.financial,p1.name,p2.name,"sp")} color="#00e5ff"/>
+            <SubMetric label="Money Management" value={deriveScore(s.financial,p1.name,p2.name,"mm")} color="#BC6A4D"/>
+            <SubMetric label="Spending Style"   value={deriveScore(s.financial,p1.name,p2.name,"sp")} color="#BC6A4D"/>
           </div>
         </CC>
       </div>
@@ -867,31 +867,31 @@ function Results({ p1, p2, report, onReset }) {
       <div className="cards-grid">
         <CC type="fam">
           <div className="card-head"><span className="card-emoji">🏠</span><span className="card-name">Family Harmony</span><span className="card-score-num">{s.family}%</span></div>
-          <ProgBar value={s.family} color="linear-gradient(to right,#e67e22,#f5c842)"/>
+          <ProgBar value={s.family} color="linear-gradient(to right,#e67e22,#BC6A4D)"/>
           <div className="sub-metrics" style={{marginTop:12}}>
             <SubMetric label="Domestic Harmony"  value={deriveScore(s.family,p1.name,p2.name,"dh")} color="#e67e22"/>
-            <SubMetric label="Family Acceptance" value={deriveScore(s.family,p1.name,p2.name,"fa")} color="#f5c842"/>
-            <SubMetric label="Parenting Energy"  value={deriveScore(s.family,p1.name,p2.name,"pe")} color="#ff2d78"/>
+            <SubMetric label="Family Acceptance" value={deriveScore(s.family,p1.name,p2.name,"fa")} color="#BC6A4D"/>
+            <SubMetric label="Parenting Energy"  value={deriveScore(s.family,p1.name,p2.name,"pe")} color="#BC6A4D"/>
           </div>
         </CC>
         <CC type="fam2">
           <div className="card-head"><span className="card-emoji">👶</span><span className="card-name">Future Family Energy</span><span className="card-score-num">{deriveScore(s.family,p1.name,p2.name,"ffe")}%</span></div>
-          <ProgBar value={deriveScore(s.family,p1.name,p2.name,"ffe")} color="linear-gradient(to right,#ff2d78,#f5c842)"/>
+          <ProgBar value={deriveScore(s.family,p1.name,p2.name,"ffe")} color="linear-gradient(to right,#BC6A4D,#BC6A4D)"/>
           <div className="sub-metrics" style={{marginTop:12}}>
-            <SubMetric label="Family Growth"      value={deriveScore(s.family,p1.name,p2.name,"fg")} color="#f5c842"/>
-            <SubMetric label="Nurturing Potential"value={deriveScore(s.family,p1.name,p2.name,"np")} color="#ff2d78"/>
-            <SubMetric label="Child Compatibility"value={deriveScore(s.family,p1.name,p2.name,"cc")} color="#7b2fff"/>
+            <SubMetric label="Family Growth"      value={deriveScore(s.family,p1.name,p2.name,"fg")} color="#BC6A4D"/>
+            <SubMetric label="Nurturing Potential"value={deriveScore(s.family,p1.name,p2.name,"np")} color="#BC6A4D"/>
+            <SubMetric label="Child Compatibility"value={deriveScore(s.family,p1.name,p2.name,"cc")} color="#BC6A4D"/>
           </div>
           <div className="insight-box" style={{fontSize:13}}><div className="insight-label">Note</div>These are astrology-based compatibility indicators, not guarantees of future outcomes.</div>
         </CC>
         <CC type="spi">
           <div className="card-head"><span className="card-emoji">🌙</span><span className="card-name">Spiritual Connection</span><span className="card-score-num">{s.spiritual}%</span></div>
-          <ProgBar value={s.spiritual} color="linear-gradient(to right,#7b2fff,#00e5ff)"/>
+          <ProgBar value={s.spiritual} color="linear-gradient(to right,#BC6A4D,#BC6A4D)"/>
           <div className="sub-metrics" style={{marginTop:12}}>
-            <SubMetric label="Karma Connection"    value={deriveScore(s.spiritual,p1.name,p2.name,"karma")} color="#7b2fff"/>
-            <SubMetric label="Soul Bond"            value={deriveScore(s.spiritual,p1.name,p2.name,"soul2")} color="#00e5ff"/>
-            <SubMetric label="Past Life Indicators" value={deriveScore(s.spiritual,p1.name,p2.name,"past")}  color="#ff2d78"/>
-            <SubMetric label="Destiny Connection"   value={deriveScore(s.spiritual,p1.name,p2.name,"dest")}  color="#f5c842"/>
+            <SubMetric label="Karma Connection"    value={deriveScore(s.spiritual,p1.name,p2.name,"karma")} color="#BC6A4D"/>
+            <SubMetric label="Soul Bond"            value={deriveScore(s.spiritual,p1.name,p2.name,"soul2")} color="#BC6A4D"/>
+            <SubMetric label="Past Life Indicators" value={deriveScore(s.spiritual,p1.name,p2.name,"past")}  color="#BC6A4D"/>
+            <SubMetric label="Destiny Connection"   value={deriveScore(s.spiritual,p1.name,p2.name,"dest")}  color="#BC6A4D"/>
           </div>
         </CC>
       </div>
@@ -1008,9 +1008,9 @@ export default function App() {
   return (
     <div className="universe-app">
       <Starfield/>
-      <div className="nebula-blob" style={{width:600,height:600,top:"-200px",left:"-200px",background:"radial-gradient(circle,rgba(123,47,255,0.15),transparent 70%)",animationDuration:"18s"}}/>
-      <div className="nebula-blob" style={{width:500,height:500,bottom:"10%",right:"-150px",background:"radial-gradient(circle,rgba(255,45,120,0.12),transparent 70%)",animationDuration:"22s",animationDelay:"3s"}}/>
-      <div className="nebula-blob" style={{width:400,height:400,top:"40%",left:"30%",background:"radial-gradient(circle,rgba(0,229,255,0.07),transparent 70%)",animationDuration:"25s",animationDelay:"6s"}}/>
+      <div className="nebula-blob" style={{width:600,height:600,top:"-200px",left:"-200px",background:"radial-gradient(circle,rgba(188,106,77,0.15),transparent 70%)",animationDuration:"18s"}}/>
+      <div className="nebula-blob" style={{width:500,height:500,bottom:"10%",right:"-150px",background:"radial-gradient(circle,rgba(188,106,77,0.12),transparent 70%)",animationDuration:"22s",animationDelay:"3s"}}/>
+      <div className="nebula-blob" style={{width:400,height:400,top:"40%",left:"30%",background:"radial-gradient(circle,rgba(188,106,77,0.07),transparent 70%)",animationDuration:"25s",animationDelay:"6s"}}/>
       {phase==="loading" && <LoadingScreen/>}
       <div className="content" style={{display:phase==="loading"?"none":"block"}}>
         {phase==="form" && (
@@ -1023,8 +1023,8 @@ export default function App() {
             <div className="form-container">
               {error && <div className="error-box">⚠ {error}</div>}
               <div className="persons-grid">
-                <PersonForm title="The Divine Masculine" icon="♂" grad="linear-gradient(135deg,#7b2fff,#00e5ff)" data={p1} onChange={setP1}/>
-                <PersonForm title="The Divine Feminine"  icon="♀" grad="linear-gradient(135deg,#ff2d78,#f5c842)" data={p2} onChange={setP2}/>
+                <PersonForm title="The Divine Masculine" icon="♂" grad="linear-gradient(135deg,#BC6A4D,#BC6A4D)" data={p1} onChange={setP1}/>
+                <PersonForm title="The Divine Feminine"  icon="♀" grad="linear-gradient(135deg,#BC6A4D,#BC6A4D)" data={p2} onChange={setP2}/>
               </div>
               <button className="submit-btn" onClick={compute}>✦ Reveal Cosmic Compatibility ✦</button>
             </div>

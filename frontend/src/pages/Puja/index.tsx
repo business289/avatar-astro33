@@ -155,7 +155,7 @@ const PujaPage = () => {
             <div style={{ height: 1, width: 56, background: 'linear-gradient(to right, transparent, rgba(188,106,77,0.5))' }} />
             <p style={{
               fontSize: 11, fontWeight: 700, letterSpacing: '0.32em',
-              color: '#BC6A4D', textTransform: 'uppercase', fontFamily: 'sans-serif',
+              color: '#BC6A4D', textTransform: 'uppercase', fontFamily: "'Astra','Iceland',sans-serif",
               display: 'flex', alignItems: 'center', gap: 6,
             }}>
               <span style={{ color: '#BC6A4D' }}>✦</span>
@@ -172,7 +172,7 @@ const PujaPage = () => {
           >
             <span style={{ color: '#2C1810' }}>Book A </span>
             <span style={{
-              background: 'linear-gradient(135deg, #BC6A4D 0%, #D4854A 60%, #BC6A4D 100%)',
+              background: 'linear-gradient(135deg, #BC6A4D 0%, #BC6A4D 60%, #BC6A4D 100%)',
               WebkitBackgroundClip: 'text',
               WebkitTextFillColor: 'transparent',
               backgroundClip: 'text',
@@ -204,7 +204,7 @@ const PujaPage = () => {
                 className="puja-search"
                 style={{
                   width: '100%', height: 56, paddingLeft: 52, paddingRight: 20,
-                  fontSize: 15, color: '#2C1810', fontFamily: 'sans-serif',
+                  fontSize: 15, color: '#2C1810', fontFamily: "'Astra','Iceland',sans-serif",
                   background: '#FFFFFF',
                   border: '1.5px solid rgba(188,106,77,0.22)',
                   borderRadius: 16,
@@ -303,7 +303,7 @@ const PujaPage = () => {
                       borderRadius: 99,
                       padding: '4px 11px',
                       width: 'fit-content',
-                      fontFamily: 'sans-serif',
+                      fontFamily: "'Astra','Iceland',sans-serif",
                     }}>
                       🔥 {badge}
                     </span>
@@ -339,7 +339,7 @@ const PujaPage = () => {
                         <p style={{
                           fontSize: 10, fontWeight: 700, letterSpacing: '0.14em',
                           color: '#9C7B62', textTransform: 'uppercase',
-                          marginBottom: 2, fontFamily: 'sans-serif',
+                          marginBottom: 2, fontFamily: "'Astra','Iceland',sans-serif",
                         }}>
                           Starting from
                         </p>
@@ -349,7 +349,7 @@ const PujaPage = () => {
                       </div>
                       <span style={{
                         display: 'inline-flex', alignItems: 'center', gap: 7,
-                        background: 'linear-gradient(135deg, #BC6A4D 0%, #D4854A 100%)',
+                        background: 'linear-gradient(135deg, #BC6A4D 0%, #BC6A4D 100%)',
                         color: '#FFFFFF',
                         fontSize: 13, fontWeight: 700,
                         letterSpacing: '0.10em', textTransform: 'uppercase',
@@ -407,10 +407,10 @@ const PujaPage = () => {
                 }}>
                   <Icon style={{ width: 22, height: 22, color: '#BC6A4D', strokeWidth: 1.5 }} />
                 </div>
-                <p style={{ fontSize: 14, fontWeight: 700, color: '#2C1810', marginBottom: 4, fontFamily: 'sans-serif' }}>
+                <p style={{ fontSize: 14, fontWeight: 700, color: '#2C1810', marginBottom: 4, fontFamily: "'Astra','Iceland',sans-serif" }}>
                   {label}
                 </p>
-                <p style={{ fontSize: 12, color: '#7A6352', lineHeight: 1.55, fontFamily: 'sans-serif' }}>
+                <p style={{ fontSize: 12, color: '#7A6352', lineHeight: 1.55, fontFamily: "'Astra','Iceland',sans-serif" }}>
                   {desc}
                 </p>
               </div>

@@ -17,6 +17,19 @@ export default {
         display: ["Iceland", "sans-serif"],
         body: ["Iceland", "sans-serif"],
       },
+      // Bumped up from Tailwind's stock scale — sitewide text was reading too
+      // small across nav, cards, labels, and body copy. Line-heights keep
+      // their original proportional ratio to the new sizes.
+      fontSize: {
+        xs:   ["0.875rem", { lineHeight: "1.25rem" }],     // 14px (Tailwind default: 12px)
+        sm:   ["1rem", { lineHeight: "1.5rem" }],           // 16px (Tailwind default: 14px)
+        base: ["1.125rem", { lineHeight: "1.75rem" }],      // 18px (Tailwind default: 16px)
+        lg:   ["1.25rem", { lineHeight: "1.875rem" }],      // 20px (Tailwind default: 18px)
+        xl:   ["1.375rem", { lineHeight: "1.875rem" }],     // 22px (Tailwind default: 20px)
+        "2xl": ["1.75rem", { lineHeight: "2.25rem" }],      // 28px (Tailwind default: 24px)
+        "3xl": ["2.125rem", { lineHeight: "2.5rem" }],      // 34px (Tailwind default: 30px)
+        "4xl": ["2.625rem", { lineHeight: "2.875rem" }],    // 42px (Tailwind default: 36px)
+      },
       colors: {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
