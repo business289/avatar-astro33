@@ -22,7 +22,7 @@
   )}
 </div>
 ```
-
+<div className="flex gap-2>
 ### 2. Location API - City, State, Country Suggestions
 **Problem:** Location API was not properly parsing city, state, and country information.
 
