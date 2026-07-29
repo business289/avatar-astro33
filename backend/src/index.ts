@@ -357,12 +357,18 @@ app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
 
 // Start server (MongoDB optional — server runs without it)
 async function startServer() {
+  // Without this, a query issued while disconnected silently queues for up
+  // to 10s (Mongoose's default bufferTimeoutMS) before failing — turning
+  // every request into a slow, confusing 500 instead of an immediate,
+  // diagnosable error.
+  mongoose.set('bufferCommands', false);
+
   try {
-    await mongoose.connect(MONGODB_URI);
+    await mongoose.connect(MONGODB_URI, { serverSelectionTimeoutMS: 5000 });
     console.log('✓ MongoDB connected');
     startDarshanRefreshLoop();
   } catch (error) {
-    console.warn('⚠ MongoDB not available — running without database');
+    console.warn('⚠ MongoDB not available — running without database:', error);
   }
 
   app.listen(PORT, () => {
