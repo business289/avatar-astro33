@@ -54,7 +54,7 @@ const TempleCard = ({ temple, index }: { temple: LiveTemple; index: number }) =>
         <div style={{
           position: 'absolute', top: 12, left: 12,
           background: temple.isLive ? '#E53935' : 'rgba(60,60,60,0.75)',
-          color: '#FFF', fontSize: 10, fontWeight: 700,
+          color: '#FFF', fontSize: 11, fontWeight: 700,
           padding: '4px 10px', borderRadius: 99, letterSpacing: '0.12em',
           display: 'flex', alignItems: 'center', gap: 5,
         }}>
@@ -64,24 +64,24 @@ const TempleCard = ({ temple, index }: { temple: LiveTemple; index: number }) =>
 
         {/* Viewer count */}
         {temple.isLive && (
-          <div style={{ position: 'absolute', bottom: 10, right: 10, background: 'rgba(0,0,0,0.55)', color: 'rgba(255,255,255,0.95)', fontSize: 11, padding: '4px 10px', borderRadius: 99, display: 'flex', alignItems: 'center', gap: 5 }}>
+          <div style={{ position: 'absolute', bottom: 10, right: 10, background: 'rgba(0,0,0,0.55)', color: 'rgba(255,255,255,0.95)', fontSize: 12, padding: '4px 10px', borderRadius: 99, display: 'flex', alignItems: 'center', gap: 5 }}>
             <Users style={{ width: 11, height: 11 }} /> {formatViewers(temple.viewers)} watching
           </div>
         )}
 
         {/* Category chip */}
-        <div style={{ position: 'absolute', top: 12, right: 12, background: 'rgba(0,0,0,0.5)', color: 'rgba(255,255,255,0.88)', fontSize: 9, padding: '3px 9px', borderRadius: 99, fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase' }}>
+        <div style={{ position: 'absolute', top: 12, right: 12, background: 'rgba(0,0,0,0.5)', color: 'rgba(255,255,255,0.88)', fontSize: 10, padding: '3px 9px', borderRadius: 99, fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase' }}>
           {temple.category}
         </div>
       </div>
 
       {/* Card body */}
       <div style={{ padding: '18px 20px 20px' }}>
-        <h3 className="font-display uppercase tracking-wide leading-tight" style={{ fontSize: 26, fontWeight: 700, color: '#2C1810', marginBottom: 6 }}>
+        <h3 className="font-display uppercase tracking-wide leading-tight" style={{ fontSize: 28, fontWeight: 700, color: '#2C1810', marginBottom: 6 }}>
           {temple.name}
         </h3>
-        <p style={{ fontSize: 14, color: '#BC6A4D', fontWeight: 600, marginBottom: 7 }}>{temple.deity}</p>
-        <p style={{ fontSize: 15, color: '#6B4E3D', display: 'flex', alignItems: 'center', gap: 5, marginBottom: 14 }}>
+        <p style={{ fontSize: 15, color: '#BC6A4D', fontWeight: 600, marginBottom: 7 }}>{temple.deity}</p>
+        <p style={{ fontSize: 16, color: '#6B4E3D', display: 'flex', alignItems: 'center', gap: 5, marginBottom: 14 }}>
           <MapPin style={{ width: 13, height: 13, color: '#BC6A4D', flexShrink: 0 }} />
           {temple.city}, {temple.state}
         </p>
@@ -89,12 +89,12 @@ const TempleCard = ({ temple, index }: { temple: LiveTemple; index: number }) =>
         <div style={{ height: 1, background: 'rgba(188,106,77,0.12)', marginBottom: 14 }} />
 
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10 }}>
-          <p style={{ fontSize: 13, color: '#9C7B62' }}>Darshan: <span style={{ color: '#2C1810', fontWeight: 600 }}>{temple.darshanTimings.split('–')[0].trim()}</span></p>
+          <p style={{ fontSize: 14, color: '#9C7B62' }}>Darshan: <span style={{ color: '#2C1810', fontWeight: 600 }}>{temple.darshanTimings.split('–')[0].trim()}</span></p>
           <span style={{
             display: 'inline-flex', alignItems: 'center', gap: 6,
             background: temple.isLive ? 'linear-gradient(135deg, #BC6A4D 0%, #BC6A4D 100%)' : 'rgba(188,106,77,0.10)',
             color: temple.isLive ? '#FFF' : '#BC6A4D',
-            fontSize: 12, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase',
+            fontSize: 13, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase',
             padding: '9px 16px', borderRadius: 10, flexShrink: 0,
             fontFamily: 'Iceland, sans-serif',
             border: temple.isLive ? 'none' : '1px solid rgba(188,106,77,0.25)',
@@ -216,7 +216,7 @@ const DarshanPage = () => {
         {/* ── FEATURED LIVE ─────────────────────────────────────────────── */}
         <section style={{ paddingLeft: 48, paddingRight: 48, paddingTop: 40, paddingBottom: 48 }}>
           <div style={{ maxWidth: 1280, margin: '0 auto' }}>
-            <p style={{ fontSize: 13, fontWeight: 700, letterSpacing: '0.28em', color: '#BC6A4D', textTransform: 'uppercase', marginBottom: 16 }}>
+            <p style={{ fontSize: 14, fontWeight: 700, letterSpacing: '0.28em', color: '#BC6A4D', textTransform: 'uppercase', marginBottom: 16 }}>
               🔴 Featured Live
             </p>
 
@@ -242,14 +242,14 @@ const DarshanPage = () => {
 
                 {/* Content overlay */}
                 <div style={{ position: 'absolute', inset: 0, padding: '40px 48px', display: 'flex', flexDirection: 'column', justifyContent: 'flex-end' }}>
-                  <div style={{ background: '#E53935', color: '#FFF', fontSize: 11, fontWeight: 700, padding: '5px 12px', borderRadius: 99, letterSpacing: '0.15em', display: 'inline-flex', alignItems: 'center', gap: 6, width: 'fit-content', marginBottom: 16 }}>
+                  <div style={{ background: '#E53935', color: '#FFF', fontSize: 12, fontWeight: 700, padding: '5px 12px', borderRadius: 99, letterSpacing: '0.15em', display: 'inline-flex', alignItems: 'center', gap: 6, width: 'fit-content', marginBottom: 16 }}>
                     <span style={{ width: 7, height: 7, background: '#FFF', borderRadius: '50%' }} />
                     LIVE NOW
                   </div>
-                  <h2 className="font-display uppercase tracking-wide" style={{ fontSize: 44, fontWeight: 800, color: '#FFF', marginBottom: 8 }}>
+                  <h2 className="font-display uppercase tracking-wide" style={{ fontSize: 46, fontWeight: 800, color: '#FFF', marginBottom: 8 }}>
                     {featured.name}
                   </h2>
-                  <p style={{ fontSize: 17, color: 'rgba(255,255,255,0.75)', marginBottom: 20, display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <p style={{ fontSize: 18, color: 'rgba(255,255,255,0.75)', marginBottom: 20, display: 'flex', alignItems: 'center', gap: 8 }}>
                     <MapPin style={{ width: 16, height: 16 }} /> {featured.city}, {featured.state}
                     <span style={{ marginLeft: 12, display: 'flex', alignItems: 'center', gap: 5 }}>
                       <Users style={{ width: 15, height: 15 }} /> {formatViewers(featured.viewers)} watching
@@ -258,7 +258,7 @@ const DarshanPage = () => {
                   <div style={{
                     display: 'inline-flex', alignItems: 'center', gap: 8,
                     background: 'linear-gradient(135deg, #BC6A4D 0%, #BC6A4D 100%)',
-                    color: '#FFF', fontSize: 14, fontWeight: 700,
+                    color: '#FFF', fontSize: 15, fontWeight: 700,
                     letterSpacing: '0.08em', padding: '14px 28px', borderRadius: 12,
                     fontFamily: 'Iceland, sans-serif', width: 'fit-content',
                   }}>
@@ -274,15 +274,15 @@ const DarshanPage = () => {
         <section style={{ paddingLeft: 48, paddingRight: 48, paddingBottom: 64 }}>
           <div style={{ maxWidth: 1280, margin: '0 auto' }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 24 }}>
-              <h2 className="font-display font-bold tracking-wide uppercase" style={{ fontSize: 32, color: '#2C1810' }}>
+              <h2 className="font-display font-bold tracking-wide uppercase" style={{ fontSize: 33, color: '#2C1810' }}>
                 All Temples
-                <span style={{ fontSize: 16, color: '#9C7B62', fontWeight: 400, marginLeft: 12, fontFamily: "'Astra','Iceland',sans-serif", textTransform: 'none', letterSpacing: 0 }}>
+                <span style={{ fontSize: 17, color: '#9C7B62', fontWeight: 400, marginLeft: 12, fontFamily: "'Astra','Iceland',sans-serif", textTransform: 'none', letterSpacing: 0 }}>
                   {filtered.length} streams
                 </span>
               </h2>
               <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                 <div style={{ width: 8, height: 8, background: '#E53935', borderRadius: '50%' }} />
-                <span style={{ fontSize: 12, color: '#7A5C42', fontWeight: 600 }}>{liveTemples.filter(t => t.isLive).length} live now</span>
+                <span style={{ fontSize: 13, color: '#7A5C42', fontWeight: 600 }}>{liveTemples.filter(t => t.isLive).length} live now</span>
               </div>
             </div>
 

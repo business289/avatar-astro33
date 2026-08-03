@@ -42,12 +42,32 @@ export async function refreshAllTemples(): Promise<void> {
   }
 }
 
-/** Runs an immediate refresh, then repeats on an interval. Call once at server startup. */
+/**
+ * Skips the startup refresh if temples were already checked within the
+ * current interval window — otherwise every dev-server restart (tsx watch
+ * fires on every save) re-burns ~100 YouTube quota units per temple, which
+ * exhausts the 10,000/day quota within a few restarts.
+ */
+async function refreshOnStartupIfStale(intervalMs: number): Promise<void> {
+  const mostRecent = await Temple.findOne({ youtubeChannelId: { $ne: '' } })
+    .sort({ lastCheckedAt: -1 })
+    .select('lastCheckedAt');
+  const lastCheckedAt = mostRecent?.lastCheckedAt?.getTime() ?? 0;
+
+  if (Date.now() - lastCheckedAt < intervalMs) {
+    console.log('[darshan] Skipping startup refresh — temples were checked recently');
+    return;
+  }
+
+  return refreshAllTemples();
+}
+
+/** Runs an immediate refresh (unless recently done), then repeats on an interval. Call once at server startup. */
 export function startDarshanRefreshLoop(): void {
   const minutes = Number(process.env.DARSHAN_REFRESH_INTERVAL_MINUTES) || 15;
   const intervalMs = minutes * 60 * 1000;
 
-  refreshAllTemples().catch((err) => console.error('[darshan] Initial refresh failed:', err.message));
+  refreshOnStartupIfStale(intervalMs).catch((err) => console.error('[darshan] Initial refresh failed:', err.message));
 
   if (refreshTimer) clearInterval(refreshTimer);
   refreshTimer = setInterval(() => {

@@ -43,5 +43,50 @@
     "name": "ISKCON Vrindavan",
     "slug": "iskcon-vrindavan",
     "youtubeChannelId": "UCAA6IsLVfbHrP1I_lzxv09Q"
+  },
+  {
+    "name": "Kedarnath Temple",
+    "slug": "kedarnath",
+    "youtubeChannelId": "UC7Uo3euG3IA0yBlQyIXDcUA"
+  },
+  {
+    "name": "Omkareshwar Temple",
+    "slug": "omkareshwar",
+    "youtubeChannelId": "UCsIZ3yYwCW4316fPX3V-4lg"
+  },
+  {
+    "name": "Trimbakeshwar Temple",
+    "slug": "trimbakeshwar",
+    "youtubeChannelId": ""
+  },
+  {
+    "name": "Ramanathaswamy Temple",
+    "slug": "ramanathaswamy",
+    "youtubeChannelId": ""
+  },
+  {
+    "name": "Mallikarjuna Temple",
+    "slug": "mallikarjuna",
+    "youtubeChannelId": "UCNIzL2dT2gZxQae2LHXvl0A"
+  },
+  {
+    "name": "Kamakhya Temple",
+    "slug": "kamakhya",
+    "youtubeChannelId": "UC5Z7J1X1DmWLHCoMEXS6DAA"
+  },
+  {
+    "name": "Ambaji Temple",
+    "slug": "ambaji",
+    "youtubeChannelId": "UCUge9PCf1By7w1DEP95xXoA"
+  },
+  {
+    "name": "Jwala Ji Temple",
+    "slug": "jwala-ji",
+    "youtubeChannelId": ""
+  },
+  {
+    "name": "ISKCON Bangalore",
+    "slug": "iskcon-bangalore",
+    "youtubeChannelId": "UCPXnayBvF7ynbG_I3VOTgIg"
   }
 ]

@@ -38,7 +38,9 @@ const EXPLICIT_ALLOWED_ORIGINS = [
 ];
 // This project's actual Vite dev port (see frontend/vite.config.ts) — kept
 // in addition to the explicit list above since that's what's really running.
-const LOCAL_DEV_ORIGIN_REGEX = /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/;
+// Also allows LAN IPs (192.168.x.x / 10.x.x.x / 172.16-31.x.x) so phones and
+// other devices on the same WiFi can hit a locally-running backend during dev.
+const LOCAL_DEV_ORIGIN_REGEX = /^https?:\/\/(localhost|127\.0\.0\.1|192\.168\.\d{1,3}\.\d{1,3}|10\.\d{1,3}\.\d{1,3}\.\d{1,3}|172\.(1[6-9]|2\d|3[01])\.\d{1,3}\.\d{1,3})(:\d+)?$/;
 // Optional production origin, set via env — unrelated to local dev, unchanged.
 const PRODUCTION_ORIGIN = process.env.CORS_ORIGIN;
 
