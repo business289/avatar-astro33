@@ -3,8 +3,8 @@ import {
   getDailyHoroscope,
   getHoroscopeBySign,
   createHoroscope,
-} from '../controllers/horoscopeController';
-import { authMiddleware } from '../middleware/auth';
+} from '../controllers/horoscopeController.js';
+import { authMiddleware } from '../middleware/auth.js';
 
 const router = Router();
 

@@ -1,5 +1,5 @@
 import mongoose, { Connection } from 'mongoose';
-import { config } from './environment';
+import { config } from './environment.js';
 
 let connection: Connection | null = null;
 
@@ -12,7 +12,7 @@ export const connectDatabase = async (): Promise<Connection> => {
   try {
     console.log('Connecting to MongoDB...');
     
-    await mongoose.connect(config.mongodb.uri, {
+    await mongoose.connect(config.mongodb.uri!, {
       serverSelectionTimeoutMS: 5000,
       socketTimeoutMS: 45000,
     });

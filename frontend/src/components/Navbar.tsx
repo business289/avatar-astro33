@@ -170,7 +170,7 @@ const AvatarLiveDropdown = ({ currentPath, lightNav }: AvatarLiveDropdownProps) 
           focus-visible:ring-offset-background rounded-sm
           ${isActive ? "text-[#BC6A4D]" : lightNav ? "text-[#2C1810]/60 hover:text-[#BC6A4D]" : "text-foreground/70 hover:text-[#BC6A4D]"}`}
       >
-        Avatar Live
+        Live
         <ChevronDown size={14} aria-hidden="true" className={`transition-transform duration-200 ${open ? "rotate-180" : ""}`} />
         {isActive && <span className="absolute -bottom-1 left-0 right-0 h-[2px] bg-[#BC6A4D] rounded-full" />}
       </button>
@@ -178,7 +178,7 @@ const AvatarLiveDropdown = ({ currentPath, lightNav }: AvatarLiveDropdownProps) 
       {/* Panel — positioned left-aligned so it doesn't clip */}
       <div className={`absolute top-full left-0 pt-3 ${open ? "pointer-events-auto" : "pointer-events-none"}`} style={{ width: 340 }}>
         <div
-          id="avatar-live-menu" role="menu" aria-label="Avatar Live"
+          id="avatar-live-menu" role="menu" aria-label="Live"
           className={`rounded-2xl overflow-hidden transition-all duration-200 origin-top-left
             ${open ? "opacity-100 scale-100" : "opacity-0 scale-95"}`}
           style={{
@@ -198,7 +198,7 @@ const AvatarLiveDropdown = ({ currentPath, lightNav }: AvatarLiveDropdownProps) 
           >
             <Radio style={{ width: 13, height: 13, color: '#BC6A4D', flexShrink: 0 }} />
             <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.2em', color: '#BC6A4D', textTransform: 'uppercase', fontFamily: "'Astra','Iceland',sans-serif" }}>
-              Avatar Live Hub
+              Live Hub
             </span>
             {/* Live pulse dot */}
             <span style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 5, fontSize: 10, color: '#E53935', fontWeight: 700, letterSpacing: '0.08em' }}>
@@ -422,8 +422,8 @@ const Navbar = () => {
 
               {/* Avatar Live accordion — links to hub + sub-pages */}
               <MobileAccordion
-                label="Avatar Live"
-                items={[{ name: "Avatar Live Hub", path: "/avatar-live" }, ...avatarLiveLinks]}
+                label="Live"
+                items={[{ name: "Live Hub", path: "/avatar-live" }, ...avatarLiveLinks]}
                 currentPath={location.pathname}
                 onNavigate={() => setIsOpen(false)}
               />

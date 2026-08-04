@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
-import { Kundali } from '../models/Kundali';
-import { User } from '../models/User';
-import astroApiService from '../services/astroApiService';
+import { Kundali } from '../models/Kundali.js';
+import { User } from '../models/User.js';
+import astroApiService from '../services/astroApiService.js';
 
 /**
  * Generate Kundali for authenticated user using AstroAPI

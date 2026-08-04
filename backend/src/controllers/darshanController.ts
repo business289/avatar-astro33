@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import Temple from '../models/Temple';
+import Temple from '../models/Temple.js';
 
 const toPublicShape = (temple: InstanceType<typeof Temple>) => ({
   name: temple.name,

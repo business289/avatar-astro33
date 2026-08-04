@@ -3,9 +3,9 @@ import {
   register,
   login,
   getCurrentUser
-} from '../controllers/authController';
-import { authMiddleware } from '../middleware/auth';
-import { validateBirthData } from '../middleware/birthDataValidation';
+} from '../controllers/authController.js';
+import { authMiddleware } from '../middleware/auth.js';
+import { validateBirthData } from '../middleware/birthDataValidation.js';
 
 const router = Router();
 

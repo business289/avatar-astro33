@@ -3,6 +3,7 @@ import { useSpeechRecognition } from "../hooks/useSpeechRecognition";
 import { useTextToSpeech } from "../hooks/useTextToSpeech";
 import { useLanguageDetection, type Language } from "../hooks/useLanguageDetection";
 import { useConsultationGuard } from "../hooks/useConsultationGuard";
+import { API_BASE_URL } from "@/lib/api";
 
 // ── API ──────────────────────────────────────────────────────────────────────
 const GROQ_API_KEY = import.meta.env.VITE_GROQ_API_KEY;
@@ -73,7 +74,7 @@ async function speakSarvam(
 ): Promise<"ok" | "error"> {
   try {
     console.log("[Sarvam TTS] Requesting — provider: sarvam, speaker: manan, lang:", ttsLang, "chars:", text.length);
-    const res = await fetch("/api/tts", {
+    const res = await fetch(`${API_BASE_URL}/tts`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ text, language: ttsLang }),

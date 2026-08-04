@@ -71,20 +71,20 @@ const LiveCard = ({ temple }: { temple: (typeof liveTemples)[0] }) => (
         )}
         <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(0,0,0,0.5) 0%, transparent 60%)' }} />
         {temple.isLive && (
-          <div style={{ position: 'absolute', top: 10, left: 10, background: '#E53935', color: '#FFF', fontSize: 9, fontWeight: 700, padding: '3px 9px', borderRadius: 99, letterSpacing: '0.12em', display: 'flex', alignItems: 'center', gap: 4 }}>
+          <div style={{ position: 'absolute', top: 10, left: 10, background: '#E53935', color: '#FFF', fontSize: 10, fontWeight: 700, padding: '3px 9px', borderRadius: 99, letterSpacing: '0.12em', display: 'flex', alignItems: 'center', gap: 4 }}>
             <span style={{ width: 5, height: 5, background: '#FFF', borderRadius: '50%' }} /> LIVE
           </div>
         )}
-        <div style={{ position: 'absolute', bottom: 8, right: 8, background: 'rgba(0,0,0,0.5)', color: 'rgba(255,255,255,0.9)', fontSize: 10, padding: '3px 8px', borderRadius: 99, display: 'flex', alignItems: 'center', gap: 4 }}>
+        <div style={{ position: 'absolute', bottom: 8, right: 8, background: 'rgba(0,0,0,0.5)', color: 'rgba(255,255,255,0.9)', fontSize: 11, padding: '3px 8px', borderRadius: 99, display: 'flex', alignItems: 'center', gap: 4 }}>
           <Users style={{ width: 10, height: 10 }} /> {formatViewers(temple.viewers)}
         </div>
       </div>
       <div style={{ padding: '14px 16px' }}>
-        <span style={{ fontSize: 10, fontWeight: 600, color: '#BC6A4D', letterSpacing: '0.08em', textTransform: 'uppercase', background: 'rgba(188,106,77,0.08)', border: '1px solid rgba(188,106,77,0.2)', borderRadius: 99, padding: '2px 8px', display: 'inline-block', marginBottom: 6 }}>
+        <span style={{ fontSize: 11, fontWeight: 600, color: '#BC6A4D', letterSpacing: '0.08em', textTransform: 'uppercase', background: 'rgba(188,106,77,0.08)', border: '1px solid rgba(188,106,77,0.2)', borderRadius: 99, padding: '2px 8px', display: 'inline-block', marginBottom: 6 }}>
           {temple.category}
         </span>
-        <p style={{ fontSize: 14, fontWeight: 700, color: '#2C1810', lineHeight: 1.3, marginBottom: 3, fontFamily: 'Iceland, sans-serif', letterSpacing: '0.03em' }}>{temple.name}</p>
-        <p style={{ fontSize: 12, color: '#7A5C42' }}>{temple.city}</p>
+        <p style={{ fontSize: 15, fontWeight: 700, color: '#2C1810', lineHeight: 1.3, marginBottom: 3, fontFamily: 'Iceland, sans-serif', letterSpacing: '0.03em' }}>{temple.name}</p>
+        <p style={{ fontSize: 13, color: '#7A5C42' }}>{temple.city}</p>
       </div>
     </div>
   </Link>
@@ -112,7 +112,6 @@ const AvatarLivePage = () => {
 
             <h1 className="font-display font-bold tracking-widest uppercase leading-none mb-5"
               style={{ fontSize: 'clamp(52px, 8vw, 96px)' }}>
-              <span style={{ color: '#2C1810' }}>Avatar </span>
               <span style={{ background: 'linear-gradient(135deg, #BC6A4D 0%, #BC6A4D 60%, #BC6A4D 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
                 Live
               </span>
@@ -317,7 +316,7 @@ const AvatarLivePage = () => {
             <div style={{ maxWidth: 1280, margin: '0 auto', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
               <div>
                 <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.3em', color: '#BC6A4D', textTransform: 'uppercase', marginBottom: 5 }}>LIVE NOW</p>
-                <h2 className="font-display font-bold tracking-wide uppercase" style={{ fontSize: 26, color: '#2C1810' }}>
+                <h2 className="font-display font-bold tracking-wide uppercase" style={{ fontSize: 27, color: '#2C1810' }}>
                   Featured <span style={{ color: '#BC6A4D' }}>Streams</span>
                 </h2>
               </div>

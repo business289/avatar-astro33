@@ -5,6 +5,7 @@ import { RotateCcw, Sprout, Sparkles, EyeOff, Star, Zap, Flame } from 'lucide-re
 import { TarotCard, ALL_CARDS, MAJOR_ARCANA, shuffleDeck, getCategoryCardImage } from '../data/tarotData';
 import { TarotLandingScene } from '../components/tarot/TarotLandingScene';
 import { useBackOverride } from '../context/NavigationContext';
+import { API_BASE_URL } from '@/lib/api';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 type Phase = 'landing' | 'opening' | 'shuffling' | 'mode' | 'question' | 'spread' | 'revealing' | 'reading';
@@ -1922,7 +1923,7 @@ const TarotExperience = () => {
   const fetchReading = useCallback(async (cards: TarotCard[], modeArg: Mode, q: string) => {
     setIsLoading(true);
     try {
-      const res = await fetch('/api/tarot/reading', {
+      const res = await fetch(`${API_BASE_URL}/tarot/reading`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ mode: modeArg, question: q, cards: cards.map(c => ({ name: c.name, meaning: c.meaning, keywords: c.keywords, symbol: c.symbol })) }),

@@ -1059,6 +1059,7 @@
 //komal vedya
 import { useState, useEffect, useRef, useCallback, type CSSProperties } from "react";
 import { useBackOverride } from "../context/NavigationContext";
+import { API_BASE_URL } from "@/lib/api";
 import {
   Calendar, MapPin, Globe, Heart, Briefcase, DollarSign, Activity, Star,
   Target, Palette, Eye, RotateCcw, Hourglass, Shield, Compass,
@@ -1446,7 +1447,7 @@ async function searchPlaces(q){
 
 // Backend AI call
 async function fetchBirthChartAI(payload){
-  const r=await fetch("/api/birthchart/analyze",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(payload)});
+  const r=await fetch(`${API_BASE_URL}/birthchart/analyze`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(payload)});
   if(!r.ok)throw new Error("Backend error");
   return r.json();
 }

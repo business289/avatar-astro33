@@ -1,6 +1,6 @@
 import { Router } from 'express';
-import { generateKundali, getKundali, deleteKundali } from '../controllers/kundaliController';
-import { authMiddleware } from '../middleware/auth';
+import { generateKundali, getKundali, deleteKundali } from '../controllers/kundaliController.js';
+import { authMiddleware } from '../middleware/auth.js';
 
 const router = Router();
 

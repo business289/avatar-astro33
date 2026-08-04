@@ -4,12 +4,12 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import mongoose from 'mongoose';
 import axios from 'axios';
-import interpretationRoutes from './routes/interpretationRoutes';
-import compatibilityRoutes from './routes/compatibilityRoutes';
-import birthChartRoutes from './routes/birthChartRoutes';
-import innerVoiceRoutes from './routes/innerVoiceRoutes';
-import darshanRoutes from './routes/darshanRoutes';
-import { startDarshanRefreshLoop } from './services/darshanRefreshService';
+import interpretationRoutes from './routes/interpretationRoutes.js';
+import compatibilityRoutes from './routes/compatibilityRoutes.js';
+import birthChartRoutes from './routes/birthChartRoutes.js';
+import innerVoiceRoutes from './routes/innerVoiceRoutes.js';
+import darshanRoutes from './routes/darshanRoutes.js';
+import { startDarshanRefreshLoop } from './services/darshanRefreshService.js';
 
 dotenv.config();
 
@@ -32,10 +32,15 @@ const EXPLICIT_ALLOWED_ORIGINS = [
   'http://127.0.0.1:5173',
   'http://localhost:3000',
   'http://127.0.0.1:3000',
+  'http://localhost:8081',
+  'http://192.168.1.126:8081',
+  'https://avatar-astro33.vercel.app',
 ];
 // This project's actual Vite dev port (see frontend/vite.config.ts) — kept
 // in addition to the explicit list above since that's what's really running.
-const LOCAL_DEV_ORIGIN_REGEX = /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/;
+// Also allows LAN IPs (192.168.x.x / 10.x.x.x / 172.16-31.x.x) so phones and
+// other devices on the same WiFi can hit a locally-running backend during dev.
+const LOCAL_DEV_ORIGIN_REGEX = /^https?:\/\/(localhost|127\.0\.0\.1|192\.168\.\d{1,3}\.\d{1,3}|10\.\d{1,3}\.\d{1,3}\.\d{1,3}|172\.(1[6-9]|2\d|3[01])\.\d{1,3}\.\d{1,3})(:\d+)?$/;
 // Optional production origin, set via env — unrelated to local dev, unchanged.
 const PRODUCTION_ORIGIN = process.env.CORS_ORIGIN;
 
@@ -354,12 +359,18 @@ app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
 
 // Start server (MongoDB optional — server runs without it)
 async function startServer() {
+  // Without this, a query issued while disconnected silently queues for up
+  // to 10s (Mongoose's default bufferTimeoutMS) before failing — turning
+  // every request into a slow, confusing 500 instead of an immediate,
+  // diagnosable error.
+  mongoose.set('bufferCommands', false);
+
   try {
-    await mongoose.connect(MONGODB_URI);
+    await mongoose.connect(MONGODB_URI, { serverSelectionTimeoutMS: 5000 });
     console.log('✓ MongoDB connected');
     startDarshanRefreshLoop();
   } catch (error) {
-    console.warn('⚠ MongoDB not available — running without database');
+    console.warn('⚠ MongoDB not available — running without database:', error);
   }
 
   app.listen(PORT, () => {

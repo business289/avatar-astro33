@@ -1,6 +1,6 @@
 import { Response } from 'express';
-import { User } from '../models/User';
-import { AuthRequest } from '../middleware/auth';
+import { User } from '../models/User.js';
+import { AuthRequest } from '../middleware/auth.js';
 
 interface BirthDataRequestBody {
   dateOfBirth: string;

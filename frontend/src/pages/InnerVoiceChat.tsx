@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
 import VoiceConsultation from "../components/VoiceConsultation";
+import { API_BASE_URL } from "@/lib/api";
 
 const fl = document.createElement("link"); fl.rel = "stylesheet";
 fl.href = "https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Inter:wght@300;400;500;600&family=Space+Mono:wght@400;700&display=swap";
@@ -783,7 +784,7 @@ function MantraCard({m,onSave}){
     setPlaying(true);
     try{
       console.log("[Sarvam TTS] Mantra request — speaker: manan, rate:", rate);
-      const res=await fetch("/api/tts",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({text:text.slice(0,500),language:"hi-IN"})});
+      const res=await fetch(`${API_BASE_URL}/tts`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({text:text.slice(0,500),language:"hi-IN"})});
       if(!res.ok){console.error("[Sarvam TTS] Mantra HTTP error",res.status);setPlaying(false);return;}
       const data=await res.json();
       const b64=data.audio;if(!b64){setPlaying(false);return;}
