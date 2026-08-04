@@ -1,8 +1,8 @@
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef, useCallback, useEffect, useMemo } from "react";
 import { useBackOverride } from "../context/NavigationContext";
 import {
   defaultPalmAnalysisEngine, loadImageFromDataUrl,
-  type HandType, type PalmAnalysisResult, type PalmLine,
+  type HandLandmarks, type HandType, type PalmAnalysisResult, type PalmLine,
 } from "@/lib/palmAnalysis";
 import { ScanSequence } from "@/components/palm/ScanSequence";
 import { PalmLineOverlay } from "@/components/palm/PalmLineOverlay";
@@ -10,7 +10,7 @@ import { MetricDashboard, type DashboardMetric } from "@/components/palm/MetricD
 
 
 // ─── Types ────────────────────────────────────────────────────────────────────
-type Stage = "landing" | "processing" | "retake" | "scanning" | "results";
+type Stage = "landing" | "processing" | "retake" | "scanning" | "results" | "live";
 
 interface PalmResult {
   handType: string; handElement: string; dominance: string;
@@ -30,6 +30,32 @@ interface MountData { name: string; planet: string; strength: number; meaning: s
 interface TraitScore { name: string; score: number; icon: string }
 interface TimelineItem { phase: string; years: string; theme: string; insight: string }
 interface RecoItem { category: string; icon: string; tip: string }
+
+// ─── Hand type reference (shown on landing + live scan so users know what
+// the scanner is classifying against) ─────────────────────────────────────
+const HAND_TYPE_LEGEND: { type: HandType; emoji: string; label: string; traits: string; shape: string }[] = [
+  { type: "Earth", emoji: "🌍", label: "Earth Hand", traits: "Practical, stable, grounded, reliable", shape: "Square palm, short fingers" },
+  { type: "Air",   emoji: "💨", label: "Air Hand",   traits: "Intelligent, curious, communicative", shape: "Square palm, long fingers" },
+  { type: "Water", emoji: "🌊", label: "Water Hand", traits: "Emotional, intuitive, artistic", shape: "Long palm, long fingers" },
+  { type: "Fire",  emoji: "🔥", label: "Fire Hand",  traits: "Energetic, ambitious, spontaneous", shape: "Rectangular palm, short fingers" },
+];
+
+// ─── Live blueprint skeleton — connects the 21 MediaPipe hand landmarks into
+// the finger/palm topology so the live camera view can render a real-time
+// tracking overlay (not a canned animation — these edges follow the actual
+// detected joints frame to frame).
+function handSkeletonEdges(lm: HandLandmarks): [{ x: number; y: number }, { x: number; y: number }][] {
+  const fingers = [lm.thumb, lm.index, lm.middle, lm.ring, lm.pinky];
+  const edges: [{ x: number; y: number }, { x: number; y: number }][] = [];
+  for (const finger of fingers) {
+    edges.push([lm.wrist, finger[0]]);
+    for (let i = 0; i < finger.length - 1; i++) edges.push([finger[i], finger[i + 1]]);
+  }
+  // knuckle row, so the palm reads as a connected plane rather than 5 loose spokes
+  const knuckles = [lm.thumb[0], lm.index[0], lm.middle[0], lm.ring[0], lm.pinky[0]];
+  for (let i = 0; i < knuckles.length - 1; i++) edges.push([knuckles[i], knuckles[i + 1]]);
+  return edges;
+}
 
 // ─── Deterministic result generator ──────────────────────────────────────────
 // `real`, when provided, comes from actual MediaPipe-detected hand geometry
@@ -171,6 +197,77 @@ function SectionTitle({ icon, title }: { icon: string; title: string }) {
   );
 }
 
+// ─── Live blueprint scanner overlay ───────────────────────────────────────────
+// Renders on top of the raw <video> element: a cyan hand-tracking skeleton
+// anchored to real MediaPipe landmarks (updates each detection tick), a
+// sweeping scanner beam, blueprint grid, and targeting corner brackets.
+// `locked` (green) means a stable, high-quality palm was just found and a
+// capture is about to fire; otherwise it stays in amber "searching" mode.
+function LiveBlueprintOverlay({ landmarks, locked }: { landmarks: HandLandmarks | null; locked: boolean }) {
+  const edges = useMemo(() => (landmarks ? handSkeletonEdges(landmarks) : []), [landmarks]);
+  const points = useMemo(() => {
+    if (!landmarks) return [];
+    return [landmarks.wrist, ...landmarks.thumb, ...landmarks.index, ...landmarks.middle, ...landmarks.ring, ...landmarks.pinky];
+  }, [landmarks]);
+  const tint = locked ? "#4ade80" : "#7fc4ff";
+
+  return (
+    <div style={{ position: "absolute", inset: 0, pointerEvents: "none", overflow: "hidden" }}>
+      <style>{`
+        @keyframes lp-beam-sweep{0%{top:-6%}100%{top:106%}}
+        @keyframes lp-pulse-dot{0%,100%{opacity:0.4;transform:scale(1)}50%{opacity:1;transform:scale(1.7)}}
+        @keyframes lp-grid-drift{0%{background-position:0 0}100%{background-position:0 40px}}
+        .lp-edge{transition:x1 0.45s ease,y1 0.45s ease,x2 0.45s ease,y2 0.45s ease,stroke 0.3s ease}
+        .lp-joint{transition:cx 0.45s ease,cy 0.45s ease,fill 0.3s ease}
+      `}</style>
+
+      {/* Blueprint grid */}
+      <div style={{
+        position: "absolute", inset: 0,
+        backgroundImage: "linear-gradient(rgba(127,196,255,0.12) 1px, transparent 1px), linear-gradient(90deg, rgba(127,196,255,0.12) 1px, transparent 1px)",
+        backgroundSize: "28px 28px",
+        animation: "lp-grid-drift 7s linear infinite",
+      }} />
+
+      {/* Corner targeting brackets */}
+      {[
+        { top: 22, left: 22, borderTop: `2px solid ${tint}`, borderLeft: `2px solid ${tint}` },
+        { top: 22, right: 22, borderTop: `2px solid ${tint}`, borderRight: `2px solid ${tint}` },
+        { bottom: 22, left: 22, borderBottom: `2px solid ${tint}`, borderLeft: `2px solid ${tint}` },
+        { bottom: 22, right: 22, borderBottom: `2px solid ${tint}`, borderRight: `2px solid ${tint}` },
+      ].map((s, i) => (
+        <div key={i} style={{ position: "absolute", width: 34, height: 34, ...s, filter: `drop-shadow(0 0 4px ${tint}aa)`, transition: "border-color 0.3s ease" }} />
+      ))}
+
+      {/* Sweeping scan beam — pauses once a palm is locked */}
+      {!locked && (
+        <div style={{
+          position: "absolute", left: 0, right: 0, height: "14%",
+          background: `linear-gradient(180deg, transparent, ${tint}22, ${tint}55, ${tint}22, transparent)`,
+          animation: "lp-beam-sweep 2.6s ease-in-out infinite",
+          filter: "blur(1px)",
+        }} />
+      )}
+
+      {/* Real-time hand skeleton, anchored to actual detected landmarks */}
+      {landmarks && (
+        <svg viewBox="0 0 1 1" preserveAspectRatio="none" style={{ position: "absolute", inset: 0, width: "100%", height: "100%" }}>
+          {edges.map((e, i) => (
+            <line key={i} className="lp-edge" x1={e[0].x} y1={e[0].y} x2={e[1].x} y2={e[1].y}
+              stroke={tint} strokeWidth={0.0016} strokeOpacity={0.85} vectorEffect="non-scaling-stroke"
+              style={{ filter: `drop-shadow(0 0 2px ${tint})` }} />
+          ))}
+          {points.map((p, i) => (
+            <circle key={i} className="lp-joint" cx={p.x} cy={p.y} r={0.008} fill={tint}
+              vectorEffect="non-scaling-stroke"
+              style={{ filter: `drop-shadow(0 0 3px ${tint})`, animation: `lp-pulse-dot 1.5s ease-in-out ${i * 0.02}s infinite` }} />
+          ))}
+        </svg>
+      )}
+    </div>
+  );
+}
+
 // ─── Main Component ───────────────────────────────────────────────────────────
 export default function PalmReading() {
   const [stage, setStage]           = useState<Stage>("landing");
@@ -182,7 +279,33 @@ export default function PalmReading() {
   const [processingMessage, setProcessingMessage] = useState("Initializing AI Vision Engine...");
   const [processingPct, setProcessingPct]         = useState(0);
   const [retakeMessage, setRetakeMessage]         = useState<string | null>(null);
+  const [liveMessage, setLiveMessage]             = useState("Align your palm within the frame. Keep fingers relaxed and palm visible.");
+  const [cameraError, setCameraError]             = useState<string | null>(null);
+  const [cameraReady, setCameraReady]             = useState(false);
+  const [liveLandmarks, setLiveLandmarks]         = useState<HandLandmarks | null>(null);
+  const [liveLocked, setLiveLocked]               = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
+  const videoRef = useRef<HTMLVideoElement | null>(null);
+  const previewCanvasRef = useRef<HTMLCanvasElement | null>(null);
+  const streamRef = useRef<MediaStream | null>(null);
+  const captureTimeoutRef = useRef<number | null>(null);
+
+  const cleanupCamera = useCallback(() => {
+    if (captureTimeoutRef.current) {
+      window.clearTimeout(captureTimeoutRef.current);
+      captureTimeoutRef.current = null;
+    }
+    if (streamRef.current) {
+      streamRef.current.getTracks().forEach((track) => track.stop());
+      streamRef.current = null;
+    }
+    if (videoRef.current) {
+      videoRef.current.srcObject = null;
+    }
+    setCameraReady(false);
+    setLiveLandmarks(null);
+    setLiveLocked(false);
+  }, []);
 
   // Back button returns to landing from any non-landing stage
   const resetToLanding = useCallback(() => {
@@ -237,6 +360,95 @@ export default function PalmReading() {
       setStage("retake");
     }
   }, []);
+
+  useEffect(() => {
+    if (stage !== "live") return;
+
+    let isActive = true;
+
+    async function captureFrame() {
+      const video = videoRef.current;
+      const canvas = previewCanvasRef.current;
+      if (!video || !canvas) return;
+
+      const width = video.videoWidth || 1280;
+      const height = video.videoHeight || 720;
+      canvas.width = width;
+      canvas.height = height;
+      const ctx = canvas.getContext("2d");
+      if (!ctx) return;
+      ctx.drawImage(video, 0, 0, width, height);
+
+      try {
+        const quality = await defaultPalmAnalysisEngine.checkQuality(canvas);
+        if (!isActive || stage !== "live") return;
+
+        // Surface the live skeleton the instant *any* hand is found, even
+        // before it clears the capture quality gate — this is what makes the
+        // blueprint tracking feel real-time rather than only flashing at capture.
+        setLiveLandmarks(quality.landmarks);
+
+        if (!quality.ok || !quality.landmarks) {
+          setLiveLocked(false);
+          setLiveMessage(quality.message ?? "A clear palm was not detected yet. Keep it steady inside the frame.");
+          captureTimeoutRef.current = window.setTimeout(captureFrame, 900);
+          return;
+        }
+
+        setLiveLocked(true);
+        setLiveMessage("Palm detected. Capturing the best scan...");
+        const dataUrl = canvas.toDataURL("image/jpeg", 0.95);
+        setStage("processing");
+        runAnalysisPipeline(dataUrl);
+      } catch (err) {
+        console.error("[PalmReading] live capture failed", err);
+        if (!isActive) return;
+        setLiveLocked(false);
+        setLiveMessage("Still scanning... move your palm slowly and hold it steady.");
+        captureTimeoutRef.current = window.setTimeout(captureFrame, 1100);
+      }
+    }
+
+    async function initLiveCamera() {
+      if (!navigator.mediaDevices?.getUserMedia) {
+        setCameraError("Camera access is not supported in this browser.");
+        return;
+      }
+
+      setCameraError(null);
+      setLiveMessage("Preparing live palm scanner...");
+      setProcessingPct(0);
+
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({
+          video: { facingMode: "environment", width: { ideal: 1280 }, height: { ideal: 720 } },
+          audio: false,
+        });
+        if (!isActive) return;
+
+        streamRef.current = stream;
+        if (videoRef.current) {
+          videoRef.current.srcObject = stream;
+          await videoRef.current.play();
+        }
+
+        setCameraReady(true);
+        setLiveMessage("Hold your palm in the frame. Scanning for your hand structure...");
+        await defaultPalmAnalysisEngine.ensureReady((pct) => setProcessingPct(Math.round(pct * 0.6)));
+        captureFrame();
+      } catch (err) {
+        console.error("[PalmReading] live camera failed", err);
+        if (!isActive) return;
+        setCameraError("Could not access your camera. Please allow camera permission or try another device.");
+      }
+    }
+
+    initLiveCamera();
+    return () => {
+      isActive = false;
+      cleanupCamera();
+    };
+  }, [stage, runAnalysisPipeline, cleanupCamera]);
 
   const handleFile = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -294,7 +506,7 @@ export default function PalmReading() {
         </div>
 
         {/* Upload cards */}
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 28, marginBottom: 60 }}>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 28, marginBottom: 28 }}>
           {/* Upload */}
           <div className="pr-card" style={{ ...sec, textAlign: "center", cursor: "pointer", marginBottom: 0 }} onClick={() => fileRef.current?.click()}>
             {fileInput}
@@ -303,21 +515,21 @@ export default function PalmReading() {
             <p style={{ color: "rgba(232,224,240,0.6)", fontSize: 16, lineHeight: 1.7, marginBottom: 28 }}>Upload an existing photo of your palm from your device for instant analysis.</p>
             <button style={goldBtn}>📤 Upload Photo</button>
           </div>
-          {/* Live scan (demo) */}
-          <div className="pr-card" style={{ ...sec, textAlign: "center", marginBottom: 0, opacity: 0.7 }}>
+          {/* Live scan */}
+          <div className="pr-card" style={{ ...sec, textAlign: "center", marginBottom: 0 }}>
             <div style={{ fontSize: 56, marginBottom: 20 }}>📷</div>
             <h3 style={{ color: "#BC6A4D", fontSize: 22, fontWeight: 800, marginBottom: 12 }}>Live Palm Scan</h3>
-            <p style={{ color: "rgba(232,224,240,0.6)", fontSize: 16, lineHeight: 1.7, marginBottom: 28 }}>Use your camera for a real-time palm scan with live line detection overlay.</p>
-            <button style={{ ...goldBtn, background: "rgba(188,106,77,0.15)", color: "rgba(188,106,77,0.6)", cursor: "not-allowed", boxShadow: "none" }}>📱 Coming Soon</button>
+            <p style={{ color: "rgba(232,224,240,0.6)", fontSize: 16, lineHeight: 1.7, marginBottom: 28 }}>Use your camera for a real-time palm scan with a live blueprint hand-tracking overlay.</p>
+            <button style={goldBtn} onClick={() => setStage("live")}>📱 Start Live Scan</button>
           </div>
         </div>
 
         {/* Guidelines */}
         <div style={sec}>
-          <SectionTitle icon="📋" title="Photo Guidelines for Best Results"/>
+          <SectionTitle icon="📋" title="Photo & Scan Guidelines for Best Results"/>
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 24 }}>
             <div style={card}>
-              <div style={{ color: "#4ade80", fontWeight: 700, fontSize: 14, letterSpacing: "0.15em", marginBottom: 16 }}>✅ IDEAL PHOTO</div>
+              <div style={{ color: "#4ade80", fontWeight: 700, fontSize: 14, letterSpacing: "0.15em", marginBottom: 16 }}>✅ IDEAL</div>
               {["Full palm clearly visible","Bright, even natural lighting","Fingers slightly spread apart","Palm centered in frame","Sharp, high-resolution image"].map(g=>(
                 <div key={g} style={{ display: "flex", gap: 10, alignItems: "center", marginBottom: 10 }}>
                   <span style={{ color: "#4ade80", fontSize: 16 }}>✓</span>
@@ -334,6 +546,21 @@ export default function PalmReading() {
                 </div>
               ))}
             </div>
+          </div>
+        </div>
+
+        {/* Hand type legend */}
+        <div style={sec}>
+          <SectionTitle icon="🤲" title="Hand Structures We Recognize"/>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 16 }}>
+            {HAND_TYPE_LEGEND.map(h=>(
+              <div key={h.type} style={{ ...card, textAlign: "center" }}>
+                <div style={{ fontSize: 32, marginBottom: 10 }}>{h.emoji}</div>
+                <div style={{ color: "#BC6A4D", fontWeight: 700, fontSize: 14, marginBottom: 6 }}>{h.label}</div>
+                <div style={{ color: "rgba(255,255,255,0.4)", fontSize: 11, marginBottom: 8 }}>{h.shape}</div>
+                <div style={{ color: "rgba(232,224,240,0.6)", fontSize: 13, lineHeight: 1.5 }}>{h.traits}</div>
+              </div>
+            ))}
           </div>
         </div>
 
@@ -383,6 +610,79 @@ export default function PalmReading() {
           <div style={{ height: "100%", width: `${processingPct}%`, background: "linear-gradient(90deg,#BC6A4D,#e8b23f)", borderRadius: 6, boxShadow: "0 0 10px rgba(232,178,63,0.5)", transition: "width 0.3s ease" }}/>
         </div>
       </div>
+    </div>
+  );
+
+  // ── LIVE SCAN ────────────────────────────────────────────────────────────
+  if (stage === "live") return (
+    <div>
+      <style>{`@keyframes pulse-glow{0%,100%{opacity:0.6;transform:scale(1)}50%{opacity:1;transform:scale(1.3)}}`}</style>
+      {fileInput}
+      <div style={{ minHeight: "80vh", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "40px 24px", textAlign: "center", color: "#e8e0f0" }}>
+        <div style={{ fontSize: 14, color: "rgba(188,106,77,0.6)", letterSpacing: "0.3em", marginBottom: 32, fontWeight: 600 }}>✦ LIVE PALM SCANNER ✦</div>
+        <div style={{ width: "100%", maxWidth: 880, marginBottom: 28, position: "relative", borderRadius: 26, overflow: "hidden", border: "2px solid rgba(188,106,77,0.25)", boxShadow: "0 0 40px rgba(188,106,77,0.16)" }}>
+          <video
+            ref={videoRef}
+            style={{ width: "100%", height: "auto", display: "block", background: "#000" }}
+            playsInline
+            muted
+          />
+          {cameraReady && <LiveBlueprintOverlay landmarks={liveLandmarks} locked={liveLocked} />}
+          <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(0,0,0,0.55), transparent 30%)", pointerEvents: "none" }} />
+          <div style={{ position: "absolute", left: 18, top: 18, right: 18, display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 14, flexWrap: "wrap" }}>
+            <div style={{ color: "#fff", textAlign: "left", maxWidth: 520 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10 }}>
+                <span style={{
+                  width: 8, height: 8, borderRadius: "50%",
+                  background: liveLocked ? "#4ade80" : "#e8b23f",
+                  boxShadow: `0 0 8px ${liveLocked ? "#4ade80" : "#e8b23f"}`,
+                  animation: "pulse-glow 1.4s ease-in-out infinite",
+                }} />
+                <span style={{ fontSize: 13, color: liveLocked ? "#86efac" : "rgba(188,106,77,0.9)", letterSpacing: "0.2em", fontWeight: 700 }}>
+                  {liveLocked ? "PALM LOCKED" : "SCANNING"}
+                </span>
+              </div>
+              <div style={{ fontSize: 18, fontWeight: 700, lineHeight: 1.3 }}>{liveMessage}</div>
+              {liveLandmarks && (
+                <div style={{ display: "flex", gap: 8, marginTop: 12, flexWrap: "wrap" }}>
+                  <span style={{ background: "rgba(0,0,0,0.5)", border: "1px solid rgba(127,196,255,0.4)", borderRadius: 20, padding: "4px 12px", fontSize: 12, color: "#7fc4ff" }}>
+                    ✋ {liveLandmarks.handedness} Hand
+                  </span>
+                  <span style={{ background: "rgba(0,0,0,0.5)", border: "1px solid rgba(127,196,255,0.4)", borderRadius: 20, padding: "4px 12px", fontSize: 12, color: "#7fc4ff" }}>
+                    Confidence {Math.round(liveLandmarks.confidence * 100)}%
+                  </span>
+                  <span style={{ background: "rgba(0,0,0,0.5)", border: "1px solid rgba(127,196,255,0.4)", borderRadius: 20, padding: "4px 12px", fontSize: 12, color: "#7fc4ff" }}>
+                    21/21 Landmarks Tracked
+                  </span>
+                </div>
+              )}
+            </div>
+            <button
+              style={{ ...goldBtn, background: "rgba(188,106,77,0.18)", color: "#fff", boxShadow: "none" }}
+              onClick={() => { cleanupCamera(); resetToLanding(); }}
+            >
+              ✕ Cancel Scan
+            </button>
+          </div>
+        </div>
+        {cameraError ? (
+          <div style={{ maxWidth: 640, color: "#fca5a5", marginTop: 24, fontSize: 15 }}>{cameraError}</div>
+        ) : (
+          <div style={{ maxWidth: 640, marginTop: 24, color: "rgba(232,224,240,0.75)", fontSize: 15, lineHeight: 1.7 }}>
+            Keep your palm centered, fingers slightly spread, and avoid strong reflections. The blueprint scanner locks on and captures automatically once detection is stable.
+          </div>
+        )}
+        {/* Hand type reference while the user waits for a stable lock */}
+        <div style={{ display: "flex", gap: 10, flexWrap: "wrap", justifyContent: "center", marginTop: 28, maxWidth: 880 }}>
+          {HAND_TYPE_LEGEND.map(h => (
+            <div key={h.type} style={{ display: "flex", alignItems: "center", gap: 8, background: "rgba(255,255,255,0.03)", border: "1px solid rgba(188,106,77,0.16)", borderRadius: 20, padding: "6px 14px" }}>
+              <span style={{ fontSize: 16 }}>{h.emoji}</span>
+              <span style={{ fontSize: 12, color: "rgba(232,224,240,0.6)" }}>{h.label}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+      <canvas ref={previewCanvasRef} style={{ display: "none" }} />
     </div>
   );
 

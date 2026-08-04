@@ -1111,15 +1111,18 @@ const css = `
   .submit-btn:active { transform:translateY(0); }
   .submit-btn:disabled { opacity:0.5; cursor:not-allowed; transform:none; }
   .loading-screen { position:fixed; inset:0; background:var(--void); z-index:200; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:32px; }
-  .loading-cosmos { width:180px; height:180px; position:relative; }
-  .orbit-ring { position:absolute; border-radius:50%; border:1px solid transparent; animation:orbit-spin linear infinite; }
-  .orbit-ring:nth-child(1){inset:0;border-color:rgba(123,47,255,0.5);animation-duration:4s;}
-  .orbit-ring:nth-child(2){inset:20px;border-color:rgba(255,45,120,0.5);animation-duration:3s;animation-direction:reverse;}
-  .orbit-ring:nth-child(3){inset:40px;border-color:rgba(0,229,255,0.5);animation-duration:5s;}
-  .orbit-dot { position:absolute; width:8px; height:8px; border-radius:50%; top:-4px; left:50%; transform:translateX(-50%); }
+  .loading-cosmos { width:200px; height:200px; position:relative; }
+  .orbit-ring { position:absolute; border-radius:50%; border:1.5px solid transparent; animation:orbit-spin linear infinite; }
+  .orbit-ring:nth-child(1){inset:0;   border-color:rgba(230,228,245,.8); box-shadow:0 0 8px rgba(230,228,245,.55),0 0 18px rgba(230,228,245,.3); animation-duration:20s;}
+  .orbit-ring:nth-child(2){inset:24px;border-color:rgba(123,47,255,0.7); box-shadow:0 0 8px rgba(123,47,255,.55),0 0 18px rgba(123,47,255,.3); animation-duration:14s;animation-direction:reverse;}
+  .orbit-ring:nth-child(3){inset:52px;border-color:rgba(0,229,255,0.75); box-shadow:0 0 8px rgba(0,229,255,.6), 0 0 18px rgba(0,229,255,.32); animation-duration:8s;}
+  .orbit-ring:nth-child(4){inset:80px;border-color:rgba(0,255,170,.7);  box-shadow:0 0 8px rgba(0,255,170,.55),0 0 18px rgba(0,255,170,.3); animation-duration:4.5s;animation-direction:reverse;}
+  .orbit-dot { position:absolute; width:9px; height:9px; border-radius:50%; top:-4.5px; left:50%; transform:translateX(-50%); box-shadow:0 0 6px currentColor,0 0 14px currentColor,0 0 26px currentColor; }
   @keyframes orbit-spin{from{transform:rotate(0deg);}to{transform:rotate(360deg);}}
-  .orbit-center { position:absolute; inset:60px; border-radius:50%; background:radial-gradient(circle,var(--aurora-1),var(--aurora-2)); display:flex; align-items:center; justify-content:center; font-size:24px; animation:pulse-glow 2s ease-in-out infinite; }
-  @keyframes pulse-glow{0%,100%{box-shadow:0 0 20px rgba(123,47,255,0.5);}50%{box-shadow:0 0 60px rgba(255,45,120,0.8),0 0 100px rgba(123,47,255,0.4);}}
+  .orbit-center { position:absolute; inset:88px; border-radius:50%; background:radial-gradient(circle at 36% 34%,#ffffff 0%,#fff6d0 14%,#ffd54f 42%,#ffb300 72%,#ff8f00 100%); animation:pulse-glow 2s ease-in-out infinite; z-index:2; }
+  .orbit-center::after{ content:''; position:absolute; inset:-90%; border-radius:50%; background:linear-gradient(to right,transparent 0%,rgba(255,246,208,.85) 49.3%,rgba(255,246,208,.85) 50.7%,transparent 100%),linear-gradient(to bottom,transparent 0%,rgba(255,246,208,.85) 49.3%,rgba(255,246,208,.85) 50.7%,transparent 100%); mix-blend-mode:screen; -webkit-mask-image:radial-gradient(circle,black 12%,transparent 62%); mask-image:radial-gradient(circle,black 12%,transparent 62%); pointer-events:none; animation:flare-spin 24s linear infinite; }
+  @keyframes flare-spin{from{transform:rotate(0deg);}to{transform:rotate(360deg);}}
+  @keyframes pulse-glow{0%,100%{box-shadow:0 0 8px 2px rgba(255,213,79,.6),0 0 20px 6px rgba(255,179,0,.35),0 0 44px 14px rgba(255,143,0,.18);opacity:.9;}50%{box-shadow:0 0 12px 3px rgba(255,213,79,.8),0 0 30px 10px rgba(255,179,0,.5),0 0 60px 20px rgba(255,143,0,.28);opacity:1;}}
   .loading-steps { display:flex; flex-direction:column; gap:10px; text-align:center; }
   .loading-step { font-family:var(--font-mono); font-size:12px; letter-spacing:2px; color:rgba(255,255,255,0.65); transition:color 0.5s,opacity 0.5s; display:flex; align-items:center; gap:10px; justify-content:center; }
   .loading-step.active { color:var(--aurora-3); text-shadow:0 0 20px var(--aurora-3); }
@@ -1548,10 +1551,11 @@ function LoadingScreen() {
   return (
     <div className="loading-screen">
       <div className="loading-cosmos">
-        <div className="orbit-ring"><div className="orbit-dot" style={{ background:"#7b2fff" }}/></div>
-        <div className="orbit-ring"><div className="orbit-dot" style={{ background:"#ff2d78" }}/></div>
-        <div className="orbit-ring"><div className="orbit-dot" style={{ background:"#00e5ff" }}/></div>
-        <div className="orbit-center">💫</div>
+        <div className="orbit-ring"><div className="orbit-dot" style={{ background:"#e6e4f5", color:"#e6e4f5" }}/></div>
+        <div className="orbit-ring"><div className="orbit-dot" style={{ background:"#7b2fff", color:"#7b2fff" }}/></div>
+        <div className="orbit-ring"><div className="orbit-dot" style={{ background:"#00e5ff", color:"#00e5ff" }}/></div>
+        <div className="orbit-ring"><div className="orbit-dot" style={{ background:"#00ffaa", color:"#00ffaa" }}/></div>
+        <div className="orbit-center"/>
       </div>
       <div className="loading-steps">
         {LOADING_STEPS.map((s,i) => (
@@ -1770,7 +1774,11 @@ function CompatChat({ p1, p2, scores }) {
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const endRef = useRef(null);
-  useEffect(() => { endRef.current?.scrollIntoView({ behavior:"smooth" }); }, [msgs]);
+  const isFirstRender = useRef(true);
+  useEffect(() => {
+    if (isFirstRender.current) { isFirstRender.current = false; return; }
+    endRef.current?.scrollIntoView({ behavior:"smooth", block:"nearest" });
+  }, [msgs]);
 
   const send = (q?: string) => {
     const question = q || input.trim();
@@ -1962,6 +1970,11 @@ export default function App() {
   const [phase,setPhase] = useState("form");
   const [report,setReport] = useState(null);
   const [error,setError] = useState("");
+
+  // Scroll offset carries over across phase changes (nothing resets it), so
+  // without this the loading/results views can open scrolled down wherever
+  // the user had scrolled the (long) form to instead of at the top.
+  useEffect(() => { window.scrollTo(0, 0); }, [phase]);
 
   // Back button returns to form from loading/results phases
   useBackOverride(
