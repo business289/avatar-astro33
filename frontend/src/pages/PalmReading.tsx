@@ -281,6 +281,7 @@ export default function PalmReading() {
   const [retakeMessage, setRetakeMessage]         = useState<string | null>(null);
   const [liveMessage, setLiveMessage]             = useState("Align your palm within the frame. Keep fingers relaxed and palm visible.");
   const [cameraError, setCameraError]             = useState<string | null>(null);
+  const [cameraRetryTick, setCameraRetryTick]     = useState(0);
   const [cameraReady, setCameraReady]             = useState(false);
   const [liveLandmarks, setLiveLandmarks]         = useState<HandLandmarks | null>(null);
   const [liveLocked, setLiveLocked]               = useState(false);
@@ -409,6 +410,26 @@ export default function PalmReading() {
       }
     }
 
+    // Phones have a rear ("environment") camera worth preferring for a palm
+    // scan; laptops/desktops usually only expose a front-facing webcam. A
+    // bare `facingMode: "environment"` constraint is rejected outright
+    // (OverconstrainedError) on those devices, so we prefer it but always
+    // fall back to whatever camera is actually available rather than failing.
+    async function openCameraStream(): Promise<MediaStream> {
+      const dims = { width: { ideal: 1280 }, height: { ideal: 720 } };
+      try {
+        return await navigator.mediaDevices.getUserMedia({
+          video: { facingMode: { ideal: "environment" }, ...dims },
+          audio: false,
+        });
+      } catch (err) {
+        if (err instanceof DOMException && (err.name === "NotAllowedError" || err.name === "SecurityError")) {
+          throw err; // permission denied — retrying with different constraints won't help
+        }
+        return navigator.mediaDevices.getUserMedia({ video: dims, audio: false });
+      }
+    }
+
     async function initLiveCamera() {
       if (!navigator.mediaDevices?.getUserMedia) {
         setCameraError("Camera access is not supported in this browser.");
@@ -420,10 +441,7 @@ export default function PalmReading() {
       setProcessingPct(0);
 
       try {
-        const stream = await navigator.mediaDevices.getUserMedia({
-          video: { facingMode: "environment", width: { ideal: 1280 }, height: { ideal: 720 } },
-          audio: false,
-        });
+        const stream = await openCameraStream();
         if (!isActive) return;
 
         streamRef.current = stream;
@@ -439,7 +457,12 @@ export default function PalmReading() {
       } catch (err) {
         console.error("[PalmReading] live camera failed", err);
         if (!isActive) return;
-        setCameraError("Could not access your camera. Please allow camera permission or try another device.");
+        const denied = err instanceof DOMException && (err.name === "NotAllowedError" || err.name === "SecurityError");
+        setCameraError(
+          denied
+            ? "Camera permission was denied. Allow camera access in your browser's site settings, then try again."
+            : "Could not access your camera. Make sure no other app is using it, then try again."
+        );
       }
     }
 
@@ -448,7 +471,7 @@ export default function PalmReading() {
       isActive = false;
       cleanupCamera();
     };
-  }, [stage, runAnalysisPipeline, cleanupCamera]);
+  }, [stage, cameraRetryTick, runAnalysisPipeline, cleanupCamera]);
 
   const handleFile = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -666,7 +689,10 @@ export default function PalmReading() {
           </div>
         </div>
         {cameraError ? (
-          <div style={{ maxWidth: 640, color: "#fca5a5", marginTop: 24, fontSize: 15 }}>{cameraError}</div>
+          <div style={{ maxWidth: 640, marginTop: 24, display: "flex", flexDirection: "column", alignItems: "center", gap: 16 }}>
+            <div style={{ color: "#fca5a5", fontSize: 15 }}>{cameraError}</div>
+            <button style={goldBtn} onClick={() => { setCameraError(null); setCameraRetryTick(t => t + 1); }}>🔄 Try Again</button>
+          </div>
         ) : (
           <div style={{ maxWidth: 640, marginTop: 24, color: "rgba(232,224,240,0.75)", fontSize: 15, lineHeight: 1.7 }}>
             Keep your palm centered, fingers slightly spread, and avoid strong reflections. The blueprint scanner locks on and captures automatically once detection is stable.

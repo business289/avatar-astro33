@@ -1073,6 +1073,18 @@ import careerInsightImg from "@/assets/insights/career.png";
 import moneyInsightImg from "@/assets/insights/money.png";
 import healthInsightImg from "@/assets/insights/health.png";
 import spiritualityInsightImg from "@/assets/insights/spirituality.png";
+import zodiacAries from "@/assets/zodiac-gold/aries.png";
+import zodiacTaurus from "@/assets/zodiac-gold/taurus.png";
+import zodiacGemini from "@/assets/zodiac-gold/gemini.png";
+import zodiacCancer from "@/assets/zodiac-gold/cancer.png";
+import zodiacLeo from "@/assets/zodiac-gold/leo.png";
+import zodiacVirgo from "@/assets/zodiac-gold/virgo.png";
+import zodiacLibra from "@/assets/zodiac-gold/libra.png";
+import zodiacScorpio from "@/assets/zodiac-gold/scorpio.png";
+import zodiacSagittarius from "@/assets/zodiac-gold/sagittarius.png";
+import zodiacCapricorn from "@/assets/zodiac-gold/capricorn.png";
+import zodiacAquarius from "@/assets/zodiac-gold/aquarius.png";
+import zodiacPisces from "@/assets/zodiac-gold/pisces.png";
 
 // ── Google Fonts ─────────────────────────────────────────────────────────────
 const fl = document.createElement("link"); fl.rel="stylesheet";
@@ -1412,6 +1424,7 @@ function EnergyBadge({label,color,desc,Icon,value}){
 }
 
 const ZODIAC_SYMBOLS={Aries:"♈",Taurus:"♉",Gemini:"♊",Cancer:"♋",Leo:"♌",Virgo:"♍",Libra:"♎",Scorpio:"♏",Sagittarius:"♐",Capricorn:"♑",Aquarius:"♒",Pisces:"♓"};
+const ZODIAC_IMAGES={Aries:zodiacAries,Taurus:zodiacTaurus,Gemini:zodiacGemini,Cancer:zodiacCancer,Leo:zodiacLeo,Virgo:zodiacVirgo,Libra:zodiacLibra,Scorpio:zodiacScorpio,Sagittarius:zodiacSagittarius,Capricorn:zodiacCapricorn,Aquarius:zodiacAquarius,Pisces:zodiacPisces};
 
 const ARCHETYPES=[
   {icon:explorerIcon,name:"Explorer",tag:"Born to discover",detail:"You seek meaning, adventures, and new horizons."},
@@ -1600,6 +1613,7 @@ function Results({data,onReset}){
   const h=hash(name+dob);
   const base=62+(h%30);
   const sym=ZODIAC_SYMBOLS[zodiac]||"⭐";
+  const zodiacImg=ZODIAC_IMAGES[zodiac];
   const [insightTab,setInsightTab]=useState("love");
 
   const [dy,dm,dd]=dob.split("-");
@@ -1672,9 +1686,9 @@ function Results({data,onReset}){
           </div>
         </div>
 
-        <div style={{position:"relative",display:"flex",alignItems:"center",justifyContent:"center",minHeight:280}}>
-          <div style={{position:"absolute",inset:"10%",borderRadius:"50%",background:"radial-gradient(circle,rgba(255,126,71,0.18),transparent 70%)",filter:"blur(20px)"}}></div>
-          <div style={{position:"relative",fontSize:200,color:"#ff7e47",textShadow:"0 0 60px rgba(255,126,71,0.4)"}}>{sym}</div>
+        <div style={{position:"relative",display:"flex",alignItems:"center",justifyContent:"center",minHeight:460}}>
+          <div style={{position:"absolute",inset:"2%",borderRadius:"50%",background:"radial-gradient(circle,rgba(255,126,71,0.18),transparent 70%)",filter:"blur(20px)"}}></div>
+          <img src={zodiacImg} alt={zodiac} style={{position:"relative",width:460,height:460,objectFit:"contain",filter:"drop-shadow(0 0 40px rgba(255,126,71,0.4))"}}/>
         </div>
       </div>
 
@@ -1684,8 +1698,8 @@ function Results({data,onReset}){
         <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:24}}>
           {ARCHETYPES.map((a,i)=>(
             <div key={i} className="r-hcard" style={cardStyle}>
-              <div style={{width:44,height:44,borderRadius:"50%",background:"rgba(255,126,71,0.12)",display:"flex",alignItems:"center",justifyContent:"center",marginBottom:14}}>
-                <img src={a.icon} alt={a.name} style={{width:24,height:24,objectFit:"contain"}}/>
+              <div style={{width:80,height:80,borderRadius:"50%",background:"rgba(255,126,71,0.12)",display:"flex",alignItems:"center",justifyContent:"center",marginBottom:14}}>
+                <img src={a.icon} alt={a.name} style={{width:52,height:52,objectFit:"contain"}}/>
               </div>
               <div style={{color:"#fff",fontWeight:800,fontSize:18,marginBottom:4}}>{a.name.toUpperCase()}</div>
               <div style={{color:"#ff7e47",fontWeight:600,fontSize:14,marginBottom:16}}>{a.tag}</div>
@@ -1745,8 +1759,8 @@ function Results({data,onReset}){
         <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:24,alignItems:"stretch"}}>
           <div className="r-hcard" style={cardStyle}>
             <div style={{display:"flex",gap:20,marginBottom:24}}>
-              <div style={{width:80,height:80,borderRadius:"50%",border:"2px solid #ff7e47",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>
-                <span style={{fontSize:36,color:"#ff7e47"}}>{sym}</span>
+              <div style={{width:130,height:130,borderRadius:"50%",border:"2px solid #ff7e47",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,overflow:"hidden"}}>
+                <img src={zodiacImg} alt={zodiac} style={{width:98,height:98,objectFit:"contain"}}/>
               </div>
               <div>
                 <div style={{color:"#fff",fontWeight:800,fontSize:20,marginBottom:4}}>{name.toUpperCase()}</div>

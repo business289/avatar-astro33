@@ -122,7 +122,7 @@ const CardFace = ({ card, size = 'md', category }: { card: TarotCard; size?: 'sm
   const cfg = {
     sm: { symbol: 28, name: 8,  sub: 7,  kw: 6.5, pad: '5px 4px', numSize: 8  },
     md: { symbol: 40, name: 11, sub: 9,  kw: 8,   pad: '8px 6px', numSize: 10 },
-    lg: { symbol: 52, name: 14, sub: 11, kw: 10,  pad: '10px 8px', numSize: 12 },
+    lg: { symbol: 52, name: 16, sub: 11, kw: 10,  pad: '10px 8px', numSize: 14 },
   }[size];
 
   const topLabel = isMajor ? card.number : (card.suit || '');
@@ -252,10 +252,10 @@ const ScoreCircle = ({ score, label, color = '#BC6A4D' }: { score: number; label
             strokeLinecap="round" style={{ filter: `drop-shadow(0 0 8px ${color})` }} />
         </svg>
         <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column' }}>
-          <span style={{ fontSize: '22px', fontWeight: 'bold', color, fontFamily: 'Iceland, sans-serif' }}>{displayed}</span>
+          <span style={{ fontSize: '24px', fontWeight: 'bold', color, fontFamily: 'Iceland, sans-serif' }}>{displayed}</span>
         </div>
       </div>
-      <span style={{ fontSize: '12px', color: 'rgba(188,106,77,0.7)', textTransform: 'uppercase', letterSpacing: '1.5px', textAlign: 'center', fontFamily: 'Iceland, sans-serif' }}>{label}</span>
+      <span style={{ fontSize: '14px', color: 'rgba(255,255,255,0.8)', textTransform: 'uppercase', letterSpacing: '1.5px', textAlign: 'center', fontFamily: 'Iceland, sans-serif' }}>{label}</span>
     </div>
   );
 };
@@ -1152,7 +1152,7 @@ const CardRevealScene = ({ cards, positions, question, onComplete }: { cards: Ta
       <Particles count={40} />
 
       <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ textAlign: 'center', marginBottom: '48px', zIndex: 10 }}>
-        <p style={{ letterSpacing: '6px', fontSize: '12px', color: 'rgba(188,106,77,0.65)', textTransform: 'uppercase', fontFamily: 'Iceland, sans-serif', marginBottom: '12px' }}>
+        <p style={{ letterSpacing: '6px', fontSize: '14px', color: 'rgba(255,255,255,0.8)', textTransform: 'uppercase', fontFamily: 'Iceland, sans-serif', marginBottom: '12px' }}>
           The Cards Reveal Themselves
         </p>
         <h2 style={{ fontSize: 'clamp(26px, 4vw, 44px)', fontFamily: 'Iceland, sans-serif', letterSpacing: '5px', textTransform: 'uppercase', color: '#BC6A4D', textShadow: '0 0 30px rgba(188,106,77,0.4)' }}>
@@ -1191,7 +1191,7 @@ const CardRevealScene = ({ cards, positions, question, onComplete }: { cards: Ta
               </div>
 
               {/* Position label */}
-              <span style={{ fontSize: '11px', letterSpacing: '2.5px', color: revealed[i] ? theme.accent : 'rgba(188,106,77,0.45)', fontFamily: 'Iceland, sans-serif', textTransform: 'uppercase', textAlign: 'center', maxWidth: '150px', transition: 'color 0.6s' }}>
+              <span style={{ fontSize: '13px', fontWeight: 600, letterSpacing: '2.5px', color: revealed[i] ? 'rgba(255,255,255,0.85)' : 'rgba(188,106,77,0.45)', fontFamily: 'Iceland, sans-serif', textTransform: 'uppercase', textAlign: 'center', maxWidth: '150px', transition: 'color 0.6s' }}>
                 {positions[i]}
               </span>
 
@@ -1199,8 +1199,8 @@ const CardRevealScene = ({ cards, positions, question, onComplete }: { cards: Ta
                 {revealed[i] && (
                   <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.7 }}
                     style={{ textAlign: 'center' }}>
-                    <p style={{ fontSize: '16px', color: theme.accent, fontFamily: 'Iceland, sans-serif', letterSpacing: '1.5px', textTransform: 'uppercase', marginBottom: '4px' }}>{card.name}</p>
-                    <p style={{ fontSize: '12px', color: 'rgba(255,248,220,0.55)', fontFamily: 'Iceland, sans-serif' }}>{card.keywords[0]}</p>
+                    <p style={{ fontSize: '18px', color: theme.accent, fontFamily: 'Iceland, sans-serif', letterSpacing: '1.5px', textTransform: 'uppercase', marginBottom: '4px' }}>{card.name}</p>
+                    <p style={{ fontSize: '14px', color: 'rgba(255,248,220,0.85)', fontFamily: 'Iceland, sans-serif' }}>{card.keywords[0]}</p>
                   </motion.div>
                 )}
               </AnimatePresence>
@@ -1259,14 +1259,14 @@ const InsightCard = ({
       }}
     >
       <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-        <span style={{ fontSize: '20px', lineHeight: 1 }}>{icon}</span>
+        <span style={{ fontSize: '22px', lineHeight: 1 }}>{icon}</span>
         <span style={{
-          fontSize: '11px', letterSpacing: '2.5px', textTransform: 'uppercase',
-          color: `${accent}cc`, fontFamily: 'Iceland, sans-serif', fontWeight: 600,
+          fontSize: '13px', letterSpacing: '2.5px', textTransform: 'uppercase',
+          color: 'rgba(255,255,255,0.85)', fontFamily: 'Iceland, sans-serif', fontWeight: 600,
         }}>{label}</span>
       </div>
       <p style={{
-        margin: 0, color: 'rgba(255,248,220,0.9)', fontSize: '17px',
+        margin: 0, color: 'rgba(255,248,220,0.92)', fontSize: '18px',
         lineHeight: 1.78, fontFamily: 'Iceland, sans-serif',
         wordBreak: 'break-word', overflowWrap: 'break-word',
       }}>{value}</p>
@@ -1320,7 +1320,7 @@ const ResultCard: React.FC<{
             <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, rgba(7,13,24,0.6) 0%, transparent 26%, transparent 64%, rgba(7,13,24,0.88) 100%)' }} />
           </>
         )}
-        <span style={{ position: 'absolute', top: 14, left: 0, right: 0, textAlign: 'center', fontSize: 13, letterSpacing: 1.5, color: imgSrc ? 'rgba(255,255,255,0.85)' : 'rgba(188,106,77,0.7)', fontFamily: "'Astra','Iceland',sans-serif" }}>{card.number}</span>
+        <span style={{ position: 'absolute', top: 14, left: 0, right: 0, textAlign: 'center', fontSize: 14, letterSpacing: 1.5, color: imgSrc ? 'rgba(255,255,255,0.9)' : 'rgba(255,255,255,0.8)', fontFamily: "'Astra','Iceland',sans-serif" }}>{card.number}</span>
         {!imgSrc && <span style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%,-52%)', fontSize: 90, filter: 'drop-shadow(0 0 14px rgba(188,106,77,0.55))' }}>{card.symbol}</span>}
         <span style={{ position: 'absolute', bottom: 16, left: 10, right: 10, textAlign: 'center', fontSize: 18, letterSpacing: 0.5, color: '#E8B79A', fontFamily: "'Astra','Iceland',sans-serif", lineHeight: 1.25, fontWeight: 600 }}>{card.name}</span>
 
@@ -1329,7 +1329,7 @@ const ResultCard: React.FC<{
           <span key={i} className="result-card-sparkle" style={{ left: `${20 + i * 28}%`, animationDelay: `${i * 0.15}s` }} />
         ))}
       </motion.button>
-      <span style={{ fontSize: 16, letterSpacing: '1px', color: '#BC6A4D', fontFamily: "'Astra','Iceland',sans-serif", textTransform: 'uppercase', textAlign: 'center', maxWidth: 200 }}>{label}</span>
+      <span style={{ fontSize: 17, letterSpacing: '1px', color: '#BC6A4D', fontFamily: "'Astra','Iceland',sans-serif", textTransform: 'uppercase', textAlign: 'center', maxWidth: 200 }}>{label}</span>
     </motion.div>
   );
 };
@@ -1367,7 +1367,7 @@ const ProbabilityRing: React.FC<{ score: number; delay: number }> = ({ score, de
         </svg>
         <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
           <span style={{ fontSize: 44, fontWeight: 700, color: '#FFFFFF', fontFamily: "'Astra','Iceland',sans-serif", lineHeight: 1 }}>{displayed}</span>
-          <span style={{ fontSize: 13, letterSpacing: '1px', color: '#BC6A4D', textTransform: 'uppercase', fontFamily: "'Astra','Iceland',sans-serif", marginTop: 8, whiteSpace: 'nowrap' }}>Path Probability</span>
+          <span style={{ fontSize: 14, letterSpacing: '1px', color: '#BC6A4D', textTransform: 'uppercase', fontFamily: "'Astra','Iceland',sans-serif", marginTop: 8, whiteSpace: 'nowrap' }}>Path Probability</span>
         </div>
       </div>
     </motion.div>
@@ -1376,8 +1376,8 @@ const ProbabilityRing: React.FC<{ score: number; delay: number }> = ({ score, de
 
 const DetailRow: React.FC<{ label: string; value: string }> = ({ label, value }) => (
   <div style={{ marginBottom: 16 }}>
-    <p style={{ margin: '0 0 4px', fontSize: 13, letterSpacing: '1.5px', color: 'rgba(232,183,154,0.6)', textTransform: 'uppercase', fontFamily: "'Astra','Iceland',sans-serif" }}>{label}</p>
-    <p style={{ margin: 0, fontSize: 17, lineHeight: 1.75, color: 'rgba(255,248,220,0.88)', fontFamily: "'Astra','Iceland',sans-serif" }}>{value}</p>
+    <p style={{ margin: '0 0 4px', fontSize: 14, letterSpacing: '1.5px', color: 'rgba(255,255,255,0.8)', textTransform: 'uppercase', fontFamily: "'Astra','Iceland',sans-serif" }}>{label}</p>
+    <p style={{ margin: 0, fontSize: 18, lineHeight: 1.75, color: 'rgba(255,248,220,0.92)', fontFamily: "'Astra','Iceland',sans-serif" }}>{value}</p>
   </div>
 );
 
@@ -1577,11 +1577,11 @@ const TimelineReadingDisplay = ({
                     }}
                   >
                     <StoryCardThumb card={card} category={question} />
-                    <p style={{ margin: '0 0 14px', fontSize: 21, color: '#BC6A4D', fontFamily: "'Astra','Iceland',sans-serif", fontWeight: 600, letterSpacing: '1px' }}>{card.name}</p>
-                    <p style={{ margin: '0 0 6px', fontSize: 14, letterSpacing: '1px', textTransform: 'uppercase', color: 'rgba(188,106,77,0.6)', fontFamily: "'Astra','Iceland',sans-serif" }}>Meaning</p>
-                    <p style={{ margin: '0 0 14px', fontSize: 16.5, lineHeight: 1.7, color: 'rgba(255,248,220,0.75)', fontFamily: "'Astra','Iceland',sans-serif" }}>{card.meaning}</p>
-                    <p style={{ margin: '0 0 6px', fontSize: 14, letterSpacing: '1px', textTransform: 'uppercase', color: 'rgba(188,106,77,0.6)', fontFamily: "'Astra','Iceland',sans-serif" }}>Interpretation</p>
-                    <p style={{ margin: 0, fontSize: 16.5, lineHeight: 1.7, color: 'rgba(255,248,220,0.75)', fontFamily: "'Astra','Iceland',sans-serif" }}>{n.insight}</p>
+                    <p style={{ margin: '0 0 14px', fontSize: 22, color: '#BC6A4D', fontFamily: "'Astra','Iceland',sans-serif", fontWeight: 600, letterSpacing: '1px' }}>{card.name}</p>
+                    <p style={{ margin: '0 0 6px', fontSize: 15, letterSpacing: '1px', textTransform: 'uppercase', color: 'rgba(255,255,255,0.8)', fontFamily: "'Astra','Iceland',sans-serif" }}>Meaning</p>
+                    <p style={{ margin: '0 0 14px', fontSize: 17, lineHeight: 1.7, color: 'rgba(255,248,220,0.9)', fontFamily: "'Astra','Iceland',sans-serif" }}>{card.meaning}</p>
+                    <p style={{ margin: '0 0 6px', fontSize: 15, letterSpacing: '1px', textTransform: 'uppercase', color: 'rgba(255,255,255,0.8)', fontFamily: "'Astra','Iceland',sans-serif" }}>Interpretation</p>
+                    <p style={{ margin: 0, fontSize: 17, lineHeight: 1.7, color: 'rgba(255,248,220,0.9)', fontFamily: "'Astra','Iceland',sans-serif" }}>{n.insight}</p>
                   </motion.div>
                   {i < reading.timelineNarrative!.length - 1 && (
                     <span className="trd-story-arrow" style={{ color: 'rgba(188,106,77,0.5)', fontSize: 26, alignSelf: 'center', padding: '0 12px' }}>→</span>
@@ -1671,13 +1671,13 @@ const KarmaMirrorDisplay = ({
       {/* ── Header ─────────────────────────────────────────────────────── */}
       <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }}
         style={{ textAlign: 'center', marginBottom: '52px', position: 'relative', zIndex: 10 }}>
-        <p style={{ letterSpacing: '6px', fontSize: '12px', color: 'rgba(188,106,77,0.65)', textTransform: 'uppercase', fontFamily: 'Iceland, sans-serif', marginBottom: '10px' }}>
+        <p style={{ letterSpacing: '6px', fontSize: '14px', color: 'rgba(255,255,255,0.8)', textTransform: 'uppercase', fontFamily: 'Iceland, sans-serif', marginBottom: '10px' }}>
           Karma Mirror™ Reading
         </p>
         <h2 style={{ fontSize: 'clamp(26px,5vw,52px)', fontFamily: 'Iceland, sans-serif', letterSpacing: '5px', textTransform: 'uppercase', color: '#BC6A4D', textShadow: '0 0 30px rgba(188,106,77,0.4)', marginBottom: '12px' }}>
           The Mirror Reveals
         </h2>
-        <p style={{ color: 'rgba(255,248,220,0.5)', fontFamily: 'Iceland, sans-serif', fontSize: '16px', fontStyle: 'italic' }}>
+        <p style={{ color: 'rgba(255,248,220,0.8)', fontFamily: 'Iceland, sans-serif', fontSize: '18px', fontStyle: 'italic' }}>
           "The cards do not judge. They reflect."
         </p>
         <div style={{ width: '100px', height: '1px', background: 'linear-gradient(90deg,transparent,#BC6A4D,transparent)', margin: '16px auto 0' }} />
@@ -1695,8 +1695,8 @@ const KarmaMirrorDisplay = ({
                 style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px' }}>
                 {/* Journey label above card */}
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <span style={{ fontSize: '18px' }}>{journeyIcons[i]}</span>
-                  <span style={{ fontSize: '11px', letterSpacing: '2px', color: kt.color, fontFamily: 'Iceland, sans-serif', textTransform: 'uppercase' }}>{journeyLabels[i]}</span>
+                  <span style={{ fontSize: '20px' }}>{journeyIcons[i]}</span>
+                  <span style={{ fontSize: '13px', letterSpacing: '2px', color: kt.color, fontFamily: 'Iceland, sans-serif', textTransform: 'uppercase', fontWeight: 600 }}>{journeyLabels[i]}</span>
                 </div>
                 {/* Card — fixed container with position:relative */}
                 <div style={{
@@ -1707,7 +1707,7 @@ const KarmaMirrorDisplay = ({
                 }}>
                   <CardFace card={card} size="lg" />
                 </div>
-                <p style={{ margin: 0, fontSize: '15px', color: '#BC6A4D', fontFamily: 'Iceland, sans-serif', textTransform: 'uppercase', textAlign: 'center', letterSpacing: '1px', maxWidth: '130px' }}>{card.name}</p>
+                <p style={{ margin: 0, fontSize: '17px', color: '#BC6A4D', fontFamily: 'Iceland, sans-serif', textTransform: 'uppercase', textAlign: 'center', letterSpacing: '1px', maxWidth: '130px' }}>{card.name}</p>
               </motion.div>
 
               {/* Arrow connector between cards */}
@@ -1732,12 +1732,12 @@ const KarmaMirrorDisplay = ({
       {reading.lifeAreasAffected && reading.lifeAreasAffected.length > 0 && (
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.55 }}
           style={{ padding: '22px 26px', border: '1px solid rgba(188,106,77,0.2)', borderRadius: '16px', marginBottom: '32px', position: 'relative', zIndex: 10 }}>
-          <p style={{ fontSize: '11px', letterSpacing: '2.5px', color: 'rgba(188,106,77,0.6)', fontFamily: 'Iceland, sans-serif', textTransform: 'uppercase', marginBottom: '14px' }}>
+          <p style={{ fontSize: '13px', letterSpacing: '2.5px', color: 'rgba(255,255,255,0.8)', fontFamily: 'Iceland, sans-serif', textTransform: 'uppercase', marginBottom: '14px' }}>
             Life Areas Being Affected
           </p>
           <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
             {reading.lifeAreasAffected.map(area => (
-              <span key={area} style={{ padding: '6px 16px', background: 'rgba(188,106,77,0.1)', border: '1px solid rgba(188,106,77,0.3)', borderRadius: '24px', fontSize: '14px', color: '#BC6A4D', fontFamily: 'Iceland, sans-serif', letterSpacing: '1px' }}>
+              <span key={area} style={{ padding: '6px 16px', background: 'rgba(188,106,77,0.15)', border: '1px solid rgba(188,106,77,0.4)', borderRadius: '24px', fontSize: '15px', color: '#fff', fontFamily: 'Iceland, sans-serif', letterSpacing: '1px' }}>
                 {area}
               </span>
             ))}
@@ -1755,7 +1755,7 @@ const KarmaMirrorDisplay = ({
 
       {/* ── Action Plan ────────────────────────────────────────────────── */}
       <div style={{ marginBottom: '40px', position: 'relative', zIndex: 10 }}>
-        <h3 style={{ fontFamily: 'Iceland, sans-serif', fontSize: '20px', letterSpacing: '4px', color: '#BC6A4D', textTransform: 'uppercase', marginBottom: '22px', textAlign: 'center' }}>
+        <h3 style={{ fontFamily: 'Iceland, sans-serif', fontSize: '24px', letterSpacing: '4px', color: '#BC6A4D', textTransform: 'uppercase', marginBottom: '22px', textAlign: 'center' }}>
           Your Healing Action Plan
         </h3>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(240px,1fr))', gap: '16px' }}>
@@ -1771,15 +1771,15 @@ const KarmaMirrorDisplay = ({
         {reading.reflectionQuestion && (
           <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.95 }}
             style={{ padding: '26px', background: 'linear-gradient(135deg,rgba(100,80,200,0.1) 0%,rgba(100,80,200,0.03) 100%)', border: '1px solid rgba(150,100,255,0.22)', borderRadius: '16px' }}>
-            <p style={{ margin: '0 0 12px', fontSize: '11px', letterSpacing: '2.5px', color: 'rgba(180,150,255,0.7)', fontFamily: 'Iceland, sans-serif', textTransform: 'uppercase' }}>🔍 Think About This</p>
-            <p style={{ margin: 0, color: 'rgba(255,248,220,0.9)', fontSize: '18px', lineHeight: 1.8, fontFamily: 'Iceland, sans-serif', fontStyle: 'italic', wordBreak: 'break-word' }}>"{reading.reflectionQuestion}"</p>
+            <p style={{ margin: '0 0 12px', fontSize: '13px', letterSpacing: '2.5px', color: 'rgba(255,255,255,0.85)', fontFamily: 'Iceland, sans-serif', textTransform: 'uppercase' }}>🔍 Think About This</p>
+            <p style={{ margin: 0, color: 'rgba(255,248,220,0.92)', fontSize: '19px', lineHeight: 1.8, fontFamily: 'Iceland, sans-serif', fontStyle: 'italic', wordBreak: 'break-word' }}>"{reading.reflectionQuestion}"</p>
           </motion.div>
         )}
         {reading.positiveAffirmation && (
           <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 1.04 }}
             style={{ padding: '26px', background: 'linear-gradient(135deg,rgba(188,106,77,0.1) 0%,rgba(255,180,0,0.03) 100%)', border: '1px solid rgba(188,106,77,0.28)', borderRadius: '16px' }}>
-            <p style={{ margin: '0 0 12px', fontSize: '11px', letterSpacing: '2.5px', color: 'rgba(188,106,77,0.6)', fontFamily: 'Iceland, sans-serif', textTransform: 'uppercase' }}>✨ Say This To Yourself</p>
-            <p style={{ margin: 0, color: '#BC6A4D', fontSize: '18px', lineHeight: 1.8, fontFamily: 'Iceland, sans-serif', fontStyle: 'italic', textShadow: '0 0 20px rgba(188,106,77,0.3)', wordBreak: 'break-word' }}>"{reading.positiveAffirmation}"</p>
+            <p style={{ margin: '0 0 12px', fontSize: '13px', letterSpacing: '2.5px', color: 'rgba(255,255,255,0.85)', fontFamily: 'Iceland, sans-serif', textTransform: 'uppercase' }}>✨ Say This To Yourself</p>
+            <p style={{ margin: 0, color: '#E8935F', fontSize: '19px', lineHeight: 1.8, fontFamily: 'Iceland, sans-serif', fontStyle: 'italic', textShadow: '0 0 20px rgba(188,106,77,0.3)', wordBreak: 'break-word' }}>"{reading.positiveAffirmation}"</p>
           </motion.div>
         )}
       </div>
@@ -1787,7 +1787,7 @@ const KarmaMirrorDisplay = ({
       {/* ── Card-by-card insights ──────────────────────────────────────── */}
       {reading.cardInsights && reading.cardInsights.length > 0 && (
         <div style={{ marginBottom: '48px', position: 'relative', zIndex: 10 }}>
-          <h3 style={{ fontFamily: 'Iceland, sans-serif', fontSize: '20px', letterSpacing: '4px', color: '#BC6A4D', textTransform: 'uppercase', marginBottom: '22px', textAlign: 'center' }}>
+          <h3 style={{ fontFamily: 'Iceland, sans-serif', fontSize: '24px', letterSpacing: '4px', color: '#BC6A4D', textTransform: 'uppercase', marginBottom: '22px', textAlign: 'center' }}>
             What Each Card Is Telling You
           </h3>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
@@ -1807,9 +1807,9 @@ const KarmaMirrorDisplay = ({
                     </div>
                   )}
                   <div style={{ flex: 1, minWidth: 0 }}>
-                    <p style={{ margin: '0 0 4px', fontSize: '11px', letterSpacing: '2px', color: `${kt.color}99`, fontFamily: 'Iceland, sans-serif', textTransform: 'uppercase' }}>{n.position}</p>
-                    <p style={{ margin: '0 0 10px', fontSize: '14px', color: kt.color, fontFamily: 'Iceland, sans-serif', fontWeight: 600 }}>{n.card}</p>
-                    <p style={{ margin: 0, fontSize: '16px', color: 'rgba(255,248,220,0.82)', lineHeight: 1.76, wordBreak: 'break-word' }}>{n.insight}</p>
+                    <p style={{ margin: '0 0 4px', fontSize: '13px', letterSpacing: '2px', color: 'rgba(255,255,255,0.75)', fontFamily: 'Iceland, sans-serif', textTransform: 'uppercase' }}>{n.position}</p>
+                    <p style={{ margin: '0 0 10px', fontSize: '16px', color: kt.color, fontFamily: 'Iceland, sans-serif', fontWeight: 600 }}>{n.card}</p>
+                    <p style={{ margin: 0, fontSize: '17px', color: 'rgba(255,248,220,0.9)', lineHeight: 1.76, wordBreak: 'break-word' }}>{n.insight}</p>
                   </div>
                 </motion.div>
               );
@@ -1828,9 +1828,9 @@ const ResetButton = ({ onReset }: { onReset: () => void }) => (
   <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.2 }}
     style={{ textAlign: 'center', paddingBottom: '48px', position: 'relative', zIndex: 10 }}>
     <button onClick={onReset}
-      style={{ display: 'inline-flex', alignItems: 'center', gap: '10px', padding: '16px 36px', background: 'transparent', border: '1px solid rgba(188,106,77,0.32)', color: 'rgba(188,106,77,0.7)', fontFamily: 'Iceland, sans-serif', letterSpacing: '4px', fontSize: '13px', textTransform: 'uppercase', borderRadius: '4px', cursor: 'pointer', transition: 'all 0.3s' }}
-      onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = 'rgba(188,106,77,0.75)'; (e.currentTarget as HTMLElement).style.color = '#BC6A4D'; (e.currentTarget as HTMLElement).style.boxShadow = '0 0 24px rgba(188,106,77,0.22)'; }}
-      onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = 'rgba(188,106,77,0.32)'; (e.currentTarget as HTMLElement).style.color = 'rgba(188,106,77,0.7)'; (e.currentTarget as HTMLElement).style.boxShadow = 'none'; }}>
+      style={{ display: 'inline-flex', alignItems: 'center', gap: '10px', padding: '16px 36px', background: 'transparent', border: '1px solid rgba(188,106,77,0.45)', color: 'rgba(255,255,255,0.85)', fontFamily: 'Iceland, sans-serif', letterSpacing: '4px', fontSize: '15px', textTransform: 'uppercase', borderRadius: '4px', cursor: 'pointer', transition: 'all 0.3s' }}
+      onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = 'rgba(188,106,77,0.75)'; (e.currentTarget as HTMLElement).style.color = '#fff'; (e.currentTarget as HTMLElement).style.boxShadow = '0 0 24px rgba(188,106,77,0.22)'; }}
+      onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = 'rgba(188,106,77,0.45)'; (e.currentTarget as HTMLElement).style.color = 'rgba(255,255,255,0.85)'; (e.currentTarget as HTMLElement).style.boxShadow = 'none'; }}>
       <RotateCcw size={15} /> Begin New Reading
     </button>
   </motion.div>

@@ -1048,6 +1048,18 @@ import {
   Puzzle, TrendingUp, CalendarDays, CheckCircle2, XCircle, Send, Lock,
   Infinity as InfinityIcon,
 } from "lucide-react";
+import zodiacAries from "@/assets/zodiac-gold/aries.png";
+import zodiacTaurus from "@/assets/zodiac-gold/taurus.png";
+import zodiacGemini from "@/assets/zodiac-gold/gemini.png";
+import zodiacCancer from "@/assets/zodiac-gold/cancer.png";
+import zodiacLeo from "@/assets/zodiac-gold/leo.png";
+import zodiacVirgo from "@/assets/zodiac-gold/virgo.png";
+import zodiacLibra from "@/assets/zodiac-gold/libra.png";
+import zodiacScorpio from "@/assets/zodiac-gold/scorpio.png";
+import zodiacSagittarius from "@/assets/zodiac-gold/sagittarius.png";
+import zodiacCapricorn from "@/assets/zodiac-gold/capricorn.png";
+import zodiacAquarius from "@/assets/zodiac-gold/aquarius.png";
+import zodiacPisces from "@/assets/zodiac-gold/pisces.png";
 
 const fontLink = document.createElement("link");
 fontLink.rel = "stylesheet";
@@ -1647,17 +1659,14 @@ function computeWhoLovesMore(p1, p2, scores) {
   return { pct1, pct2, pattern, patternEmoji, confidence: Math.round(confidence), moreInvested, morePct, lessInvested, lessPct, insight, intensity1: intensity(pct1), intensity2: intensity(pct2) };
 }
 
-const ZODIAC_SYMBOLS = {Aries:"♈",Taurus:"♉",Gemini:"♊",Cancer:"♋",Leo:"♌",Virgo:"♍",Libra:"♎",Scorpio:"♏",Sagittarius:"♐",Capricorn:"♑",Aquarius:"♒",Pisces:"♓"};
+const ZODIAC_IMAGES = {Aries:zodiacAries,Taurus:zodiacTaurus,Gemini:zodiacGemini,Cancer:zodiacCancer,Leo:zodiacLeo,Virgo:zodiacVirgo,Libra:zodiacLibra,Scorpio:zodiacScorpio,Sagittarius:zodiacSagittarius,Capricorn:zodiacCapricorn,Aquarius:zodiacAquarius,Pisces:zodiacPisces};
 
 function ZodiacPortrait({ zodiac, color }) {
-  const sym = ZODIAC_SYMBOLS[zodiac] || "✦";
+  const img = ZODIAC_IMAGES[zodiac];
   return (
-    <div style={{position:"relative", width:200, height:200, flexShrink:0}}>
-      <div style={{position:"absolute", inset:0, borderRadius:"50%", border:`1px solid ${color}33`}}></div>
-      <div style={{position:"absolute", inset:16, borderRadius:"50%", background:`radial-gradient(circle, ${color}1f, transparent 72%)`, display:"flex", alignItems:"center", justifyContent:"center"}}>
-        <span style={{fontSize:90, color, textShadow:`0 0 40px ${color}55`}}>{sym}</span>
-      </div>
-      <div style={{position:"absolute", top:6, right:6, width:40, height:40, borderRadius:"50%", background:"rgba(15,20,45,0.85)", border:`1px solid ${color}66`, display:"flex", alignItems:"center", justifyContent:"center", fontSize:18, color}}>{sym}</div>
+    <div style={{position:"relative", width:"clamp(160px,30vw,400px)", height:"clamp(160px,30vw,400px)", flexShrink:1, minWidth:0, display:"flex", alignItems:"center", justifyContent:"center"}}>
+      <div style={{position:"absolute", inset:0, borderRadius:"50%", background:`radial-gradient(circle, ${color}12, transparent 65%)`}}></div>
+      <img src={img} alt={zodiac} style={{position:"relative", width:"96%", height:"96%", objectFit:"contain", filter:`drop-shadow(0 0 14px ${color}33)`}}/>
     </div>
   );
 }
@@ -1735,8 +1744,23 @@ function EmotionalBalance({ p1, p2, scores }) {
     <div style={{background:"rgba(15,20,45,0.55)", border:"1px solid rgba(255,126,71,0.2)", borderRadius:20, padding:40}}>
       <div style={{display:"flex", alignItems:"center", justifyContent:"center", gap:60, flexWrap:"wrap"}}>
         <Ring name={p1.name} pct={wlm.pct1} color={c1} r0={ref1} intensity={wlm.intensity1}/>
-        <div style={{width:100, height:100, borderRadius:"50%", background:"radial-gradient(circle, rgba(255,126,71,0.18), transparent 70%)", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0}}>
-          <Heart size={38} color="#ff7e47" fill="#ff7e47" fillOpacity={0.2}/>
+        <div style={{position:"relative", width:110, height:110, borderRadius:"50%", background:"radial-gradient(circle, rgba(255,126,71,0.22), transparent 70%)", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0, animation:"pulse-glow 3s ease-in-out infinite"}}>
+          <div style={{position:"absolute", inset:8, borderRadius:"50%", border:"1px solid rgba(255,126,71,0.3)"}}/>
+          <svg width={58} height={58} viewBox="0 0 24 24" style={{filter:"drop-shadow(0 0 14px rgba(255,126,71,0.65))", position:"relative"}}>
+            <defs>
+              <linearGradient id="ebHeartGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stopColor="#ffd54f"/>
+                <stop offset="45%" stopColor="#ff8f00"/>
+                <stop offset="100%" stopColor="#BC6A4D"/>
+              </linearGradient>
+            </defs>
+            {/* faint twin outlines echoing each partner's ring color */}
+            <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" fill="none" stroke={c1} strokeOpacity={0.35} strokeWidth="1" transform="translate(-1.1,0)"/>
+            <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" fill="none" stroke={c2} strokeOpacity={0.35} strokeWidth="1" transform="translate(1.1,0)"/>
+            {/* main gradient heart */}
+            <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" fill="url(#ebHeartGrad)" stroke="#ffedc2" strokeOpacity={0.6} strokeWidth="0.6"/>
+          </svg>
+          <Star size={12} color="#ffe9b0" fill="#ffe9b0" style={{position:"absolute", top:18, right:20, filter:"drop-shadow(0 0 5px rgba(255,213,79,0.9))"}}/>
         </div>
         <Ring name={p2.name} pct={wlm.pct2} color={c2} r0={ref2} intensity={wlm.intensity2}/>
       </div>
@@ -1872,8 +1896,8 @@ function Results({ p1, p2, report, onReset }) {
         </div>
       </div>
 
-      <div style={{display:"flex", alignItems:"center", justifyContent:"center", gap:40, marginBottom:80, flexWrap:"wrap"}}>
-        <ZodiacPortrait zodiac={p1.zodiac} color="#ffc94a"/>
+      <div style={{display:"flex", alignItems:"center", justifyContent:"center", gap:"clamp(12px,3vw,40px)", marginBottom:80, flexWrap:"nowrap"}}>
+        <ZodiacPortrait zodiac={p1.zodiac} color="#60a5fa"/>
         <ScoreRing score={s.overall}/>
         <ZodiacPortrait zodiac={p2.zodiac} color="#60a5fa"/>
       </div>
@@ -1929,13 +1953,10 @@ function Results({ p1, p2, report, onReset }) {
       <div style={{marginBottom:80}}>
         <div style={sectionTitle}>Best Relationship Advice</div>
         <div style={cardStyle}>
-          <div style={{display:"grid", gridTemplateColumns:"1fr auto 1fr", gap:32, alignItems:"start"}}>
+          <div style={{display:"grid", gridTemplateColumns:"1fr 1fr", gap:32, alignItems:"start"}}>
             <div>
               <div style={{color:"#4ade80", fontWeight:700, fontSize:14, letterSpacing:"0.05em", textTransform:"uppercase", marginBottom:16}}>Do More Of This</div>
               {DO_MORE.map(t => (<div key={t} style={{display:"flex", alignItems:"center", gap:8, marginBottom:12, fontSize:14, color:"#f8f8f8"}}><CheckCircle2 size={16} color="#4ade80"/> {t}</div>))}
-            </div>
-            <div style={{width:90, height:90, borderRadius:"50%", background:"radial-gradient(circle, rgba(255,126,71,0.15), transparent 70%)", display:"flex", alignItems:"center", justifyContent:"center"}}>
-              <Heart size={34} color="#ff7e47"/>
             </div>
             <div>
               <div style={{color:"#f87171", fontWeight:700, fontSize:14, letterSpacing:"0.05em", textTransform:"uppercase", marginBottom:16}}>Avoid This</div>

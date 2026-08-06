@@ -364,7 +364,7 @@ const Index = () => {
                     </h3>
 
                     {/* Description */}
-                    <p className="text-muted-foreground text-sm md:text-base leading-relaxed max-w-sm">
+                    <p className="text-muted-foreground text-base md:text-lg font-astra leading-relaxed max-w-sm">
                       {item.description}
                     </p>
                   </div>

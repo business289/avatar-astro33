@@ -93,7 +93,7 @@ const NavDropdown = ({ label, menuId, items, currentPath, lightNav }: DropdownPr
         ref={triggerRef}
         aria-haspopup="true" aria-expanded={open} aria-controls={menuId}
         onKeyDown={onTriggerKey} onClick={() => setOpen((v) => !v)}
-        className={`relative flex items-center gap-1.5 font-display text-xs font-semibold tracking-wider transition-colors duration-300
+        className={`relative flex items-center gap-1.5 font-astra text-sm font-semibold tracking-wider transition-colors duration-300
           focus:outline-none focus-visible:ring-2 focus-visible:ring-[#BC6A4D] focus-visible:ring-offset-2
           focus-visible:ring-offset-background rounded-sm
           ${isActive ? "text-[#BC6A4D]" : lightNav ? "text-[#2C1810]/60 hover:text-[#BC6A4D]" : "text-foreground/70 hover:text-[#BC6A4D]"}`}
@@ -167,7 +167,7 @@ const AvatarLiveDropdown = ({ currentPath, lightNav }: AvatarLiveDropdownProps) 
         ref={triggerRef}
         aria-haspopup="true" aria-expanded={open} aria-controls="avatar-live-menu"
         onKeyDown={onTriggerKey} onClick={() => setOpen((v) => !v)}
-        className={`relative flex items-center gap-1.5 font-display text-xs font-semibold tracking-wider transition-colors duration-300
+        className={`relative flex items-center gap-1.5 font-astra text-sm font-semibold tracking-wider transition-colors duration-300
           focus:outline-none focus-visible:ring-2 focus-visible:ring-[#BC6A4D] focus-visible:ring-offset-2
           focus-visible:ring-offset-background rounded-sm
           ${isActive ? "text-[#BC6A4D]" : lightNav ? "text-[#2C1810]/60 hover:text-[#BC6A4D]" : "text-foreground/70 hover:text-[#BC6A4D]"}`}
@@ -352,7 +352,7 @@ const Navbar = () => {
   const lightNav       = isDevotionPage;
 
   const desktopLinkCls = (active: boolean) =>
-    `relative font-display text-xs font-semibold tracking-wider transition-colors duration-300 ${
+    `relative font-astra text-sm font-semibold tracking-wider transition-colors duration-300 ${
       active
         ? "text-[#BC6A4D]"
         : lightNav

@@ -77,12 +77,12 @@ html,body{background:#09090f;overflow-x:hidden;}
 
 /* Header — matches design: centered title, dark bg */
 .kj-hdr{background:linear-gradient(180deg,rgba(188,106,77,.06) 0%,transparent 100%);padding:18px 24px 14px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid rgba(255,255,255,.06);}
-.kj-back{font-size:16px;color:rgba(188,106,77,.55);text-decoration:none;font-family:'Astra','Iceland',sans-serif;letter-spacing:1px;}
+.kj-back{font-size:16px;color:rgba(255,255,255,.75);text-decoration:none;font-family:'Astra','Iceland',sans-serif;letter-spacing:1px;}
 .kj-back:hover{color:#BC6A4D;}
 .kj-hdr-center{text-align:center;flex:1;}
 .kj-hdr-title{font-family:'Astra','Iceland',sans-serif;font-size:19px;color:#BC6A4D;letter-spacing:.5px;}
 .kj-hdr-sub{font-size:15px;color:#fff;margin-top:3px;}
-.kj-hdr-date{font-size:15px;color:rgba(188,106,77,.5);font-family:'Astra','Iceland',sans-serif;background:rgba(188,106,77,.07);border:1px solid rgba(188,106,77,.15);border-radius:50px;padding:4px 10px;white-space:nowrap;}
+.kj-hdr-date{font-size:15px;color:rgba(255,255,255,.8);font-family:'Astra','Iceland',sans-serif;background:rgba(188,106,77,.07);border:1px solid rgba(188,106,77,.15);border-radius:50px;padding:4px 10px;white-space:nowrap;}
 
 /* Content — full width with padding */
 .kj-content{padding:0;}
@@ -92,8 +92,8 @@ html,body{background:#09090f;overflow-x:hidden;}
 .kj-section:last-child{padding-bottom:80px;}
 
 /* Section label */
-.kj-lbl{font-size:15px;font-family:'Astra','Iceland',sans-serif;letter-spacing:3px;text-transform:uppercase;color:rgba(188,106,77,.75);margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;}
-.kj-lbl-right{font-size:15px;color:rgba(188,106,77,.7);letter-spacing:0;cursor:pointer;font-family:'Astra','Iceland',sans-serif;text-transform:none;}
+.kj-lbl{font-size:16px;font-family:'Astra','Iceland',sans-serif;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,.85);margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;}
+.kj-lbl-right{font-size:15px;color:rgba(255,255,255,.8);letter-spacing:0;cursor:pointer;font-family:'Astra','Iceland',sans-serif;text-transform:none;}
 .kj-lbl-right:hover{color:#BC6A4D;}
 
 /* ── A. SCORE CARD — full width gold ── */
@@ -106,7 +106,7 @@ html,body{background:#09090f;overflow-x:hidden;}
 .kj-ring-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;line-height:1;}
 .kj-ring-num{font-family:'Astra','Iceland',sans-serif;font-size:20px;color:#BC6A4D;line-height:1.1;}
 .kj-ring-den{font-size:16px;color:#fff;font-family:'Astra','Iceland',sans-serif;}
-.kj-ring-lbl{font-size:11px;color:#fff;text-transform:uppercase;letter-spacing:1px;margin-top:1px;}
+.kj-ring-lbl{font-size:13px;color:#fff;text-transform:uppercase;letter-spacing:1px;margin-top:1px;}
 .kj-score-info{flex:1;min-width:0;}
 .kj-score-sub{font-size:15px;color:#fff;margin-bottom:4px;}
 .kj-score-pattern{font-size:28px;font-weight:700;color:#fff;margin-bottom:10px;letter-spacing:-.3px;}
@@ -131,7 +131,7 @@ html,body{background:#09090f;overflow-x:hidden;}
 .kj-ai-star{color:#BC6A4D;font-size:15px;flex-shrink:0;margin-top:2px;}
 .kj-ai-lbl{font-size:16px;font-family:'Astra','Iceland',sans-serif;letter-spacing:2px;text-transform:uppercase;color:#BC6A4D;margin-bottom:5px;}
 .kj-ai-txt{font-size:15px;color:#fff;line-height:1.7;}
-.kj-ai-next{font-size:16px;color:rgba(188,106,77,.6);margin-top:5px;font-style:italic;}
+.kj-ai-next{font-size:16px;color:rgba(255,255,255,.8);margin-top:5px;font-style:italic;}
 .kj-ai-placeholder{opacity:.4;}
 
 /* ── C. PATTERN TRACKER — horizontal scroll chips ── */
@@ -145,7 +145,7 @@ html,body{background:#09090f;overflow-x:hidden;}
 .kj-pat-track{height:4px;background:rgba(255,255,255,.07);border-radius:2px;overflow:hidden;margin-bottom:4px;}
 .kj-pat-fill{height:100%;border-radius:2px;transition:width 1.2s ease;}
 .kj-pat-pct{font-size:16px;font-family:'Astra','Iceland',sans-serif;color:#fff;}
-.kj-view-all{display:inline-flex;align-items:center;gap:5px;font-size:16px;color:rgba(188,106,77,.6);cursor:pointer;margin-top:10px;}
+.kj-view-all{display:inline-flex;align-items:center;gap:5px;font-size:16px;color:rgba(255,255,255,.8);cursor:pointer;margin-top:10px;}
 .kj-view-all:hover{color:#BC6A4D;}
 
 /* ── D. MANTRA — full width warm gradient ── */
@@ -157,7 +157,7 @@ html,body{background:#09090f;overflow-x:hidden;}
 .kj-mantra-meaning{font-size:15px;color:#fff;margin-top:6px;}
 .kj-mantra-meaning strong{color:#BC6A4D;}
 .kj-citation{background:rgba(188,106,77,.07);border-top:1px solid rgba(188,106,77,.15);padding:14px 18px;}
-.kj-cit-lbl{font-size:11px;font-family:'Astra','Iceland',sans-serif;letter-spacing:2px;text-transform:uppercase;color:rgba(188,106,77,.6);margin-bottom:7px;}
+.kj-cit-lbl{font-size:13px;font-family:'Astra','Iceland',sans-serif;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.8);margin-bottom:7px;}
 .kj-cit-ref{font-size:16px;color:#BC6A4D;font-weight:600;margin-bottom:4px;}
 .kj-cit-verse{font-size:16px;color:#fff;line-height:1.65;font-style:italic;margin-bottom:8px;}
 .kj-cit-app{font-size:16px;color:#fff;line-height:1.6;padding-top:8px;border-top:1px solid rgba(188,106,77,.1);}
@@ -173,10 +173,10 @@ html,body{background:#09090f;overflow-x:hidden;}
 .kj-player-ctrls{display:flex;gap:8px;}
 .kj-pctrl{background:transparent;border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:5px 12px;font-size:15px;color:#fff;cursor:pointer;transition:all .2s;font-family:'Astra','Iceland',sans-serif;}
 .kj-pctrl:hover,.kj-pctrl.on{border-color:rgba(188,106,77,.4);color:#BC6A4D;background:rgba(188,106,77,.08);}
-.kj-understand-btn{width:100%;margin-top:10px;padding:8px;background:transparent;border:1px solid rgba(188,106,77,.22);border-radius:10px;font-size:16px;color:rgba(188,106,77,.65);cursor:pointer;font-family:'Astra','Iceland',sans-serif;transition:all .2s;}
+.kj-understand-btn{width:100%;margin-top:10px;padding:8px;background:transparent;border:1px solid rgba(188,106,77,.22);border-radius:10px;font-size:16px;color:rgba(255,255,255,.85);cursor:pointer;font-family:'Astra','Iceland',sans-serif;transition:all .2s;}
 .kj-understand-btn:hover{background:rgba(188,106,77,.1);color:#BC6A4D;}
 .kj-up-panel{margin-top:10px;background:rgba(188,106,77,.08);border:1px solid rgba(188,106,77,.15);border-radius:10px;padding:12px;animation:fin .35s ease;}
-.kj-up-lbl{font-size:11px;font-family:'Astra','Iceland',sans-serif;letter-spacing:2px;text-transform:uppercase;color:#BC6A4D;margin-bottom:6px;}
+.kj-up-lbl{font-size:13px;font-family:'Astra','Iceland',sans-serif;letter-spacing:2px;text-transform:uppercase;color:#BC6A4D;margin-bottom:6px;}
 .kj-up-txt{font-size:15px;color:#fff;line-height:1.7;}
 
 /* ── E. KARMA ACTION ── */
@@ -189,7 +189,7 @@ html,body{background:#09090f;overflow-x:hidden;}
 .kj-streak-lbl{font-size:16px;color:#BC6A4D;font-family:'Astra','Iceland',sans-serif;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px;}
 .kj-streak-fire{font-size:22px;line-height:1;display:block;}
 .kj-streak-num{font-family:'Astra','Iceland',sans-serif;font-size:26px;color:#BC6A4D;line-height:1;}
-.kj-streak-days{font-size:16px;color:rgba(188,106,77,.55);font-family:'Astra','Iceland',sans-serif;}
+.kj-streak-days{font-size:16px;color:rgba(255,255,255,.8);font-family:'Astra','Iceland',sans-serif;}
 .kj-check-btn{display:flex;align-items:center;gap:9px;padding:9px 16px;background:transparent;border:1px solid rgba(255,255,255,.12);border-radius:10px;font-size:15px;color:#fff;cursor:pointer;transition:all .25s;font-family:'Astra','Iceland',sans-serif;}
 .kj-check-btn:hover:not(:disabled){border-color:rgba(188,106,77,.4);color:#BC6A4D;}
 .kj-check-btn.done{background:rgba(188,106,77,.09);border-color:rgba(188,106,77,.32);color:#BC6A4D;}
@@ -219,9 +219,9 @@ html,body{background:#09090f;overflow-x:hidden;}
 .kj-eod-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;}
 @media(max-width:480px){.kj-eod-grid{grid-template-columns:1fr;}}
 .kj-eod-item{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:12px;padding:11px 13px;}
-.kj-eod-il{font-size:11px;font-family:'Astra','Iceland',sans-serif;letter-spacing:2px;text-transform:uppercase;margin-bottom:5px;}
-.kj-eod-il.g{color:rgba(188,106,77,.6);}
-.kj-eod-il.a{color:rgba(188,106,77,.6);}
+.kj-eod-il{font-size:13px;font-family:'Astra','Iceland',sans-serif;letter-spacing:2px;text-transform:uppercase;margin-bottom:5px;}
+.kj-eod-il.g{color:rgba(255,255,255,.8);}
+.kj-eod-il.a{color:rgba(255,255,255,.8);}
 .kj-eod-iv{font-size:15px;color:#fff;line-height:1.55;}
 .kj-eod-growth{background:rgba(188,106,77,.07);border:1px solid rgba(188,106,77,.15);border-radius:10px;padding:11px 13px;font-size:15px;color:#fff;line-height:1.7;font-style:italic;margin-bottom:12px;}
 .kj-eod-preview{display:flex;align-items:center;justify-content:space-between;gap:10px;}
@@ -475,7 +475,7 @@ export default function InnerVoiceJournal() {
               </div>
             ))}
           </div>
-          {loadingRef&&<div style={{textAlign:"center",padding:"10px 0",fontSize:11,color:"rgba(188,106,77,.6)",fontFamily:"'Astra','Iceland',sans-serif",letterSpacing:1}}>AI is reflecting...</div>}
+          {loadingRef&&<div style={{textAlign:"center",padding:"10px 0",fontSize:13,color:"rgba(255,255,255,.8)",fontFamily:"'Astra','Iceland',sans-serif",letterSpacing:1}}>AI is reflecting...</div>}
           <div className={`kj-ai-box${!aiRef?" kj-ai-placeholder":""}`}>
             <div className="kj-ai-star">✦</div>
             <div>
@@ -534,7 +534,7 @@ export default function InnerVoiceJournal() {
 
         {/* ── E. KARMA ACTION FOR TODAY ── */}
         <div className="kj-section" style={{paddingTop:20}}>
-          <div className="kj-lbl" style={{color:"rgba(188,106,77,.65)"}}>Karma Action for Today</div>
+          <div className="kj-lbl" style={{color:"rgba(255,255,255,.85)"}}>Karma Action for Today</div>
           <div className="kj-action-card">
             <div className="kj-action-row">
               <div className="kj-action-body">

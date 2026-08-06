@@ -163,7 +163,7 @@ export const ScrollytellingHero = () => {
               <span className="text-white block">The Cosmos</span>
             </h1>
 
-            <p className="text-sm md:text-base text-foreground/80 font-display font-normal max-w-xl mx-auto tracking-wider mb-6">
+            <p className="text-base md:text-lg text-foreground/90 font-astra font-normal max-w-xl mx-auto tracking-wider mb-6">
               Discover daily planetary wisdom aligned with your zodiac sign
             </p>
           </motion.div>
