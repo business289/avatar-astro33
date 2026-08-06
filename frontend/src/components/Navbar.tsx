@@ -1,7 +1,9 @@
 import { useState, useEffect, useRef } from "react";
-import { Link, useLocation } from "react-router-dom";
-import { Menu, X, ChevronDown, Radio } from "lucide-react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Menu, X, ChevronDown, Radio, LogIn, LogOut, User } from "lucide-react";
 import gsap from "gsap";
+import { useAuthStore } from "@/store/authStore";
+import { useLogoutMutation } from "@/features/auth/hooks/useAuthMutations";
 
 // ── Nav config ────────────────────────────────────────────────────────────────
 const astrologyTools = [
@@ -313,6 +315,20 @@ const Navbar = () => {
   const [isOpen, setIsOpen]   = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const location              = useLocation();
+  const navigate              = useNavigate();
+  const isAuthenticated       = useAuthStore((s) => s.isAuthenticated);
+  const user                  = useAuthStore((s) => s.user);
+  const logoutMutation        = useLogoutMutation();
+
+  const displayName =
+    [user?.firstName, user?.lastName].filter(Boolean).join(" ") ||
+    user?.email?.split("@")[0] ||
+    "Account";
+
+  const handleLogout = async () => {
+    await logoutMutation.mutateAsync();
+    navigate("/login");
+  };
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 50);
@@ -387,6 +403,32 @@ const Navbar = () => {
                 {location.pathname === link.path && <span className="absolute -bottom-1 left-0 right-0 h-[2px] bg-[#BC6A4D] rounded-full" />}
               </Link>
             ))}
+
+            {isAuthenticated ? (
+              <div className="flex items-center gap-3 pl-2 border-l border-border/30">
+                <span className={`flex items-center gap-1.5 font-display text-xs tracking-wider ${lightNav ? "text-[#2C1810]/70" : "text-foreground/70"}`}>
+                  <User size={14} className="text-[#BC6A4D]" />
+                  {displayName}
+                </span>
+                <button
+                  type="button"
+                  onClick={() => void handleLogout()}
+                  disabled={logoutMutation.isPending}
+                  className="inline-flex items-center gap-1.5 font-display text-xs font-semibold tracking-wider text-[#BC6A4D] transition-opacity hover:opacity-80 disabled:opacity-50"
+                >
+                  <LogOut size={14} />
+                  Sign out
+                </button>
+              </div>
+            ) : (
+              <Link
+                to="/login"
+                className="inline-flex items-center gap-1.5 rounded-full border border-[#BC6A4D]/40 bg-[#BC6A4D]/10 px-4 py-2 font-display text-xs font-semibold tracking-wider text-[#BC6A4D] transition-colors hover:bg-[#BC6A4D]/20"
+              >
+                <LogIn size={14} />
+                Sign in
+              </Link>
+            )}
           </div>
 
           {/* Mobile hamburger */}
@@ -438,6 +480,27 @@ const Navbar = () => {
                   {link.name}
                 </Link>
               ))}
+
+              {isAuthenticated ? (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsOpen(false);
+                    void handleLogout();
+                  }}
+                  className="mobile-nav-link font-display text-base font-medium px-2 py-2 rounded-lg text-[#BC6A4D] text-left"
+                >
+                  Sign out ({displayName})
+                </button>
+              ) : (
+                <Link
+                  to="/login"
+                  onClick={() => setIsOpen(false)}
+                  className="mobile-nav-link font-display text-base font-medium px-2 py-2 rounded-lg text-[#BC6A4D]"
+                >
+                  Sign in
+                </Link>
+              )}
             </div>
           </div>
         )}

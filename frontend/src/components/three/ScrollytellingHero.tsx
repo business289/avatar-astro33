@@ -3,7 +3,12 @@ import { motion, AnimatePresence } from "framer-motion";
 import { ChevronDown } from "lucide-react";
 import { InteractiveSolarSystem } from "./InteractiveSolarSystem";
 import { PlanetInfoPanel } from "../PlanetInfoPanel";
-import { Planet, getDailyInfluence, PlanetaryInfluence, ZodiacSign } from "@/data/planetaryData";
+import {
+  Planet,
+  getDailyInfluence,
+  PlanetaryInfluence,
+  ZodiacSign,
+} from "@/data/planetaryData";
 
 class PanelBoundary extends React.Component<
   { children: React.ReactNode },
@@ -13,9 +18,16 @@ class PanelBoundary extends React.Component<
     super(props);
     this.state = { crashed: false };
   }
-  static getDerivedStateFromError() { return { crashed: true }; }
+  static getDerivedStateFromError() {
+    return { crashed: true };
+  }
   componentDidCatch(err: Error, info: React.ErrorInfo) {
-    console.error("[PlanetInfoPanel crash]", err.message, "\n", info.componentStack);
+    console.error(
+      "[PlanetInfoPanel crash]",
+      err.message,
+      "\n",
+      info.componentStack,
+    );
   }
   render() {
     return this.state.crashed ? null : this.props.children;
@@ -30,9 +42,16 @@ class SceneBoundary extends React.Component<
     super(props);
     this.state = { crashed: false };
   }
-  static getDerivedStateFromError() { return { crashed: true }; }
+  static getDerivedStateFromError() {
+    return { crashed: true };
+  }
   componentDidCatch(err: Error, info: React.ErrorInfo) {
-    console.error("[SolarSystem crash]", err.message, "\n", info.componentStack);
+    console.error(
+      "[SolarSystem crash]",
+      err.message,
+      "\n",
+      info.componentStack,
+    );
   }
   render() {
     if (this.state.crashed) {
@@ -52,7 +71,9 @@ const SceneLoader = memo(() => (
   <div className="absolute inset-0 flex items-center justify-center">
     <div className="flex flex-col items-center gap-4">
       <div className="w-12 h-12 rounded-full border-2 border-primary border-t-transparent animate-spin" />
-      <span className="text-sm text-muted-foreground font-display tracking-wider">Loading cosmos...</span>
+      <span className="text-sm text-muted-foreground font-display tracking-wider">
+        Loading cosmos...
+      </span>
     </div>
   </div>
 ));
@@ -63,8 +84,9 @@ export const ScrollytellingHero = () => {
   const canInteract = true;
 
   const [selectedPlanet, setSelectedPlanet] = useState<Planet | null>(null);
-  const [userZodiac, setUserZodiac]       = useState<ZodiacSign>("sagittarius");
-  const [dailyInfluence, setDailyInfluence] = useState<PlanetaryInfluence | null>(null);
+  const [userZodiac, setUserZodiac] = useState<ZodiacSign>("sagittarius");
+  const [dailyInfluence, setDailyInfluence] =
+    useState<PlanetaryInfluence | null>(null);
 
   // Load stored zodiac
   useEffect(() => {
@@ -75,7 +97,9 @@ export const ScrollytellingHero = () => {
   // Update influence when planet is clicked
   useEffect(() => {
     if (selectedPlanet) {
-      setDailyInfluence(getDailyInfluence(userZodiac, new Date(), selectedPlanet.id));
+      setDailyInfluence(
+        getDailyInfluence(userZodiac, new Date(), selectedPlanet.id),
+      );
     } else {
       setDailyInfluence(null);
     }
@@ -84,7 +108,7 @@ export const ScrollytellingHero = () => {
   return (
     <>
       {/* Glassmorphism info panel — fixed, unaffected by scroll */}
-      <PanelBoundary key={selectedPlanet?.id ?? 'none'}>
+      <PanelBoundary key={selectedPlanet?.id ?? "none"}>
         <AnimatePresence>
           {selectedPlanet && dailyInfluence && (
             <PlanetInfoPanel
@@ -122,9 +146,7 @@ export const ScrollytellingHero = () => {
         </div>
 
         {/* ── Hero text ── */}
-        <div
-          className="absolute inset-0 z-20 flex flex-col items-center justify-start pt-32 md:pt-44 px-4 pointer-events-none"
-        >
+        <div className="absolute inset-0 z-20 flex flex-col items-center justify-start pt-32 md:pt-44 px-4 pointer-events-none">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
@@ -137,25 +159,18 @@ export const ScrollytellingHero = () => {
                 fontFamily: "'Astra', 'Iceland', sans-serif",
               }}
             >
-              <span className="text-[#D16B3C] block">
-                Journey Through
-              </span>
-              <span className="text-white block">
-                The Cosmos
-              </span>
+              <span className="text-[#D16B3C] block">Journey Through</span>
+              <span className="text-white block">The Cosmos</span>
             </h1>
 
             <p className="text-sm md:text-base text-foreground/80 font-display font-normal max-w-xl mx-auto tracking-wider mb-6">
               Discover daily planetary wisdom aligned with your zodiac sign
             </p>
-
           </motion.div>
         </div>
 
         {/* ── Scroll indicator ── */}
-        <div
-          className="absolute bottom-8 left-1/2 -translate-x-1/2 z-20 pointer-events-none flex flex-col items-center gap-2"
-        >
+        {/* <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-20 pointer-events-none flex flex-col items-center gap-2">
           <span className="text-xs text-muted-foreground font-display tracking-widest uppercase">
             Scroll Downward
           </span>
@@ -165,16 +180,14 @@ export const ScrollytellingHero = () => {
           >
             <ChevronDown className="w-5 h-5 text-primary" />
           </motion.div>
-        </div>
+        </div> */}
 
         {/* ── Interact hint ── */}
-        <div
-          className="absolute bottom-14 left-1/2 -translate-x-1/2 z-20 pointer-events-none text-center whitespace-nowrap"
-        >
+        <div className="absolute bottom-14 left-1/2 -translate-x-1/2 z-20 pointer-events-none text-center whitespace-nowrap">
           <p
             className="text-sm font-display tracking-[0.22em] uppercase"
             style={{
-              color:      "rgba(255,255,255,0.7)",
+              color: "rgba(255,255,255,0.7)",
               textShadow: "0 0 24px rgba(255,200,80,0.5)",
             }}
           >

@@ -9,6 +9,8 @@ import compatibilityRoutes from './routes/compatibilityRoutes.js';
 import birthChartRoutes from './routes/birthChartRoutes.js';
 import innerVoiceRoutes from './routes/innerVoiceRoutes.js';
 import darshanRoutes from './routes/darshanRoutes.js';
+import authRoutes from './modules/auth/auth.route.js';
+import { errorHandler } from './middleware/errorHandler.js';
 import { startDarshanRefreshLoop } from './services/darshanRefreshService.js';
 
 dotenv.config();
@@ -118,6 +120,9 @@ app.post('/api/contact/send', (req: Request, res: Response) => {
   }
   res.json({ success: true, message: 'Message sent successfully' });
 });
+
+// Auth routes
+app.use('/api/auth', authRoutes);
 
 // AI routes
 app.use('/api/interpretation', interpretationRoutes);
@@ -351,8 +356,15 @@ Return ONLY valid JSON, no markdown fences, no extra text. Use this exact struct
   }
 });
 
-// Error handling middleware (must be last)
-app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
+// Error handling middleware (must be last).
+// ApiError (thrown by the auth module / auth middleware) carries `statusCode`
+// and is answered in the { status, data, message } shape the auth controllers
+// use, so clients see one consistent envelope across the whole auth flow.
+// Everything else keeps the original { success, error } shape.
+app.use((err: any, req: Request, res: Response, next: NextFunction) => {
+  if (typeof err?.statusCode === 'number') {
+    return errorHandler(err, req, res, next);
+  }
   console.error(err);
   res.status(err.status || 500).json({ success: false, error: err.message || 'Internal Server Error' });
 });
