@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 import { Loader2 } from "lucide-react";
 import { useGoogleIdentity } from "../hooks/useGoogleIdentity";
 
@@ -43,14 +43,16 @@ export function GoogleAuthButton({
     }
   }, [renderButton, disabled, ready]);
 
-  // The Google-rendered button is kept mounted but visually hidden; our themed
-  // button forwards the click to it so the sign-in flow is untouched.
-  const handleClick = useCallback(() => {
-    const target =
-      containerRef.current?.querySelector<HTMLElement>('div[role="button"]') ??
-      containerRef.current?.querySelector<HTMLElement>("button");
-    target?.click();
-  }, []);
+  // Google renders its button into a cross-origin iframe, so its width has to be
+  // re-synced whenever our container resizes or the hit area drifts off.
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el || disabled || !ready) return;
+
+    const observer = new ResizeObserver(() => renderButton(el));
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [renderButton, disabled, ready]);
 
   if (error) {
     return (
@@ -62,17 +64,11 @@ export function GoogleAuthButton({
 
   return (
     <div className="relative w-full">
-      <div
-        ref={containerRef}
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-0 -z-10 overflow-hidden opacity-0"
-      />
-
       <button
         type="button"
-        onClick={handleClick}
+        tabIndex={-1}
         disabled={!ready || disabled}
-        className="flex w-full items-center justify-center gap-3 rounded-xl border border-border/40 bg-background/30 py-3.5 text-sm font-semibold tracking-widest text-foreground backdrop-blur transition-colors hover:border-primary/50 hover:bg-background/50 disabled:cursor-not-allowed disabled:opacity-50"
+        className="pointer-events-none flex w-full items-center justify-center gap-3 rounded-xl border border-border/40 bg-background/30 py-3.5 text-sm font-semibold tracking-widest text-foreground backdrop-blur transition-colors hover:border-primary/50 hover:bg-background/50 disabled:cursor-not-allowed disabled:opacity-50"
       >
         {!ready ? (
           <Loader2 className="h-4 w-4 animate-spin text-primary" />
@@ -83,6 +79,15 @@ export function GoogleAuthButton({
           </>
         )}
       </button>
+
+      {/* Google's real button sits on top, effectively invisible but fully
+          interactive, so the click is a genuine user gesture on their iframe.
+          A synthetic .click() forwarded into it is rejected by GSI. */}
+      <div
+        ref={containerRef}
+        className="absolute inset-0 z-10 overflow-hidden opacity-[0.001]"
+        style={{ colorScheme: "light" }}
+      />
     </div>
   );
 }

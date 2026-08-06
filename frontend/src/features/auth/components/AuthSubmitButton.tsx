@@ -1,8 +1,7 @@
 import { Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-interface AuthSubmitButtonProps
-  extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+interface AuthSubmitButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   loading?: boolean;
   loadingText?: string;
 }
@@ -21,7 +20,15 @@ export function AuthSubmitButton({
       type={type}
       disabled={disabled || loading}
       className={cn(
-        "btn-cosmic flex w-full items-center justify-center gap-2 rounded-xl py-3.5 text-sm font-semibold tracking-widest disabled:cursor-not-allowed disabled:opacity-70",
+        // Utilities rather than the .btn-cosmic components-layer class: these are
+        // generated from this class string, so they survive the production build
+        // and always sort after preflight.
+        "flex w-full items-center justify-center gap-2 rounded-xl py-3.5",
+        "bg-gradient-to-br from-gold to-gold-dim text-cosmic-dark",
+        "font-display text-sm font-semibold uppercase tracking-widest",
+        "shadow-[0_4px_20px_hsl(var(--gold)/0.3)] transition-all duration-300",
+        "hover:-translate-y-0.5 hover:shadow-[0_6px_30px_hsl(var(--gold)/0.5)]",
+        "disabled:cursor-not-allowed disabled:opacity-70 disabled:hover:translate-y-0",
         className,
       )}
       {...props}
