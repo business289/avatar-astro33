@@ -26,8 +26,8 @@ export function AuthSubmitButton({
         "flex w-full items-center justify-center gap-2 rounded-xl py-3.5",
         "bg-gradient-to-br from-gold to-gold-dim text-cosmic-dark",
         "font-display text-sm font-semibold uppercase tracking-widest",
-        "shadow-[0_4px_20px_hsl(var(--gold)/0.3)] transition-all duration-300",
-        "hover:-translate-y-0.5 hover:shadow-[0_6px_30px_hsl(var(--gold)/0.5)]",
+        "shadow-[0_4px_20px_hsl(var(--gold)_/_0.3)] transition-all duration-300",
+        "hover:-translate-y-0.5 hover:shadow-[0_6px_30px_hsl(var(--gold)_/_0.5)]",
         "disabled:cursor-not-allowed disabled:opacity-70 disabled:hover:translate-y-0",
         className,
       )}
