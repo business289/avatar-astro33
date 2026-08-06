@@ -20,9 +20,10 @@ export function AuthSubmitButton({
       type={type}
       disabled={disabled || loading}
       className={cn(
-        // Utilities rather than the .btn-cosmic components-layer class: these are
-        // generated from this class string, so they survive the production build
-        // and always sort after preflight.
+        // Utilities rather than the .btn-cosmic components-layer class, so these
+        // always sort after preflight. Note the `_/_` in the arbitrary shadow
+        // values: a bare `/` there reads as Tailwind's opacity-modifier
+        // separator and the candidate is silently dropped from the build.
         "flex w-full items-center justify-center gap-2 rounded-xl py-3.5",
         "bg-gradient-to-br from-gold to-gold-dim text-cosmic-dark",
         "font-display text-sm font-semibold uppercase tracking-widest",
