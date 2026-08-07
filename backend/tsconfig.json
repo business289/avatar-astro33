@@ -4,7 +4,7 @@
     "module": "NodeNext",
     "lib": ["ES2020"],
     "outDir": "./dist",
-    "rootDir": "./src",
+    "rootDir": "./",
     "strict": true,
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
@@ -14,8 +14,58 @@
     "declaration": true,
     "declarationMap": true,
     "sourceMap": true,
-    "moduleResolution": "NodeNext"
+    "types": ["node"],
+    "moduleResolution": "NodeNext",
+
+    "paths": {
+      "@/*": ["./src/*"],
+      "@root/*": ["./*"],
+      "@prisma": ["./prisma"],
+      "@utils/*": ["./src/utils/*"],
+      "@modules/*": ["./src/modules/*"],
+      "@validators/*": ["./src/validators/*"]
+    }
   },
-  "include": ["src/**/*"],
-  "exclude": ["node_modules", "dist", "src/__tests__"]
+  "include": ["src/**/*", "prisma.config.ts"],
+  "exclude": ["node_modules", "dist", "src/__tests__"],
+  "ts-node": {
+    "transpileOnly": true,
+    "esm": true
+  }
 }
+
+// {
+//   "compilerOptions": {
+//     "target": "ES2023",
+//     "module": "NodeNext",
+//     "types": ["node"],
+//     "moduleResolution": "NodeNext",
+//     "outDir": "dist",
+//     "strict": true,
+//     "noUnusedLocals": true,
+//     "noUnusedParameters": true,
+//     "lib": ["esnext"],
+//     "esModuleInterop": true,
+//     "skipLibCheck": true,
+//     "resolveJsonModule": true,
+//     "paths": {
+//       "@/*": ["./src/*"],
+//       "@root/*": ["./*"],
+//       "@prisma": ["./prisma"],
+//       "@utils/*": ["./src/utils/*"],
+//       "@modules/*": ["./src/modules/*"],
+//       "@validators/*": ["./src/validators/*"]
+//     }
+//   },
+//   "include": [
+//     "./src/**/*.ts",
+//     "./src/types/**/*.ts",
+//     "./src",
+//     "./prisma/**/*.ts",
+//     "./prisma.ts"
+//   ],
+//   "ts-node": {
+//     "transpileOnly": true,
+//     "esm": true
+//   }
+// }

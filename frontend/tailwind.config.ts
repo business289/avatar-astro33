@@ -16,6 +16,7 @@ export default {
       fontFamily: {
         display: ["Iceland", "sans-serif"],
         body: ["Iceland", "sans-serif"],
+        astra: ["Astra", "Iceland", "sans-serif"],
       },
       // Bumped up from Tailwind's stock scale — sitewide text was reading too
       // small across nav, cards, labels, and body copy. Line-heights keep

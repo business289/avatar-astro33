@@ -1073,6 +1073,18 @@ import careerInsightImg from "@/assets/insights/career.png";
 import moneyInsightImg from "@/assets/insights/money.png";
 import healthInsightImg from "@/assets/insights/health.png";
 import spiritualityInsightImg from "@/assets/insights/spirituality.png";
+import zodiacAries from "@/assets/zodiac-gold/aries.png";
+import zodiacTaurus from "@/assets/zodiac-gold/taurus.png";
+import zodiacGemini from "@/assets/zodiac-gold/gemini.png";
+import zodiacCancer from "@/assets/zodiac-gold/cancer.png";
+import zodiacLeo from "@/assets/zodiac-gold/leo.png";
+import zodiacVirgo from "@/assets/zodiac-gold/virgo.png";
+import zodiacLibra from "@/assets/zodiac-gold/libra.png";
+import zodiacScorpio from "@/assets/zodiac-gold/scorpio.png";
+import zodiacSagittarius from "@/assets/zodiac-gold/sagittarius.png";
+import zodiacCapricorn from "@/assets/zodiac-gold/capricorn.png";
+import zodiacAquarius from "@/assets/zodiac-gold/aquarius.png";
+import zodiacPisces from "@/assets/zodiac-gold/pisces.png";
 
 // ── Google Fonts ─────────────────────────────────────────────────────────────
 const fl = document.createElement("link"); fl.rel="stylesheet";
@@ -1138,16 +1150,18 @@ const css = `
 
 /* ── LOADING ── */
 .load-screen{position:fixed;inset:0;background:var(--void);z-index:300;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:36px;}
-.load-cosmos{width:200px;height:200px;position:relative;}
+.load-cosmos{width:240px;height:240px;position:relative;}
 .orb{position:absolute;border-radius:50%;border:1.5px solid transparent;animation:spin linear infinite;}
-.orb:nth-child(1){inset:0;border-color:rgba(245,197,24,.5);animation-duration:5s;}
-.orb:nth-child(2){inset:24px;border-color:rgba(255,45,120,.5);animation-duration:3.5s;animation-direction:reverse;}
-.orb:nth-child(3){inset:48px;border-color:rgba(0,229,255,.5);animation-duration:6s;}
-.orb:nth-child(4){inset:70px;border-color:rgba(123,47,255,.4);animation-duration:4s;animation-direction:reverse;}
-.orb-dot{position:absolute;width:8px;height:8px;border-radius:50%;top:-4px;left:50%;transform:translateX(-50%);}
+.orb:nth-child(1){inset:0;   border-color:rgba(230,228,245,.8); box-shadow:0 0 8px rgba(230,228,245,.55),0 0 18px rgba(230,228,245,.3);animation-duration:22s;}
+.orb:nth-child(2){inset:28px;border-color:rgba(123,47,255,.7);  box-shadow:0 0 8px rgba(123,47,255,.55),0 0 18px rgba(123,47,255,.3);animation-duration:15s;animation-direction:reverse;}
+.orb:nth-child(3){inset:62px;border-color:rgba(0,229,255,.75);  box-shadow:0 0 8px rgba(0,229,255,.6), 0 0 18px rgba(0,229,255,.32);animation-duration:9s;}
+.orb:nth-child(4){inset:98px;border-color:rgba(0,255,170,.7);   box-shadow:0 0 8px rgba(0,255,170,.55),0 0 18px rgba(0,255,170,.3);animation-duration:5s;animation-direction:reverse;}
+.orb-dot{position:absolute;width:9px;height:9px;border-radius:50%;top:-4.5px;left:50%;transform:translateX(-50%);box-shadow:0 0 6px currentColor,0 0 14px currentColor,0 0 26px currentColor;}
 @keyframes spin{from{transform:rotate(0deg);}to{transform:rotate(360deg);}}
-.orb-core{position:absolute;inset:80px;border-radius:50%;background:radial-gradient(circle,var(--gold),var(--pink));display:flex;align-items:center;justify-content:center;font-size:22px;animation:pglow 2s ease-in-out infinite;}
-@keyframes pglow{0%,100%{box-shadow:0 0 20px rgba(245,197,24,.5);}50%{box-shadow:0 0 60px rgba(255,45,120,.8),0 0 100px rgba(245,197,24,.4);}}
+.orb-core{position:absolute;inset:106px;border-radius:50%;background:radial-gradient(circle at 36% 34%,#ffffff 0%,#fff6d0 14%,#ffd54f 42%,#ffb300 72%,#ff8f00 100%);animation:pglow 2s ease-in-out infinite;z-index:2;}
+.orb-core::after{content:'';position:absolute;inset:-90%;border-radius:50%;background:linear-gradient(to right,transparent 0%,rgba(255,246,208,.85) 49.3%,rgba(255,246,208,.85) 50.7%,transparent 100%),linear-gradient(to bottom,transparent 0%,rgba(255,246,208,.85) 49.3%,rgba(255,246,208,.85) 50.7%,transparent 100%);mix-blend-mode:screen;-webkit-mask-image:radial-gradient(circle,black 12%,transparent 62%);mask-image:radial-gradient(circle,black 12%,transparent 62%);pointer-events:none;animation:flare-spin 24s linear infinite;}
+@keyframes flare-spin{from{transform:rotate(0deg);}to{transform:rotate(360deg);}}
+@keyframes pglow{0%,100%{box-shadow:0 0 8px 2px rgba(255,213,79,.6),0 0 20px 6px rgba(255,179,0,.35),0 0 44px 14px rgba(255,143,0,.18);opacity:.9;}50%{box-shadow:0 0 12px 3px rgba(255,213,79,.8),0 0 30px 10px rgba(255,179,0,.5),0 0 60px 20px rgba(255,143,0,.28);opacity:1;}}
 .load-steps{display:flex;flex-direction:column;gap:10px;text-align:center;}
 .load-step{font-family:var(--fm);font-size:11px;letter-spacing:2px;color:rgba(232,224,240,.2);transition:color .5s;display:flex;align-items:center;gap:10px;justify-content:center;}
 .load-step.active{color:var(--cyan);text-shadow:0 0 20px var(--cyan);}
@@ -1410,6 +1424,7 @@ function EnergyBadge({label,color,desc,Icon,value}){
 }
 
 const ZODIAC_SYMBOLS={Aries:"♈",Taurus:"♉",Gemini:"♊",Cancer:"♋",Leo:"♌",Virgo:"♍",Libra:"♎",Scorpio:"♏",Sagittarius:"♐",Capricorn:"♑",Aquarius:"♒",Pisces:"♓"};
+const ZODIAC_IMAGES={Aries:zodiacAries,Taurus:zodiacTaurus,Gemini:zodiacGemini,Cancer:zodiacCancer,Leo:zodiacLeo,Virgo:zodiacVirgo,Libra:zodiacLibra,Scorpio:zodiacScorpio,Sagittarius:zodiacSagittarius,Capricorn:zodiacCapricorn,Aquarius:zodiacAquarius,Pisces:zodiacPisces};
 
 const ARCHETYPES=[
   {icon:explorerIcon,name:"Explorer",tag:"Born to discover",detail:"You seek meaning, adventures, and new horizons."},
@@ -1486,11 +1501,11 @@ function Loading({name}){
     <div className="load-screen">
       <div className="load-name">✦ {name} ✦</div>
       <div className="load-cosmos">
-        <div className="orb"><div className="orb-dot" style={{background:"var(--gold)"}}/></div>
-        <div className="orb"><div className="orb-dot" style={{background:"var(--pink)"}}/></div>
-        <div className="orb"><div className="orb-dot" style={{background:"var(--cyan)"}}/></div>
-        <div className="orb"><div className="orb-dot" style={{background:"var(--pur)"}}/></div>
-        <div className="orb-core">✨</div>
+        <div className="orb"><div className="orb-dot" style={{background:"#e6e4f5",color:"#e6e4f5"}}/></div>
+        <div className="orb"><div className="orb-dot" style={{background:"var(--pur)",color:"var(--pur)"}}/></div>
+        <div className="orb"><div className="orb-dot" style={{background:"var(--cyan)",color:"var(--cyan)"}}/></div>
+        <div className="orb"><div className="orb-dot" style={{background:"var(--green)",color:"var(--green)"}}/></div>
+        <div className="orb-core"/>
       </div>
       <div className="load-steps">{LSTEPS.map((s,i)=><div key={s} className={`load-step ${i===step?"active":i<step?"done":""}`}><div className="ls-dot"/><span>✨ {s}</span></div>)}</div>
     </div>
@@ -1598,6 +1613,7 @@ function Results({data,onReset}){
   const h=hash(name+dob);
   const base=62+(h%30);
   const sym=ZODIAC_SYMBOLS[zodiac]||"⭐";
+  const zodiacImg=ZODIAC_IMAGES[zodiac];
   const [insightTab,setInsightTab]=useState("love");
 
   const [dy,dm,dd]=dob.split("-");
@@ -1670,9 +1686,9 @@ function Results({data,onReset}){
           </div>
         </div>
 
-        <div style={{position:"relative",display:"flex",alignItems:"center",justifyContent:"center",minHeight:280}}>
-          <div style={{position:"absolute",inset:"10%",borderRadius:"50%",background:"radial-gradient(circle,rgba(255,126,71,0.18),transparent 70%)",filter:"blur(20px)"}}></div>
-          <div style={{position:"relative",fontSize:200,color:"#ff7e47",textShadow:"0 0 60px rgba(255,126,71,0.4)"}}>{sym}</div>
+        <div style={{position:"relative",display:"flex",alignItems:"center",justifyContent:"center",minHeight:460}}>
+          <div style={{position:"absolute",inset:"2%",borderRadius:"50%",background:"radial-gradient(circle,rgba(255,126,71,0.18),transparent 70%)",filter:"blur(20px)"}}></div>
+          <img src={zodiacImg} alt={zodiac} style={{position:"relative",width:460,height:460,objectFit:"contain",filter:"drop-shadow(0 0 40px rgba(255,126,71,0.4))"}}/>
         </div>
       </div>
 
@@ -1682,8 +1698,8 @@ function Results({data,onReset}){
         <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:24}}>
           {ARCHETYPES.map((a,i)=>(
             <div key={i} className="r-hcard" style={cardStyle}>
-              <div style={{width:44,height:44,borderRadius:"50%",background:"rgba(255,126,71,0.12)",display:"flex",alignItems:"center",justifyContent:"center",marginBottom:14}}>
-                <img src={a.icon} alt={a.name} style={{width:24,height:24,objectFit:"contain"}}/>
+              <div style={{width:80,height:80,borderRadius:"50%",background:"rgba(255,126,71,0.12)",display:"flex",alignItems:"center",justifyContent:"center",marginBottom:14}}>
+                <img src={a.icon} alt={a.name} style={{width:52,height:52,objectFit:"contain"}}/>
               </div>
               <div style={{color:"#fff",fontWeight:800,fontSize:18,marginBottom:4}}>{a.name.toUpperCase()}</div>
               <div style={{color:"#ff7e47",fontWeight:600,fontSize:14,marginBottom:16}}>{a.tag}</div>
@@ -1743,8 +1759,8 @@ function Results({data,onReset}){
         <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:24,alignItems:"stretch"}}>
           <div className="r-hcard" style={cardStyle}>
             <div style={{display:"flex",gap:20,marginBottom:24}}>
-              <div style={{width:80,height:80,borderRadius:"50%",border:"2px solid #ff7e47",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>
-                <span style={{fontSize:36,color:"#ff7e47"}}>{sym}</span>
+              <div style={{width:130,height:130,borderRadius:"50%",border:"2px solid #ff7e47",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,overflow:"hidden"}}>
+                <img src={zodiacImg} alt={zodiac} style={{width:98,height:98,objectFit:"contain"}}/>
               </div>
               <div>
                 <div style={{color:"#fff",fontWeight:800,fontSize:20,marginBottom:4}}>{name.toUpperCase()}</div>
@@ -1852,6 +1868,11 @@ export default function App(){
   const [phase,setPhase]=useState("form");
   const [chartData,setChartData]=useState(null);
   const [error,setError]=useState("");
+
+  // Scroll offset carries over across phase changes (nothing resets it), so
+  // without this the loading/results views can open scrolled down wherever
+  // the user had scrolled the (long) form to instead of at the top.
+  useEffect(() => { window.scrollTo(0, 0); }, [phase]);
 
   // Back button returns to form from loading/results phases
   useBackOverride(

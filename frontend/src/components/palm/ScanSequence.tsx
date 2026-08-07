@@ -17,6 +17,7 @@ const PHASES: Phase[] = [
   { key: "minor", duration: 400, message: "Identifying Palm Shape..." },
   { key: "mounts", duration: 450, message: "Calculating Mount Positions..." },
   { key: "final", duration: 500, message: "Generating Personality Report..." },
+  { key: "future", duration: 550, message: "Predicting Your Future Timeline..." },
   { key: "ready", duration: 400, message: "Preparing Final Reading..." },
 ];
 const CUM: number[] = (() => {

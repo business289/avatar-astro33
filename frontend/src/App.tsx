@@ -28,7 +28,21 @@ import TarotExperience from "./pages/TarotExperience";
 import SolarSystem from "./pages/SolarSystem";
 import NotFound from "./pages/NotFound";
 import CosmicBackground from "./components/CosmicBackground";
+import { PublicRoute } from "./routes/PublicRoute";
+import { GoogleOnboardingRoute } from "./routes/ProtectedRoute";
 
+const LoginPage = lazy(() => import("./features/auth/pages/LoginPage"));
+const RegisterPage = lazy(() => import("./features/auth/pages/RegisterPage"));
+const VerifyOtpPage = lazy(() => import("./features/auth/pages/VerifyOtpPage"));
+const ForgotPasswordPage = lazy(
+  () => import("./features/auth/pages/ForgotPasswordPage"),
+);
+const ResetPasswordPage = lazy(
+  () => import("./features/auth/pages/ResetPasswordPage"),
+);
+const GoogleOnboardingPage = lazy(
+  () => import("./features/auth/pages/GoogleOnboardingPage"),
+);
 
 const PujaPage      = lazy(() => import("./pages/Puja/index"));
 const PujaDetail    = lazy(() => import("./pages/Puja/PujaDetail"));
@@ -344,9 +358,67 @@ const App = () => {
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <BrowserRouter>
+        <Toaster />
+        <Sonner />
         <Routes>
           {/* Full-screen standalone pages (no Layout/Navbar) */}
           <Route path="/solar-system" element={<SolarSystem />} />
+
+          {/* Auth — public (redirect if already signed in) */}
+          <Route element={<PublicRoute />}>
+            <Route
+              path="/login"
+              element={
+                <Suspense fallback={<LazyFallback />}>
+                  <LoginPage />
+                </Suspense>
+              }
+            />
+            <Route
+              path="/register"
+              element={
+                <Suspense fallback={<LazyFallback />}>
+                  <RegisterPage />
+                </Suspense>
+              }
+            />
+            <Route
+              path="/verify-otp"
+              element={
+                <Suspense fallback={<LazyFallback />}>
+                  <VerifyOtpPage />
+                </Suspense>
+              }
+            />
+            <Route
+              path="/forgot-password"
+              element={
+                <Suspense fallback={<LazyFallback />}>
+                  <ForgotPasswordPage />
+                </Suspense>
+              }
+            />
+            <Route
+              path="/reset-password"
+              element={
+                <Suspense fallback={<LazyFallback />}>
+                  <ResetPasswordPage />
+                </Suspense>
+              }
+            />
+          </Route>
+
+          {/* Google onboarding — authenticated but profile incomplete */}
+          <Route element={<GoogleOnboardingRoute />}>
+            <Route
+              path="/google-onboarding"
+              element={
+                <Suspense fallback={<LazyFallback />}>
+                  <GoogleOnboardingPage />
+                </Suspense>
+              }
+            />
+          </Route>
 
           {/* All other pages with Layout */}
           <Route
@@ -354,8 +426,6 @@ const App = () => {
             element={
               <>
                 <CosmicBackground />
-                <Toaster />
-                <Sonner />
                 <NavigationProvider>
                   <Layout>
                     <AnimatedRoutes />
