@@ -7,6 +7,7 @@ import axios from 'axios';
 import interpretationRoutes from './routes/interpretationRoutes.js';
 import compatibilityRoutes from './routes/compatibilityRoutes.js';
 import birthChartRoutes from './routes/birthChartRoutes.js';
+import nameAnalysisRoutes from './routes/nameAnalysisRoutes.js';
 import innerVoiceRoutes from './routes/innerVoiceRoutes.js';
 import darshanRoutes from './routes/darshanRoutes.js';
 import { startDarshanRefreshLoop } from './services/darshanRefreshService.js';
@@ -123,6 +124,7 @@ app.post('/api/contact/send', (req: Request, res: Response) => {
 app.use('/api/interpretation', interpretationRoutes);
 app.use('/api/compatibility', compatibilityRoutes);
 app.use('/api/birthchart', birthChartRoutes);
+app.use('/api/name-analysis', nameAnalysisRoutes);
 app.use('/api/inner-voice', innerVoiceRoutes);
 app.use('/api/darshan', darshanRoutes);
 

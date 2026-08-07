@@ -152,27 +152,16 @@ export const ScrollytellingHero = () => {
           </motion.div>
         </div>
 
-        {/* ── Scroll indicator ── */}
+        {/* ── Scroll indicator + interact hint ── merged into a single
+            stacked flex column so the two lines lay out in normal flow
+            instead of two independently bottom-anchored blocks (which
+            overlapped since their fixed offsets didn't account for each
+            other's actual height). */}
         <div
-          className="absolute bottom-8 left-1/2 -translate-x-1/2 z-20 pointer-events-none flex flex-col items-center gap-2"
-        >
-          <span className="text-xs text-muted-foreground font-display tracking-widest uppercase">
-            Scroll Downward
-          </span>
-          <motion.div
-            animate={{ y: [0, 7, 0] }}
-            transition={{ duration: 1.6, repeat: Infinity, ease: "easeInOut" }}
-          >
-            <ChevronDown className="w-5 h-5 text-primary" />
-          </motion.div>
-        </div>
-
-        {/* ── Interact hint ── */}
-        <div
-          className="absolute bottom-14 left-1/2 -translate-x-1/2 z-20 pointer-events-none text-center whitespace-nowrap"
+          className="absolute bottom-6 left-1/2 -translate-x-1/2 z-20 pointer-events-none flex flex-col items-center gap-3 text-center px-4"
         >
           <p
-            className="text-sm font-display tracking-[0.22em] uppercase"
+            className="text-sm font-display tracking-[0.22em] uppercase whitespace-nowrap"
             style={{
               color:      "rgba(255,255,255,0.7)",
               textShadow: "0 0 24px rgba(255,200,80,0.5)",
@@ -180,6 +169,17 @@ export const ScrollytellingHero = () => {
           >
             ✦ Click a planet to discover today's cosmic influence ✦
           </p>
+          <div className="flex flex-col items-center gap-2">
+            <span className="text-xs text-muted-foreground font-display tracking-widest uppercase">
+              Scroll Downward
+            </span>
+            <motion.div
+              animate={{ y: [0, 7, 0] }}
+              transition={{ duration: 1.6, repeat: Infinity, ease: "easeInOut" }}
+            >
+              <ChevronDown className="w-5 h-5 text-primary" />
+            </motion.div>
+          </div>
         </div>
       </div>
     </>

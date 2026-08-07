@@ -11,6 +11,7 @@ const astrologyTools = [
   { name: "Birth Chart",      path: "/birth-chart" },
   { name: "Compatibility",    path: "/compatibility" },
   { name: "Palm Reading",     path: "/palm-reading" },
+  { name: "AI Destiny Report", path: "/name-destiny-report" },
 ];
 
 const innerVoiceLinks = [

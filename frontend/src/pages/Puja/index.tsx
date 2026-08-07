@@ -264,7 +264,7 @@ const PujaPage = () => {
                     el.style.borderColor = 'rgba(188,106,77,0.13)';
                   }}
                 >
-                  {/* Image — 4:3 ratio, object-contain */}
+                  {/* Image — 4:3 ratio, edge-to-edge cover (matches Live Darshan cards) */}
                   <div style={{
                     position: 'relative',
                     width: '100%',
@@ -280,8 +280,8 @@ const PujaPage = () => {
                         style={{
                           position: 'absolute', inset: 0,
                           width: '100%', height: '100%',
-                          objectFit: 'contain', objectPosition: 'center',
-                          padding: '12px',
+                          objectFit: 'cover', objectPosition: 'center',
+                          display: 'block',
                           transition: 'transform 0.6s ease',
                         }}
                         className="group-hover:scale-[1.04]"

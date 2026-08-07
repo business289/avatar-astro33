@@ -14,6 +14,7 @@ import ZodiacSigns from "./pages/ZodiacSigns";
 import ZodiacDetail from "./pages/ZodiacDetail";
 import CompatibilityChecker from "./pages/CompatibilityChecker";
 import BirthChart from "./pages/BirthChart";
+import NameDestinyReportPage from "./pages/NameDestinyReportPage";
 import Blog from "./pages/Blog";
 import About from "./pages/About";
 import Contact from "./pages/Contact";
@@ -124,6 +125,14 @@ const AnimatedRoutes = () => {
           element={
             <PageTransition>
               <BirthChart />
+            </PageTransition>
+          }
+        />
+        <Route
+          path="/name-destiny-report"
+          element={
+            <PageTransition>
+              <NameDestinyReportPage />
             </PageTransition>
           }
         />
