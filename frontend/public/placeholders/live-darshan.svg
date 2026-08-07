@@ -1,0 +1,33 @@
+<svg width="800" height="500" viewBox="0 0 800 500" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="ldbg" x1="0" y1="0" x2="800" y2="500" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#0d1c34"/>
+      <stop offset="1" stop-color="#050b18"/>
+    </linearGradient>
+    <radialGradient id="ldglow" cx="50%" cy="55%" r="55%">
+      <stop offset="0" stop-color="#e8935f" stop-opacity="0.35"/>
+      <stop offset="1" stop-color="#e8935f" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="800" height="500" fill="url(#ldbg)"/>
+  <rect width="800" height="500" fill="url(#ldglow)"/>
+  <circle cx="110" cy="90" r="1.4" fill="#ffffff" opacity="0.5"/>
+  <circle cx="700" cy="120" r="1.6" fill="#ffffff" opacity="0.4"/>
+  <circle cx="660" cy="150" r="1.2" fill="#ffffff" opacity="0.5"/>
+
+  <!-- temple silhouette -->
+  <g transform="translate(400,470)" fill="#1a2c4a" stroke="#e8935f" stroke-opacity="0.6" stroke-width="2">
+    <rect x="-160" y="-40" width="320" height="40"/>
+    <rect x="-120" y="-90" width="240" height="50"/>
+    <rect x="-40" y="-140" width="80" height="50"/>
+    <path d="M -20 -140 L 0 -190 L 20 -140 Z"/>
+    <rect x="-140" y="-90" width="18" height="50" fill="#0d1c34"/>
+    <rect x="122" y="-90" width="18" height="50" fill="#0d1c34"/>
+    <rect x="-60" y="-90" width="18" height="50" fill="#0d1c34"/>
+    <rect x="42" y="-90" width="18" height="50" fill="#0d1c34"/>
+    <circle cx="0" cy="-165" r="4" fill="#e8935f" stroke="none"/>
+  </g>
+
+  <text x="40" y="452" font-family="Arial, sans-serif" font-size="15" letter-spacing="3" fill="#e8935f" fill-opacity="0.9">LIVE DARSHAN</text>
+  <text x="760" y="40" text-anchor="end" font-family="Arial, sans-serif" font-size="11" letter-spacing="2" fill="#ffffff" fill-opacity="0.35">PLACEHOLDER</text>
+</svg>

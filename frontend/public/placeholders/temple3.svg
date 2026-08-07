@@ -1,0 +1,17 @@
+<svg width="300" height="300" viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="t3bg" x1="0" y1="0" x2="300" y2="300" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#0d1c34"/>
+      <stop offset="1" stop-color="#04070f"/>
+    </linearGradient>
+  </defs>
+  <rect width="300" height="300" fill="url(#t3bg)"/>
+  <g transform="translate(150,255)" fill="#1a2c4a" stroke="#e8935f" stroke-opacity="0.55" stroke-width="1.5">
+    <rect x="-72" y="-20" width="144" height="20"/>
+    <rect x="-30" y="-60" width="60" height="40"/>
+    <rect x="-50" y="-20" width="16" height="40" fill="#0d1c34"/>
+    <rect x="34" y="-20" width="16" height="40" fill="#0d1c34"/>
+    <path d="M -30 -60 L 0 -95 L 30 -60 Z"/>
+    <circle cx="0" cy="-82" r="3" fill="#e8935f" stroke="none"/>
+  </g>
+</svg>
