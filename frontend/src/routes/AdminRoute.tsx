@@ -1,13 +1,13 @@
 import { Navigate, Outlet, useLocation } from "react-router-dom";
-import { Loader2 } from "lucide-react";
 import { useAuthStore } from "@/store/authStore";
 import { useAuthHydrated } from "@/features/auth/hooks/useAuthHydrated";
 import { isAdminUser } from "@/features/admin/utils/roles";
+import Loader from "@/components/Loader/Loader";
 
 function AuthSpinner() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-[#081426]">
-      <Loader2 className="h-7 w-7 animate-spin text-[#BC6A4D]" />
+      <Loader />
     </div>
   );
 }

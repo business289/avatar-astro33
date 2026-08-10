@@ -31,6 +31,7 @@ import CosmicBackground from "./components/CosmicBackground";
 import { PublicRoute } from "./routes/PublicRoute";
 import { GoogleOnboardingRoute } from "./routes/ProtectedRoute";
 import { AdminRoute } from "./routes/AdminRoute";
+import Loader from "./components/Loader/Loader";
 
 const LoginPage = lazy(() => import("./features/auth/pages/LoginPage"));
 const RegisterPage = lazy(() => import("./features/auth/pages/RegisterPage"));
@@ -69,6 +70,12 @@ const DarshanDetail    = lazy(() => import("./pages/AvatarLive/DarshanDetail"));
 const FamilyPage       = lazy(() => import("./pages/AvatarLive/FamilyPage"));
 
 const LazyFallback = () => <div className="min-h-screen" />;
+
+const AdminLazyFallback = () => (
+  <div className="flex min-h-screen items-center justify-center bg-[#081426]">
+    <Loader />
+  </div>
+);
 
 const queryClient = new QueryClient();
 
@@ -438,7 +445,7 @@ const App = () => {
             <Route
               path="/admin"
               element={
-                <Suspense fallback={<LazyFallback />}>
+                <Suspense fallback={<AdminLazyFallback />}>
                   <AdminLayout />
                 </Suspense>
               }
@@ -446,7 +453,7 @@ const App = () => {
               <Route
                 index
                 element={
-                  <Suspense fallback={<LazyFallback />}>
+                  <Suspense fallback={<AdminLazyFallback />}>
                     <AdminDashboardPage />
                   </Suspense>
                 }
@@ -454,7 +461,7 @@ const App = () => {
               <Route
                 path="puja"
                 element={
-                  <Suspense fallback={<LazyFallback />}>
+                  <Suspense fallback={<AdminLazyFallback />}>
                     <AdminPujaPage />
                   </Suspense>
                 }
@@ -462,7 +469,7 @@ const App = () => {
               <Route
                 path="chadhawa"
                 element={
-                  <Suspense fallback={<LazyFallback />}>
+                  <Suspense fallback={<AdminLazyFallback />}>
                     <AdminChadhawaPage />
                   </Suspense>
                 }
@@ -470,7 +477,7 @@ const App = () => {
               <Route
                 path="shop"
                 element={
-                  <Suspense fallback={<LazyFallback />}>
+                  <Suspense fallback={<AdminLazyFallback />}>
                     <AdminShopPage />
                   </Suspense>
                 }

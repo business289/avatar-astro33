@@ -1,5 +1,5 @@
 import { Link, Navigate } from "react-router-dom";
-import { Loader2, Flame, Flower2, Store } from "lucide-react";
+import { Flame, Flower2, Store } from "lucide-react";
 import {
   Card,
   CardContent,
@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/card";
 import { useAdminDashboard } from "../hooks/useAdminDashboard";
 import { AuthApiError } from "@/lib/authClient";
+import Loader from "@/components/Loader/Loader";
 
 const sections = [
   {
@@ -64,9 +65,9 @@ export default function AdminDashboardPage() {
       </div>
 
       {isLoading && (
-        <div className="flex items-center gap-2 text-sm text-white/50">
-          <Loader2 className="h-4 w-4 animate-spin text-[#BC6A4D]" />
-          Verifying admin access…
+        <div className="flex flex-col items-center justify-center gap-4 py-8">
+          <Loader />
+          <p className="text-sm text-white/50">Verifying admin access…</p>
         </div>
       )}
 
