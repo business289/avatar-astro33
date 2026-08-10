@@ -11,6 +11,7 @@ import nameAnalysisRoutes from "./routes/nameAnalysisRoutes.js";
 import innerVoiceRoutes from "./routes/innerVoiceRoutes.js";
 import darshanRoutes from "./routes/darshanRoutes.js";
 import authRoutes from "./modules/auth/auth.route.js";
+import adminRoutes from "./modules/admin/admin.route.js";
 import { errorHandler } from "./middleware/errorHandler.js";
 import { startDarshanRefreshLoop } from "./services/darshanRefreshService.js";
 
@@ -279,6 +280,9 @@ app.post("/api/contact/send", (req: Request, res: Response) => {
 
 // Auth routes
 app.use("/api/auth", authRoutes);
+
+// Admin routes (ADMIN / SUPERADMIN only)
+app.use("/api/admin", adminRoutes);
 
 // AI routes
 app.use("/api/interpretation", interpretationRoutes);

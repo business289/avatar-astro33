@@ -40,3 +40,5 @@ temp/
 .agents/
 .windsurf/
 /generated/prisma
+
+prisma/seeds/makeadmin.ts

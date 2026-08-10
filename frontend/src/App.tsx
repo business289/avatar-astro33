@@ -30,6 +30,7 @@ import NotFound from "./pages/NotFound";
 import CosmicBackground from "./components/CosmicBackground";
 import { PublicRoute } from "./routes/PublicRoute";
 import { GoogleOnboardingRoute } from "./routes/ProtectedRoute";
+import { AdminRoute } from "./routes/AdminRoute";
 
 const LoginPage = lazy(() => import("./features/auth/pages/LoginPage"));
 const RegisterPage = lazy(() => import("./features/auth/pages/RegisterPage"));
@@ -43,6 +44,18 @@ const ResetPasswordPage = lazy(
 const GoogleOnboardingPage = lazy(
   () => import("./features/auth/pages/GoogleOnboardingPage"),
 );
+
+const AdminLayout = lazy(
+  () => import("./features/admin/components/AdminLayout"),
+);
+const AdminDashboardPage = lazy(
+  () => import("./features/admin/pages/Dashboard"),
+);
+const AdminPujaPage = lazy(() => import("./features/admin/pages/Puja"));
+const AdminChadhawaPage = lazy(
+  () => import("./features/admin/pages/Chadhawa"),
+);
+const AdminShopPage = lazy(() => import("./features/admin/pages/Shop"));
 
 const PujaPage      = lazy(() => import("./pages/Puja/index"));
 const PujaDetail    = lazy(() => import("./pages/Puja/PujaDetail"));
@@ -418,6 +431,51 @@ const App = () => {
                 </Suspense>
               }
             />
+          </Route>
+
+          {/* Admin — own layout (no public CosmicBackground / Navbar) */}
+          <Route element={<AdminRoute />}>
+            <Route
+              path="/admin"
+              element={
+                <Suspense fallback={<LazyFallback />}>
+                  <AdminLayout />
+                </Suspense>
+              }
+            >
+              <Route
+                index
+                element={
+                  <Suspense fallback={<LazyFallback />}>
+                    <AdminDashboardPage />
+                  </Suspense>
+                }
+              />
+              <Route
+                path="puja"
+                element={
+                  <Suspense fallback={<LazyFallback />}>
+                    <AdminPujaPage />
+                  </Suspense>
+                }
+              />
+              <Route
+                path="chadhawa"
+                element={
+                  <Suspense fallback={<LazyFallback />}>
+                    <AdminChadhawaPage />
+                  </Suspense>
+                }
+              />
+              <Route
+                path="shop"
+                element={
+                  <Suspense fallback={<LazyFallback />}>
+                    <AdminShopPage />
+                  </Suspense>
+                }
+              />
+            </Route>
           </Route>
 
           {/* All other pages with Layout */}

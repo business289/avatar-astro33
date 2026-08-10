@@ -4,6 +4,16 @@ import { Menu, X, ChevronDown, Radio, LogIn, LogOut, User } from "lucide-react";
 import gsap from "gsap";
 import { useAuthStore } from "@/store/authStore";
 import { useLogoutMutation } from "@/features/auth/hooks/useAuthMutations";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 // ── Nav config ────────────────────────────────────────────────────────────────
 const astrologyTools = [
@@ -320,6 +330,7 @@ const Navbar = () => {
   const isAuthenticated       = useAuthStore((s) => s.isAuthenticated);
   const user                  = useAuthStore((s) => s.user);
   const logoutMutation        = useLogoutMutation();
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
 
   const displayName =
     [user?.firstName, user?.lastName].filter(Boolean).join(" ") ||
@@ -413,7 +424,7 @@ const Navbar = () => {
                 </span>
                 <button
                   type="button"
-                  onClick={() => void handleLogout()}
+                  onClick={() => setShowLogoutConfirm(true)}
                   disabled={logoutMutation.isPending}
                   className="inline-flex items-center gap-1.5 font-display text-xs font-semibold tracking-wider text-[#BC6A4D] transition-opacity hover:opacity-80 disabled:opacity-50"
                 >
@@ -487,7 +498,7 @@ const Navbar = () => {
                   type="button"
                   onClick={() => {
                     setIsOpen(false);
-                    void handleLogout();
+                    setShowLogoutConfirm(true);
                   }}
                   className="mobile-nav-link font-display text-base font-medium px-2 py-2 rounded-lg text-[#BC6A4D] text-left"
                 >
@@ -505,6 +516,30 @@ const Navbar = () => {
             </div>
           </div>
         )}
+      <AlertDialog open={showLogoutConfirm} onOpenChange={setShowLogoutConfirm}>
+        <AlertDialogContent className="border-border/30 bg-[#081426] text-white">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="font-display text-lg tracking-wide text-[#BC6A4D]">Confirm Logout</AlertDialogTitle>
+            <AlertDialogDescription className="text-foreground/70">
+              Are you sure you want to sign out of your account?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel className="border-border/30 bg-transparent text-white hover:bg-white/5 hover:text-white">
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => {
+                setShowLogoutConfirm(false);
+                void handleLogout();
+              }}
+              className="bg-[#BC6A4D] text-white hover:bg-[#BC6A4D]/80"
+            >
+              Sign out
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
       </div>
     </nav>
   );
