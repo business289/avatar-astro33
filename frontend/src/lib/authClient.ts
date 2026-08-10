@@ -83,8 +83,12 @@ export async function authRequest<T = unknown>(
 ): Promise<T> {
   const { body, skipAuth, headers, ...rest } = options;
 
+  // FormData must set its own Content-Type so the multipart boundary is
+  // included — forcing application/json would make the upload unparseable.
+  const isFormData = body instanceof FormData;
+
   const requestHeaders: Record<string, string> = {
-    "Content-Type": "application/json",
+    ...(isFormData ? {} : { "Content-Type": "application/json" }),
     ...((headers as Record<string, string>) ?? {}),
   };
 
@@ -98,7 +102,12 @@ export async function authRequest<T = unknown>(
     response = await fetch(`${AUTH_API_BASE_URL}${endpoint}`, {
       ...rest,
       headers: requestHeaders,
-      body: body === undefined ? undefined : JSON.stringify(body),
+      body:
+        body === undefined
+          ? undefined
+          : isFormData
+            ? (body as FormData)
+            : JSON.stringify(body),
     });
   } catch {
     throw new AuthApiError(

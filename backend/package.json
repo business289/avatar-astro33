@@ -12,6 +12,7 @@
     "lint": "eslint src --ext .ts",
     "seed:temples": "tsx src/scripts/seedTemples.ts",
     "db:seed": "tsx prisma/seeds/index.ts",
+    "db:seed:puja": "tsx prisma/seeds/pujaTemples.ts",
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate dev",
     "db:deploy": "prisma migrate deploy"
@@ -26,9 +27,11 @@
   "dependencies": {
     "@prisma/adapter-pg": "^7.9.1",
     "@prisma/client": "^7.9.1",
+    "@types/multer": "^2.2.0",
     "axios": "^1.19.0",
     "bcrypt": "^6.0.0",
     "bcryptjs": "^2.4.3",
+    "cloudinary": "^2.10.0",
     "cors": "^2.8.5",
     "dayjs": "^1.11.21",
     "dotenv": "^16.3.1",
@@ -38,6 +41,7 @@
     "joi": "^18.2.3",
     "jsonwebtoken": "^9.0.3",
     "mongoose": "^7.5.0",
+    "multer": "^2.2.0",
     "resend": "^6.18.1"
   },
   "devDependencies": {

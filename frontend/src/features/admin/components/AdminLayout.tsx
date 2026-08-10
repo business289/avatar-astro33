@@ -19,12 +19,12 @@ export function AdminLayout() {
   }, [location.pathname]);
 
   return (
-    <div className="flex min-h-screen bg-[#081426] text-white">
+    <div className="flex h-screen overflow-hidden bg-[#081426] text-white">
       <AdminSidebar
         mobileOpen={mobileOpen}
         onMobileClose={() => setMobileOpen(false)}
       />
-      <div className="flex min-w-0 flex-1 flex-col">
+      <div className="flex min-w-0 flex-1 flex-col h-full">
         <AdminHeader title={title} onMenuClick={() => setMobileOpen(true)} />
         <main className="flex-1 overflow-y-auto px-4 py-6 sm:px-6 lg:px-8">
           <Outlet />

@@ -42,3 +42,4 @@ temp/
 /generated/prisma
 
 prisma/seeds/makeadmin.ts
+prisma/seeds/pujaTemples.ts
