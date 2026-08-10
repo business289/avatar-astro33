@@ -5,8 +5,10 @@ import {
   ArrowLeft, MapPin, Clock, CheckCircle, ChevronLeft, ChevronRight,
   Plus, Minus, Calendar, Star, Sparkles, ShieldCheck,
 } from 'lucide-react';
-import { temples } from '@/data/temples';
+import { useTemple, isNotFoundError } from '@/features/puja/hooks';
+import type { PublicPuja } from '@/features/puja/types';
 import DevotionLayout from '@/components/DevotionLayout';
+import Loader from '@/components/Loader/Loader';
 
 // ── Static content ─────────────────────────────────────────────────────────────
 const HOW_IT_WORKS = [
@@ -44,7 +46,7 @@ const TEMPLE_TIMINGS: Record<string, string> = {
 };
 
 // ── Image Carousel ─────────────────────────────────────────────────────────────
-const Carousel = ({ images, gradient, name }: { images: string[]; gradient: string; name: string }) => {
+const Carousel = ({ images, gradient, name }: { images: string[]; gradient: string | null; name: string }) => {
   const [idx, setIdx] = useState(0);
   const total = images.length;
   const prev  = () => setIdx(i => (i - 1 + total) % total);
@@ -55,12 +57,12 @@ const Carousel = ({ images, gradient, name }: { images: string[]; gradient: stri
       {/* Main frame */}
       <div
         className="relative rounded-2xl overflow-hidden"
-        style={{ aspectRatio: '4/3', background: gradient }}
+        style={{ aspectRatio: '4/3', background: gradient ?? undefined }}
       >
         <AnimatePresence mode="wait">
           <motion.img
             key={idx}
-            src={total > 0 ? `/images/temples/${images[idx]}` : ''}
+            src={images[idx] ?? ''}
             alt={`${name} ${idx + 1}`}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -111,11 +113,38 @@ const Carousel = ({ images, gradient, name }: { images: string[]; gradient: stri
 // ── Main ───────────────────────────────────────────────────────────────────────
 const PujaDetail = () => {
   const { slug }  = useParams<{ slug: string }>();
-  const temple    = temples.find(t => t.slug === slug);
+  const { data: temple, isLoading, isError, error } = useTemple(slug);
   const pujaRef   = useRef<HTMLDivElement>(null);
 
-  const [selectedPuja, setSelectedPuja] = useState<(typeof temple)['pujas'][0] | null>(null);
+  const [selectedPuja, setSelectedPuja] = useState<PublicPuja | null>(null);
   const [quantity, setQuantity]         = useState(1);
+
+  if (isLoading) {
+    return (
+      <DevotionLayout>
+        <div className="min-h-screen pt-24 flex items-center justify-center">
+          <Loader />
+        </div>
+      </DevotionLayout>
+    );
+  }
+
+  // A 404 keeps the original "Temple not found" screen; any other failure is a
+  // transient problem and says so rather than claiming the temple doesn't exist.
+  if (isError && !isNotFoundError(error)) {
+    return (
+      <DevotionLayout>
+        <div className="min-h-screen pt-24 flex items-center justify-center">
+          <div className="text-center">
+            <p className="font-display text-3xl tracking-wider text-muted-foreground mb-4">Could not load temple</p>
+            <Link to="/puja" className="btn-outline-cosmic px-6 py-3 rounded-lg inline-flex items-center gap-2">
+              <ArrowLeft className="w-4 h-4" /> Back to Puja
+            </Link>
+          </div>
+        </div>
+      </DevotionLayout>
+    );
+  }
 
   if (!temple) {
     return (
@@ -132,7 +161,7 @@ const PujaDetail = () => {
     );
   }
 
-  const images      = temple.image ? [temple.image] : [];
+  const images      = temple.images;
   const activePuja  = selectedPuja ?? temple.pujas[0];
   const total       = activePuja ? activePuja.price * quantity : 0;
   const highlights  = TEMPLE_HIGHLIGHTS[temple.slug] ?? [];

@@ -3,7 +3,8 @@ import { Link } from 'react-router-dom';
 import { Search, MapPin, ArrowRight, Shield, Camera, Lock, Flame } from 'lucide-react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { temples } from '@/data/temples';
+import { useTemples } from '@/features/puja/hooks';
+import Loader from '@/components/Loader/Loader';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -105,14 +106,20 @@ const PujaPage = () => {
   const [query, setQuery] = useState('');
   const gridRef = useRef<HTMLDivElement>(null);
 
+  const { data, isLoading, isError } = useTemples();
+  const temples = data ?? [];
+
   const filtered = temples.filter(t =>
     t.name.toLowerCase().includes(query.toLowerCase()) ||
     t.location.toLowerCase().includes(query.toLowerCase()) ||
     t.state.toLowerCase().includes(query.toLowerCase())
   );
 
+  // Keyed on `data` rather than running once on mount: the cards no longer
+  // exist on the first render, so the tween has to wait for the fetch. Using
+  // `data` (not `filtered`) keeps typing in the search box from re-animating.
   useEffect(() => {
-    if (!gridRef.current) return;
+    if (!gridRef.current || !data) return;
     const ctx = gsap.context(() => {
       gsap.fromTo('.puja-card',
         { opacity: 0, y: 40 },
@@ -121,7 +128,7 @@ const PujaPage = () => {
       );
     }, gridRef);
     return () => ctx.revert();
-  }, []);
+  }, [data]);
 
   return (
     <div
@@ -269,13 +276,13 @@ const PujaPage = () => {
                     position: 'relative',
                     width: '100%',
                     paddingBottom: '75%',
-                    background: temple.gradient,
+                    background: temple.gradient ?? undefined,
                     borderRadius: '18px 18px 0 0',
                     overflow: 'hidden',
                   }}>
                     {temple.image && (
                       <img
-                        src={`/images/temples/${temple.image}`}
+                        src={temple.image}
                         alt={temple.name}
                         style={{
                           position: 'absolute', inset: 0,
@@ -367,7 +374,24 @@ const PujaPage = () => {
             })}
           </div>
 
-          {filtered.length === 0 && (
+          {isLoading && (
+            <div style={{ display: 'flex', justifyContent: 'center', paddingTop: 80, paddingBottom: 80 }}>
+              <Loader />
+            </div>
+          )}
+
+          {!isLoading && isError && (
+            <div style={{ textAlign: 'center', paddingTop: 80, paddingBottom: 80 }}>
+              <p style={{ fontSize: 22, color: '#9C7B62', fontFamily: 'Iceland, sans-serif', letterSpacing: '0.1em' }}>
+                Could not load temples
+              </p>
+              <p style={{ fontSize: 14, color: '#B09070', marginTop: 8 }}>
+                Please check your connection and try again
+              </p>
+            </div>
+          )}
+
+          {!isLoading && !isError && filtered.length === 0 && (
             <div style={{ textAlign: 'center', paddingTop: 80, paddingBottom: 80 }}>
               <p style={{ fontSize: 22, color: '#9C7B62', fontFamily: 'Iceland, sans-serif', letterSpacing: '0.1em' }}>
                 No temples found

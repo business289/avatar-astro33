@@ -356,7 +356,7 @@ export function TempleFormDialog({
               Select Images
             </Button>
             <p className="text-xs text-white/40">
-              JPEG, PNG, WebP or AVIF · up to 5 MB each
+              JPEG, PNG, WebP or AVIF · up to 10 MB each
             </p>
           </div>
 

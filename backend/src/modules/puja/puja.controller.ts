@@ -22,7 +22,33 @@ const fail = (res: Response, error: any) =>
     error.statusCode ?? STATUS_CODES.SERVER_ERROR,
   );
 
-// ── Temples ─────────────────────────────────────────────────────────────────
+// ── Public (unauthenticated) ────────────────────────────────────────────────
+
+export const listPublicTemples = async (
+  _req: Request,
+  res: Response,
+): Promise<void> => {
+  try {
+    const data = await pujaService.listPublicTemples();
+    sendResponse(res, true, data, "Temples loaded successfully");
+  } catch (error: any) {
+    fail(res, error);
+  }
+};
+
+export const getPublicTempleBySlug = async (
+  req: Request,
+  res: Response,
+): Promise<void> => {
+  try {
+    const data = await pujaService.getPublicTempleBySlug(req.params.slug);
+    sendResponse(res, true, data, "Temple loaded successfully");
+  } catch (error: any) {
+    fail(res, error);
+  }
+};
+
+// ── Temples (admin) ─────────────────────────────────────────────────────────
 
 export const listTemples = async (
   req: Request,

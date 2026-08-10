@@ -76,6 +76,36 @@ export interface PujaInput {
 
 export type UpdatePujaInput = Partial<PujaInput>;
 
+/**
+ * Shape returned by the public (unauthenticated) temple endpoints.
+ * Deliberately narrower than TempleDTO: no Cloudinary publicIds, no
+ * timestamps, no counts — only what the public Puja pages render.
+ */
+export interface PublicPujaDTO {
+  id: string;
+  name: string;
+  price: number;
+  duration: string;
+  benefits: string[];
+}
+
+export interface PublicTempleDTO {
+  id: string;
+  slug: string;
+  name: string;
+  location: string;
+  state: string;
+  deity: string;
+  description: string;
+  priceFrom: number;
+  gradient: string | null;
+  /** First image URL — convenience for card thumbnails. */
+  image?: string;
+  /** Every image URL, in upload order, for the detail-page carousel. */
+  images: string[];
+  pujas: PublicPujaDTO[];
+}
+
 /** Multer's in-memory file shape, narrowed to what the service needs. */
 export interface UploadFile {
   buffer: Buffer;

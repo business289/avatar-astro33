@@ -142,7 +142,7 @@ export function TempleImagesDialog({
             {uploadImages.isPending ? "Uploading…" : "Upload Images"}
           </Button>
           <p className="text-xs text-white/40">
-            JPEG, PNG, WebP or AVIF · up to 5 MB each · max 10 per upload
+            JPEG, PNG, WebP or AVIF · up to 10 MB each · max 10 per upload
           </p>
         </div>
       </DialogContent>

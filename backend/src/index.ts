@@ -12,6 +12,7 @@ import innerVoiceRoutes from "./routes/innerVoiceRoutes.js";
 import darshanRoutes from "./routes/darshanRoutes.js";
 import authRoutes from "./modules/auth/auth.route.js";
 import adminRoutes from "./modules/admin/admin.route.js";
+import publicTempleRoutes from "./modules/puja/puja.public.route.js";
 import { errorHandler } from "./middleware/errorHandler.js";
 import { startDarshanRefreshLoop } from "./services/darshanRefreshService.js";
 
@@ -283,6 +284,9 @@ app.use("/api/auth", authRoutes);
 
 // Admin routes (ADMIN / SUPERADMIN only)
 app.use("/api/admin", adminRoutes);
+
+// Public temple/puja catalogue (read-only, no auth)
+app.use("/api/temples", publicTempleRoutes);
 
 // AI routes
 app.use("/api/interpretation", interpretationRoutes);

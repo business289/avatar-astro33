@@ -8,6 +8,7 @@ import {
 import type {
   CreateTempleInput,
   ListTemplesInput,
+  PublicTempleDTO,
   PujaDTO,
   PujaInput,
   TempleDTO,
@@ -344,6 +345,34 @@ class PujaService {
     await prisma.puja.delete({ where: { id: pujaId } });
   }
 
+  // ── Public (unauthenticated) reads ────────────────────────────────────────
+
+  /**
+   * Ordered oldest-first so the public grid keeps a stable order as new
+   * temples are added, rather than reshuffling on every insert.
+   */
+  async listPublicTemples(): Promise<PublicTempleDTO[]> {
+    const temples = await prisma.temple.findMany({
+      orderBy: { createdAt: "asc" },
+      include: templeInclude,
+    });
+
+    return temples.map((temple) => this.toPublicTempleDTO(temple));
+  }
+
+  async getPublicTempleBySlug(slug: string): Promise<PublicTempleDTO> {
+    const temple = await prisma.temple.findUnique({
+      where: { slug },
+      include: templeInclude,
+    });
+
+    if (!temple) {
+      throw new ApiError("Temple not found", STATUS_CODES.NOT_FOUND);
+    }
+
+    return this.toPublicTempleDTO(temple);
+  }
+
   // ── Helpers ───────────────────────────────────────────────────────────────
 
   private async assertSlugAvailable(slug: string): Promise<void> {
@@ -389,6 +418,31 @@ class PujaService {
       benefits: row.benefits,
       createdAt: row.createdAt,
       updatedAt: row.updatedAt,
+    };
+  }
+
+  private toPublicTempleDTO(row: any): PublicTempleDTO {
+    const images: string[] = row.images.map((image: any) => image.url);
+
+    return {
+      id: row.id,
+      slug: row.slug,
+      name: row.name,
+      location: row.location,
+      state: row.state,
+      deity: row.deity,
+      description: row.description,
+      priceFrom: row.priceFrom,
+      gradient: row.gradient,
+      image: images[0],
+      images,
+      pujas: row.pujas.map((puja: any) => ({
+        id: puja.id,
+        name: puja.name,
+        price: puja.price,
+        duration: puja.duration,
+        benefits: puja.benefits,
+      })),
     };
   }
 

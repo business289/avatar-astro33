@@ -1,4 +1,6 @@
-export const MAX_IMAGE_BYTES = 5 * 1024 * 1024;
+// Must track MAX_IMAGE_BYTES in backend/src/middleware/upload.ts — a smaller
+// value here silently rejects files the server would have accepted.
+export const MAX_IMAGE_BYTES = 10 * 1024 * 1024;
 export const MAX_IMAGES_PER_UPLOAD = 10;
 
 const ALLOWED_IMAGE_TYPES = [
@@ -38,7 +40,7 @@ export function validateImageFiles(files: File[]): ImageSelection {
       continue;
     }
     if (file.size > MAX_IMAGE_BYTES) {
-      errors.push(`${file.name}: must be 5 MB or smaller`);
+      errors.push(`${file.name}: must be 10 MB or smaller`);
       continue;
     }
     accepted.push(file);
