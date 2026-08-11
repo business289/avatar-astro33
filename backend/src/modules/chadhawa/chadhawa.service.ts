@@ -6,6 +6,7 @@ import type {
   ChadhawaInput,
   ChadhawaListResult,
   ListChadhawasInput,
+  PublicChadhawaTempleDTO,
   UpdateChadhawaInput,
 } from "./chadhawa.types.js";
 
@@ -153,6 +154,55 @@ class ChadhawaService {
     await prisma.chadhawa.delete({ where: { id } });
   }
 
+  // ── Public (unauthenticated) reads ────────────────────────────────────────
+
+  /**
+   * Only temples that actually offer Chadhawa: a temple with no active
+   * offering is not a Chadhawa destination and is left out of the listing.
+   * Ordered oldest-first, matching the public temple grid.
+   */
+  async listPublicChadhawaTemples(): Promise<PublicChadhawaTempleDTO[]> {
+    const temples = await prisma.temple.findMany({
+      where: { chadhawas: { some: { isActive: true } } },
+      orderBy: { createdAt: "asc" },
+      include: {
+        images: { orderBy: { createdAt: "asc" } },
+        chadhawas: {
+          where: { isActive: true },
+          orderBy: [{ displayOrder: "asc" }, { createdAt: "asc" }],
+        },
+      },
+    });
+
+    return temples.map((temple) => this.toPublicTempleDTO(temple));
+  }
+
+  /**
+   * A temple that exists but has no active offerings still resolves, with an
+   * empty `offerings` array — the detail page distinguishes "not a Chadhawa
+   * temple yet" from "no such temple", which is a 404.
+   */
+  async getPublicChadhawaTempleBySlug(
+    slug: string,
+  ): Promise<PublicChadhawaTempleDTO> {
+    const temple = await prisma.temple.findUnique({
+      where: { slug },
+      include: {
+        images: { orderBy: { createdAt: "asc" } },
+        chadhawas: {
+          where: { isActive: true },
+          orderBy: [{ displayOrder: "asc" }, { createdAt: "asc" }],
+        },
+      },
+    });
+
+    if (!temple) {
+      throw new ApiError("Temple not found", STATUS_CODES.NOT_FOUND);
+    }
+
+    return this.toPublicTempleDTO(temple);
+  }
+
   // ── Helpers ───────────────────────────────────────────────────────────────
 
   private async assertTempleExists(templeId: string): Promise<void> {
@@ -202,6 +252,42 @@ class ChadhawaService {
     });
 
     return last ? last.displayOrder + 1 : 1;
+  }
+
+  private toPublicTempleDTO(row: any): PublicChadhawaTempleDTO {
+    const images: string[] = row.images.map((image: any) => image.url);
+    const offerings = row.chadhawas as {
+      id: string;
+      name: string;
+      description: string;
+      price: number;
+      emoji: string | null;
+    }[];
+
+    return {
+      id: row.id,
+      slug: row.slug,
+      name: row.name,
+      location: row.location,
+      state: row.state,
+      deity: row.deity,
+      description: row.description,
+      // Derived from the offerings themselves rather than Temple.priceFrom,
+      // which is the Puja starting price and unrelated to Chadhawa.
+      priceFrom: offerings.length
+        ? Math.min(...offerings.map((offering) => offering.price))
+        : 0,
+      gradient: row.gradient,
+      image: images[0],
+      images,
+      offerings: offerings.map((offering) => ({
+        id: offering.id,
+        name: offering.name,
+        description: offering.description,
+        price: offering.price,
+        emoji: offering.emoji,
+      })),
+    };
   }
 
   private toDTO(row: any): ChadhawaDTO {

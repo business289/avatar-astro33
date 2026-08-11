@@ -13,6 +13,7 @@
     "seed:temples": "tsx src/scripts/seedTemples.ts",
     "db:seed": "tsx prisma/seeds/index.ts",
     "db:seed:puja": "tsx prisma/seeds/pujaTemples.ts",
+    "db:seed:chadhawa": "tsx prisma/seeds/chadhawaOfferings.ts",
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate dev",
     "db:deploy": "prisma migrate deploy"

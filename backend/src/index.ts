@@ -13,6 +13,7 @@ import darshanRoutes from "./routes/darshanRoutes.js";
 import authRoutes from "./modules/auth/auth.route.js";
 import adminRoutes from "./modules/admin/admin.route.js";
 import publicTempleRoutes from "./modules/puja/puja.public.route.js";
+import publicChadhawaRoutes from "./modules/chadhawa/chadhawa.public.route.js";
 import { errorHandler } from "./middleware/errorHandler.js";
 import { startDarshanRefreshLoop } from "./services/darshanRefreshService.js";
 
@@ -287,6 +288,9 @@ app.use("/api/admin", adminRoutes);
 
 // Public temple/puja catalogue (read-only, no auth)
 app.use("/api/temples", publicTempleRoutes);
+
+// Public Chadhawa catalogue (read-only, no auth)
+app.use("/api/chadhawa", publicChadhawaRoutes);
 
 // AI routes
 app.use("/api/interpretation", interpretationRoutes);

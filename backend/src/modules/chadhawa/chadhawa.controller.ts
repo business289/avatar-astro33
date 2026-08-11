@@ -19,6 +19,36 @@ const fail = (res: Response, error: any) =>
     error.statusCode ?? STATUS_CODES.SERVER_ERROR,
   );
 
+// ── Public (unauthenticated) ────────────────────────────────────────────────
+
+export const listPublicChadhawaTemples = async (
+  _req: Request,
+  res: Response,
+): Promise<void> => {
+  try {
+    const data = await chadhawaService.listPublicChadhawaTemples();
+    sendResponse(res, true, data, "Chadhawa temples loaded successfully");
+  } catch (error: any) {
+    fail(res, error);
+  }
+};
+
+export const getPublicChadhawaTempleBySlug = async (
+  req: Request,
+  res: Response,
+): Promise<void> => {
+  try {
+    const data = await chadhawaService.getPublicChadhawaTempleBySlug(
+      req.params.slug,
+    );
+    sendResponse(res, true, data, "Chadhawa temple loaded successfully");
+  } catch (error: any) {
+    fail(res, error);
+  }
+};
+
+// ── Admin ───────────────────────────────────────────────────────────────────
+
 export const listChadhawas = async (
   req: Request,
   res: Response,

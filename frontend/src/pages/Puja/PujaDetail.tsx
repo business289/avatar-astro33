@@ -8,7 +8,7 @@ import {
 import { useTemple, isNotFoundError } from '@/features/puja/hooks';
 import type { PublicPuja } from '@/features/puja/types';
 import DevotionLayout from '@/components/DevotionLayout';
-import Loader from '@/components/Loader/Loader';
+import { PujaDetailSkeleton } from './PujaSkeletons';
 
 // ── Static content ─────────────────────────────────────────────────────────────
 const HOW_IT_WORKS = [
@@ -120,13 +120,7 @@ const PujaDetail = () => {
   const [quantity, setQuantity]         = useState(1);
 
   if (isLoading) {
-    return (
-      <DevotionLayout>
-        <div className="min-h-screen pt-24 flex items-center justify-center">
-          <Loader />
-        </div>
-      </DevotionLayout>
-    );
+    return <PujaDetailSkeleton />;
   }
 
   // A 404 keeps the original "Temple not found" screen; any other failure is a

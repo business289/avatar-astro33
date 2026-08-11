@@ -3,7 +3,8 @@ import { Link } from 'react-router-dom';
 import { Search, MapPin, ArrowRight, Flame } from 'lucide-react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { temples } from '@/data/temples';
+import { useChadhawaTemples } from '@/features/chadhawa/hooks';
+import { PujaListSkeleton } from '@/pages/Puja/PujaSkeletons';
 import DevotionLayout from '@/components/DevotionLayout';
 
 gsap.registerPlugin(ScrollTrigger);
@@ -39,6 +40,9 @@ const ChadhawaPage = () => {
   const pageRef = useRef<HTMLDivElement>(null);
   const gridRef = useRef<HTMLDivElement>(null);
 
+  const { data, isLoading, isError } = useChadhawaTemples();
+  const temples = data ?? [];
+
   const filtered = temples.filter(t =>
     t.name.toLowerCase().includes(query.toLowerCase()) ||
     t.location.toLowerCase().includes(query.toLowerCase()) ||
@@ -59,8 +63,11 @@ const ChadhawaPage = () => {
     return () => ctx.revert();
   }, []);
 
+  // Keyed on `data` rather than running once on mount: the cards no longer
+  // exist on the first render, so the tween has to wait for the fetch. Using
+  // `data` (not `filtered`) keeps typing in the search box from re-animating.
   useEffect(() => {
-    if (!gridRef.current) return;
+    if (!gridRef.current || !data) return;
     const ctx = gsap.context(() => {
       gsap.fromTo('.chadhawa-temple-card',
         { opacity: 0, y: 50 },
@@ -71,7 +78,7 @@ const ChadhawaPage = () => {
       );
     }, gridRef);
     return () => ctx.revert();
-  }, []);
+  }, [data]);
 
   return (
     <DevotionLayout>
@@ -129,6 +136,9 @@ const ChadhawaPage = () => {
       {/* ── Temple Grid ────────────────────────────────────────────────── */}
       <section className="relative z-10 pb-16">
         <div className="mx-auto px-10" style={{ maxWidth: 1380 }}>
+          {isLoading ? (
+            <PujaListSkeleton />
+          ) : (
           <div
             ref={gridRef}
             className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"
@@ -168,11 +178,11 @@ const ChadhawaPage = () => {
                   {/* Image — 4:3 ratio, edge-to-edge cover (matches Live Darshan cards) */}
                   <div style={{
                     position: 'relative', width: '100%', paddingBottom: '75%',
-                    background: temple.gradient, borderRadius: '18px 18px 0 0', overflow: 'hidden',
+                    background: temple.gradient ?? undefined, borderRadius: '18px 18px 0 0', overflow: 'hidden',
                   }}>
                     {temple.image && (
                       <img
-                        src={`/images/temples/${temple.image}`}
+                        src={temple.image}
                         alt={temple.name}
                         style={{
                           position: 'absolute', inset: 0, width: '100%', height: '100%',
@@ -236,8 +246,20 @@ const ChadhawaPage = () => {
               );
             })}
           </div>
+          )}
 
-          {filtered.length === 0 && (
+          {!isLoading && isError && (
+            <div style={{ textAlign: 'center', paddingTop: 80, paddingBottom: 80 }}>
+              <p style={{ fontSize: 22, color: '#9C7B62', fontFamily: 'Iceland, sans-serif', letterSpacing: '0.1em' }}>
+                Could not load temples
+              </p>
+              <p style={{ fontSize: 14, color: '#B09070', marginTop: 8 }}>
+                Please check your connection and try again
+              </p>
+            </div>
+          )}
+
+          {!isLoading && !isError && filtered.length === 0 && (
             <div style={{ textAlign: 'center', paddingTop: 80, paddingBottom: 80 }}>
               <p style={{ fontSize: 22, color: '#9C7B62', fontFamily: 'Iceland, sans-serif', letterSpacing: '0.1em' }}>
                 No temples found

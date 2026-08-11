@@ -5,32 +5,9 @@ import {
   ArrowLeft, MapPin, Users, ChevronLeft, ChevronRight, Check,
   Plus, Minus, Heart, ShoppingBag, ChevronDown, Phone,
 } from 'lucide-react';
-import { temples } from '@/data/temples';
+import { useChadhawaTemple, useChadhawaTemples, isNotFoundError } from '@/features/chadhawa/hooks';
+import { ChadhawaDetailSkeleton } from './ChadhawaSkeletons';
 import DevotionLayout from '@/components/DevotionLayout';
-
-// ── Offering items ─────────────────────────────────────────────────────────────
-interface Offering {
-  id: string;
-  name: string;
-  desc: string;
-  price: number;
-  emoji: string;
-}
-
-const OFFERINGS: Offering[] = [
-  { id: 'kumkum',    name: 'Kumkum',              emoji: '🔴', price: 51,   desc: "Auspicious red powder applied on the deity's forehead as a mark of devotion." },
-  { id: 'mehendi',   name: 'Mehendi',              emoji: '🌿', price: 51,   desc: 'Sacred henna offering symbolising beauty, devotion, and divine feminine grace.' },
-  { id: 'flowers',   name: 'Flower Basket',        emoji: '🌸', price: 71,   desc: 'Offering a basket of fresh flowers as a symbol of worship and prosperity.' },
-  { id: 'bangles',   name: 'Red Bangles',          emoji: '💫', price: 81,   desc: 'Red bangles are a symbol of power, passion and good fortune in tradition.' },
-  { id: 'lotus',     name: 'Lotus',                emoji: '🪷', price: 101,  desc: 'Offer a lotus to Goddess Mahalaxmi as a symbol of purity and admiration.' },
-  { id: 'chunri',    name: 'Chunri',               emoji: '🧣', price: 101,  desc: 'Chunri is a decorative cloth offered to goddesses, especially during festivals.' },
-  { id: 'ghee',      name: 'Ghee Lamp',            emoji: '🪔', price: 101,  desc: 'Lighting a ghee lamp during prayer is believed to illuminate the environment.' },
-  { id: '4lamp',     name: 'Four-Faced Lamp',      emoji: '✨', price: 151,  desc: 'Lighting a four-faced lamp spreads sacred light and positive energy in all directions.' },
-  { id: '16shringar',name: '16 Shringar',          emoji: '👑', price: 501,  desc: 'Decorate the idol of gods and goddesses. This act of adornment is a way to express.' },
-  { id: 'complete',  name: 'Mata Complete Offering',emoji: '🎁', price: 651, desc: 'Chunri, Turmeric, Red Thread, Coconut, Sindoor, Kumkum, Flower and Saree.' },
-  { id: 'saree',     name: 'Saree',                emoji: '🥻', price: 2100, desc: 'Offering a saree to the Shri Mahalaxmi symbolises honouring the Mother with.' },
-  { id: '56bhog',    name: '56 Bhog',              emoji: '🍱', price: 5130, desc: 'Offering 56 types of food items to the deity represents gratitude and abundance.' },
-];
 
 // ── Timeline ───────────────────────────────────────────────────────────────────
 const TIMELINE = [
@@ -67,7 +44,7 @@ const ABOUT_TEXT: Record<string, string> = {
 const DEFAULT_ABOUT = 'This sacred temple is a powerful centre of divine energy that has attracted millions of devotees across centuries. The temple\'s spiritual significance lies in the deep connection between the deity and the devotees. By offering a Chadhawa through our verified pandits, you extend your devotion directly to the sacred shrine, ensuring your prayers, wishes, and gratitude reach the divine with full sankalp performed in your name.';
 
 // ── Image Carousel ─────────────────────────────────────────────────────────────
-const ImageCarousel = ({ images, name, gradient }: { images: string[]; name: string; gradient: string }) => {
+const ImageCarousel = ({ images, name, gradient }: { images: string[]; name: string; gradient?: string }) => {
   const [current, setCurrent] = useState(0);
   const total = images.length;
   const prev = () => setCurrent(i => (i - 1 + total) % total);
@@ -90,7 +67,7 @@ const ImageCarousel = ({ images, name, gradient }: { images: string[]; name: str
           >
             {total > 0 ? (
               <img
-                src={`/images/temples/${images[current]}`}
+                src={images[current]}
                 alt={`${name} ${current + 1}`}
                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                 onError={e => { (e.target as HTMLImageElement).style.display = 'none'; }}
@@ -145,7 +122,9 @@ const ImageCarousel = ({ images, name, gradient }: { images: string[]; name: str
 // ── Main ───────────────────────────────────────────────────────────────────────
 const ChadhawaDetail = () => {
   const { slug } = useParams<{ slug: string }>();
-  const temple = temples.find(t => t.slug === slug);
+  const { data: temple, isLoading, isError, error } = useChadhawaTemple(slug);
+  // Cached by the listing page, so this is usually a no-op fetch.
+  const { data: allTemples } = useChadhawaTemples();
 
   // Offering quantities
   const [qty, setQty] = useState<Record<string, number>>({});
@@ -156,6 +135,27 @@ const ChadhawaDetail = () => {
   // Newsletter
   const [phone, setPhone] = useState('');
   const scrollToOfferings = () => document.getElementById('offerings')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+  if (isLoading) {
+    return <ChadhawaDetailSkeleton />;
+  }
+
+  // A 404 keeps the original "Temple not found" screen; any other failure is a
+  // transient problem and says so rather than claiming the temple doesn't exist.
+  if (isError && !isNotFoundError(error)) {
+    return (
+      <DevotionLayout>
+        <div className="min-h-screen pt-24 flex items-center justify-center">
+          <div className="text-center">
+            <p className="font-display text-3xl tracking-wider text-muted-foreground mb-4">Could not load temple</p>
+            <Link to="/chadhawa" className="btn-outline-cosmic px-6 py-3 rounded-lg inline-flex items-center gap-2">
+              <ArrowLeft className="w-4 h-4" /> Back to Chadhawa
+            </Link>
+          </div>
+        </div>
+      </DevotionLayout>
+    );
+  }
 
   if (!temple) {
     return (
@@ -172,8 +172,9 @@ const ChadhawaDetail = () => {
     );
   }
 
-  const images  = temple.image ? [temple.image] : [];
-  const related = temples.filter(t => t.slug !== slug).slice(0, 3);
+  const images    = temple.images;
+  const offerings = temple.offerings;
+  const related   = (allTemples ?? []).filter(t => t.slug !== slug).slice(0, 3);
   const aboutText = ABOUT_TEXT[slug!] ?? DEFAULT_ABOUT;
 
   const setItemQty = (id: string, delta: number) => {
@@ -184,7 +185,7 @@ const ChadhawaDetail = () => {
     });
   };
 
-  const cartItems  = OFFERINGS.filter(o => qty[o.id]);
+  const cartItems  = offerings.filter(o => qty[o.id]);
   const totalAmt   = cartItems.reduce((s, o) => s + o.price * (qty[o.id] ?? 0), 0);
   const totalItems = cartItems.reduce((s, o) => s + (qty[o.id] ?? 0), 0);
 
@@ -212,7 +213,7 @@ const ChadhawaDetail = () => {
 
           {/* LEFT — Image carousel */}
           <div className="lg:w-[56%]">
-            <ImageCarousel images={images} name={temple.name} gradient={temple.gradient} />
+            <ImageCarousel images={images} name={temple.name} gradient={temple.gradient ?? undefined} />
           </div>
 
           {/* RIGHT — Info + CTAs */}
@@ -312,7 +313,7 @@ const ChadhawaDetail = () => {
             {/* Offering grid */}
             <div className="flex-1">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {OFFERINGS.map(offering => {
+                {offerings.map(offering => {
                   const q = qty[offering.id] ?? 0;
                   return (
                     <motion.div
@@ -330,7 +331,7 @@ const ChadhawaDetail = () => {
                         className="w-16 h-16 rounded-xl flex items-center justify-center text-3xl flex-shrink-0 border border-primary/20"
                         style={{ background: 'rgba(188,106,77,0.07)' }}
                       >
-                        {offering.emoji}
+                        {offering.emoji ?? '🪔'}
                       </div>
 
                       <div className="flex-1 min-w-0">
@@ -341,7 +342,7 @@ const ChadhawaDetail = () => {
                           <span className="font-bold text-primary text-sm flex-shrink-0">₹{offering.price}</span>
                         </div>
                         <p className="text-[11px] text-muted-foreground leading-relaxed line-clamp-2 mb-3">
-                          {offering.desc}
+                          {offering.description}
                         </p>
 
                         {/* Qty selector / Add */}
@@ -404,7 +405,7 @@ const ChadhawaDetail = () => {
                         {cartItems.map(item => (
                           <div key={item.id} className="flex items-center justify-between gap-3">
                             <div className="flex items-center gap-2 min-w-0">
-                              <span className="text-base flex-shrink-0">{item.emoji}</span>
+                              <span className="text-base flex-shrink-0">{item.emoji ?? '🪔'}</span>
                               <span className="text-xs text-foreground/80 truncate">{item.name}</span>
                             </div>
                             <div className="flex items-center gap-2 flex-shrink-0">
@@ -732,10 +733,10 @@ const ChadhawaDetail = () => {
                 to={`/chadhawa/${t.slug}`}
                 className="glass-card-hover rounded-2xl overflow-hidden group block"
               >
-                <div className="h-44 relative overflow-hidden" style={{ background: t.gradient }}>
+                <div className="h-44 relative overflow-hidden" style={{ background: t.gradient ?? undefined }}>
                   {t.image && (
                     <img
-                      src={`/images/temples/${t.image}`}
+                      src={t.image}
                       alt={t.name}
                       className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                       onError={e => { (e.target as HTMLImageElement).style.display = 'none'; }}
