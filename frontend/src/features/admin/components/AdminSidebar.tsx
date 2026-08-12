@@ -1,9 +1,13 @@
-import { NavLink, useNavigate } from "react-router-dom";
+import { useState } from "react";
+import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import {
   LayoutDashboard,
   Flame,
   Flower2,
   Store,
+  ChevronDown,
+  Tags,
+  ShoppingBag,
   LogOut,
   X,
 } from "lucide-react";
@@ -27,7 +31,11 @@ const navItems = [
   { to: "/admin", label: "Dashboard", icon: LayoutDashboard, end: true },
   { to: "/admin/puja", label: "Puja", icon: Flame, end: false },
   { to: "/admin/chadhawa", label: "Chadhawa", icon: Flower2, end: false },
-  { to: "/admin/shop", label: "Shop", icon: Store, end: false },
+] as const;
+
+const shopChildren = [
+  { to: "/admin/shop/categories", label: "Categories", icon: Tags },
+  { to: "/admin/shop/products", label: "Products", icon: ShoppingBag },
 ] as const;
 
 interface AdminSidebarProps {
@@ -42,6 +50,9 @@ export function AdminSidebar({
   const user = useAuthStore((s) => s.user);
   const logoutMutation = useLogoutMutation();
   const navigate = useNavigate();
+  const location = useLocation();
+  const isShopRoute = location.pathname.startsWith("/admin/shop");
+  const [shopExpanded, setShopExpanded] = useState(isShopRoute);
 
   const displayName =
     [user?.firstName, user?.lastName].filter(Boolean).join(" ") ||
@@ -94,6 +105,52 @@ export function AdminSidebar({
             <span>{label}</span>
           </NavLink>
         ))}
+
+        <div>
+          <button
+            type="button"
+            onClick={() => setShopExpanded((prev) => !prev)}
+            className={cn(
+              "flex w-full items-center gap-3 rounded-md px-3 py-2.5 text-sm transition-colors",
+              isShopRoute
+                ? "bg-[#BC6A4D]/15 text-[#BC6A4D]"
+                : "text-white/70 hover:bg-white/5 hover:text-white",
+            )}
+            aria-expanded={shopExpanded}
+          >
+            <Store className="h-4 w-4 shrink-0" />
+            <span className="flex-1 text-left">Shop</span>
+            <ChevronDown
+              className={cn(
+                "h-4 w-4 shrink-0 transition-transform",
+                shopExpanded && "rotate-180",
+              )}
+            />
+          </button>
+
+          {shopExpanded && (
+            <div className="mt-1 space-y-1 pl-6">
+              {shopChildren.map(({ to, label, icon: Icon }) => (
+                <NavLink
+                  key={to}
+                  to={to}
+                  onClick={onMobileClose}
+                  className={({ isActive }) =>
+                    cn(
+                      "flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors",
+                      isActive
+                        ? "bg-[#BC6A4D]/15 text-[#BC6A4D]"
+                        : "text-white/60 hover:bg-white/5 hover:text-white",
+                    )
+                  }
+                >
+                  <Icon className="h-4 w-4 shrink-0" />
+                  <span>{label}</span>
+                </NavLink>
+              ))}
+            </div>
+          )}
+        </div>
       </nav>
 
       <div className="border-t border-white/10 px-4 py-4">

@@ -25,7 +25,7 @@ const sections = [
     icon: Flower2,
   },
   {
-    to: "/admin/shop",
+    to: "/admin/shop/products",
     title: "Shop",
     description: "Manage Divine Shop products",
     icon: Store,
@@ -71,11 +71,16 @@ export default function AdminDashboardPage() {
         </div>
       )}
 
-      {error && !(error instanceof AuthApiError && (error.status === 401 || error.status === 403)) && (
-        <p className="text-sm text-red-400">
-          Could not load dashboard details. You can still navigate the admin sections.
-        </p>
-      )}
+      {error &&
+        !(
+          error instanceof AuthApiError &&
+          (error.status === 401 || error.status === 403)
+        ) && (
+          <p className="text-sm text-red-400">
+            Could not load dashboard details. You can still navigate the admin
+            sections.
+          </p>
+        )}
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {sections.map(({ to, title, description, icon: Icon }) => (

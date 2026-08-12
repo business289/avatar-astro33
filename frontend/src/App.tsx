@@ -56,7 +56,12 @@ const AdminPujaPage = lazy(() => import("./features/admin/pages/Puja"));
 const AdminChadhawaPage = lazy(
   () => import("./features/admin/pages/Chadhawa"),
 );
-const AdminShopPage = lazy(() => import("./features/admin/pages/Shop"));
+const AdminShopCategoriesPage = lazy(
+  () => import("./features/admin/pages/ShopCategories"),
+);
+const AdminShopProductsPage = lazy(
+  () => import("./features/admin/pages/ShopProducts"),
+);
 
 const PujaPage      = lazy(() => import("./pages/Puja/index"));
 const PujaDetail    = lazy(() => import("./pages/Puja/PujaDetail"));
@@ -475,10 +480,18 @@ const App = () => {
                 }
               />
               <Route
-                path="shop"
+                path="shop/categories"
                 element={
                   <Suspense fallback={<AdminLazyFallback />}>
-                    <AdminShopPage />
+                    <AdminShopCategoriesPage />
+                  </Suspense>
+                }
+              />
+              <Route
+                path="shop/products"
+                element={
+                  <Suspense fallback={<AdminLazyFallback />}>
+                    <AdminShopProductsPage />
                   </Suspense>
                 }
               />

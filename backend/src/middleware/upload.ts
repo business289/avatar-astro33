@@ -58,4 +58,33 @@ export const uploadTempleImages = (
   });
 };
 
+/**
+ * Accepts a single file on the `image` field — used by Shop categories and
+ * products, which only ever carry one image (unlike temples' galleries).
+ */
+export const uploadSingleImage = (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  upload.single("image")(req, res, (error: unknown) => {
+    if (!error) {
+      next();
+      return;
+    }
+
+    let message = "Image upload failed";
+    if (error instanceof multer.MulterError) {
+      message =
+        error.code === "LIMIT_FILE_SIZE"
+          ? `Image must be ${MAX_IMAGE_BYTES / (1024 * 1024)} MB or smaller`
+          : error.message;
+    } else if (error instanceof Error) {
+      message = error.message;
+    }
+
+    sendResponse(res, false, null, message, STATUS_CODES.BAD_REQUEST);
+  });
+};
+
 export default upload;
