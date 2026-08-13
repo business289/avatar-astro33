@@ -1,19 +1,26 @@
 /**
  * Seeds shop categories and products from the same demo catalog the
  * customer-facing Shop pages currently render statically
- * (frontend/src/data/products.ts).
+ * (frontend/src/data/products.ts), uploading each product's image to
+ * Cloudinary from frontend/public/images/shop/.
  *
  * The data is copied rather than imported: the frontend is a separate
  * package with its own tsconfig, and this seed must keep working even after
  * the frontend is later switched to read from the API.
  *
  * Safe to re-run — categories are matched by slug, products by slug, and
- * both are upserted in place rather than duplicated.
+ * both are upserted in place rather than duplicated. Products that already
+ * have an image are left alone so re-runs don't clobber admin uploads.
  *
  *   npm run db:seed:shop
+ *   npm run db:seed:shop -- --skip-images
  */
 
 import "dotenv/config";
+import fs from "node:fs/promises";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+import { v2 as cloudinary } from "cloudinary";
 import prisma from "../../prisma.js";
 
 interface SeedProduct {
@@ -25,6 +32,8 @@ interface SeedProduct {
   benefits: string[];
   authenticity: string;
   gradient: string;
+  /** Filename under frontend/public/images/shop/ */
+  image?: string;
 }
 
 interface SeedCategory {
@@ -53,6 +62,7 @@ const CATEGORIES: SeedCategory[] = [
         ],
         authenticity: "GIA Certified · Untreated · Sri Lanka Origin",
         gradient: "linear-gradient(135deg, #0A0A2E 0%, #1A1A6E 50%, #4444CC 100%)",
+        image: "blue-sapphire.png",
       },
       {
         slug: "yellow-sapphire",
@@ -69,6 +79,7 @@ const CATEGORIES: SeedCategory[] = [
         ],
         authenticity: "Gemological Certified · Natural · Madagascar Origin",
         gradient: "linear-gradient(135deg, #3D2A00 0%, #8B6500 50%, #D4A017 100%)",
+        image: "yellow-sapphire.png",
       },
       {
         slug: "emerald",
@@ -84,6 +95,7 @@ const CATEGORIES: SeedCategory[] = [
         ],
         authenticity: "AGL Certified · Colombian Origin · Natural",
         gradient: "linear-gradient(135deg, #003300 0%, #006600 50%, #00AA44 100%)",
+        image: "emerald.png",
       },
       {
         slug: "red-coral",
@@ -99,6 +111,7 @@ const CATEGORIES: SeedCategory[] = [
         ],
         authenticity: "IGI Certified · Italian Mediterranean · Natural",
         gradient: "linear-gradient(135deg, #4D0000 0%, #990000 50%, #CC3333 100%)",
+        image: "red-coral.png",
       },
     ],
   },
@@ -120,6 +133,7 @@ const CATEGORIES: SeedCategory[] = [
         ],
         authenticity: "Authentic Nepal Rudraksha · 18K Gold Plated · Temple Energized",
         gradient: "linear-gradient(135deg, #2D1B00 0%, #6B4400 50%, #BC8A2D 100%)",
+        image: "rudraksha-gold-bracelet.png",
       },
       {
         slug: "crystal-healing-bracelet",
@@ -135,6 +149,7 @@ const CATEGORIES: SeedCategory[] = [
         ],
         authenticity: "Natural Crystals · Reiki Energized · Handcrafted",
         gradient: "linear-gradient(135deg, #1A0033 0%, #6600CC 50%, #CC4499 100%)",
+        image: "crystal-healing-bracelet.png",
       },
       {
         slug: "tiger-eye-bracelet",
@@ -150,6 +165,7 @@ const CATEGORIES: SeedCategory[] = [
         ],
         authenticity: "Natural Tiger Eye · South Africa Origin · Handcrafted",
         gradient: "linear-gradient(135deg, #2D1B00 0%, #8B5E00 50%, #C8901A 100%)",
+        image: "tiger-eye-bracelet.png",
       },
     ],
   },
@@ -172,6 +188,7 @@ const CATEGORIES: SeedCategory[] = [
         ],
         authenticity: "Nepal Origin · Pandit Verified · 5-Mukhi Certified",
         gradient: "linear-gradient(135deg, #3D1A00 0%, #8B3A00 50%, #D45500 100%)",
+        image: "Panchmukhi-Rudraksha-Mala.png",
       },
       {
         slug: "gauri-shankar-rudraksha",
@@ -187,6 +204,7 @@ const CATEGORIES: SeedCategory[] = [
         ],
         authenticity: "Rare Nepal Origin · Astrologically Verified · Natural Joint",
         gradient: "linear-gradient(135deg, #2D0014 0%, #800040 50%, #CC0066 100%)",
+        image: "Gauri-Shankar-Rudraksha.png",
       },
       {
         slug: "ekamukhi-rudraksha",
@@ -202,6 +220,7 @@ const CATEGORIES: SeedCategory[] = [
         ],
         authenticity: "Certified Rare · Nepal Origin · Pandit Verified",
         gradient: "linear-gradient(135deg, #0A0A0A 0%, #1A1A1A 50%, #3D3D00 100%)",
+        image: "Ek-Mukhi-Rudraksha.png",
       },
     ],
   },
@@ -223,6 +242,7 @@ const CATEGORIES: SeedCategory[] = [
         ],
         authenticity: "Pure Copper · Hand Etched · Navratri Energized",
         gradient: "linear-gradient(135deg, #4D2900 0%, #CC6600 50%, #FF9933 100%)",
+        image: "sri-yantra.png",
       },
       {
         slug: "vastu-yantra",
@@ -238,6 +258,7 @@ const CATEGORIES: SeedCategory[] = [
         ],
         authenticity: "Copper · Vastu Expert Verified · Temple Energized",
         gradient: "linear-gradient(135deg, #001A33 0%, #003366 50%, #0055AA 100%)",
+        image: "vastu-yantra.png",
       },
     ],
   },
@@ -259,6 +280,7 @@ const CATEGORIES: SeedCategory[] = [
         ],
         authenticity: "Brahmin Curated · Natural Materials · Pure",
         gradient: "linear-gradient(135deg, #330000 0%, #990000 50%, #CC3300 100%)",
+        image: "navratri-puja-kit.png",
       },
       {
         slug: "satyanarayan-puja-kit",
@@ -274,6 +296,7 @@ const CATEGORIES: SeedCategory[] = [
         ],
         authenticity: "Pandit Approved · Natural Ingredients · Complete Set",
         gradient: "linear-gradient(135deg, #001A00 0%, #003300 50%, #005500 100%)",
+        image: "satyanarayan-puja-kit.png",
       },
     ],
   },
@@ -295,6 +318,7 @@ const CATEGORIES: SeedCategory[] = [
         ],
         authenticity: "TTD Official · Direct Sourced · Pure Ghee",
         gradient: "linear-gradient(135deg, #2D1B69 0%, #6B3FA0 50%, #BC6A4D 100%)",
+        image: "tirupati-ladoo-prasad.png",
       },
       {
         slug: "vrindavan-peda-prasad",
@@ -310,16 +334,62 @@ const CATEGORIES: SeedCategory[] = [
         ],
         authenticity: "Temple Origin · Pure Milk · Handmade",
         gradient: "linear-gradient(135deg, #00264D 0%, #0052A3 50%, #1A8CFF 100%)",
+        image: "vrindavan-peda-prasad.png",
       },
     ],
   },
 ];
+
+// ── Setup ───────────────────────────────────────────────────────────────────
+
+const args = new Set(process.argv.slice(2));
+const skipImages = args.has("--skip-images");
+
+const here = path.dirname(fileURLToPath(import.meta.url));
+// backend/prisma/seeds → repo root → frontend/public/images/shop
+const IMAGES_DIR = path.resolve(here, "../../../frontend/public/images/shop");
+
+const CLOUDINARY_ROOT_FOLDER = "shop/products";
+
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+  secure: true,
+});
+
+const cloudinaryConfigured = Boolean(
+  process.env.CLOUDINARY_CLOUD_NAME &&
+    process.env.CLOUDINARY_API_KEY &&
+    process.env.CLOUDINARY_API_SECRET,
+);
+
+function uploadBuffer(
+  buffer: Buffer,
+  folder: string,
+): Promise<{ url: string; publicId: string }> {
+  return new Promise((resolve, reject) => {
+    const stream = cloudinary.uploader.upload_stream(
+      { folder, resource_type: "image" },
+      (error, result) => {
+        if (error || !result) {
+          reject(error ?? new Error("Upload returned no result"));
+          return;
+        }
+        resolve({ url: result.secure_url, publicId: result.public_id });
+      },
+    );
+    stream.end(buffer);
+  });
+}
 
 async function main() {
   let categoriesCreated = 0;
   let categoriesUpdated = 0;
   let productsCreated = 0;
   let productsUpdated = 0;
+  let imagesUploaded = 0;
+  const imageFailures: string[] = [];
 
   for (const category of CATEGORIES) {
     const existingCategory = await prisma.shopCategory.findUnique({
@@ -355,17 +425,52 @@ async function main() {
         isActive: true,
       };
 
-      if (existingProduct) {
-        await prisma.shopProduct.update({
-          where: { id: existingProduct.id },
-          data,
-        });
-        productsUpdated += 1;
-      } else {
-        await prisma.shopProduct.create({
-          data: { ...data, slug: product.slug },
-        });
-        productsCreated += 1;
+      const productRow = existingProduct
+        ? await prisma.shopProduct.update({
+            where: { id: existingProduct.id },
+            data,
+            select: { id: true, slug: true, image: true },
+          })
+        : await prisma.shopProduct.create({
+            data: { ...data, slug: product.slug },
+            select: { id: true, slug: true, image: true },
+          });
+
+      if (existingProduct) productsUpdated += 1;
+      else productsCreated += 1;
+
+      // ── Image ──
+      if (!skipImages && product.image) {
+        if (!cloudinaryConfigured) {
+          imageFailures.push(`${product.slug}: Cloudinary env vars not set`);
+        } else if (productRow.image) {
+          // Already has an image — leave it alone so re-runs don't clobber
+          // anything an admin uploaded through the panel.
+        } else {
+          const filePath = path.join(IMAGES_DIR, product.image);
+          try {
+            const buffer = await fs.readFile(filePath);
+            const asset = await uploadBuffer(
+              buffer,
+              `${CLOUDINARY_ROOT_FOLDER}/${product.slug}`,
+            );
+            await prisma.shopProduct.update({
+              where: { id: productRow.id },
+              data: { image: asset.url, imagePublicId: asset.publicId },
+            });
+            imagesUploaded += 1;
+            console.log(`    image: uploaded ${product.image}`);
+          } catch (error: any) {
+            if (error?.code === "ENOENT") {
+              imageFailures.push(`${product.slug}: file not found at ${filePath}`);
+            } else {
+              const code = error?.http_code ? ` (HTTP ${error.http_code})` : "";
+              imageFailures.push(
+                `${product.slug}: ${error?.message ?? "upload failed"}${code}`,
+              );
+            }
+          }
+        }
       }
     }
 
@@ -374,8 +479,16 @@ async function main() {
 
   console.log(
     `\n✓ Done: ${categoriesCreated} categories created, ${categoriesUpdated} updated; ` +
-      `${productsCreated} products created, ${productsUpdated} updated`,
+      `${productsCreated} products created, ${productsUpdated} updated; ` +
+      `images uploaded: ${imagesUploaded}`,
   );
+
+  if (imageFailures.length) {
+    console.warn(
+      `\n⚠ ${imageFailures.length} image(s) were not uploaded — category and product rows were still saved:`,
+    );
+    imageFailures.forEach((line) => console.warn(`  · ${line}`));
+  }
 }
 
 main()

@@ -13,6 +13,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { GradientPicker } from "../GradientPicker";
 import {
   useCreateTemple,
   useUpdateTemple,
@@ -289,19 +290,11 @@ export function TempleFormDialog({
             />
           </Field>
 
-          <Field label="Gradient" error={errors.gradient}>
-            <Input
+          <Field label="Card Color" error={errors.gradient}>
+            <GradientPicker
               value={values.gradient ?? ""}
-              onChange={(e) => setField("gradient", e.target.value)}
-              placeholder="linear-gradient(135deg, #2D1B69 0%, #BC6A4D 100%)"
-              className="border-white/10 bg-white/[0.03] text-white"
+              onChange={(next) => setField("gradient", next)}
             />
-            {values.gradient?.trim() && (
-              <div
-                className="mt-2 h-8 w-full rounded-md border border-white/10"
-                style={{ background: values.gradient }}
-              />
-            )}
           </Field>
 
           <div className="space-y-2">

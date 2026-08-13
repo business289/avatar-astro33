@@ -41,6 +41,6 @@ temp/
 .windsurf/
 /generated/prisma
 
-prisma/seeds/makeadmin.ts
-prisma/seeds/pujaTemples.ts
-prisma/seeds/chadhawaOfferings.ts
+# prisma/seeds/makeadmin.ts
+# prisma/seeds/pujaTemples.ts
+# prisma/seeds/chadhawaOfferings.ts

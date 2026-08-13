@@ -1,0 +1,49 @@
+model ShopCategory {
+  id String @id @default(cuid())
+
+  name          String  @unique
+  slug          String  @unique
+  description   String?
+  image         String?
+  imagePublicId String? @map("image_public_id")
+
+  isActive Boolean @default(true) @map("is_active")
+
+  products ShopProduct[]
+
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime? @updatedAt @map("updated_at")
+
+  @@index([isActive])
+  @@map("shop_categories")
+}
+
+model ShopProduct {
+  id String @id @default(cuid())
+
+  categoryId String @map("category_id")
+
+  name          String
+  slug          String   @unique
+  price         Int
+  originalPrice Int?     @map("original_price")
+  description   String
+  benefits      String[]
+  authenticity  String
+  gradient      String?
+  image         String?
+  imagePublicId String?  @map("image_public_id")
+
+  isActive Boolean @default(true) @map("is_active")
+
+  category ShopCategory @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime? @updatedAt @map("updated_at")
+
+  @@index([categoryId])
+  @@index([isActive])
+  @@index([createdAt])
+  @@index([categoryId, isActive])
+  @@map("shop_products")
+}

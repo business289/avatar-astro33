@@ -1,0 +1,84 @@
+model Temple {
+  id          String  @id @default(cuid())
+  slug        String  @unique
+  name        String
+  location    String
+  state       String
+  deity       String
+  description String
+  priceFrom   Int     @map("price_from")
+  gradient    String?
+
+  images    TempleImage[]
+  pujas     Puja[]
+  chadhawas Chadhawa[]
+
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime? @updatedAt @map("updated_at")
+
+  @@index([name])
+  @@index([state])
+  @@map("temples")
+}
+
+model TempleImage {
+  id String @id @default(cuid())
+
+  templeId String @map("temple_id")
+  url      String
+  publicId String @map("public_id")
+
+  temple Temple @relation(fields: [templeId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@index([templeId])
+  @@map("temple_images")
+}
+
+model Puja {
+  id String @id @default(cuid())
+
+  templeId String   @map("temple_id")
+  name     String
+  price    Int
+  duration String
+  benefits String[]
+
+  temple Temple @relation(fields: [templeId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime? @updatedAt @map("updated_at")
+
+  @@index([templeId])
+  @@map("pujas")
+}
+
+model Chadhawa {
+  id String @id @default(cuid())
+
+  templeId    String  @map("temple_id")
+  name        String
+  description String
+  /**
+   * Whole rupees, matching Puja.price and Temple.priceFrom.
+   */
+  price       Int
+  /**
+   * Emoji shown next to the offering on the public Chadhawa page.
+   */
+  emoji       String?
+
+  isActive     Boolean @default(true) @map("is_active")
+  displayOrder Int     @default(0) @map("display_order")
+
+  temple Temple @relation(fields: [templeId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime? @updatedAt @map("updated_at")
+
+  @@index([templeId])
+  @@index([templeId, isActive])
+  @@index([displayOrder])
+  @@map("chadhawas")
+}
