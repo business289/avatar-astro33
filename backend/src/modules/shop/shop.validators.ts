@@ -171,3 +171,13 @@ export const validateUpdateProductSchema = (data: unknown) =>
   updateProductSchema.validate(data, { abortEarly: false });
 export const validateListProductsSchema = (data: unknown) =>
   listProductsSchema.validate(data, { abortEarly: false });
+
+// ── Public (unauthenticated) ─────────────────────────────────────────────────
+
+const listPublicProductsSchema = Joi.object({
+  search: Joi.string().trim().max(150).allow("").optional(),
+  category: Joi.string().trim().allow("").optional(),
+});
+
+export const validateListPublicProductsSchema = (data: unknown) =>
+  listPublicProductsSchema.validate(data, { abortEarly: false });

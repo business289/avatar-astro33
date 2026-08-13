@@ -2,27 +2,29 @@ import { useState, useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Search, ShoppingBag } from "lucide-react";
 import gsap from "gsap";
-import {
-  products,
-  productCategories,
-  type ProductCategory,
-} from "@/data/products";
+import { useShopCategories, useShopProducts } from "@/features/shop/hooks";
+import { ShopListSkeleton } from "./ShopSkeletons";
 import DevotionLayout from "@/components/DevotionLayout";
 
 const ShopPage = () => {
   const [query, setQuery] = useState("");
-  const [activeCategory, setActiveCategory] = useState<ProductCategory | "All">(
-    "All",
-  );
+  const [activeCategory, setActiveCategory] = useState<string>("All");
   const pageRef = useRef<HTMLDivElement>(null);
   const gridRef = useRef<HTMLDivElement>(null);
 
+  const { data: categoriesData } = useShopCategories();
+  const { data: productsData, isLoading, isError } = useShopProducts();
+
+  const categories = categoriesData ?? [];
+  const products = productsData ?? [];
+
   const filtered = products.filter((p) => {
-    const matchCat = activeCategory === "All" || p.category === activeCategory;
+    const matchCat =
+      activeCategory === "All" || p.category.slug === activeCategory;
     const matchQ =
       !query ||
       p.name.toLowerCase().includes(query.toLowerCase()) ||
-      p.category.toLowerCase().includes(query.toLowerCase()) ||
+      p.category.name.toLowerCase().includes(query.toLowerCase()) ||
       p.description.toLowerCase().includes(query.toLowerCase());
     return matchCat && matchQ;
   });
@@ -39,7 +41,7 @@ const ShopPage = () => {
   }, []);
 
   useEffect(() => {
-    if (!gridRef.current) return;
+    if (!gridRef.current || !productsData) return;
     const ctx = gsap.context(() => {
       gsap.fromTo(
         ".shop-product-card",
@@ -48,7 +50,7 @@ const ShopPage = () => {
       );
     }, gridRef);
     return () => ctx.revert();
-  }, [activeCategory, query]);
+  }, [activeCategory, query, productsData]);
 
   return (
     <DevotionLayout>
@@ -189,24 +191,25 @@ const ShopPage = () => {
           >
             <div className="container mx-auto px-6 lg:px-16">
               <div className="flex gap-2 overflow-x-auto pb-1">
-                {(["All", ...productCategories] as const).map((cat) => (
+                {[
+                  { slug: "All", name: "All" },
+                  ...categories.map((c) => ({ slug: c.slug, name: c.name })),
+                ].map((cat) => (
                   <button
-                    key={cat}
-                    onClick={() =>
-                      setActiveCategory(cat as ProductCategory | "All")
-                    }
+                    key={cat.slug}
+                    onClick={() => setActiveCategory(cat.slug)}
                     className={`flex-shrink-0 font-display text-xs tracking-wider px-4 py-2 rounded-full border transition-all duration-200 ${
-                      activeCategory === cat
+                      activeCategory === cat.slug
                         ? "border-[#BC6A4D] text-[#BC6A4D]"
                         : "border-[#D4B896] text-[#7A5C42] hover:border-[#BC6A4D] hover:text-[#BC6A4D]"
                     }`}
                     style={
-                      activeCategory === cat
+                      activeCategory === cat.slug
                         ? { background: "rgba(188,106,77,0.1)" }
                         : { background: "transparent" }
                     }
                   >
-                    {cat}
+                    {cat.name}
                   </button>
                 ))}
               </div>
@@ -216,6 +219,9 @@ const ShopPage = () => {
           {/* ── Product grid ──────────────────────────────────────────────────── */}
           <section className="relative z-10 py-8">
             <div className="container mx-auto px-6 lg:px-16">
+              {isLoading ? (
+                <ShopListSkeleton />
+              ) : (
               <div
                 ref={gridRef}
                 className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
@@ -251,15 +257,11 @@ const ShopPage = () => {
                     {/* Image */}
                     <div
                       className="h-48 relative overflow-hidden"
-                      style={{ background: product.gradient }}
+                      style={{ background: product.gradient ?? undefined }}
                     >
                       {product.image && (
                         <img
-                          src={
-                            product.image.startsWith("http")
-                              ? product.image
-                              : `/images/shop/${product.image}`
-                          }
+                          src={product.image}
                           alt={product.name}
                           className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                           onError={(e) => {
@@ -282,7 +284,7 @@ const ShopPage = () => {
                             borderRadius: 99,
                           }}
                         >
-                          {product.category}
+                          {product.category.name}
                         </span>
                       </div>
                       {product.originalPrice && (
@@ -339,8 +341,33 @@ const ShopPage = () => {
                   </Link>
                 ))}
               </div>
+              )}
 
-              {filtered.length === 0 && (
+              {!isLoading && isError && (
+                <div
+                  style={{
+                    textAlign: "center",
+                    paddingTop: 80,
+                    paddingBottom: 80,
+                  }}
+                >
+                  <p
+                    style={{
+                      fontSize: 22,
+                      color: "#9C7B62",
+                      fontFamily: "Iceland, sans-serif",
+                      letterSpacing: "0.1em",
+                    }}
+                  >
+                    Could not load products
+                  </p>
+                  <p style={{ fontSize: 14, color: "#B09070", marginTop: 8 }}>
+                    Please check your connection and try again
+                  </p>
+                </div>
+              )}
+
+              {!isLoading && !isError && filtered.length === 0 && (
                 <div
                   style={{
                     textAlign: "center",

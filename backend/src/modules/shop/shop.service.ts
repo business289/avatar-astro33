@@ -6,8 +6,11 @@ import {
   uploadImageBuffer,
 } from "@/config/cloudinary.js";
 import type {
+  ListPublicShopProductsInput,
   ListShopCategoriesInput,
   ListShopProductsInput,
+  PublicShopCategoryDTO,
+  PublicShopProductDTO,
   ShopCategoryDTO,
   ShopCategoryInput,
   ShopCategoryListResult,
@@ -23,7 +26,7 @@ const CATEGORY_FOLDER = "shop/categories";
 const PRODUCT_FOLDER = "shop/products";
 
 const productInclude = {
-  category: { select: { name: true, slug: true } },
+  category: { select: { id: true, name: true, slug: true, isActive: true } },
 } as const;
 
 class ShopService {
@@ -347,6 +350,68 @@ class ShopService {
     return this.toProductDTO(updated);
   }
 
+  // ── Public (unauthenticated) reads ────────────────────────────────────────
+
+  async listPublicCategories(): Promise<PublicShopCategoryDTO[]> {
+    const categories = await prisma.shopCategory.findMany({
+      where: { isActive: true },
+      orderBy: { name: "asc" },
+      select: { id: true, name: true, slug: true },
+    });
+
+    return categories;
+  }
+
+  async listPublicProducts({
+    search,
+    category,
+  }: ListPublicShopProductsInput): Promise<PublicShopProductDTO[]> {
+    const term = search?.trim();
+
+    const where = {
+      isActive: true,
+      category: {
+        isActive: true,
+        ...(category && { slug: category }),
+      },
+      ...(term && {
+        OR: [
+          { name: { contains: term, mode: "insensitive" as const } },
+          { description: { contains: term, mode: "insensitive" as const } },
+          {
+            category: { name: { contains: term, mode: "insensitive" as const } },
+          },
+        ],
+      }),
+    };
+
+    const rows = await prisma.shopProduct.findMany({
+      where,
+      orderBy: { createdAt: "asc" },
+      include: productInclude,
+    });
+
+    return rows.map((row) => this.toPublicProductDTO(row));
+  }
+
+  async getPublicProductBySlug(slug: string): Promise<PublicShopProductDTO> {
+    const product = await prisma.shopProduct.findUnique({
+      where: { slug },
+      include: productInclude,
+    });
+
+    if (
+      !product ||
+      !product.isActive ||
+      !(product as any).category ||
+      !(product as any).category.isActive
+    ) {
+      throw new ApiError("Product not found", STATUS_CODES.NOT_FOUND);
+    }
+
+    return this.toPublicProductDTO(product);
+  }
+
   // ── Helpers ───────────────────────────────────────────────────────────────
 
   private async assertCategoryExists(categoryId: string): Promise<void> {
@@ -446,6 +511,26 @@ class ShopService {
       isActive: row.isActive,
       createdAt: row.createdAt,
       updatedAt: row.updatedAt,
+    };
+  }
+
+  private toPublicProductDTO(row: any): PublicShopProductDTO {
+    return {
+      id: row.id,
+      slug: row.slug,
+      name: row.name,
+      price: row.price,
+      originalPrice: row.originalPrice,
+      description: row.description,
+      benefits: row.benefits,
+      authenticity: row.authenticity,
+      gradient: row.gradient,
+      image: row.image,
+      category: {
+        id: row.category.id,
+        name: row.category.name,
+        slug: row.category.slug,
+      },
     };
   }
 }

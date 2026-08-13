@@ -8,6 +8,7 @@ import {
   validateCreateProductSchema,
   validateListCategoriesSchema,
   validateListProductsSchema,
+  validateListPublicProductsSchema,
   validateUpdateCategorySchema,
   validateUpdateProductSchema,
 } from "./shop.validators.js";
@@ -22,6 +23,50 @@ const fail = (res: Response, error: any) =>
     error.message,
     error.statusCode ?? STATUS_CODES.SERVER_ERROR,
   );
+
+// ── Public (unauthenticated) ────────────────────────────────────────────────
+
+export const listPublicCategories = async (
+  _req: Request,
+  res: Response,
+): Promise<void> => {
+  try {
+    const data = await shopService.listPublicCategories();
+    sendResponse(res, true, data, "Categories loaded successfully");
+  } catch (error: any) {
+    fail(res, error);
+  }
+};
+
+export const listPublicProducts = async (
+  req: Request,
+  res: Response,
+): Promise<void> => {
+  try {
+    const { error, value } = validateListPublicProductsSchema(req.query);
+    if (error) {
+      sendResponse(res, false, null, error.message, STATUS_CODES.BAD_REQUEST);
+      return;
+    }
+
+    const data = await shopService.listPublicProducts(value);
+    sendResponse(res, true, data, "Products loaded successfully");
+  } catch (error: any) {
+    fail(res, error);
+  }
+};
+
+export const getPublicProductBySlug = async (
+  req: Request,
+  res: Response,
+): Promise<void> => {
+  try {
+    const data = await shopService.getPublicProductBySlug(req.params.slug);
+    sendResponse(res, true, data, "Product loaded successfully");
+  } catch (error: any) {
+    fail(res, error);
+  }
+};
 
 // ── Categories ────────────────────────────────────────────────────────────
 

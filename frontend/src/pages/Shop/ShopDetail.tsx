@@ -1,21 +1,46 @@
 import { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { ArrowLeft, ShoppingCart, Zap, Shield, CheckCircle } from 'lucide-react';
-import { products } from '@/data/products';
+import { useShopProduct, isNotFoundError } from '@/features/shop/hooks';
+import { ShopDetailSkeleton } from './ShopSkeletons';
 import DevotionLayout from '@/components/DevotionLayout';
 
 const ShopDetail = () => {
   const { slug } = useParams<{ slug: string }>();
-  const product  = products.find(p => p.slug === slug);
+  const { data: product, isLoading, isError, error } = useShopProduct(slug);
   const [qty, setQty] = useState(1);
 
-  if (!product) {
+  if (isLoading) {
+    return <ShopDetailSkeleton />;
+  }
+
+  if (!product || (isError && isNotFoundError(error))) {
     return (
       <DevotionLayout>
         <div className="min-h-screen pt-24 flex items-center justify-center">
           <div className="text-center">
             <p className="font-display text-3xl tracking-wider text-muted-foreground mb-4">
               Product not found
+            </p>
+            <Link
+              to="/shop"
+              className="btn-outline-cosmic px-6 py-3 rounded-lg inline-flex items-center gap-2"
+            >
+              <ArrowLeft className="w-4 h-4" /> Back to Shop
+            </Link>
+          </div>
+        </div>
+      </DevotionLayout>
+    );
+  }
+
+  if (isError) {
+    return (
+      <DevotionLayout>
+        <div className="min-h-screen pt-24 flex items-center justify-center">
+          <div className="text-center">
+            <p className="font-display text-3xl tracking-wider text-muted-foreground mb-4">
+              Could not load product
             </p>
             <Link
               to="/shop"
@@ -48,11 +73,11 @@ const ShopDetail = () => {
             {/* Gradient always shows as background/fallback */}
             <div
               className="rounded-3xl h-80 md:h-[420px] relative overflow-hidden"
-              style={{ background: product.gradient }}
+              style={{ background: product.gradient ?? undefined }}
             >
               {product.image && (
                 <img
-                  src={product.image.startsWith('http') ? product.image : `/images/shop/${product.image}`}
+                  src={product.image}
                   alt={product.name}
                   className="absolute inset-0 w-full h-full object-cover"
                   onError={e => { (e.target as HTMLImageElement).style.display = 'none'; }}
@@ -76,7 +101,7 @@ const ShopDetail = () => {
           {/* ── Right — details ─────────────────────────────────────────── */}
           <div className="flex flex-col">
             <span className="text-[11px] font-display tracking-[0.2em] uppercase text-primary/70 bg-primary/10 border border-primary/30 px-3 py-1 rounded-full w-fit mb-4">
-              {product.category}
+              {product.category.name}
             </span>
 
             <h1 className="font-display text-3xl md:text-4xl tracking-widest uppercase text-foreground leading-tight mb-4">

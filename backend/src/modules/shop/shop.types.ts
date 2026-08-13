@@ -90,3 +90,30 @@ export interface UploadFile {
   mimetype: string;
   size: number;
 }
+
+// ── Public (unauthenticated) DTOs ────────────────────────────────────────────
+
+export interface PublicShopCategoryDTO {
+  id: string;
+  name: string;
+  slug: string;
+}
+
+export interface PublicShopProductDTO {
+  id: string;
+  slug: string;
+  name: string;
+  price: number;
+  originalPrice: number | null;
+  description: string;
+  benefits: string[];
+  authenticity: string;
+  gradient: string | null;
+  image: string | null;
+  category: PublicShopCategoryDTO;
+}
+
+export interface ListPublicShopProductsInput {
+  search?: string;
+  category?: string;
+}
