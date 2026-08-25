@@ -65,7 +65,7 @@ export function useAIDailyHoroscope(sign: string) {
     if (!sign) return null;
     setState({ data: null, loading: true, error: null });
     try {
-      const response = await fetch(`${API_BASE_URL}/interpretation/horoscope/${sign}`);
+      const response = await window.fetch(`${API_BASE_URL}/interpretation/horoscope/${sign}`);
 
       if (!response.ok) {
         throw new Error('Failed to generate horoscope');
@@ -96,7 +96,7 @@ export function useAICompatibility(sign1: string, sign2: string) {
     if (!sign1 || !sign2) return null;
     setState({ data: null, loading: true, error: null });
     try {
-      const response = await fetch(
+      const response = await window.fetch(
         `${API_BASE_URL}/interpretation/compatibility?sign1=${sign1}&sign2=${sign2}`
       );
 

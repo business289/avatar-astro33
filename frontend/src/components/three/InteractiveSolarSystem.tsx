@@ -240,6 +240,10 @@ const ShootingStar = ({ id, onComplete }: { id: number; onComplete: (id: number)
       trail: Math.random() * 9 + 4,
     };
   }, []);
+  const lineObj = useMemo(
+    () => new THREE.Line(geometry, new THREE.LineBasicMaterial({ color: '#ffffff', transparent: true, opacity: 0 })),
+    [geometry]
+  );
   useFrame((_, dt) => {
     if (doneRef.current) return;
     lifeRef.current += dt;
@@ -254,11 +258,7 @@ const ShootingStar = ({ id, onComplete }: { id: number; onComplete: (id: number)
     const op = t < 0.2 ? t / 0.2 : t > 0.8 ? (1 - t) / 0.2 : 1;
     if (lineRef.current) (lineRef.current.material as THREE.LineBasicMaterial).opacity = op * 0.92;
   });
-  return (
-    <line ref={lineRef} geometry={geometry}>
-      <lineBasicMaterial color="#ffffff" transparent opacity={0} />
-    </line>
-  );
+  return <primitive object={lineObj} ref={lineRef} />;
 };
 const ShootingStarManager = () => {
   const [stars, setStars] = useState<{ id: number }[]>([]);

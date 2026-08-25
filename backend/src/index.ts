@@ -358,46 +358,46 @@ app.post("/api/tarot/reading", async (req: Request, res: Response) => {
 Their 5-card Life Timeline spread:
 ${cardList}
 
-Return ONLY valid JSON (no markdown, no fences) with this exact structure:
+Write every field as ONE short, vivid, punchy sentence (max ~16 words). No filler, no repetition, no restating the card's literal meaning — make each line feel like a distinct, quotable insight. Return ONLY valid JSON (no markdown, no fences) with this exact structure:
 {
-  "currentLifeStage": "2-3 sentence description of where the seeker is right now in their life journey",
-  "mainOpportunity": "2-3 sentences describing the biggest opening available to them",
-  "hiddenChallenge": "2-3 sentences about the hidden obstacle or pattern affecting them",
-  "nextMajorTurningPoint": "2-3 sentences about the pivotal shift approaching in the next 3-6 months",
-  "recommendedAction": "1-2 sentences of specific, actionable spiritual guidance",
-  "spiritualGuidance": "2-3 sentences of deeper cosmic or karmic wisdom for this seeker",
+  "currentLifeStage": "1 punchy sentence on where the seeker stands right now",
+  "mainOpportunity": "1 punchy sentence on the biggest opening available to them",
+  "hiddenChallenge": "1 punchy sentence on the hidden obstacle affecting them",
+  "nextMajorTurningPoint": "1 punchy sentence on the pivotal shift approaching in 3-6 months",
+  "recommendedAction": "1 short, specific, actionable sentence",
+  "spiritualGuidance": "1 punchy sentence of deeper cosmic wisdom for this seeker",
   "probabilityScore": 78,
   "timelineNarrative": [
-    {"position": "Past Energy", "card": "${(cards[0] as any)?.name}", "insight": "2-3 sentences connecting this card's energy to how the seeker's past has shaped their now"},
-    {"position": "Current Energy", "card": "${(cards[1] as any)?.name}", "insight": "2-3 sentences about what this card reveals about the seeker's current reality"},
-    {"position": "Hidden Influence", "card": "${(cards[2] as any)?.name}", "insight": "2-3 sentences about the unseen force or pattern operating behind the scenes"},
-    {"position": "Next 6 Months", "card": "${(cards[3] as any)?.name}", "insight": "2-3 sentences about what to expect and prepare for in the near future"},
-    {"position": "Future Potential", "card": "${(cards[4] as any)?.name}", "insight": "2-3 sentences about the highest possible outcome if the seeker aligns with their path"}
+    {"position": "Past Energy", "card": "${(cards[0] as any)?.name}", "insight": "1 punchy sentence — a fresh angle on this card, not a restatement of its meaning"},
+    {"position": "Current Energy", "card": "${(cards[1] as any)?.name}", "insight": "1 punchy sentence on what this card reveals about their current reality"},
+    {"position": "Hidden Influence", "card": "${(cards[2] as any)?.name}", "insight": "1 punchy sentence on the unseen force operating behind the scenes"},
+    {"position": "Next 6 Months", "card": "${(cards[3] as any)?.name}", "insight": "1 punchy sentence on what to expect and prepare for"},
+    {"position": "Future Potential", "card": "${(cards[4] as any)?.name}", "insight": "1 punchy sentence on the highest possible outcome"}
   ],
-  "overallMessage": "3-4 powerful sentences synthesizing the entire reading into one cohesive spiritual message"
+  "overallMessage": "1-2 punchy sentences synthesizing the whole reading into one memorable line"
 }`;
 
   const karmaPrompt = `You are a master karmic guide who reads the soul's patterns through tarot. The seeker has drawn these 3 Karma Mirror cards:
 ${cardList}
 
-Return ONLY valid JSON (no markdown, no fences):
+Write every field as ONE short, vivid, punchy sentence (max ~16 words). No filler, no repetition, no restating the card's literal meaning — make each line feel like a distinct, quotable insight. Return ONLY valid JSON (no markdown, no fences):
 {
-  "currentKarmaTheme": "2-3 sentences naming and describing the central karmic pattern at play",
-  "rootCause": "2-3 sentences tracing this pattern to its deeper source — past conditioning, beliefs, or soul lessons",
+  "currentKarmaTheme": "1 punchy sentence naming the central karmic pattern at play",
+  "rootCause": "1 punchy sentence tracing this pattern to its deeper source",
   "lifeAreasAffected": ["Career", "Love", "Health"],
   "energyScore": 68,
   "karmaBlockScore": 72,
   "spiritualGrowthScore": 61,
-  "dailyAction": "One specific daily practice to shift the karmic pattern",
-  "weeklyAction": "One deeper weekly action for healing and integration",
-  "spiritualPractice": "A specific meditation, mantra, or ritual aligned with the Healing Path card",
-  "recommendedHabit": "One new habit to cultivate for long-term karmic clearing",
-  "reflectionQuestion": "A powerful introspective question for the seeker to sit with",
-  "positiveAffirmation": "A personalized affirmation based on the Healing Path card energy",
+  "dailyAction": "One specific daily practice to shift the karmic pattern, in one short sentence",
+  "weeklyAction": "One deeper weekly action for healing, in one short sentence",
+  "spiritualPractice": "A specific meditation, mantra, or ritual, in one short sentence",
+  "recommendedHabit": "One new habit to cultivate, in one short sentence",
+  "reflectionQuestion": "One powerful, concise introspective question",
+  "positiveAffirmation": "One short, personalized affirmation based on the Healing Path card",
   "cardInsights": [
-    {"position": "Current Karma", "card": "${(cards[0] as any)?.name}", "insight": "2-3 sentences about what karmic energy this card reveals"},
-    {"position": "Hidden Blockage", "card": "${(cards[1] as any)?.name}", "insight": "2-3 sentences revealing the unconscious block"},
-    {"position": "Healing Path", "card": "${(cards[2] as any)?.name}", "insight": "2-3 sentences describing the path of healing and integration"}
+    {"position": "Current Karma", "card": "${(cards[0] as any)?.name}", "insight": "1 punchy sentence — a fresh angle on this card, not a restatement of its meaning"},
+    {"position": "Hidden Blockage", "card": "${(cards[1] as any)?.name}", "insight": "1 punchy sentence revealing the unconscious block"},
+    {"position": "Healing Path", "card": "${(cards[2] as any)?.name}", "insight": "1 punchy sentence on the path of healing and integration"}
   ]
 }`;
 

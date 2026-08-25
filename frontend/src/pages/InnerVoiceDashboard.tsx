@@ -180,7 +180,7 @@ export default function InnerVoiceDashboard() {
   const [loadingAI, setLoadingAI] = useState(false);
   const [saved, setSaved] = useState(false);
 
-  useEffect(()=>{ const s=document.createElement("style"); s.textContent=CSS; document.head.appendChild(s); return()=>document.head.removeChild(s); },[]);
+  useEffect(()=>{ const s=document.createElement("style"); s.textContent=CSS; document.head.appendChild(s); return()=>{document.head.removeChild(s);}; },[]);
   useEffect(()=>{ if(profile && !aiData) loadAI(); },[profile]);
 
   const saveProfile=()=>{ if(!form.name||!form.sign) return; localStorage.setItem("iv_profile",JSON.stringify(form)); setProfile(form); };

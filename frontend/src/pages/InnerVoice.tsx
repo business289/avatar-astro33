@@ -1,5 +1,10 @@
 import { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
+import { motion } from "framer-motion";
+import careerHintImg from "@/assets/insights/career.png";
+import loveHintImg from "@/assets/insights/love.png";
+import moneyHintImg from "@/assets/insights/money.png";
+import healthHintImg from "@/assets/insights/health.png";
 
 const fl = document.createElement("link"); fl.rel = "stylesheet";
 fl.href = "https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Space+Mono:wght@400;700&display=swap";
@@ -70,11 +75,27 @@ const CSS = `
 @media(max-width:768px){.iv-container{padding:0 20px;}}
 
 /* ── HERO ── */
-.iv-hero{padding:100px 48px 80px;text-align:center;}
+.iv-hero{padding:100px 48px 80px;text-align:center;position:relative;}
 @media(max-width:768px){.iv-hero{padding:80px 20px 60px;}}
-.iv-hero-eyebrow{font-family:'Astra','Iceland',sans-serif;font-size:14px;letter-spacing:7px;color:#BC6A4D;text-transform:uppercase;margin-bottom:22px;}
-.iv-hero-om{font-size:60px;display:block;margin-bottom:22px;filter:drop-shadow(0 0 28px rgba(188,106,77,.65));}
-.iv-hero-title{font-family:'Astra','Iceland',sans-serif;font-size:clamp(48px,8vw,80px);font-weight:900;line-height:1.0;margin-bottom:18px;background:linear-gradient(135deg,#BC6A4D 0%,#D9895F 50%,#BC6A4D 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;letter-spacing:2px;}
+.iv-hero-eyebrow{font-family:'Astra','Iceland',sans-serif;font-size:14px;letter-spacing:7px;color:#BC6A4D;text-transform:uppercase;margin-bottom:22px;display:flex;align-items:center;justify-content:center;gap:12px;}
+.iv-hero-eyebrow-line{width:32px;height:1px;background:linear-gradient(90deg,transparent,#BC6A4D);}
+.iv-hero-eyebrow-line.r{background:linear-gradient(90deg,#BC6A4D,transparent);}
+
+.iv-hero-om-wrap{position:relative;width:150px;height:150px;margin:0 auto 24px;display:flex;align-items:center;justify-content:center;}
+.iv-orbit-ring{position:absolute;border-radius:50%;border:1px solid transparent;}
+.iv-orbit-ring.r1{inset:0;border-top-color:rgba(188,106,77,.55);border-right-color:rgba(188,106,77,.15);animation:iv-orbit-spin 14s linear infinite;}
+.iv-orbit-ring.r2{inset:18px;border-bottom-color:rgba(217,137,95,.5);border-left-color:rgba(217,137,95,.12);animation:iv-orbit-spin 10s linear infinite reverse;}
+.iv-orbit-ring.r3{inset:36px;border:1px dashed rgba(188,106,77,.28);animation:iv-orbit-spin 22s linear infinite;}
+@keyframes iv-orbit-spin{to{transform:rotate(360deg);}}
+.iv-hero-om{position:relative;font-size:56px;display:block;filter:drop-shadow(0 0 28px rgba(188,106,77,.65));animation:iv-om-pulse 3.2s ease-in-out infinite;}
+@keyframes iv-om-pulse{0%,100%{filter:drop-shadow(0 0 20px rgba(188,106,77,.5));transform:scale(1);}50%{filter:drop-shadow(0 0 38px rgba(188,106,77,.85));transform:scale(1.06);}}
+.iv-hero-spark{position:absolute;font-size:14px;color:#D9895F;pointer-events:none;filter:drop-shadow(0 0 6px rgba(217,137,95,.8));}
+
+.iv-hero-title{font-family:'Astra','Iceland',sans-serif;font-size:clamp(48px,8vw,80px);font-weight:900;line-height:1.0;margin-bottom:18px;letter-spacing:2px;
+  background:linear-gradient(90deg,#BC6A4D 0%,#ffd9b0 25%,#D9895F 50%,#ffd9b0 75%,#BC6A4D 100%);
+  background-size:250% auto;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  animation:iv-title-shimmer 7s linear infinite;}
+@keyframes iv-title-shimmer{to{background-position:-250% center;}}
 .iv-hero-tagline{font-family:'Astra','Iceland',sans-serif;font-size:14px;letter-spacing:6px;color:rgba(255,255,255,.8);text-transform:uppercase;margin-bottom:26px;}
 .iv-hero-sub{color:rgba(255,255,255,.85);font-style:italic;font-size:21px;line-height:1.8;max-width:640px;margin:0 auto 44px;}
 .iv-karma-strip{display:flex;justify-content:center;gap:56px;flex-wrap:wrap;}
@@ -88,12 +109,14 @@ const CSS = `
 .iv-nav-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:22px;max-width:1440px;margin:0 auto;}
 @media(max-width:1100px){.iv-nav-grid{grid-template-columns:repeat(2,1fr);}}
 @media(max-width:540px){.iv-nav-grid{grid-template-columns:1fr;}}
-.iv-nav-card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:22px;padding:34px 28px;text-decoration:none;transition:all .35s;position:relative;overflow:hidden;display:block;}
-.iv-nav-card:hover{transform:translateY(-6px);box-shadow:0 24px 64px rgba(0,0,0,.55);}
+.iv-nav-card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:22px;padding:34px 28px;text-decoration:none;transition:border-color .35s,background .35s,box-shadow .35s;position:relative;overflow:hidden;display:block;}
+.iv-nav-card:hover{box-shadow:0 24px 64px rgba(0,0,0,.5);}
 .iv-nav-card.gold:hover{border-color:rgba(188,106,77,.5);background:rgba(188,106,77,.05);}
 .iv-nav-card.purple:hover{border-color:rgba(188,106,77,.45);background:rgba(188,106,77,.05);}
 .iv-nav-card.cyan:hover{border-color:rgba(188,106,77,.4);background:rgba(188,106,77,.04);}
 .iv-nav-card.rose:hover{border-color:rgba(188,106,77,.4);background:rgba(188,106,77,.04);}
+.iv-nav-card-shine{position:absolute;top:0;left:-60%;width:40%;height:100%;background:linear-gradient(115deg,transparent,rgba(255,255,255,.08),transparent);transform:skewX(-20deg);transition:left .7s ease;pointer-events:none;}
+.iv-nav-card:hover .iv-nav-card-shine{left:130%;}
 .iv-nc-icon{font-size:40px;margin-bottom:18px;display:block;}
 .iv-nc-tag{font-family:'Astra','Iceland',sans-serif;font-size:13px;letter-spacing:3px;text-transform:uppercase;margin-bottom:10px;}
 .gold .iv-nc-tag{color:rgba(255,255,255,.8);}
@@ -111,20 +134,36 @@ const CSS = `
 .iv-diag-inner{max-width:1440px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:72px;align-items:start;}
 @media(max-width:960px){.iv-diag-inner{grid-template-columns:1fr;gap:44px;}}
 
-.iv-diag-heading{font-family:'Astra','Iceland',sans-serif;font-size:clamp(32px,4.5vw,50px);color:#BC6A4D;line-height:1.15;margin-bottom:18px;}
-.iv-diag-sub{font-size:20px;color:rgba(255,255,255,.68);font-style:italic;line-height:1.78;margin-bottom:36px;}
-.iv-diag-hints{display:flex;flex-direction:column;gap:14px;}
+.iv-diag-eyebrow{display:flex;align-items:center;justify-content:flex-start;gap:10px;margin-bottom:14px;}
+.iv-diag-eyebrow-line{width:26px;height:1px;background:linear-gradient(90deg,transparent,#BC6A4D);}
+.iv-diag-eyebrow-txt{font-family:'Astra','Iceland',sans-serif;font-size:12px;letter-spacing:4px;color:#BC6A4D;text-transform:uppercase;}
+@media(max-width:960px){.iv-diag-eyebrow{justify-content:center;}}
+
+.iv-diag-heading{font-family:'Astra','Iceland',sans-serif;font-size:clamp(32px,4.5vw,50px);color:#BC6A4D;line-height:1.15;margin-bottom:14px;}
+.iv-diag-sub{font-size:18px;color:rgba(255,255,255,.7);font-style:italic;line-height:1.65;margin-bottom:32px;max-width:480px;}
+@media(max-width:960px){.iv-diag-sub{margin-left:auto;margin-right:auto;}}
+.iv-diag-hints{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+@media(max-width:560px){.iv-diag-hints{grid-template-columns:1fr;}}
 
 /* CLICKABLE hint cards */
-.iv-hint{display:flex;align-items:center;gap:16px;padding:18px 22px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:16px;cursor:pointer;transition:all .3s;}
-.iv-hint:hover{background:rgba(188,106,77,.1);border-color:rgba(188,106,77,.45);transform:translateX(6px);}
-.iv-hint-icon{font-size:24px;flex-shrink:0;}
-.iv-hint-txt{font-size:18px;color:rgba(255,255,255,.8);line-height:1.55;}
+.iv-hint{position:relative;overflow:hidden;display:flex;flex-direction:column;align-items:flex-start;gap:12px;padding:20px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:18px;cursor:pointer;transition:all .3s;}
+.iv-hint:hover{background:rgba(188,106,77,.08);border-color:rgba(188,106,77,.45);box-shadow:0 16px 34px rgba(0,0,0,.4);}
+.iv-hint-icon-wrap{width:50px;height:50px;border-radius:50%;overflow:hidden;flex-shrink:0;border:1px solid rgba(188,106,77,.4);box-shadow:0 0 16px rgba(188,106,77,.25);}
+.iv-hint-icon-wrap img{width:100%;height:100%;object-fit:cover;display:block;}
+.iv-hint-txt{font-size:15px;color:rgba(255,255,255,.82);line-height:1.5;font-weight:500;}
 .iv-hint:hover .iv-hint-txt{color:#fff;}
+.iv-hint-arrow{position:absolute;top:16px;right:16px;font-size:15px;color:rgba(188,106,77,.4);transition:all .3s;}
+.iv-hint:hover .iv-hint-arrow{color:#BC6A4D;transform:translate(3px,-3px);}
 
 /* Input card */
-.iv-input-card{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);border-radius:24px;padding:38px;}
-.iv-voice-row{display:flex;gap:12px;margin-bottom:20px;align-items:center;}
+.iv-input-card{position:relative;overflow:hidden;background:rgba(255,255,255,.05);border:1px solid rgba(188,106,77,.18);border-radius:24px;padding:38px;}
+.iv-input-glow{position:absolute;inset:-50%;background:radial-gradient(circle at 30% 20%,rgba(188,106,77,.16),transparent 60%);pointer-events:none;animation:iv-glow-shift 9s ease-in-out infinite alternate;}
+@keyframes iv-glow-shift{from{transform:translate(0,0);}to{transform:translate(8%,6%);}}
+.iv-input-card-head{position:relative;display:flex;align-items:center;gap:12px;margin-bottom:24px;}
+.iv-input-orb{width:36px;height:36px;border-radius:50%;background:radial-gradient(circle,#D9895F,#BC6A4D);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;animation:iv-orb-pulse 2.4s ease-in-out infinite;}
+@keyframes iv-orb-pulse{0%,100%{box-shadow:0 0 10px rgba(188,106,77,.4);}50%{box-shadow:0 0 22px rgba(188,106,77,.75);}}
+.iv-input-card-title{font-family:'Astra','Iceland',sans-serif;font-size:14px;letter-spacing:2px;color:#fff;text-transform:uppercase;}
+.iv-voice-row{position:relative;display:flex;gap:12px;margin-bottom:20px;align-items:center;}
 .iv-voice-btn{background:rgba(188,106,77,.09);border:1px solid rgba(188,106,77,.28);border-radius:10px;padding:11px 20px;color:#BC6A4D;font-family:'Astra','Iceland',sans-serif;font-size:13px;letter-spacing:2px;cursor:pointer;transition:all .3s;display:flex;align-items:center;gap:8px;}
 .iv-voice-btn:hover{background:rgba(188,106,77,.18);}
 .iv-voice-btn.listening{background:rgba(188,106,77,.14);border-color:rgba(188,106,77,.45);color:#D9895F;animation:pulse-anim 1s ease-in-out infinite;}
@@ -256,11 +295,27 @@ const NAV_CARDS = [
 ];
 
 const HINTS = [
-  { icon:"💼", text:"Career stagnation, job loss, or a difficult boss" },
-  { icon:"💛", text:"Relationship conflicts, marriage issues, or loneliness" },
-  { icon:"💰", text:"Financial struggles, debt, or business failure" },
-  { icon:"🌿", text:"Recurring health issues or unexplained suffering" },
+  { img:careerHintImg, text:"Career stagnation or job loss" },
+  { img:loveHintImg,   text:"Relationship conflicts or loneliness" },
+  { img:moneyHintImg,  text:"Financial struggles or debt" },
+  { img:healthHintImg, text:"Unexplained health issues" },
 ];
+
+// ── Count-up number, animates once from 0 to target on mount ────────────────
+function CountUp({ target, duration = 1100 }) {
+  const [val, setVal] = useState(0);
+  useEffect(() => {
+    let raf; const start = performance.now();
+    const step = now => {
+      const p = Math.min(1, (now - start) / duration);
+      setVal(Math.floor(target * (1 - Math.pow(1 - p, 3))));
+      if (p < 1) raf = requestAnimationFrame(step);
+    };
+    raf = requestAnimationFrame(step);
+    return () => cancelAnimationFrame(raf);
+  }, [target, duration]);
+  return <>{val}</>;
+}
 
 // ── Animated starfield canvas ──────────────────────────────────────────────
 function StarCanvas() {
@@ -544,7 +599,7 @@ export default function InnerVoice() {
     const s = document.createElement("style");
     s.textContent = CSS;
     document.head.appendChild(s);
-    return () => document.head.removeChild(s);
+    return () => { document.head.removeChild(s); };
   }, []);
 
   const karmaHistory = (() => { try { return JSON.parse(localStorage.getItem("iv_karma_v2")||"[]"); } catch { return []; } })();
@@ -575,7 +630,7 @@ export default function InnerVoice() {
   // Hint click — fills textarea and scrolls to input
   const onHintClick = (txt) => {
     setText(txt);
-    document.querySelector(".iv-textarea")?.focus();
+    (document.querySelector(".iv-textarea") as HTMLElement | null)?.focus();
   };
 
   return (
@@ -586,52 +641,127 @@ export default function InnerVoice() {
 
         {/* Hero */}
         <div className="iv-hero">
-          <div className="iv-hero-eyebrow">Spiritual Intelligence Platform</div>
-          <span className="iv-hero-om">🕉</span>
-          <h1 className="iv-hero-title">Inner Voice</h1>
-          <div className="iv-hero-tagline">Know Your Karma · Improve Your Karma</div>
-          <p className="iv-hero-sub">Your personal Vedic guidance system — powered by ancient wisdom and modern AI. Diagnose karmic patterns, track your dharmic progress, and receive actionable remedies.</p>
+          <motion.div initial={{ opacity:0, y:-10 }} animate={{ opacity:1, y:0 }} transition={{ duration:0.5 }} className="iv-hero-eyebrow">
+            <span className="iv-hero-eyebrow-line" />
+            Spiritual Intelligence Platform
+            <span className="iv-hero-eyebrow-line r" />
+          </motion.div>
+
+          <motion.div
+            className="iv-hero-om-wrap"
+            initial={{ opacity:0, scale:0.7 }}
+            animate={{ opacity:1, scale:1 }}
+            transition={{ duration:0.6, delay:0.1, type:"spring", bounce:0.4 }}
+          >
+            <span className="iv-orbit-ring r1" />
+            <span className="iv-orbit-ring r2" />
+            <span className="iv-orbit-ring r3" />
+            {[0,1,2,3,4].map(i => (
+              <motion.span
+                key={i}
+                className="iv-hero-spark"
+                style={{ top:`${18 + i*14}%`, left:`${8 + i*20}%` }}
+                animate={{ opacity:[0,1,0], y:[0,-14,-24], scale:[0.6,1,0.6] }}
+                transition={{ duration:2.6, repeat:Infinity, delay:i*0.5, ease:"easeInOut" }}
+              >✦</motion.span>
+            ))}
+            <span className="iv-hero-om">🕉</span>
+          </motion.div>
+
+          <motion.h1 initial={{ opacity:0, y:16 }} animate={{ opacity:1, y:0 }} transition={{ duration:0.5, delay:0.2 }} className="iv-hero-title">Inner Voice</motion.h1>
+          <motion.div initial={{ opacity:0 }} animate={{ opacity:1 }} transition={{ duration:0.5, delay:0.3 }} className="iv-hero-tagline">Know Your Karma · Improve Your Karma</motion.div>
+          <motion.p initial={{ opacity:0, y:12 }} animate={{ opacity:1, y:0 }} transition={{ duration:0.5, delay:0.38 }} className="iv-hero-sub">Your personal Vedic guidance system — powered by ancient wisdom and modern AI. Diagnose karmic patterns, track your dharmic progress, and receive actionable remedies.</motion.p>
           {latestScore && (
-            <div className="iv-karma-strip">
-              <div className="iv-ks-item"><div className="iv-ks-val">{latestScore}</div><div className="iv-ks-lbl">Karma Score</div></div>
-              <div className="iv-ks-item"><div className="iv-ks-val">{karmaHistory.length}</div><div className="iv-ks-lbl">Days Tracked</div></div>
-            </div>
+            <motion.div initial={{ opacity:0, y:12 }} animate={{ opacity:1, y:0 }} transition={{ duration:0.5, delay:0.46 }} className="iv-karma-strip">
+              <div className="iv-ks-item"><div className="iv-ks-val"><CountUp target={latestScore}/></div><div className="iv-ks-lbl">Karma Score</div></div>
+              <div className="iv-ks-item"><div className="iv-ks-val"><CountUp target={karmaHistory.length}/></div><div className="iv-ks-lbl">Days Tracked</div></div>
+            </motion.div>
           )}
         </div>
 
         {/* Nav grid */}
         <div className="iv-nav-section">
-          <div className="iv-nav-grid">
+          <motion.div
+            className="iv-nav-grid"
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once:true, margin:"-60px" }}
+            variants={{ visible:{ transition:{ staggerChildren:0.1 } } }}
+          >
             {NAV_CARDS.map(c => (
-              <Link key={c.path} to={c.path} className={`iv-nav-card ${c.color}`}>
-                <span className="iv-nc-icon">{c.icon}</span>
-                <div className="iv-nc-tag">{c.tag}</div>
-                <div className="iv-nc-name">{c.name}</div>
-                <div className="iv-nc-desc">{c.desc}</div>
-                <span className="iv-nc-arrow">→</span>
-              </Link>
+              <motion.div
+                key={c.path}
+                variants={{ hidden:{ opacity:0, y:26 }, visible:{ opacity:1, y:0 } }}
+                whileHover={{ y:-8, scale:1.02 }}
+                transition={{ duration:0.35 }}
+              >
+                <Link to={c.path} className={`iv-nav-card ${c.color}`}>
+                  <span className="iv-nav-card-shine" />
+                  <motion.span
+                    className="iv-nc-icon"
+                    animate={{ y:[0,-6,0] }}
+                    transition={{ duration:3, repeat:Infinity, ease:"easeInOut", delay:NAV_CARDS.indexOf(c)*0.25 }}
+                  >{c.icon}</motion.span>
+                  <div className="iv-nc-tag">{c.tag}</div>
+                  <div className="iv-nc-name">{c.name}</div>
+                  <div className="iv-nc-desc">{c.desc}</div>
+                  <span className="iv-nc-arrow">→</span>
+                </Link>
+              </motion.div>
             ))}
-          </div>
+          </motion.div>
         </div>
 
         {/* Diagnosis */}
         {!result && (
           <div className="iv-diag-section">
             <div className="iv-diag-inner">
-              <div>
-                <h2 className="iv-diag-heading">Quick Karma Diagnosis</h2>
-                <p className="iv-diag-sub">Share your situation in any language — Hindi, English, or Hinglish. Pandit Ji will diagnose the karmic root and prescribe exact remedies.</p>
-                <div className="iv-diag-hints">
-                  {HINTS.map((h, i) => (
-                    <div key={i} className="iv-hint" onClick={() => onHintClick(h.text)} role="button" tabIndex={0} onKeyDown={e => e.key==="Enter" && onHintClick(h.text)}>
-                      <span className="iv-hint-icon">{h.icon}</span>
-                      <span className="iv-hint-txt">{h.text}</span>
-                    </div>
-                  ))}
+              <motion.div
+                initial={{ opacity:0, y:24 }}
+                whileInView={{ opacity:1, y:0 }}
+                viewport={{ once:true, margin:"-60px" }}
+                transition={{ duration:0.5 }}
+              >
+                <div className="iv-diag-eyebrow">
+                  <span className="iv-diag-eyebrow-line" />
+                  <span className="iv-diag-eyebrow-txt">AI Karma Reading</span>
                 </div>
-              </div>
-              <div>
+                <h2 className="iv-diag-heading">Quick Karma Diagnosis</h2>
+                <p className="iv-diag-sub">In Hindi, English, or Hinglish — Pandit Ji reads the root and gives you the remedy.</p>
+                <motion.div
+                  className="iv-diag-hints"
+                  initial="hidden"
+                  whileInView="visible"
+                  viewport={{ once:true, margin:"-40px" }}
+                  variants={{ visible:{ transition:{ staggerChildren:0.1 } } }}
+                >
+                  {HINTS.map((h, i) => (
+                    <motion.div
+                      key={i}
+                      className="iv-hint"
+                      variants={{ hidden:{ opacity:0, y:18 }, visible:{ opacity:1, y:0 } }}
+                      whileHover={{ y:-5 }}
+                      onClick={() => onHintClick(h.text)} role="button" tabIndex={0} onKeyDown={e => e.key==="Enter" && onHintClick(h.text)}
+                    >
+                      <span className="iv-hint-icon-wrap"><img src={h.img} alt="" /></span>
+                      <span className="iv-hint-txt">{h.text}</span>
+                      <span className="iv-hint-arrow">↗</span>
+                    </motion.div>
+                  ))}
+                </motion.div>
+              </motion.div>
+              <motion.div
+                initial={{ opacity:0, y:24 }}
+                whileInView={{ opacity:1, y:0 }}
+                viewport={{ once:true, margin:"-60px" }}
+                transition={{ duration:0.5, delay:0.12 }}
+              >
                 <div className="iv-input-card">
+                  <div className="iv-input-glow" />
+                  <div className="iv-input-card-head">
+                    <span className="iv-input-orb">🕉</span>
+                    <span className="iv-input-card-title">Speak To Pandit Ji</span>
+                  </div>
                   <div className="iv-voice-row">
                     <button className={`iv-voice-btn${listening?" listening":""}`} onClick={startVoice}>
                       {listening ? "🔴 Listening..." : "🎙️ Speak"}
@@ -640,7 +770,7 @@ export default function InnerVoice() {
                   </div>
                   <textarea
                     className="iv-textarea"
-                    placeholder="Apni situation batayein... What is weighing on your heart right now? Be honest and specific."
+                    placeholder="Apni situation batayein... what's weighing on your heart right now?"
                     value={text}
                     onChange={e => setText(e.target.value.slice(0, 1500))}
                   />
@@ -656,7 +786,7 @@ export default function InnerVoice() {
                   )}
                   {error && <div className="iv-err">⚠ {error}</div>}
                 </div>
-              </div>
+              </motion.div>
             </div>
           </div>
         )}

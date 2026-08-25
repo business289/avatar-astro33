@@ -139,7 +139,7 @@ const CardFace = ({ card, size = 'md', category }: { card: TarotCard; size?: 'sm
         <div style={{ position: 'absolute', top: 0, left: 0, right: 0, padding: size === 'sm' ? '4px 0' : '6px 0', textAlign: 'center', background: 'linear-gradient(to bottom, rgba(0,0,0,0.65), transparent)' }}>
           <span style={{ fontSize: `${cfg.numSize}px`, color: '#fff', letterSpacing: '2px', fontFamily: "'Astra','Iceland',sans-serif", textTransform: 'uppercase', fontWeight: 600 }}>{topLabel}</span>
         </div>
-        <div style={{ position: 'absolute', left: 0, right: 0, bottom: 0, padding: size === 'sm' ? '4px 3px 5px' : '8px 6px 10px', textAlign: 'center', background: 'linear-gradient(to top, rgba(0,0,0,0.82) 0%, transparent 100%)' }}>
+        <div style={{ position: 'absolute', left: 0, right: 0, bottom: 0, padding: size === 'sm' ? '4px 3px 5    px' : '8px 6px 10px', textAlign: 'center', background: 'linear-gradient(to top, rgba(0,0,0,0.82) 0%, transparent 100%)' }}>
           <span style={{ fontSize: `${cfg.name}px`, color: '#fff', fontFamily: "'Astra','Iceland',sans-serif", textTransform: 'uppercase', letterSpacing: '1px', lineHeight: 1.2 }}>{card.name}</span>
         </div>
       </div>
@@ -2018,41 +2018,50 @@ const TarotExperience = () => {
 };
 
 // ─── Fallback reading generator ───────────────────────────────────────────────
+/** Short, distinct one-liners so the fallback reading never just echoes card.meaning verbatim. */
+const FALLBACK_ANGLES = [
+  (c: TarotCard) => `${c.keywords[0]} is the thread quietly running through this chapter.`,
+  (c: TarotCard) => `Lean into ${c.keywords[1]?.toLowerCase() ?? c.keywords[0]?.toLowerCase()} — it's asking to be noticed.`,
+  (c: TarotCard) => `${c.name} is less a warning and more an invitation.`,
+  (c: TarotCard) => `This is the card of ${c.keywords[0]?.toLowerCase()} finding its moment.`,
+  (c: TarotCard) => `Trust what ${c.name} is nudging you toward.`,
+];
+
 function generateFallbackReading(mode: Mode, cards: TarotCard[]): AIReading {
   if (mode === 'timeline') {
     return {
-      currentLifeStage: `You stand at a threshold of transformation, embodied by the energy of ${cards[1]?.name}.`,
-      mainOpportunity: `${cards[3]?.name} opens a doorway of significant growth and aligned action in the coming months.`,
-      hiddenChallenge: `${cards[2]?.name} reveals a hidden pattern that quietly shapes your experience. Acknowledge it with compassion.`,
-      nextMajorTurningPoint: `Around the energy of ${cards[3]?.name}, a significant pivotal shift arrives — prepare your heart and mind.`,
-      recommendedAction: 'Take one courageous step aligned with your highest truth each day, without waiting for perfect conditions.',
-      spiritualGuidance: 'The cosmos supports those who act from love rather than fear. Trust the path unfolding before you.',
+      currentLifeStage: `You're standing at a threshold, carried by the energy of ${cards[1]?.name}.`,
+      mainOpportunity: `${cards[3]?.name} opens a real door — if you're willing to walk through it.`,
+      hiddenChallenge: `${cards[2]?.name} points to a quiet pattern worth facing with compassion.`,
+      nextMajorTurningPoint: `A pivotal shift is building around ${cards[3]?.name} — stay ready.`,
+      recommendedAction: 'Take one courageous step today, without waiting for perfect conditions.',
+      spiritualGuidance: 'The cosmos favors those who act from love rather than fear.',
       probabilityScore: 72 + Math.floor(Math.random() * 20),
       timelineNarrative: cards.map((c, i) => ({
         position: TIMELINE_POSITIONS[i],
         card: c.name,
-        insight: c.meaning,
+        insight: FALLBACK_ANGLES[i % FALLBACK_ANGLES.length](c),
       })),
-      overallMessage: `Your reading reveals a soul in beautiful motion. ${cards[0]?.meaning} Trust this journey — it leads exactly where you are meant to go.`,
+      overallMessage: `Your reading shows a soul in motion — trust it, it leads exactly where you're meant to go.`,
     };
   }
   return {
-    currentKarmaTheme: `${cards[0]?.keywords[0]} — a pattern asking for your loving attention and conscious healing.`,
-    rootCause: `Past experiences have created ${cards[0]?.keywords[1]?.toLowerCase() ?? 'limiting'} patterns. Awareness is the first act of liberation.`,
+    currentKarmaTheme: `${cards[0]?.keywords[0]} is the pattern asking for your attention right now.`,
+    rootCause: `This traces back to old ${cards[0]?.keywords[1]?.toLowerCase() ?? 'limiting'} conditioning — awareness starts the release.`,
     lifeAreasAffected: ['Career', 'Relationships', 'Inner Peace'],
     energyScore: 55 + Math.floor(Math.random() * 30),
     karmaBlockScore: 50 + Math.floor(Math.random() * 35),
     spiritualGrowthScore: 60 + Math.floor(Math.random() * 25),
-    dailyAction: 'Begin each morning with 5 minutes of conscious breath awareness before any digital input.',
-    weeklyAction: `Journal on this question: Where in my ${cards[1]?.keywords[0]?.toLowerCase() ?? 'life'} am I resisting what the soul already accepts?`,
-    spiritualPractice: `The energy of ${cards[2]?.name} invites a practice of ${cards[2]?.keywords[2]?.toLowerCase() ?? 'stillness and reflection'}.`,
-    recommendedHabit: 'Create one act of self-kindness each day that costs nothing but your willingness to receive it.',
-    reflectionQuestion: `What would I do today if I truly believed I deserved the healing that ${cards[2]?.name} is offering me?`,
-    positiveAffirmation: `I release what no longer serves my soul. I walk forward in the full light of ${cards[2]?.keywords[0]?.toLowerCase() ?? 'healing and grace'}.`,
+    dailyAction: 'Five minutes of conscious breath before you touch your phone.',
+    weeklyAction: `Journal on: where am I resisting what my soul already accepts?`,
+    spiritualPractice: `Let ${cards[2]?.name} guide a few minutes of still, quiet reflection.`,
+    recommendedHabit: 'One small act of self-kindness, daily, no strings attached.',
+    reflectionQuestion: `What would I do today if I believed I deserved this healing?`,
+    positiveAffirmation: `I release what no longer serves me and walk toward ${cards[2]?.keywords[0]?.toLowerCase() ?? 'healing'}.`,
     cardInsights: cards.map((c, i) => ({
       position: KARMA_POSITIONS[i],
       card: c.name,
-      insight: c.meaning,
+      insight: FALLBACK_ANGLES[i % FALLBACK_ANGLES.length](c),
     })),
   };
 }

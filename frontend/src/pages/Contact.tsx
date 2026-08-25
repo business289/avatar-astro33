@@ -68,7 +68,7 @@ const Contact = () => {
                   <Check className="w-8 h-8 text-primary" />
                 </div>
                 <h3 className="font-display text-xl text-foreground mb-2">Message Sent!</h3>
-                <p className="text-muted-foreground">We'll get back to you as soon as the stars align.</p>
+                <p className="text-muted-foreground">We'll  get back to you as soon as the stars align.</p>
               </div>
             ) : (
               <form onSubmit={handleSubmit} className="space-y-5">

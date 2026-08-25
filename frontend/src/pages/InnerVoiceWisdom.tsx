@@ -190,7 +190,7 @@ function StarCanvas() {
   return <canvas ref={canvasRef} style={{position:"fixed",inset:0,zIndex:0,pointerEvents:"none"}} />;
 }
 
-function Field({ icon, label, labelClass, text, textClass, children }) {
+function Field({ icon, label, labelClass, text, textClass = "", children = null }) {
   const content = text || children;
   if (!content) return null;
   return (
@@ -217,10 +217,10 @@ export default function InnerVoiceWisdom() {
     const s = document.createElement("style");
     s.textContent = CSS;
     document.head.appendChild(s);
-    return () => document.head.removeChild(s);
+    return () => { document.head.removeChild(s); };
   }, []);
 
-  const fetchWisdom = async (sit) => {
+  const fetchWisdom = async (sit?) => {
     const q = (sit || situation).trim();
     if (!q) return;
     if (sit) setSituation(sit);

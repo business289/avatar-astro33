@@ -16,3 +16,11 @@ declare module "*.jpg" { const src: string; export default src; }
 declare module "*.jpeg" { const src: string; export default src; }
 declare module "*.svg" { const src: string; export default src; }
 declare module "*.webp" { const src: string; export default src; }
+
+interface Window {
+  SpeechRecognition?: any;
+  webkitSpeechRecognition?: any;
+  jspdf?: any;
+}
+
+type CSSVarStyle = React.CSSProperties & Record<string, string | number>;

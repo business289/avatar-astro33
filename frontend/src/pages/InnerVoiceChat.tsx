@@ -181,7 +181,7 @@ async function callDiagnosis(conversationHistory) {
   catch { return null; }
 }
 
-function loadJsPDF() {
+function loadJsPDF(): Promise<any> {
   return new Promise((resolve, reject) => {
     if (window.jspdf) { resolve(window.jspdf); return; }
     const s = document.createElement("script");
@@ -260,7 +260,7 @@ async function downloadReportPDF(report, userName) {
   if (report.diagnosis?.saturnScore!==undefined) progressBar("Saturn Influence",(report.diagnosis.saturnScore||0),[239,68,68]);
   if (report.diagnosis?.areaScores) {
     label("Impact by Life Area");
-    Object.entries(report.diagnosis.areaScores).forEach(([area,score]) => progressBar(area,(score/10)*100,score>=7?[239,68,68]:score>=5?[188,106,77]:[34,197,94]));
+    Object.entries(report.diagnosis.areaScores).forEach(([area,score]:[string,number]) => progressBar(area,(score/10)*100,score>=7?[239,68,68]:score>=5?[188,106,77]:[34,197,94]));
   }
   if (report.diagnosis?.whyThisDiagnosis?.length) {
     sectionHeader("🔍","Why This Diagnosis?",[188,106,77]);
@@ -927,7 +927,7 @@ function DiagnosisReport({report,onSaveMantra,onBookPuja,userName,onAskFollowUp,
           {report.diagnosis.areaScores&&(
             <div style={{marginBottom:18}}>
               <div style={{fontSize:10,letterSpacing:2,textTransform:"uppercase",fontFamily:"'Astra','Iceland',sans-serif",color:"rgba(188,106,77,.6)",marginBottom:12}}>Severity by Life Area</div>
-              <div className="ivc-area-scores">{Object.entries(report.diagnosis.areaScores).map(([area,score])=>(
+              <div className="ivc-area-scores">{Object.entries(report.diagnosis.areaScores).map(([area,score]:[string,number])=>(
                 <div key={area} className="ivc-area-row"><span className="ivc-area-name">{area}</span><div className="ivc-area-track"><div className="ivc-area-fill" style={{width:`${(score/10)*100}%`,background:areaColor(score)}}/></div><span className="ivc-area-score">{score}/10</span></div>
               ))}</div>
             </div>
@@ -948,7 +948,7 @@ function DiagnosisReport({report,onSaveMantra,onBookPuja,userName,onAskFollowUp,
           {report.diagnosis.confidenceLevels&&(
             <div style={{marginTop:16}}>
               <div style={{fontSize:10,letterSpacing:2,textTransform:"uppercase",fontFamily:"'Astra','Iceland',sans-serif",color:"rgba(249,168,212,.7)",marginBottom:10}}>Prediction Confidence</div>
-              <div className="ivc-confidence-row">{Object.entries(report.diagnosis.confidenceLevels).map(([area,level])=><span key={area} className={`ivc-conf-badge conf-${level}`}>{area}: {level}</span>)}</div>
+              <div className="ivc-confidence-row">{Object.entries(report.diagnosis.confidenceLevels).map(([area,level]:[string,string])=><span key={area} className={`ivc-conf-badge conf-${level}`}>{area}: {level}</span>)}</div>
             </div>
           )}
         </ReportCard>
@@ -1142,13 +1142,13 @@ export default function InnerVoiceChat(){
   const bottomRef=useRef(null),textareaRef=useRef(null),recognitionRef=useRef(null);
   const profile=(()=>{try{return JSON.parse(localStorage.getItem("iv_profile")||"null");}catch{return null;}})();
 
-  useEffect(()=>{const s=document.createElement("style");s.textContent=CSS;document.head.appendChild(s);return()=>document.head.removeChild(s);},[]);
+  useEffect(()=>{const s=document.createElement("style");s.textContent=CSS;document.head.appendChild(s);return()=>{document.head.removeChild(s);};},[]);
   useEffect(()=>{bottomRef.current?.scrollIntoView({behavior:"smooth"});},[messages,loading]);
 
   useEffect(()=>{
     const SELECTORS=["footer","[class*='footer' i]","[class*='Footer']","[id*='footer' i]","[class*='navbar' i]","[class*='NavBar']","[class*='nav-bar' i]","[id*='navbar' i]","nav:not(.ivc-sb nav)"];
     const hidden=[];
-    SELECTORS.forEach(sel=>{try{document.querySelectorAll(sel).forEach(el=>{if(!el.closest(".ivc-app")){hidden.push({el,prev:el.style.display});el.style.setProperty("display","none","important");}});}catch{}});
+    SELECTORS.forEach(sel=>{try{document.querySelectorAll<HTMLElement>(sel).forEach(el=>{if(!el.closest(".ivc-app")){hidden.push({el,prev:el.style.display});el.style.setProperty("display","none","important");}});}catch{}});
     const prevOverflow=document.body.style.overflow;
     document.body.style.overflow="hidden";
     return()=>{hidden.forEach(({el,prev})=>el.style.display=prev);document.body.style.overflow=prevOverflow;};

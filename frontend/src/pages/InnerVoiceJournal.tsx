@@ -314,7 +314,7 @@ function MantraPlayer({text}) {
   const [playing,setPlaying]=useState(false);
   const [rate,setRate]=useState(1);
   const [showUp,setShowUp]=useState(false);
-  const speak=(r)=>{
+  const speak=(r?)=>{
     window.speechSynthesis?.cancel();
     const u=new SpeechSynthesisUtterance(text);
     u.rate=r||rate;u.pitch=.9;u.volume=1;
@@ -359,7 +359,7 @@ export default function InnerVoiceJournal() {
   const [loadingEod,setLoadingEod]=useState(false);
   const today=new Date().toLocaleDateString("en-IN",{weekday:"long",day:"numeric",month:"long"});
 
-  useEffect(()=>{const s=document.createElement("style");s.textContent=CSS;document.head.appendChild(s);return()=>document.head.removeChild(s);},[]);
+  useEffect(()=>{const s=document.createElement("style");s.textContent=CSS;document.head.appendChild(s);return()=>{document.head.removeChild(s);};},[]);
   useEffect(()=>{init();},[]);
 
   const init=async()=>{

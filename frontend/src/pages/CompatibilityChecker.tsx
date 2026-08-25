@@ -393,7 +393,7 @@
 //   return (
 //     <div className="starfield">
 //       {stars.map(s => (
-//         <div key={s.id} className="star" style={{ left:`${s.x}%`, top:`${s.y}%`, width:s.size, height:s.size, "--d":`${s.d}s`, "--delay":`${s.delay}s`, "--op":s.op }} />
+//         <div key={s.id} className="star" style={{ left:`${s.x}%`, top:`${s.y}%`, width:s.size, height:s.size, "--d":`${s.d}s`, "--delay":`${s.delay}s`, "--op":s.op } as CSSVarStyle} />
 //       ))}
 //     </div>
 //   );
@@ -1446,7 +1446,7 @@ function Starfield() {
   return (
     <div className="starfield">
       {stars.map(s => (
-        <div key={s.id} className="star" style={{ left:`${s.x}%`, top:`${s.y}%`, width:s.size, height:s.size, "--d":`${s.d}s`, "--delay":`${s.delay}s`, "--op":s.op }} />
+        <div key={s.id} className="star" style={{ left:`${s.x}%`, top:`${s.y}%`, width:s.size, height:s.size, "--d":`${s.d}s`, "--delay":`${s.delay}s`, "--op":s.op } as CSSVarStyle} />
       ))}
     </div>
   );

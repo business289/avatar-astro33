@@ -353,7 +353,7 @@
 // // ── Starfield ─────────────────────────────────────────────────────────────────
 // function Starfield(){
 //   const stars=Array.from({length:140},(_,i)=>({id:i,x:Math.random()*100,y:Math.random()*100,sz:Math.random()*2+.4,d:(Math.random()*4+2).toFixed(1),dl:(Math.random()*6).toFixed(2),op:(Math.random()*.6+.2).toFixed(2)}));
-//   return <div className="sf">{stars.map(s=><div key={s.id} className="st" style={{left:`${s.x}%`,top:`${s.y}%`,width:s.sz,height:s.sz,"--d":`${s.d}s`,"--dl":`${s.dl}s`,"--op":s.op}}/>)}</div>;
+//   return <div className="sf">{stars.map(s=><div key={s.id} className="st" style={{left:`${s.x}%`,top:`${s.y}%`,width:s.sz,height:s.sz,"--d":`${s.d}s`,"--dl":`${s.dl}s`,"--op":s.op} as CSSVarStyle}/>)}</div>;
 // }
 
 // // ── DNA bar ───────────────────────────────────────────────────────────────────
@@ -1135,6 +1135,12 @@ const css = `
 .name-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
 @media(max-width:500px){.name-row,.drow,.trow{grid-template-columns:1fr;}}
 
+/* Hero grid — stacks on narrow screens so the zodiac image can't overflow */
+.bc-hero-grid{display:grid;grid-template-columns:1.3fr 1fr;gap:60px;align-items:center;}
+@media(max-width:860px){.bc-hero-grid{grid-template-columns:1fr;gap:32px;text-align:center;}.bc-hero-meta{justify-content:center;}}
+.bc-hero-img-wrap{width:100%;min-height:min(460px,70vw);}
+.bc-hero-img{width:min(460px,70vw);height:min(460px,70vw);max-width:100%;}
+
 /* Place autocomplete */
 .pl-wrap{position:relative;}
 .pl-drop{position:absolute;top:calc(100% + 6px);left:0;right:0;background:#150830;border:1px solid rgba(123,47,255,.4);border-radius:10px;z-index:100;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.7);}
@@ -1468,7 +1474,7 @@ async function fetchBirthChartAI(payload){
 // ── Starfield ─────────────────────────────────────────────────────────────────
 function Starfield(){
   const stars=Array.from({length:140},(_,i)=>({id:i,x:Math.random()*100,y:Math.random()*100,sz:Math.random()*2+.4,d:(Math.random()*4+2).toFixed(1),dl:(Math.random()*6).toFixed(2),op:(Math.random()*.6+.2).toFixed(2)}));
-  return <div className="sf">{stars.map(s=><div key={s.id} className="st" style={{left:`${s.x}%`,top:`${s.y}%`,width:s.sz,height:s.sz,"--d":`${s.d}s`,"--dl":`${s.dl}s`,"--op":s.op}}/>)}</div>;
+  return <div className="sf">{stars.map(s=><div key={s.id} className="st" style={{left:`${s.x}%`,top:`${s.y}%`,width:s.sz,height:s.sz,"--d":`${s.d}s`,"--dl":`${s.dl}s`,"--op":s.op} as CSSVarStyle}/>)}</div>;
 }
 
 // ── Place input ───────────────────────────────────────────────────────────────
@@ -1654,14 +1660,14 @@ function Results({data,onReset}){
     <div style={{maxWidth:1200,margin:"0 auto",padding:"20px 24px 100px",color:"#e8e0f0",fontFamily:"'Inter',sans-serif"}}>
 
       {/* ── HERO ── */}
-      <div className="r-sec" style={{display:"grid",gridTemplateColumns:"1.3fr 1fr",gap:60,alignItems:"center",marginBottom:80,paddingTop:20,animationDelay:"0.05s"}}>
+      <div className="r-sec bc-hero-grid" style={{marginBottom:80,paddingTop:20,animationDelay:"0.05s"}}>
         <div>
           <div style={{color:"rgba(255,255,255,0.5)",fontWeight:700,fontSize:15,letterSpacing:"0.15em",marginBottom:12}}>BIRTH CHART REPORT</div>
           <div style={{fontFamily:"'Astra','Cinzel',serif",fontSize:"clamp(32px,5vw,52px)",color:"#fff",fontWeight:700,textTransform:"uppercase",letterSpacing:"0.04em",marginBottom:16,lineHeight:1.1}}>{name}</div>
           <div style={{color:"#ff7e47",fontWeight:700,fontSize:18,marginBottom:24}}>{zodiac.toUpperCase()} SUN &nbsp;•&nbsp; LIFE PATH {lifePath}</div>
           <div style={{fontSize:18,fontStyle:"italic",lineHeight:1.7,color:"#f8f8f8",marginBottom:32}}>{heroDesc}</div>
 
-          <div style={{display:"flex",gap:28,flexWrap:"nowrap"}}>
+          <div className="bc-hero-meta" style={{display:"flex",gap:28,flexWrap:"wrap"}}>
             <div style={{display:"flex",alignItems:"center",gap:12,flexShrink:0}}>
               <div style={{width:44,height:44,borderRadius:"50%",background:"rgba(255,126,71,0.12)",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}><Calendar size={20} color="#ff7e47"/></div>
               <div style={{whiteSpace:"nowrap"}}>
@@ -1686,9 +1692,9 @@ function Results({data,onReset}){
           </div>
         </div>
 
-        <div style={{position:"relative",display:"flex",alignItems:"center",justifyContent:"center",minHeight:460}}>
+        <div className="bc-hero-img-wrap" style={{position:"relative",display:"flex",alignItems:"center",justifyContent:"center"}}>
           <div style={{position:"absolute",inset:"2%",borderRadius:"50%",background:"radial-gradient(circle,rgba(255,126,71,0.18),transparent 70%)",filter:"blur(20px)"}}></div>
-          <img src={zodiacImg} alt={zodiac} style={{position:"relative",width:460,height:460,objectFit:"contain",filter:"drop-shadow(0 0 40px rgba(255,126,71,0.4))"}}/>
+          <img src={zodiacImg} alt={zodiac} className="bc-hero-img" style={{position:"relative",objectFit:"contain",filter:"drop-shadow(0 0 40px rgba(255,126,71,0.4))"}}/>
         </div>
       </div>
 
@@ -1907,9 +1913,9 @@ export default function App(){
   return(
     <div className="bc-app">
       <Starfield/>
-      <div className="nb" style={{width:700,height:700,top:"-250px",left:"-200px",background:"radial-gradient(circle,rgba(245,197,24,.1),transparent 70%)","--nd":"20s"}}/>
-      <div className="nb" style={{width:500,height:500,bottom:"5%",right:"-100px",background:"radial-gradient(circle,rgba(123,47,255,.1),transparent 70%)","--nd":"25s"}}/>
-      <div className="nb" style={{width:400,height:400,top:"40%",left:"35%",background:"radial-gradient(circle,rgba(0,229,255,.06),transparent 70%)","--nd":"30s"}}/>
+      <div className="nb" style={{width:700,height:700,top:"-250px",left:"-200px",background:"radial-gradient(circle,rgba(245,197,24,.1),transparent 70%)","--nd":"20s"} as CSSVarStyle}/>
+      <div className="nb" style={{width:500,height:500,bottom:"5%",right:"-100px",background:"radial-gradient(circle,rgba(123,47,255,.1),transparent 70%)","--nd":"25s"} as CSSVarStyle}/>
+      <div className="nb" style={{width:400,height:400,top:"40%",left:"35%",background:"radial-gradient(circle,rgba(0,229,255,.06),transparent 70%)","--nd":"30s"} as CSSVarStyle}/>
 
       {phase==="loading"&&<Loading name={[form.firstName,form.lastName].filter(Boolean).join(" ")}/>}
 
