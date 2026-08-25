@@ -14,6 +14,7 @@ import ZodiacSigns from "./pages/ZodiacSigns";
 import ZodiacDetail from "./pages/ZodiacDetail";
 import CompatibilityChecker from "./pages/CompatibilityChecker";
 import BirthChart from "./pages/BirthChart";
+import NameDestinyReportPage from "./pages/NameDestinyReportPage";
 import Blog from "./pages/Blog";
 import About from "./pages/About";
 import Contact from "./pages/Contact";
@@ -29,6 +30,8 @@ import NotFound from "./pages/NotFound";
 import CosmicBackground from "./components/CosmicBackground";
 import { PublicRoute } from "./routes/PublicRoute";
 import { GoogleOnboardingRoute } from "./routes/ProtectedRoute";
+import { AdminRoute } from "./routes/AdminRoute";
+import Loader from "./components/Loader/Loader";
 
 const LoginPage = lazy(() => import("./features/auth/pages/LoginPage"));
 const RegisterPage = lazy(() => import("./features/auth/pages/RegisterPage"));
@@ -43,6 +46,23 @@ const GoogleOnboardingPage = lazy(
   () => import("./features/auth/pages/GoogleOnboardingPage"),
 );
 
+const AdminLayout = lazy(
+  () => import("./features/admin/components/AdminLayout"),
+);
+const AdminDashboardPage = lazy(
+  () => import("./features/admin/pages/Dashboard"),
+);
+const AdminPujaPage = lazy(() => import("./features/admin/pages/Puja"));
+const AdminChadhawaPage = lazy(
+  () => import("./features/admin/pages/Chadhawa"),
+);
+const AdminShopCategoriesPage = lazy(
+  () => import("./features/admin/pages/ShopCategories"),
+);
+const AdminShopProductsPage = lazy(
+  () => import("./features/admin/pages/ShopProducts"),
+);
+
 const PujaPage      = lazy(() => import("./pages/Puja/index"));
 const PujaDetail    = lazy(() => import("./pages/Puja/PujaDetail"));
 const ChadhawaPage  = lazy(() => import("./pages/Chadhawa/index"));
@@ -55,6 +75,12 @@ const DarshanDetail    = lazy(() => import("./pages/AvatarLive/DarshanDetail"));
 const FamilyPage       = lazy(() => import("./pages/AvatarLive/FamilyPage"));
 
 const LazyFallback = () => <div className="min-h-screen" />;
+
+const AdminLazyFallback = () => (
+  <div className="flex min-h-screen items-center justify-center bg-[#081426]">
+    <Loader />
+  </div>
+);
 
 const queryClient = new QueryClient();
 
@@ -138,6 +164,14 @@ const AnimatedRoutes = () => {
           element={
             <PageTransition>
               <BirthChart />
+            </PageTransition>
+          }
+        />
+        <Route
+          path="/name-destiny-report"
+          element={
+            <PageTransition>
+              <NameDestinyReportPage />
             </PageTransition>
           }
         />
@@ -409,6 +443,59 @@ const App = () => {
                 </Suspense>
               }
             />
+          </Route>
+
+          {/* Admin — own layout (no public CosmicBackground / Navbar) */}
+          <Route element={<AdminRoute />}>
+            <Route
+              path="/admin"
+              element={
+                <Suspense fallback={<AdminLazyFallback />}>
+                  <AdminLayout />
+                </Suspense>
+              }
+            >
+              <Route
+                index
+                element={
+                  <Suspense fallback={<AdminLazyFallback />}>
+                    <AdminDashboardPage />
+                  </Suspense>
+                }
+              />
+              <Route
+                path="puja"
+                element={
+                  <Suspense fallback={<AdminLazyFallback />}>
+                    <AdminPujaPage />
+                  </Suspense>
+                }
+              />
+              <Route
+                path="chadhawa"
+                element={
+                  <Suspense fallback={<AdminLazyFallback />}>
+                    <AdminChadhawaPage />
+                  </Suspense>
+                }
+              />
+              <Route
+                path="shop/categories"
+                element={
+                  <Suspense fallback={<AdminLazyFallback />}>
+                    <AdminShopCategoriesPage />
+                  </Suspense>
+                }
+              />
+              <Route
+                path="shop/products"
+                element={
+                  <Suspense fallback={<AdminLazyFallback />}>
+                    <AdminShopProductsPage />
+                  </Suspense>
+                }
+              />
+            </Route>
           </Route>
 
           {/* All other pages with Layout */}

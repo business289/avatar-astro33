@@ -2,114 +2,18 @@ import { useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { ArrowRight, Star, Eye, Heart, Sparkles, Shield } from "lucide-react";
+import { ArrowRight, Shield } from "lucide-react";
 import NewsletterForm from "@/components/NewsletterForm";
 import ZodiacWheelSection from "@/components/ZodiacWheelSection";
-// import { ScrollytellingHero } from "@/components/three/ScrollytellingHero";
-import zodiacAnalysisImg from "@/assets/zodiacanalysis.png";
-import howItWorksWheel from "@/assets/how-it-works-wheel.png";
+import Hero from "@/components/hero/Hero";
+import AstrologyToolsSection from "@/components/AstrologyToolsSection";
+import FeatureShowcase from "@/components/FeatureShowcase";
 import sunMoonImg from "@/assets/sun-moon.png";
 import newsletterBg from "@/assets/newsletter-bg.png";
-import loveImg from "@/assets/love.png";
-import careerImg from "@/assets/career.png";
-import birthChartImg from "@/assets/birthchart.png";
-import weeklyImg from "@/assets/weekly.png";
-import dailyImg from "@/assets/daily.png";
-import { lazy, Suspense } from "react";
-
-const ScrollytellingHero = lazy(
-  () => import("@/components/three/ScrollytellingHero"),
-);
 
 gsap.registerPlugin(ScrollTrigger);
 
 /* ── Data ──────────────────────────────────────────────────────────────── */
-
-const howItWorks = [
-  {
-    step: "01",
-    title: "Select Your Sign",
-    description:
-      "Choose your zodiac sign from our mystical wheel and begin your journey of self-discovery.",
-    icon: Star,
-  },
-  {
-    step: "02",
-    title: "Explore Traits",
-    description:
-      "Discover your personality, strengths, hidden qualities, and the deeper traits that define you.",
-    icon: Eye,
-  },
-  {
-    step: "03",
-    title: "Check Compatibility",
-    description:
-      "Explore your cosmic connections and gain deeper insights into relationships and compatibility.",
-    icon: Heart,
-  },
-  {
-    step: "04",
-    title: "Daily Insights",
-    description:
-      "Receive personalized cosmic guidance and meaningful astrological insights every day.",
-    icon: Sparkles,
-  },
-];
-
-const offerRows = [
-  [
-    {
-      title: "",
-      description: "",
-      image: zodiacAnalysisImg,
-      flex: 722,
-      height: 486,
-      path: "/zodiac",
-    },
-    {
-      title: "",
-      description: "",
-      image: loveImg,
-      flex: 498,
-      height: 486,
-      path: "/compatibility",
-    },
-    {
-      title: "",
-      description: "",
-      image: careerImg,
-      flex: 498,
-      height: 486,
-      path: "/horoscopes",
-    },
-  ],
-  [
-    {
-      title: "",
-      description: "",
-      image: birthChartImg,
-      flex: 498,
-      height: 486,
-      path: "/birth-chart",
-    },
-    {
-      title: "",
-      description: "",
-      image: weeklyImg,
-      flex: 498,
-      height: 486,
-      path: "/horoscopes",
-    },
-    {
-      title: "",
-      description: "",
-      image: dailyImg,
-      flex: 722,
-      height: 486,
-      path: "/horoscopes",
-    },
-  ],
-];
 
 const trustReasons = [
   {
@@ -133,36 +37,10 @@ const trustReasons = [
 /* ── Component ─────────────────────────────────────────────────────────── */
 
 const Index = () => {
-  const featuresRef = useRef<HTMLDivElement>(null);
-  const offerRef = useRef<HTMLDivElement>(null);
   const trustRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const ctx = gsap.context(() => {
-      gsap.fromTo(
-        ".step-item",
-        { opacity: 0, x: 40 },
-        {
-          opacity: 1,
-          x: 0,
-          stagger: 0.2,
-          duration: 0.8,
-          ease: "power3.out",
-          scrollTrigger: { trigger: featuresRef.current, start: "top 80%" },
-        },
-      );
-      gsap.fromTo(
-        ".offer-card",
-        { opacity: 0, scale: 0.93 },
-        {
-          opacity: 1,
-          scale: 1,
-          stagger: 0.08,
-          duration: 0.55,
-          ease: "power3.out",
-          scrollTrigger: { trigger: offerRef.current, start: "top 80%" },
-        },
-      );
       gsap.fromTo(
         ".trust-item",
         { opacity: 0, x: -30 },
@@ -182,197 +60,11 @@ const Index = () => {
   return (
     <div className="relative">
       <div className="relative z-10">
-        {/* ── HERO — Interactive 3D Solar System ───────────────────── */}
-        {/* <ScrollytellingHero /> */}
+        {/* ── HERO ──────────────────────────────────────────────────── */}
+        <Hero />
 
-        <Suspense
-          fallback={
-            <div className="h-screen flex items-center justify-center">
-              Loading cosmos...
-            </div>
-          }
-        >
-          <ScrollytellingHero />
-        </Suspense>
-
-        {/* ── HOW IT WORKS ──────────────────────────────────────────── */}
-        <section ref={featuresRef} className="relative z-10 py-24">
-          <div className="container mx-auto px-6 lg:px-16">
-            {/* Heading */}
-            <div className="text-center mb-16">
-              <h2 className="font-display text-5xl md:text-6xl font-bold tracking-widest uppercase mb-4 leading-none">
-                <span className="text-foreground">How It </span>
-                <span className="text-primary">Works</span>
-              </h2>
-              <p className="text-sm md:text-base text-muted-foreground max-w-xs mx-auto leading-snug">
-                Your journey to cosmic enlightenment in four simple steps
-              </p>
-            </div>
-
-            {/* Two-column body */}
-            <div className="grid lg:grid-cols-2 gap-8 lg:gap-16 items-start">
-              {/* LEFT — zodiac wheel image */}
-              <div className="flex items-start justify-center order-2 lg:order-1 select-none -mt-16">
-                <img
-                  src={howItWorksWheel}
-                  alt="Zodiac wheel"
-                  className="w-[300px] md:w-[440px] object-contain"
-                />
-              </div>
-
-              {/* RIGHT — numbered steps */}
-              <div className="space-y-0 order-1 lg:order-2 divide-y divide-white/5">
-                {howItWorks.map((item, index) => (
-                  <div key={index} className="step-item py-8 first:pt-0">
-                    {/* Step number row + icon */}
-                    <div className="flex items-center justify-between mb-3">
-                      <span
-                        className="font-display text-sm tracking-[0.28em] uppercase"
-                        style={{ color: "#BC6A4D", opacity: 0.85 }}
-                      >
-                        [{item.step}]
-                      </span>
-
-                      {/* Circular step icon */}
-                      <div
-                        className="w-11 h-11 rounded-full flex items-center justify-center flex-shrink-0"
-                        style={{
-                          border: "1px solid rgba(188,106,77,0.35)",
-                          background: "rgba(188,106,77,0.06)",
-                        }}
-                      >
-                        {index === 0 && (
-                          <svg
-                            viewBox="0 0 36 36"
-                            className="w-6 h-6"
-                            fill="none"
-                            xmlns="http://www.w3.org/2000/svg"
-                          >
-                            <circle
-                              cx="18"
-                              cy="18"
-                              r="10"
-                              stroke="#BC6A4D"
-                              strokeWidth="1"
-                              strokeOpacity="0.9"
-                            />
-                            <circle
-                              cx="18"
-                              cy="18"
-                              r="2"
-                              fill="#BC6A4D"
-                              fillOpacity="0.9"
-                            />
-                            {[0, 45, 90, 135, 180, 225, 270, 315].map((d) => {
-                              const a = (d * Math.PI) / 180;
-                              return (
-                                <line
-                                  key={d}
-                                  x1={18 + Math.cos(a) * 4}
-                                  y1={18 + Math.sin(a) * 4}
-                                  x2={18 + Math.cos(a) * 8}
-                                  y2={18 + Math.sin(a) * 8}
-                                  stroke="#BC6A4D"
-                                  strokeWidth="1"
-                                  strokeOpacity="0.8"
-                                />
-                              );
-                            })}
-                          </svg>
-                        )}
-                        {index === 1 && (
-                          <svg
-                            viewBox="0 0 36 36"
-                            className="w-6 h-6"
-                            fill="none"
-                            xmlns="http://www.w3.org/2000/svg"
-                          >
-                            <circle
-                              cx="18"
-                              cy="13"
-                              r="5"
-                              stroke="#BC6A4D"
-                              strokeWidth="1"
-                              strokeOpacity="0.9"
-                            />
-                            <path
-                              d="M8,30 Q8,22 18,22 Q28,22 28,30"
-                              stroke="#BC6A4D"
-                              strokeWidth="1"
-                              strokeOpacity="0.9"
-                              strokeLinecap="round"
-                            />
-                          </svg>
-                        )}
-                        {index === 2 && (
-                          <svg
-                            viewBox="0 0 36 36"
-                            className="w-6 h-6"
-                            fill="none"
-                            xmlns="http://www.w3.org/2000/svg"
-                          >
-                            <circle
-                              cx="18"
-                              cy="18"
-                              r="7"
-                              stroke="#BC6A4D"
-                              strokeWidth="1"
-                              strokeOpacity="0.9"
-                            />
-                            <ellipse
-                              cx="18"
-                              cy="18"
-                              rx="16"
-                              ry="6"
-                              stroke="#BC6A4D"
-                              strokeWidth="1"
-                              strokeOpacity="0.7"
-                              transform="rotate(-20 18 18)"
-                            />
-                          </svg>
-                        )}
-                        {index === 3 && (
-                          <svg
-                            viewBox="0 0 36 36"
-                            className="w-6 h-6"
-                            fill="none"
-                            xmlns="http://www.w3.org/2000/svg"
-                          >
-                            <path
-                              d="M22,8 A12,12 0 1,0 22,28 A8,8 0 1,1 22,8 Z"
-                              fill="#BC6A4D"
-                              fillOpacity="0.25"
-                              stroke="#BC6A4D"
-                              strokeWidth="1"
-                              strokeOpacity="0.9"
-                            />
-                            <circle
-                              cx="26"
-                              cy="10"
-                              r="2"
-                              fill="#BC6A4D"
-                              fillOpacity="0.8"
-                            />
-                          </svg>
-                        )}
-                      </div>
-                    </div>
-
-                    {/* Title */}
-                    <h3 className="font-display text-xl md:text-2xl font-bold tracking-wide text-foreground mb-2">
-                      {item.title}
-                    </h3>
-
-                    {/* Description */}
-                    <p className="text-muted-foreground text-base md:text-lg font-astra leading-relaxed max-w-sm">
-                      {item.description}
-                    </p>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </section>
+        {/* ── ASTROLOGY TOOLS ──────────────────────────────────────── */}
+        <AstrologyToolsSection />
 
         {/* ── EXPLORE SOLAR SYSTEM ──────────────────────────────────── */}
         <section className="relative z-10 py-16 flex flex-col items-center text-center px-6">
@@ -427,114 +119,8 @@ const Index = () => {
           </div>
         </section>
 
-        {/* ── WHAT WE OFFER ─────────────────────────────────────────── */}
-        <section
-          ref={offerRef}
-          className="relative z-10 w-full flex flex-col items-center"
-          style={{
-            padding: "94px 53px 144px 53px",
-            gap: 109,
-            maxWidth: 1690,
-            margin: "0 auto",
-          }}
-        >
-          {/* Heading */}
-          <div className="text-center w-full">
-            <h2 className="font-display text-5xl md:text-6xl lg:text-7xl tracking-wider mb-5 leading-none">
-              <span className="text-foreground">What We </span>
-              <span className="text-primary text-glow">Offer</span>
-            </h2>
-            <p className="text-base md:text-lg text-muted-foreground max-w-md mx-auto tracking-wide">
-              Comprehensive cosmic guidance for every aspect of your life
-            </p>
-          </div>
-
-          {/* Offer rows — CSS Grid with proportional columns via --cols custom property */}
-          <div className="flex flex-col w-full" style={{ gap: 12 }}>
-            {offerRows.map((row, rowIdx) => (
-              <div
-                key={rowIdx}
-                className="offer-row"
-                style={
-                  {
-                    "--cols": row.map((item) => `${item.flex}fr`).join(" "),
-                  } as React.CSSProperties
-                }
-              >
-                {row.map((item, cardIdx) => (
-                  <Link
-                    key={cardIdx}
-                    to={item.path}
-                    className="offer-card"
-                    style={{
-                      height: item.height,
-                      display: "block",
-                      position: "relative",
-                      overflow: "hidden",
-                      borderRadius: 12,
-                      alignSelf: "start",
-                    }}
-                  >
-                    {/* LAYER 1 — image only. transform: scale applies here */}
-                    <div className="offer-card-img-wrap">
-                      <img
-                        src={item.image}
-                        alt={item.title.replace("\n", " ")}
-                      />
-                    </div>
-
-                    {/* LAYER 2 — subtle vignette only, no darkening */}
-                    <div
-                      style={{
-                        position: "absolute",
-                        inset: 0,
-                        zIndex: 1,
-                        background:
-                          "linear-gradient(135deg, rgba(0,0,0,0.12) 0%, transparent 50%)",
-                      }}
-                    />
-
-                    {/* LAYER 3 — text content. never transforms, always visible */}
-                    <div
-                      style={{
-                        position: "absolute",
-                        top: 0,
-                        left: 0,
-                        padding: "20px 22px",
-                        zIndex: 2,
-                      }}
-                    >
-                      <h3
-                        style={{
-                          fontFamily: "'Iceland','Cinzel',sans-serif",
-                          fontSize: 22,
-                          fontWeight: 400,
-                          color: "#fff",
-                          letterSpacing: "0.08em",
-                          lineHeight: 1.2,
-                          whiteSpace: "pre-line",
-                          marginBottom: 8,
-                          textTransform: "uppercase",
-                        }}
-                      >
-                        {item.title}
-                      </h3>
-                      <p
-                        style={{
-                          fontSize: 14,
-                          color: "rgba(255,255,255,0.75)",
-                          lineHeight: 1.5,
-                        }}
-                      >
-                        {item.description}
-                      </p>
-                    </div>
-                  </Link>
-                ))}
-              </div>
-            ))}
-          </div>
-        </section>
+        {/* ── FEATURE SHOWCASE ──────────────────────────────────────── */}
+        <FeatureShowcase />
 
         {/* ── ZODIAC SIGNS CAROUSEL ─────────────────────────────────── */}
         <ZodiacWheelSection />

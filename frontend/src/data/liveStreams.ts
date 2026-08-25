@@ -297,7 +297,7 @@ export const liveTemples: LiveTemple[] = [
     viewers: 6200,
     isLive: false,
     gradient: 'linear-gradient(135deg, #5C6B73 0%, #7B8A93 50%, #404E58 100%)',
-    image: 'avatar-live/kedarnath.png',
+    image: 'avatar-live/kedarnath.jpeg',
     darshanTimings: '6:00 AM – 3:00 PM, 5:00 PM – 9:00 PM (seasonal — open Akshaya Tritiya to Bhai Dooj)',
     aartTimings: [
       '4:00 AM – Mangal Aarti',
@@ -320,7 +320,7 @@ export const liveTemples: LiveTemple[] = [
     viewers: 5400,
     isLive: false,
     gradient: 'linear-gradient(135deg, #3A6B7A 0%, #5C97A8 50%, #274C58 100%)',
-    image: 'avatar-live/omkareshwar.png',
+    image: 'avatar-live/omkareshwar.jpeg',
     darshanTimings: '5:00 AM – 10:30 PM',
     aartTimings: [
       '5:00 AM – Prathah Aarti',
@@ -344,7 +344,7 @@ export const liveTemples: LiveTemple[] = [
     viewers: 4300,
     isLive: false,
     gradient: 'linear-gradient(135deg, #6B4F8A 0%, #8E6FB0 50%, #4A3763 100%)',
-    image: 'avatar-live/trimbakeshwar.png',
+    image: 'avatar-live/trimbakeshwar.jpeg',
     darshanTimings: '5:30 AM – 9:00 PM',
     aartTimings: [
       '5:30 AM – Kakad Aarti',
@@ -367,7 +367,7 @@ export const liveTemples: LiveTemple[] = [
     viewers: 7100,
     isLive: false,
     gradient: 'linear-gradient(135deg, #1F7A8C 0%, #3FA7BD 50%, #14545E 100%)',
-    image: 'avatar-live/ramanathaswamy.png',
+    image: 'avatar-live/ramanathaswamy.jpeg',
     darshanTimings: '5:00 AM – 1:00 PM, 3:00 PM – 9:00 PM',
     aartTimings: [
       '5:00 AM – Palliyarai Deeparadhanai',
@@ -390,7 +390,7 @@ export const liveTemples: LiveTemple[] = [
     viewers: 5800,
     isLive: false,
     gradient: 'linear-gradient(135deg, #8A5A2E 0%, #B57F42 50%, #5E3B1C 100%)',
-    image: 'avatar-live/mallikarjuna.png',
+    image: 'avatar-live/mallikarjuna.jpeg',
     darshanTimings: '4:30 AM – 10:00 PM',
     aartTimings: [
       '4:30 AM – Suprabhata Seva',
@@ -413,7 +413,7 @@ export const liveTemples: LiveTemple[] = [
     viewers: 9600,
     isLive: false,
     gradient: 'linear-gradient(135deg, #A5273D 0%, #D14459 50%, #7A1B2A 100%)',
-    image: 'avatar-live/kamakhya.png',
+    image: 'avatar-live/kamakhya.jpeg',
     darshanTimings: '5:30 AM – 10:00 PM',
     aartTimings: [
       '5:30 AM – Prathah Aarti',
@@ -436,7 +436,7 @@ export const liveTemples: LiveTemple[] = [
     viewers: 6700,
     isLive: false,
     gradient: 'linear-gradient(135deg, #C9752E 0%, #E89A4D 50%, #9A5620 100%)',
-    image: 'avatar-live/ambaji.png',
+    image: 'avatar-live/ambaji.jpeg',
     darshanTimings: '7:00 AM – 11:30 PM',
     aartTimings: [
       '7:00 AM – Prathah Aarti',
@@ -459,7 +459,7 @@ export const liveTemples: LiveTemple[] = [
     viewers: 3900,
     isLive: false,
     gradient: 'linear-gradient(135deg, #B8452E 0%, #E06A45 50%, #832F1D 100%)',
-    image: 'avatar-live/jwala-ji.png',
+    image: 'avatar-live/jwala-ji.jpeg',
     darshanTimings: '5:00 AM – 10:00 PM',
     aartTimings: [
       '5:00 AM – Prathah Aarti',

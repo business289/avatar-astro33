@@ -1,0 +1,110 @@
+import { v2 as cloudinary } from "cloudinary";
+import { ApiError } from "@/utils/ApiError.js";
+import STATUS_CODES from "@/utils/statusCodes.js";
+
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+  secure: true,
+});
+
+export const isCloudinaryConfigured = (): boolean =>
+  Boolean(
+    process.env.CLOUDINARY_CLOUD_NAME &&
+      process.env.CLOUDINARY_API_KEY &&
+      process.env.CLOUDINARY_API_SECRET,
+  );
+
+export interface UploadedAsset {
+  url: string;
+  publicId: string;
+}
+
+const assertConfigured = () => {
+  if (!isCloudinaryConfigured()) {
+    throw new ApiError(
+      "Image uploads are unavailable — Cloudinary is not configured on the server",
+      STATUS_CODES.SERVER_ERROR,
+    );
+  }
+};
+
+/**
+ * Turns a Cloudinary SDK error into something an admin can act on.
+ *
+ * On a 403 the SDK reports only "Server returned unexpected status code - 403"
+ * and drops the `x-cld-error` header that says *why* — most often an API key
+ * that was issued without the `create` permission. Naming that here saves
+ * digging through Cloudinary's raw HTTP response to find it.
+ */
+const describeUploadError = (error: any): string => {
+  const httpCode = error?.http_code ?? error?.error?.http_code;
+  const detail = error?.message ?? error?.error?.message;
+
+  if (httpCode === 403) {
+    return (
+      "Cloudinary rejected the upload (403). The configured API key is most " +
+      "likely missing the 'create' permission — check Settings → API Keys in " +
+      "the Cloudinary console."
+    );
+  }
+  if (httpCode === 401) {
+    return "Cloudinary rejected the credentials (401). Check CLOUDINARY_API_KEY and CLOUDINARY_API_SECRET.";
+  }
+
+  return detail ?? "Image upload to Cloudinary failed";
+};
+
+/**
+ * Uploads a buffer to Cloudinary and returns the pieces we persist.
+ * The stream API is used because multer keeps files in memory (no temp path).
+ */
+export const uploadImageBuffer = (
+  buffer: Buffer,
+  folder: string,
+): Promise<UploadedAsset> => {
+  assertConfigured();
+
+  return new Promise((resolve, reject) => {
+    const stream = cloudinary.uploader.upload_stream(
+      { folder, resource_type: "image" },
+      (error, result) => {
+        if (error || !result) {
+          // The full object carries the request id Cloudinary support asks for.
+          console.error("Cloudinary upload failed:", error);
+          reject(
+            new ApiError(
+              describeUploadError(error),
+              STATUS_CODES.BAD_REQUEST,
+            ),
+          );
+          return;
+        }
+        resolve({ url: result.secure_url, publicId: result.public_id });
+      },
+    );
+    stream.end(buffer);
+  });
+};
+
+/**
+ * Deletes an asset. Resolves `false` (rather than throwing) when Cloudinary
+ * reports anything other than success so callers can decide whether an
+ * orphaned remote asset should block the database write.
+ */
+export const deleteImageByPublicId = async (
+  publicId: string,
+): Promise<boolean> => {
+  assertConfigured();
+
+  const result = await cloudinary.uploader.destroy(publicId, {
+    resource_type: "image",
+    invalidate: true,
+  });
+
+  // "not found" means the asset is already gone — the desired end state.
+  return result?.result === "ok" || result?.result === "not found";
+};
+
+export default cloudinary;

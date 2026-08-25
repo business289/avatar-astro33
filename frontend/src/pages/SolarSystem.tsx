@@ -28,7 +28,7 @@ export default function SolarSystem() {
 
       <iframe
         ref={iframeRef}
-        src="/solar-system/index.html"
+        src={import.meta.env.VITE_SOLAR_SYSTEM_URL || "http://localhost:3000"}
         className="w-full h-full border-0"
         title="3D Solar System Explorer"
         allow="autoplay"

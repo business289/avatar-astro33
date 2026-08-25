@@ -3,7 +3,8 @@ import { Link } from 'react-router-dom';
 import { Search, MapPin, ArrowRight, Shield, Camera, Lock, Flame } from 'lucide-react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { temples } from '@/data/temples';
+import { useTemples } from '@/features/puja/hooks';
+import { PujaListSkeleton } from './PujaSkeletons';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -105,14 +106,20 @@ const PujaPage = () => {
   const [query, setQuery] = useState('');
   const gridRef = useRef<HTMLDivElement>(null);
 
+  const { data, isLoading, isError } = useTemples();
+  const temples = data ?? [];
+
   const filtered = temples.filter(t =>
     t.name.toLowerCase().includes(query.toLowerCase()) ||
     t.location.toLowerCase().includes(query.toLowerCase()) ||
     t.state.toLowerCase().includes(query.toLowerCase())
   );
 
+  // Keyed on `data` rather than running once on mount: the cards no longer
+  // exist on the first render, so the tween has to wait for the fetch. Using
+  // `data` (not `filtered`) keeps typing in the search box from re-animating.
   useEffect(() => {
-    if (!gridRef.current) return;
+    if (!gridRef.current || !data) return;
     const ctx = gsap.context(() => {
       gsap.fromTo('.puja-card',
         { opacity: 0, y: 40 },
@@ -121,7 +128,7 @@ const PujaPage = () => {
       );
     }, gridRef);
     return () => ctx.revert();
-  }, []);
+  }, [data]);
 
   return (
     <div
@@ -228,146 +235,161 @@ const PujaPage = () => {
       {/* ── TEMPLE CARDS ──────────────────────────────────────────────── */}
       <section className="relative z-10" style={{ paddingLeft: 32, paddingRight: 32, paddingBottom: 40 }}>
         <div style={{ maxWidth: 1380, margin: '0 auto' }}>
-          <div
-            ref={gridRef}
-            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"
-            style={{ gap: 24 }}
-          >
-            {filtered.map(temple => {
-              const badge    = BADGES[temple.slug]    ?? 'Sacred Puja';
-              const subtitle = SUBTITLES[temple.slug] ?? temple.deity;
+          {isLoading ? (
+            <PujaListSkeleton />
+          ) : (
+            <div
+              ref={gridRef}
+              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"
+              style={{ gap: 24 }}
+            >
+              {filtered.map(temple => {
+                const badge    = BADGES[temple.slug]    ?? 'Sacred Puja';
+                const subtitle = SUBTITLES[temple.slug] ?? temple.deity;
 
-              return (
-                <Link
-                  key={temple.id}
-                  to={`/puja/${temple.slug}`}
-                  className="puja-card group block"
-                  style={{
-                    background: '#FFFFFF',
-                    borderRadius: 20,
-                    border: '1.5px solid rgba(188,106,77,0.13)',
-                    boxShadow: '0 4px 20px rgba(120,60,20,0.07), 0 1px 3px rgba(0,0,0,0.04)',
-                    overflow: 'hidden',
-                    transition: 'transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease',
-                    textDecoration: 'none',
-                  }}
-                  onMouseEnter={e => {
-                    const el = e.currentTarget as HTMLElement;
-                    el.style.transform = 'translateY(-5px)';
-                    el.style.boxShadow = '0 16px 48px rgba(120,60,20,0.13), 0 4px 12px rgba(0,0,0,0.06)';
-                    el.style.borderColor = 'rgba(188,106,77,0.38)';
-                  }}
-                  onMouseLeave={e => {
-                    const el = e.currentTarget as HTMLElement;
-                    el.style.transform = 'translateY(0)';
-                    el.style.boxShadow = '0 4px 20px rgba(120,60,20,0.07), 0 1px 3px rgba(0,0,0,0.04)';
-                    el.style.borderColor = 'rgba(188,106,77,0.13)';
-                  }}
-                >
-                  {/* Image — 4:3 ratio, object-contain */}
-                  <div style={{
-                    position: 'relative',
-                    width: '100%',
-                    paddingBottom: '75%',
-                    background: temple.gradient,
-                    borderRadius: '18px 18px 0 0',
-                    overflow: 'hidden',
-                  }}>
-                    {temple.image && (
-                      <img
-                        src={`/images/temples/${temple.image}`}
-                        alt={temple.name}
-                        style={{
-                          position: 'absolute', inset: 0,
-                          width: '100%', height: '100%',
-                          objectFit: 'contain', objectPosition: 'center',
-                          padding: '12px',
-                          transition: 'transform 0.6s ease',
-                        }}
-                        className="group-hover:scale-[1.04]"
-                        onError={e => { (e.target as HTMLImageElement).style.display = 'none'; }}
-                      />
-                    )}
-                  </div>
-
-                  {/* Card body */}
-                  <div style={{ padding: '22px 24px 24px', display: 'flex', flexDirection: 'column', gap: 10 }}>
-
-                    {/* Badge */}
-                    <span style={{
-                      display: 'inline-flex', alignItems: 'center', gap: 5,
-                      fontSize: 11, fontWeight: 600, letterSpacing: '0.04em',
-                      color: '#BC6A4D',
-                      background: 'rgba(188,106,77,0.07)',
-                      border: '1px solid rgba(188,106,77,0.22)',
-                      borderRadius: 99,
-                      padding: '4px 11px',
-                      width: 'fit-content',
-                      fontFamily: "'Astra','Iceland',sans-serif",
-                    }}>
-                      🔥 {badge}
-                    </span>
-
-                    {/* Temple name */}
-                    <h3 className="font-display uppercase tracking-wide leading-tight" style={{
-                      fontSize: 30, fontWeight: 700, color: '#2C1810',
-                      transition: 'color 0.25s',
+                return (
+                  <Link
+                    key={temple.id}
+                    to={`/puja/${temple.slug}`}
+                    className="puja-card group block"
+                    style={{
+                      background: '#FFFFFF',
+                      borderRadius: 20,
+                      border: '1.5px solid rgba(188,106,77,0.13)',
+                      boxShadow: '0 4px 20px rgba(120,60,20,0.07), 0 1px 3px rgba(0,0,0,0.04)',
+                      overflow: 'hidden',
+                      transition: 'transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease',
+                      textDecoration: 'none',
                     }}
-                      onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color = '#BC6A4D'; }}
-                      onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = '#2C1810'; }}
-                    >
-                      {temple.name}
-                    </h3>
-
-                    {/* Subtitle */}
-                    <p style={{ fontSize: 15, fontWeight: 600, color: '#BC6A4D' }}>
-                      {subtitle}
-                    </p>
-
-                    {/* Location */}
-                    <p style={{ fontSize: 14, color: '#6B4E3D', display: 'flex', alignItems: 'center', gap: 5 }}>
-                      <MapPin style={{ width: 14, height: 14, color: '#BC6A4D', flexShrink: 0 }} />
-                      {temple.location}, {temple.state}
-                    </p>
-
-                    {/* Divider */}
-                    <div style={{ height: 1, background: 'rgba(188,106,77,0.12)', marginTop: 2, marginBottom: 2 }} />
-
-                    {/* Price + CTA */}
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
-                      <div>
-                        <p style={{
-                          fontSize: 10, fontWeight: 700, letterSpacing: '0.14em',
-                          color: '#9C7B62', textTransform: 'uppercase',
-                          marginBottom: 2, fontFamily: "'Astra','Iceland',sans-serif",
-                        }}>
-                          Starting from
-                        </p>
-                        <p style={{ fontSize: 26, fontWeight: 800, color: '#2C1810', fontFamily: 'Iceland, sans-serif' }}>
-                          ₹{temple.priceFrom}
-                        </p>
-                      </div>
-                      <span style={{
-                        display: 'inline-flex', alignItems: 'center', gap: 7,
-                        background: 'linear-gradient(135deg, #BC6A4D 0%, #BC6A4D 100%)',
-                        color: '#FFFFFF',
-                        fontSize: 13, fontWeight: 700,
-                        letterSpacing: '0.10em', textTransform: 'uppercase',
-                        padding: '12px 20px',
-                        borderRadius: 12,
-                        flexShrink: 0,
-                        fontFamily: 'Iceland, sans-serif',
-                      }}>
-                        Book Puja <ArrowRight style={{ width: 14, height: 14 }} />
-                      </span>
+                    onMouseEnter={e => {
+                      const el = e.currentTarget as HTMLElement;
+                      el.style.transform = 'translateY(-5px)';
+                      el.style.boxShadow = '0 16px 48px rgba(120,60,20,0.13), 0 4px 12px rgba(0,0,0,0.06)';
+                      el.style.borderColor = 'rgba(188,106,77,0.38)';
+                    }}
+                    onMouseLeave={e => {
+                      const el = e.currentTarget as HTMLElement;
+                      el.style.transform = 'translateY(0)';
+                      el.style.boxShadow = '0 4px 20px rgba(120,60,20,0.07), 0 1px 3px rgba(0,0,0,0.04)';
+                      el.style.borderColor = 'rgba(188,106,77,0.13)';
+                    }}
+                  >
+                    {/* Image — 4:3 ratio, edge-to-edge cover (matches Live Darshan cards) */}
+                    <div style={{
+                      position: 'relative',
+                      width: '100%',
+                      paddingBottom: '75%',
+                      background: temple.gradient ?? undefined,
+                      borderRadius: '18px 18px 0 0',
+                      overflow: 'hidden',
+                    }}>
+                      {temple.image && (
+                        <img
+                          src={temple.image}
+                          alt={temple.name}
+                          style={{
+                            position: 'absolute', inset: 0,
+                            width: '100%', height: '100%',
+                            objectFit: 'cover', objectPosition: 'center',
+                            display: 'block',
+                            transition: 'transform 0.6s ease',
+                          }}
+                          className="group-hover:scale-[1.04]"
+                          onError={e => { (e.target as HTMLImageElement).style.display = 'none'; }}
+                        />
+                      )}
                     </div>
-                  </div>
-                </Link>
-              );
-            })}
-          </div>
 
-          {filtered.length === 0 && (
+                    {/* Card body */}
+                    <div style={{ padding: '22px 24px 24px', display: 'flex', flexDirection: 'column', gap: 10 }}>
+
+                      {/* Badge */}
+                      <span style={{
+                        display: 'inline-flex', alignItems: 'center', gap: 5,
+                        fontSize: 11, fontWeight: 600, letterSpacing: '0.04em',
+                        color: '#BC6A4D',
+                        background: 'rgba(188,106,77,0.07)',
+                        border: '1px solid rgba(188,106,77,0.22)',
+                        borderRadius: 99,
+                        padding: '4px 11px',
+                        width: 'fit-content',
+                        fontFamily: "'Astra','Iceland',sans-serif",
+                      }}>
+                        🔥 {badge}
+                      </span>
+
+                      {/* Temple name */}
+                      <h3 className="font-display uppercase tracking-wide leading-tight" style={{
+                        fontSize: 30, fontWeight: 700, color: '#2C1810',
+                        transition: 'color 0.25s',
+                      }}
+                        onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color = '#BC6A4D'; }}
+                        onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = '#2C1810'; }}
+                      >
+                        {temple.name}
+                      </h3>
+
+                      {/* Subtitle */}
+                      <p style={{ fontSize: 15, fontWeight: 600, color: '#BC6A4D' }}>
+                        {subtitle}
+                      </p>
+
+                      {/* Location */}
+                      <p style={{ fontSize: 14, color: '#6B4E3D', display: 'flex', alignItems: 'center', gap: 5 }}>
+                        <MapPin style={{ width: 14, height: 14, color: '#BC6A4D', flexShrink: 0 }} />
+                        {temple.location}, {temple.state}
+                      </p>
+
+                      {/* Divider */}
+                      <div style={{ height: 1, background: 'rgba(188,106,77,0.12)', marginTop: 2, marginBottom: 2 }} />
+
+                      {/* Price + CTA */}
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
+                        <div>
+                          <p style={{
+                            fontSize: 10, fontWeight: 700, letterSpacing: '0.14em',
+                            color: '#9C7B62', textTransform: 'uppercase',
+                            marginBottom: 2, fontFamily: "'Astra','Iceland',sans-serif",
+                          }}>
+                            Starting from
+                          </p>
+                          <p style={{ fontSize: 26, fontWeight: 800, color: '#2C1810', fontFamily: 'Iceland, sans-serif' }}>
+                            ₹{temple.priceFrom}
+                          </p>
+                        </div>
+                        <span style={{
+                          display: 'inline-flex', alignItems: 'center', gap: 7,
+                          background: 'linear-gradient(135deg, #BC6A4D 0%, #BC6A4D 100%)',
+                          color: '#FFFFFF',
+                          fontSize: 13, fontWeight: 700,
+                          letterSpacing: '0.10em', textTransform: 'uppercase',
+                          padding: '12px 20px',
+                          borderRadius: 12,
+                          flexShrink: 0,
+                          fontFamily: 'Iceland, sans-serif',
+                        }}>
+                          Book Puja <ArrowRight style={{ width: 14, height: 14 }} />
+                        </span>
+                      </div>
+                    </div>
+                  </Link>
+                );
+              })}
+            </div>
+          )}
+
+          {!isLoading && isError && (
+            <div style={{ textAlign: 'center', paddingTop: 80, paddingBottom: 80 }}>
+              <p style={{ fontSize: 22, color: '#9C7B62', fontFamily: 'Iceland, sans-serif', letterSpacing: '0.1em' }}>
+                Could not load temples
+              </p>
+              <p style={{ fontSize: 14, color: '#B09070', marginTop: 8 }}>
+                Please check your connection and try again
+              </p>
+            </div>
+          )}
+
+          {!isLoading && !isError && filtered.length === 0 && (
             <div style={{ textAlign: 'center', paddingTop: 80, paddingBottom: 80 }}>
               <p style={{ fontSize: 22, color: '#9C7B62', fontFamily: 'Iceland, sans-serif', letterSpacing: '0.1em' }}>
                 No temples found

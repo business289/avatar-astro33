@@ -7,9 +7,14 @@ import axios from "axios";
 import interpretationRoutes from "./routes/interpretationRoutes.js";
 import compatibilityRoutes from "./routes/compatibilityRoutes.js";
 import birthChartRoutes from "./routes/birthChartRoutes.js";
+import nameAnalysisRoutes from "./routes/nameAnalysisRoutes.js";
 import innerVoiceRoutes from "./routes/innerVoiceRoutes.js";
 import darshanRoutes from "./routes/darshanRoutes.js";
 import authRoutes from "./modules/auth/auth.route.js";
+import adminRoutes from "./modules/admin/admin.route.js";
+import publicTempleRoutes from "./modules/puja/puja.public.route.js";
+import publicChadhawaRoutes from "./modules/chadhawa/chadhawa.public.route.js";
+import publicShopRoutes from "./modules/shop/shop.public.route.js";
 import { errorHandler } from "./middleware/errorHandler.js";
 import { startDarshanRefreshLoop } from "./services/darshanRefreshService.js";
 
@@ -63,7 +68,7 @@ app.use(
       console.warn(`✗ CORS rejected origin: ${origin}`);
       callback(new Error("Not allowed by CORS"));
     },
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     credentials: true,
   }),
 );
@@ -279,10 +284,23 @@ app.post("/api/contact/send", (req: Request, res: Response) => {
 // Auth routes
 app.use("/api/auth", authRoutes);
 
+// Admin routes (ADMIN / SUPERADMIN only)
+app.use("/api/admin", adminRoutes);
+
+// Public temple/puja catalogue (read-only, no auth)
+app.use("/api/temples", publicTempleRoutes);
+
+// Public Chadhawa catalogue (read-only, no auth)
+app.use("/api/chadhawa", publicChadhawaRoutes);
+
+// Public Shop catalogue (read-only, no auth)
+app.use("/api/shop", publicShopRoutes);
+
 // AI routes
 app.use("/api/interpretation", interpretationRoutes);
 app.use("/api/compatibility", compatibilityRoutes);
 app.use("/api/birthchart", birthChartRoutes);
+app.use("/api/name-analysis", nameAnalysisRoutes);
 app.use("/api/inner-voice", innerVoiceRoutes);
 app.use("/api/darshan", darshanRoutes);
 

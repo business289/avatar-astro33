@@ -2,6 +2,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { AuthApiError } from "@/lib/authClient";
 import { useAuthStore } from "@/store/authStore";
+import { ADMIN_DASHBOARD_QUERY_KEY } from "@/features/admin/hooks/useAdminDashboard";
 import { authApi } from "../api/authApi";
 import type {
   AuthSession,
@@ -170,11 +171,13 @@ export function useLogoutMutation() {
     mutationFn: () => authApi.logout(),
     onSuccess: () => {
       queryClient.removeQueries({ queryKey: AUTH_USER_QUERY_KEY });
+      queryClient.removeQueries({ queryKey: ADMIN_DASHBOARD_QUERY_KEY });
       toast.success("Logged out successfully.");
     },
     onError: () => {
       // Local session is cleared in authApi.logout finally block.
       queryClient.removeQueries({ queryKey: AUTH_USER_QUERY_KEY });
+      queryClient.removeQueries({ queryKey: ADMIN_DASHBOARD_QUERY_KEY });
     },
   });
 }
