@@ -1,25 +1,17 @@
 import { useState, useEffect, useRef } from "react";
+import { innerVoiceJson, innerVoiceErrorMessage } from "@/lib/innerVoiceApi";
 import { Link } from "react-router-dom";
 
 const fl = document.createElement("link"); fl.rel = "stylesheet";
 fl.href = "https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Inter:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap";
 if (!document.head.querySelector("link[href*='Cinzel']")) document.head.appendChild(fl);
 
-const GROQ_API_KEY = import.meta.env.VITE_GROQ_API_KEY;
-const GROQ_URL = "https://api.groq.com/openai/v1/chat/completions";
-const GROQ_MODEL = import.meta.env.VITE_GROQ_MODEL || "openai/gpt-oss-120b";
 
-async function callAI(system, user, maxTokens = 800) {
-  try {
-    const res = await fetch(GROQ_URL, {
-      method: "POST",
-      headers: { "Content-Type": "application/json", "Authorization": `Bearer ${GROQ_API_KEY}` },
-      body: JSON.stringify({ model: GROQ_MODEL, temperature: 0.7, max_tokens: maxTokens, response_format: { type: "json_object" }, messages: [{ role: "system", content: system }, { role: "user", content: user }] }),
-    });
-    const d = await res.json();
-    if (d.error) throw new Error(d.error.message);
-    return JSON.parse(d.choices?.[0]?.message?.content || "{}");
-  } catch (e) { console.error("[Karma Journal] AI request failed:", e); return {}; }
+async function callAI(feature, system, user, maxTokens = 800) {
+  return innerVoiceJson(feature, [
+    { role: "system", content: system },
+    { role: "user", content: user },
+  ], maxTokens);
 }
 
 const DASH_SYSTEM = `You are a Vedic karma AI. Return ONLY valid JSON:
@@ -28,11 +20,11 @@ const DASH_SYSTEM = `You are a Vedic karma AI. Return ONLY valid JSON:
   "dominantPattern": "Attachment",
   "patternInsight": "You may be holding on too tightly to people, outcomes or expectations. Practice letting go and trust the flow.",
   "patterns": [
-    {"name":"Attachment","score":72,"color":"#BC6A4D","icon":"🔗"},
+    {"name":"Attachment","score":72,"color":"#C7A46A","icon":"🔗"},
     {"name":"Anger","score":45,"color":"#ef4444","icon":"🔥"},
-    {"name":"Responsibility","score":85,"color":"#BC6A4D","icon":"⚖️"},
+    {"name":"Responsibility","score":85,"color":"#C7A46A","icon":"⚖️"},
     {"name":"Compassion","score":90,"color":"#ec4899","icon":"💛"},
-    {"name":"Detachment","score":65,"color":"#BC6A4D","icon":"🌿"}
+    {"name":"Detachment","score":65,"color":"#C7A46A","icon":"🌿"}
   ],
   "prompts": [
     {"id":1,"text":"I let go of expectations and trusted the process today.","icon":"☯️"},
@@ -58,7 +50,7 @@ const EOD_SYSTEM = `Vedic karma end-of-day AI. Return ONLY JSON: {"summary":"2 s
 const FALLBACK = {
   karmaScore:78, dominantPattern:"Attachment",
   patternInsight:"You may be holding on too tightly to people, outcomes or expectations. Practice letting go and trust the flow.",
-  patterns:[{name:"Attachment",score:72,color:"#BC6A4D",icon:"🔗"},{name:"Anger",score:45,color:"#ef4444",icon:"🔥"},{name:"Responsibility",score:85,color:"#BC6A4D",icon:"⚖️"},{name:"Compassion",score:90,color:"#ec4899",icon:"💛"},{name:"Detachment",score:65,color:"#BC6A4D",icon:"🌿"}],
+  patterns:[{name:"Attachment",score:72,color:"#C7A46A",icon:"🔗"},{name:"Anger",score:45,color:"#ef4444",icon:"🔥"},{name:"Responsibility",score:85,color:"#C7A46A",icon:"⚖️"},{name:"Compassion",score:90,color:"#ec4899",icon:"💛"},{name:"Detachment",score:65,color:"#C7A46A",icon:"🌿"}],
   prompts:[{id:1,text:"I let go of expectations and trusted the process today.",icon:"☯️"},{id:2,text:"I reacted instead of responding in a tough situation.",icon:"⚡"},{id:3,text:"I acted with kindness without expecting anything in return.",icon:"💛"}],
   mantra:{text:"I release what no longer serves me and trust the divine order of life.",meaning:"Letting go creates space for peace, clarity and growth.",source:"Bhagavad Gita, Chapter 2, Verse 47",verse:"You have a right to perform your prescribed duties, but you are not entitled to the fruits of your actions.",application:"Repeat in moments of stress to release attachment to outcomes.",purpose:"Detachment & Inner Peace"},
   action:"Practice non-attachment in one situation today. Let go of control and observe the results.",
@@ -70,20 +62,20 @@ const CSS = `
 *{box-sizing:border-box;margin:0;padding:0;}
 html,body{background:#09090f;overflow-x:hidden;}
 
-.kj{min-height:100vh;background:#09090f;color:#fff;font-family:'Astra','Iceland',sans-serif;}
+.kj{min-height:100vh;background:#09090f;color:#fff;font-family:'DM Sans', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;}
 .kj-canvas{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.55;}
 
 /* Full-width page, no max-width constraint */
 .kj-page{position:relative;z-index:1;max-width:1100px;margin:0 auto;}
 
 /* Header — matches design: centered title, dark bg */
-.kj-hdr{background:linear-gradient(180deg,rgba(188,106,77,.06) 0%,transparent 100%);padding:18px 24px 14px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid rgba(255,255,255,.06);}
-.kj-back{font-size:16px;color:rgba(255,255,255,.75);text-decoration:none;font-family:'Astra','Iceland',sans-serif;letter-spacing:1px;}
-.kj-back:hover{color:#BC6A4D;}
+.kj-hdr{background:linear-gradient(180deg,rgba(199,164,106,.06) 0%,transparent 100%);padding:18px 24px 14px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid rgba(255,255,255,.06);}
+.kj-back{font-size:16px;color:rgba(255,255,255,.75);text-decoration:none;font-family:'DM Sans', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;letter-spacing:1px;}
+.kj-back:hover{color:#C7A46A;}
 .kj-hdr-center{text-align:center;flex:1;}
-.kj-hdr-title{font-family:'Astra','Iceland',sans-serif;font-size:19px;color:#BC6A4D;letter-spacing:.5px;}
+.kj-hdr-title{font-family:'Cinzel', 'Cormorant Garamond', Georgia, 'Times New Roman', serif;font-size:19px;color:#C7A46A;letter-spacing:.5px;}
 .kj-hdr-sub{font-size:15px;color:#fff;margin-top:3px;}
-.kj-hdr-date{font-size:15px;color:rgba(255,255,255,.8);font-family:'Astra','Iceland',sans-serif;background:rgba(188,106,77,.07);border:1px solid rgba(188,106,77,.15);border-radius:50px;padding:4px 10px;white-space:nowrap;}
+.kj-hdr-date{font-size:15px;color:rgba(255,255,255,.8);font-family:'DM Sans', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;background:rgba(199,164,106,.07);border:1px solid rgba(199,164,106,.15);border-radius:50px;padding:4px 10px;white-space:nowrap;}
 
 /* Content — full width with padding */
 .kj-content{padding:0;}
@@ -93,20 +85,20 @@ html,body{background:#09090f;overflow-x:hidden;}
 .kj-section:last-child{padding-bottom:80px;}
 
 /* Section label */
-.kj-lbl{font-size:16px;font-family:'Astra','Iceland',sans-serif;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,.85);margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;}
-.kj-lbl-right{font-size:15px;color:rgba(255,255,255,.8);letter-spacing:0;cursor:pointer;font-family:'Astra','Iceland',sans-serif;text-transform:none;}
-.kj-lbl-right:hover{color:#BC6A4D;}
+.kj-lbl{font-size:16px;font-family:'DM Sans', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,.85);margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;}
+.kj-lbl-right{font-size:15px;color:rgba(255,255,255,.8);letter-spacing:0;cursor:pointer;font-family:'DM Sans', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;text-transform:none;}
+.kj-lbl-right:hover{color:#C7A46A;}
 
 /* ── A. SCORE CARD — full width gold ── */
-.kj-score-card{background:linear-gradient(135deg,rgba(188,106,77,.09) 0%,rgba(188,106,77,.07) 100%);border:1px solid rgba(188,106,77,.2);border-radius:18px;padding:24px;display:flex;align-items:center;gap:22px;position:relative;overflow:hidden;}
-.kj-score-glow{position:absolute;right:-40px;top:-40px;width:180px;height:180px;background:radial-gradient(circle,rgba(188,106,77,.12) 0%,transparent 65%);pointer-events:none;}
+.kj-score-card{background:linear-gradient(135deg,rgba(199,164,106,.09) 0%,rgba(199,164,106,.07) 100%);border:1px solid rgba(199,164,106,.2);border-radius:18px;padding:24px;display:flex;align-items:center;gap:22px;position:relative;overflow:hidden;}
+.kj-score-glow{position:absolute;right:-40px;top:-40px;width:180px;height:180px;background:radial-gradient(circle,rgba(199,164,106,.12) 0%,transparent 65%);pointer-events:none;}
 .kj-ring-wrap{position:relative;flex-shrink:0;width:110px;height:110px;}
 .kj-ring-svg{width:110px;height:110px;transform:rotate(-90deg);}
 .kj-ring-bg{fill:none;stroke:rgba(255,255,255,.12);stroke-width:9;}
 .kj-ring-fg{fill:none;stroke-width:9;stroke-linecap:round;transition:stroke-dashoffset 1.6s cubic-bezier(.4,0,.2,1);}
 .kj-ring-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;line-height:1;}
-.kj-ring-num{font-family:'Astra','Iceland',sans-serif;font-size:20px;color:#BC6A4D;line-height:1.1;}
-.kj-ring-den{font-size:16px;color:#fff;font-family:'Astra','Iceland',sans-serif;}
+.kj-ring-num{font-family:'DM Sans', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;font-size:20px;color:#C7A46A;line-height:1.1;}
+.kj-ring-den{font-size:16px;color:#fff;font-family:'DM Sans', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;}
 .kj-ring-lbl{font-size:13px;color:#fff;text-transform:uppercase;letter-spacing:1px;margin-top:1px;}
 .kj-score-info{flex:1;min-width:0;}
 .kj-score-sub{font-size:15px;color:#fff;margin-bottom:4px;}
@@ -119,18 +111,18 @@ html,body{background:#09090f;overflow-x:hidden;}
 .kj-prompts{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:12px;}
 @media(max-width:620px){.kj-prompts{grid-template-columns:1fr;}}
 .kj-prompt{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:14px;transition:all .25s;}
-.kj-prompt.done{border-color:rgba(188,106,77,.28);background:rgba(188,106,77,.05);}
-.kj-pr-num{font-family:'Astra','Iceland',sans-serif;font-size:16px;color:#fff;margin-bottom:8px;display:flex;align-items:center;gap:8px;}
+.kj-prompt.done{border-color:rgba(199,164,106,.28);background:rgba(199,164,106,.05);}
+.kj-pr-num{font-family:'DM Sans', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;font-size:16px;color:#fff;margin-bottom:8px;display:flex;align-items:center;gap:8px;}
 .kj-pr-icon{font-size:18px;}
 .kj-pr-text{font-size:15px;color:#fff;line-height:1.6;margin-bottom:12px;min-height:58px;}
 .kj-pr-resps{display:flex;flex-direction:column;gap:5px;}
-.kj-resp{padding:6px 10px;border-radius:8px;border:1px solid rgba(255,255,255,.08);background:transparent;font-size:15px;color:#fff;cursor:pointer;transition:all .2s;text-align:left;font-family:'Astra','Iceland',sans-serif;width:100%;}
-.kj-resp:hover{border-color:rgba(188,106,77,.35);color:#BC6A4D;}
-.kj-resp.sel{background:rgba(188,106,77,.12);border-color:rgba(188,106,77,.42);color:#BC6A4D;font-weight:500;}
-.kj-ai-box{background:rgba(188,106,77,.1);border:1px solid rgba(188,106,77,.22);border-radius:14px;padding:14px 16px;display:flex;gap:10px;align-items:flex-start;animation:fin .5s ease;}
+.kj-resp{padding:6px 10px;border-radius:8px;border:1px solid rgba(255,255,255,.08);background:transparent;font-size:15px;color:#fff;cursor:pointer;transition:all .2s;text-align:left;font-family:'DM Sans', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;width:100%;}
+.kj-resp:hover{border-color:rgba(199,164,106,.35);color:#C7A46A;}
+.kj-resp.sel{background:rgba(199,164,106,.12);border-color:rgba(199,164,106,.42);color:#C7A46A;font-weight:500;}
+.kj-ai-box{background:rgba(199,164,106,.1);border:1px solid rgba(199,164,106,.22);border-radius:14px;padding:14px 16px;display:flex;gap:10px;align-items:flex-start;animation:fin .5s ease;}
 @keyframes fin{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
-.kj-ai-star{color:#BC6A4D;font-size:15px;flex-shrink:0;margin-top:2px;}
-.kj-ai-lbl{font-size:16px;font-family:'Astra','Iceland',sans-serif;letter-spacing:2px;text-transform:uppercase;color:#BC6A4D;margin-bottom:5px;}
+.kj-ai-star{color:#C7A46A;font-size:15px;flex-shrink:0;margin-top:2px;}
+.kj-ai-lbl{font-size:16px;font-family:'DM Sans', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;letter-spacing:2px;text-transform:uppercase;color:#C7A46A;margin-bottom:5px;}
 .kj-ai-txt{font-size:15px;color:#fff;line-height:1.7;}
 .kj-ai-next{font-size:16px;color:rgba(255,255,255,.8);margin-top:5px;font-style:italic;}
 .kj-ai-placeholder{opacity:.4;}
@@ -145,58 +137,58 @@ html,body{background:#09090f;overflow-x:hidden;}
 .kj-pat-name{font-size:16px;color:#fff;font-weight:500;margin-bottom:6px;}
 .kj-pat-track{height:4px;background:rgba(255,255,255,.07);border-radius:2px;overflow:hidden;margin-bottom:4px;}
 .kj-pat-fill{height:100%;border-radius:2px;transition:width 1.2s ease;}
-.kj-pat-pct{font-size:16px;font-family:'Astra','Iceland',sans-serif;color:#fff;}
+.kj-pat-pct{font-size:16px;font-family:'DM Sans', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;color:#fff;}
 .kj-view-all{display:inline-flex;align-items:center;gap:5px;font-size:16px;color:rgba(255,255,255,.8);cursor:pointer;margin-top:10px;}
-.kj-view-all:hover{color:#BC6A4D;}
+.kj-view-all:hover{color:#C7A46A;}
 
 /* ── D. MANTRA — full width warm gradient ── */
-.kj-mantra-wrap{background:linear-gradient(135deg,rgba(30,18,6,.95) 0%,rgba(20,12,35,.95) 100%);border:1px solid rgba(188,106,77,.18);border-radius:18px;overflow:hidden;position:relative;}
-.kj-mantra-haze{position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 50% 0%,rgba(188,106,77,.08) 0%,transparent 70%);pointer-events:none;}
+.kj-mantra-wrap{background:linear-gradient(135deg,rgba(30,18,6,.95) 0%,rgba(20,12,35,.95) 100%);border:1px solid rgba(199,164,106,.18);border-radius:18px;overflow:hidden;position:relative;}
+.kj-mantra-haze{position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 50% 0%,rgba(199,164,106,.08) 0%,transparent 70%);pointer-events:none;}
 .kj-mantra-top{padding:18px 18px 14px;display:flex;align-items:flex-start;gap:14px;position:relative;}
-.kj-lotus{width:54px;height:54px;flex-shrink:0;background:linear-gradient(135deg,rgba(188,106,77,.25),rgba(188,106,77,.25));border:1px solid rgba(188,106,77,.3);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:26px;box-shadow:0 0 20px rgba(188,106,77,.2);}
-.kj-mantra-text{font-family:'Astra','Iceland',sans-serif;font-size:19px;color:#fff;line-height:1.65;font-style:italic;}
+.kj-lotus{width:54px;height:54px;flex-shrink:0;background:linear-gradient(135deg,rgba(199,164,106,.25),rgba(199,164,106,.25));border:1px solid rgba(199,164,106,.3);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:26px;box-shadow:0 0 20px rgba(199,164,106,.2);}
+.kj-mantra-text{font-family:'DM Sans', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;font-size:19px;color:#fff;line-height:1.65;font-style:italic;}
 .kj-mantra-meaning{font-size:15px;color:#fff;margin-top:6px;}
-.kj-mantra-meaning strong{color:#BC6A4D;}
-.kj-citation{background:rgba(188,106,77,.07);border-top:1px solid rgba(188,106,77,.15);padding:14px 18px;}
-.kj-cit-lbl{font-size:13px;font-family:'Astra','Iceland',sans-serif;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.8);margin-bottom:7px;}
-.kj-cit-ref{font-size:16px;color:#BC6A4D;font-weight:600;margin-bottom:4px;}
+.kj-mantra-meaning strong{color:#C7A46A;}
+.kj-citation{background:rgba(199,164,106,.07);border-top:1px solid rgba(199,164,106,.15);padding:14px 18px;}
+.kj-cit-lbl{font-size:13px;font-family:'DM Sans', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.8);margin-bottom:7px;}
+.kj-cit-ref{font-size:16px;color:#C7A46A;font-weight:600;margin-bottom:4px;}
 .kj-cit-verse{font-size:16px;color:#fff;line-height:1.65;font-style:italic;margin-bottom:8px;}
-.kj-cit-app{font-size:16px;color:#fff;line-height:1.6;padding-top:8px;border-top:1px solid rgba(188,106,77,.1);}
-.kj-cit-app strong{color:rgba(188,106,77,.75);}
+.kj-cit-app{font-size:16px;color:#fff;line-height:1.6;padding-top:8px;border-top:1px solid rgba(199,164,106,.1);}
+.kj-cit-app strong{color:rgba(199,164,106,.75);}
 .kj-player{padding:12px 18px 16px;border-top:1px solid rgba(255,255,255,.05);}
 .kj-player-row{display:flex;align-items:center;gap:12px;margin-bottom:10px;}
-.kj-play-btn{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#BC6A4D,#BC6A4D);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:15px;color:#09090f;flex-shrink:0;transition:all .25s;box-shadow:0 4px 14px rgba(188,106,77,.3);}
-.kj-play-btn:hover{transform:scale(1.08);box-shadow:0 6px 20px rgba(188,106,77,.45);}
+.kj-play-btn{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#C7A46A,#C7A46A);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:15px;color:#09090f;flex-shrink:0;transition:all .25s;box-shadow:0 4px 14px rgba(199,164,106,.3);}
+.kj-play-btn:hover{transform:scale(1.08);box-shadow:0 6px 20px rgba(199,164,106,.45);}
 .kj-waveform{flex:1;display:flex;align-items:center;gap:2px;height:28px;}
-.kj-wbar{width:3px;border-radius:2px;background:rgba(188,106,77,.25);transition:height .15s ease,background .2s;}
-.kj-wbar.a{background:#BC6A4D;}
-.kj-player-time{font-size:16px;color:#fff;font-family:'Astra','Iceland',sans-serif;white-space:nowrap;}
+.kj-wbar{width:3px;border-radius:2px;background:rgba(199,164,106,.25);transition:height .15s ease,background .2s;}
+.kj-wbar.a{background:#C7A46A;}
+.kj-player-time{font-size:16px;color:#fff;font-family:'DM Sans', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;white-space:nowrap;}
 .kj-player-ctrls{display:flex;gap:8px;}
-.kj-pctrl{background:transparent;border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:5px 12px;font-size:15px;color:#fff;cursor:pointer;transition:all .2s;font-family:'Astra','Iceland',sans-serif;}
-.kj-pctrl:hover,.kj-pctrl.on{border-color:rgba(188,106,77,.4);color:#BC6A4D;background:rgba(188,106,77,.08);}
-.kj-understand-btn{width:100%;margin-top:10px;padding:8px;background:transparent;border:1px solid rgba(188,106,77,.22);border-radius:10px;font-size:16px;color:rgba(255,255,255,.85);cursor:pointer;font-family:'Astra','Iceland',sans-serif;transition:all .2s;}
-.kj-understand-btn:hover{background:rgba(188,106,77,.1);color:#BC6A4D;}
-.kj-up-panel{margin-top:10px;background:rgba(188,106,77,.08);border:1px solid rgba(188,106,77,.15);border-radius:10px;padding:12px;animation:fin .35s ease;}
-.kj-up-lbl{font-size:13px;font-family:'Astra','Iceland',sans-serif;letter-spacing:2px;text-transform:uppercase;color:#BC6A4D;margin-bottom:6px;}
+.kj-pctrl{background:transparent;border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:5px 12px;font-size:15px;color:#fff;cursor:pointer;transition:all .2s;font-family:'DM Sans', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;}
+.kj-pctrl:hover,.kj-pctrl.on{border-color:rgba(199,164,106,.4);color:#C7A46A;background:rgba(199,164,106,.08);}
+.kj-understand-btn{width:100%;margin-top:10px;padding:8px;background:transparent;border:1px solid rgba(199,164,106,.22);border-radius:10px;font-size:16px;color:rgba(255,255,255,.85);cursor:pointer;font-family:'DM Sans', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;transition:all .2s;}
+.kj-understand-btn:hover{background:rgba(199,164,106,.1);color:#C7A46A;}
+.kj-up-panel{margin-top:10px;background:rgba(199,164,106,.08);border:1px solid rgba(199,164,106,.15);border-radius:10px;padding:12px;animation:fin .35s ease;}
+.kj-up-lbl{font-size:13px;font-family:'DM Sans', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;letter-spacing:2px;text-transform:uppercase;color:#C7A46A;margin-bottom:6px;}
 .kj-up-txt{font-size:15px;color:#fff;line-height:1.7;}
 
 /* ── E. KARMA ACTION ── */
-.kj-action-card{background:rgba(188,106,77,.04);border:1px solid rgba(188,106,77,.15);border-radius:18px;padding:18px;}
+.kj-action-card{background:rgba(199,164,106,.04);border:1px solid rgba(199,164,106,.15);border-radius:18px;padding:18px;}
 .kj-action-row{display:flex;align-items:flex-start;gap:16px;margin-bottom:14px;}
 .kj-action-body{flex:1;}
 .kj-action-main{font-size:16px;color:#fff;line-height:1.7;margin-bottom:5px;}
 .kj-action-impact{font-size:16px;color:#fff;font-style:italic;line-height:1.55;}
 .kj-streak{text-align:center;flex-shrink:0;}
-.kj-streak-lbl{font-size:16px;color:#BC6A4D;font-family:'Astra','Iceland',sans-serif;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px;}
+.kj-streak-lbl{font-size:16px;color:#C7A46A;font-family:'DM Sans', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px;}
 .kj-streak-fire{font-size:22px;line-height:1;display:block;}
-.kj-streak-num{font-family:'Astra','Iceland',sans-serif;font-size:26px;color:#BC6A4D;line-height:1;}
-.kj-streak-days{font-size:16px;color:rgba(255,255,255,.8);font-family:'Astra','Iceland',sans-serif;}
-.kj-check-btn{display:flex;align-items:center;gap:9px;padding:9px 16px;background:transparent;border:1px solid rgba(255,255,255,.12);border-radius:10px;font-size:15px;color:#fff;cursor:pointer;transition:all .25s;font-family:'Astra','Iceland',sans-serif;}
-.kj-check-btn:hover:not(:disabled){border-color:rgba(188,106,77,.4);color:#BC6A4D;}
-.kj-check-btn.done{background:rgba(188,106,77,.09);border-color:rgba(188,106,77,.32);color:#BC6A4D;}
+.kj-streak-num{font-family:'Cinzel', 'Cormorant Garamond', Georgia, 'Times New Roman', serif;font-size:26px;color:#C7A46A;line-height:1;}
+.kj-streak-days{font-size:16px;color:rgba(255,255,255,.8);font-family:'DM Sans', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;}
+.kj-check-btn{display:flex;align-items:center;gap:9px;padding:9px 16px;background:transparent;border:1px solid rgba(255,255,255,.12);border-radius:10px;font-size:15px;color:#fff;cursor:pointer;transition:all .25s;font-family:'DM Sans', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;}
+.kj-check-btn:hover:not(:disabled){border-color:rgba(199,164,106,.4);color:#C7A46A;}
+.kj-check-btn.done{background:rgba(199,164,106,.09);border-color:rgba(199,164,106,.32);color:#C7A46A;}
 .kj-check-btn:disabled{cursor:default;}
 .kj-chkbox{width:18px;height:18px;border-radius:5px;border:1.5px solid rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;}
-.kj-check-btn.done .kj-chkbox{background:#BC6A4D;border-color:#BC6A4D;color:#09090f;}
+.kj-check-btn.done .kj-chkbox{background:#C7A46A;border-color:#C7A46A;color:#09090f;}
 
 /* ── F. TIMELINE ── */
 .kj-tl-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
@@ -206,11 +198,11 @@ html,body{background:#09090f;overflow-x:hidden;}
 .kj-tl-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
 .kj-tl-icon{font-size:16px;flex-shrink:0;}
 .kj-tl-name{font-size:15px;color:#fff;flex:1;}
-.kj-tl-time{font-size:16px;color:#fff;font-family:'Astra','Iceland',sans-serif;white-space:nowrap;}
-.kj-milestone{background:linear-gradient(135deg,rgba(188,106,77,.1),rgba(188,106,77,.08));border:1px solid rgba(188,106,77,.2);border-radius:16px;padding:18px;text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:center;}
-.kj-mile-lbl{font-size:16px;color:#BC6A4D;font-family:'Astra','Iceland',sans-serif;letter-spacing:2px;text-transform:uppercase;margin-bottom:12px;}
-.kj-mile-icon{font-size:44px;margin-bottom:10px;filter:drop-shadow(0 0 16px rgba(188,106,77,.5));}
-.kj-mile-name{font-family:'Astra','Iceland',sans-serif;font-size:16px;color:#fff;margin-bottom:4px;}
+.kj-tl-time{font-size:16px;color:#fff;font-family:'DM Sans', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;white-space:nowrap;}
+.kj-milestone{background:linear-gradient(135deg,rgba(199,164,106,.1),rgba(199,164,106,.08));border:1px solid rgba(199,164,106,.2);border-radius:16px;padding:18px;text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+.kj-mile-lbl{font-size:16px;color:#C7A46A;font-family:'DM Sans', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;letter-spacing:2px;text-transform:uppercase;margin-bottom:12px;}
+.kj-mile-icon{font-size:44px;margin-bottom:10px;filter:drop-shadow(0 0 16px rgba(199,164,106,.5));}
+.kj-mile-name{font-family:'Cinzel', 'Cormorant Garamond', Georgia, 'Times New Roman', serif;font-size:16px;color:#fff;margin-bottom:4px;}
 .kj-mile-sub{font-size:16px;color:#fff;}
 
 /* ── G. EOD ── */
@@ -220,23 +212,23 @@ html,body{background:#09090f;overflow-x:hidden;}
 .kj-eod-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;}
 @media(max-width:480px){.kj-eod-grid{grid-template-columns:1fr;}}
 .kj-eod-item{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:12px;padding:11px 13px;}
-.kj-eod-il{font-size:13px;font-family:'Astra','Iceland',sans-serif;letter-spacing:2px;text-transform:uppercase;margin-bottom:5px;}
+.kj-eod-il{font-size:13px;font-family:'DM Sans', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;letter-spacing:2px;text-transform:uppercase;margin-bottom:5px;}
 .kj-eod-il.g{color:rgba(255,255,255,.8);}
 .kj-eod-il.a{color:rgba(255,255,255,.8);}
 .kj-eod-iv{font-size:15px;color:#fff;line-height:1.55;}
-.kj-eod-growth{background:rgba(188,106,77,.07);border:1px solid rgba(188,106,77,.15);border-radius:10px;padding:11px 13px;font-size:15px;color:#fff;line-height:1.7;font-style:italic;margin-bottom:12px;}
+.kj-eod-growth{background:rgba(199,164,106,.07);border:1px solid rgba(199,164,106,.15);border-radius:10px;padding:11px 13px;font-size:15px;color:#fff;line-height:1.7;font-style:italic;margin-bottom:12px;}
 .kj-eod-preview{display:flex;align-items:center;justify-content:space-between;gap:10px;}
 .kj-eod-preview-txt{font-size:15px;color:#fff;line-height:1.65;flex:1;}
-.kj-eod-orb{width:52px;height:52px;border-radius:50%;background:radial-gradient(circle,rgba(188,106,77,.5),rgba(188,106,77,.2));border:1px solid rgba(188,106,77,.3);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:22px;}
-.kj-eod-btn{width:100%;margin-top:12px;padding:11px;background:rgba(188,106,77,.1);border:1px solid rgba(188,106,77,.28);border-radius:12px;font-size:15px;color:#BC6A4D;font-weight:600;cursor:pointer;font-family:'Astra','Iceland',sans-serif;transition:all .25s;display:flex;align-items:center;justify-content:center;gap:8px;}
-.kj-eod-btn:hover:not(:disabled){background:rgba(188,106,77,.18);}
+.kj-eod-orb{width:52px;height:52px;border-radius:50%;background:radial-gradient(circle,rgba(199,164,106,.5),rgba(199,164,106,.2));border:1px solid rgba(199,164,106,.3);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:22px;}
+.kj-eod-btn{width:100%;margin-top:12px;padding:11px;background:rgba(199,164,106,.1);border:1px solid rgba(199,164,106,.28);border-radius:12px;font-size:15px;color:#C7A46A;font-weight:600;cursor:pointer;font-family:'DM Sans', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;transition:all .25s;display:flex;align-items:center;justify-content:center;gap:8px;}
+.kj-eod-btn:hover:not(:disabled){background:rgba(199,164,106,.18);}
 .kj-eod-btn:disabled{opacity:.45;cursor:default;}
 
 /* Loading */
 .kj-loading{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:80vh;gap:14px;}
-.kj-spin{width:44px;height:44px;border-radius:50%;border:2px solid rgba(188,106,77,.1);border-top-color:#BC6A4D;animation:spin 1s linear infinite;}
+.kj-spin{width:44px;height:44px;border-radius:50%;border:2px solid rgba(199,164,106,.1);border-top-color:#C7A46A;animation:spin 1s linear infinite;}
 @keyframes spin{to{transform:rotate(360deg);}}
-.kj-load-t{font-family:'Astra','Iceland',sans-serif;font-size:16px;color:#BC6A4D;}
+.kj-load-t{font-family:'DM Sans', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;font-size:16px;color:#C7A46A;}
 .kj-load-s{font-size:16px;color:#fff;font-style:italic;}
 
 /* Divider between sections */
@@ -262,7 +254,7 @@ function StarCanvas() {
         if(s.life<=0){shoots.splice(i,1);continue;}
         const tx=s.x-Math.cos(s.angle)*s.len,ty=s.y-Math.sin(s.angle)*s.len;
         const g=ctx.createLinearGradient(tx,ty,s.x,s.y);
-        g.addColorStop(0,"rgba(188,106,77,0)");g.addColorStop(.5,`rgba(188,106,77,${s.life*.3})`);g.addColorStop(1,`rgba(255,255,255,${s.life*.8})`);
+        g.addColorStop(0,"rgba(199,164,106,0)");g.addColorStop(.5,`rgba(199,164,106,${s.life*.3})`);g.addColorStop(1,`rgba(255,255,255,${s.life*.8})`);
         ctx.beginPath();ctx.moveTo(tx,ty);ctx.lineTo(s.x,s.y);ctx.strokeStyle=g;ctx.lineWidth=1.4;ctx.stroke();
       }
       raf=requestAnimationFrame(frame);
@@ -277,7 +269,7 @@ function StarCanvas() {
 
 function ScoreRing({score}) {
   const r=46, circ=2*Math.PI*r, offset=circ-(score/100)*circ;
-  const color=score>=70?"#BC6A4D":score>=50?"#BC6A4D":"#BC6A4D";
+  const color=score>=70?"#C7A46A":score>=50?"#C7A46A":"#C7A46A";
   return (
     <svg width="120" height="120" viewBox="0 0 120 120" style={{flexShrink:0}}>
       {/* Background ring */}
@@ -358,35 +350,49 @@ export default function InnerVoiceJournal() {
   const [streak,setStreak]=useState(()=>{try{return parseInt(localStorage.getItem("kj_streak")||"0");}catch{return 0;}});
   const [eod,setEod]=useState(null);
   const [loadingEod,setLoadingEod]=useState(false);
+  const [dashErr,setDashErr]=useState("");
+  const [refErr,setRefErr]=useState("");
+  const [eodErr,setEodErr]=useState("");
   const today=new Date().toLocaleDateString("en-IN",{weekday:"long",day:"numeric",month:"long"});
 
   useEffect(()=>{const s=document.createElement("style");s.textContent=CSS;document.head.appendChild(s);return()=>{document.head.removeChild(s);};},[]);
   useEffect(()=>{init();},[]);
 
   const init=async()=>{
-    setLoading(true);
+    setLoading(true); setDashErr("");
     try{
       const entries=JSON.parse(localStorage.getItem("ivj_entries_v3")||"[]");
       const ctx=entries.slice(0,5).map(e=>e.text||"").join(". ")||"New user";
       const p=(()=>{try{return JSON.parse(localStorage.getItem("iv_profile")||"null");}catch{return null;}})();
-      const d=await callAI(DASH_SYSTEM,`User context: ${ctx}. Sign: ${p?.sign||"Unknown"}`,1500);
-      setData(Object.keys(d).length>0?d:FALLBACK);
-    }catch{setData(FALLBACK);}
+      const d=await callAI("journal-dashboard",DASH_SYSTEM,`User context: ${ctx}. Sign: ${p?.sign||"Unknown"}`,1500);
+      if(!Array.isArray(d.prompts)||d.prompts.length===0) throw new Error("Incomplete AI analysis");
+      setData(d);
+    }catch(e){
+      console.error("[Karma Journal] AI analysis failed:", e);
+      setData(FALLBACK);
+      setDashErr(innerVoiceErrorMessage(e,"The AI analysis was incomplete. Please try again."));
+    }
     finally{setLoading(false);}
+  };
+
+  const runReflection=async(updated)=>{
+    setLoadingRef(true); setRefErr("");
+    try{
+      const summary=data.prompts.map(p=>`"${p.text}": ${updated[p.id]}`).join("; ");
+      const r=await callAI("journal-reflection",REFLECTION_SYSTEM,`Responses: ${summary}`,400);
+      if(typeof r.summary!=="string"||!r.summary.trim()) throw new Error("Incomplete AI reflection");
+      setAiRef(r);
+    }catch(e){
+      console.error("[Karma Journal] AI reflection failed:", e);
+      setRefErr(innerVoiceErrorMessage(e,"The AI reflection was incomplete. Please try again."));
+    }finally{setLoadingRef(false);}
   };
 
   const handleResp=async(id,resp)=>{
     const updated={...refs,[id]:resp};
     setRefs(updated);
     const allDone=data?.prompts?.every(p=>updated[p.id]);
-    if(allDone&&!aiRef){
-      setLoadingRef(true);
-      try{
-        const summary=data.prompts.map(p=>`"${p.text}": ${updated[p.id]}`).join("; ");
-        const r=await callAI(REFLECTION_SYSTEM,`Responses: ${summary}`,400);
-        setAiRef(r);
-      }catch{}finally{setLoadingRef(false);}
-    }
+    if(allDone&&!aiRef&&!loadingRef) runReflection(updated);
   };
 
   const markDone=()=>{
@@ -396,19 +402,23 @@ export default function InnerVoiceJournal() {
   };
 
   const genEod=async()=>{
-    setLoadingEod(true);
+    setLoadingEod(true); setEodErr("");
     try{
-      const r=await callAI(EOD_SYSTEM,`Pattern:${data?.dominantPattern}.Action:${actionDone}.Refs:${JSON.stringify(refs)}`,400);
-      setEod(Object.keys(r).length>0?r:{summary:"You made conscious efforts toward awareness today.",aligned:"Morning reflection practice",improve:"Staying grounded under pressure",growth:"Every moment of awareness plants a seed for transformation."});
-    }catch{setEod({summary:"You made conscious efforts toward awareness today.",aligned:"Morning reflection",improve:"Consistent practice",growth:"Every step forward matters."});}
+      const r=await callAI("journal-eod",EOD_SYSTEM,`Pattern:${data?.dominantPattern}.Action:${actionDone}.Refs:${JSON.stringify(refs)}`,400);
+      if(typeof r.summary!=="string"||!r.summary.trim()) throw new Error("Incomplete AI summary");
+      setEod(r);
+    }catch(e){
+      console.error("[Karma Journal] AI day summary failed:", e);
+      setEodErr(innerVoiceErrorMessage(e,"The AI summary was incomplete. Please try again."));
+    }
     finally{setLoadingEod(false);}
   };
 
   const tl=[
-    {icon:"🌅",name:"Morning Reflection Completed",time:"7:30 AM",color:"#BC6A4D"},
-    {icon:"⚡",name:"Karma Action Completed",time:"1:20 PM",color:"#BC6A4D"},
-    {icon:"🌙",name:"Evening Reflection Completed",time:"9:15 PM",color:"#BC6A4D"},
-    {icon:"🤖",name:"AI Day Summary Generated",time:"9:30 PM",color:"#BC6A4D"},
+    {icon:"🌅",name:"Morning Reflection Completed",time:"7:30 AM",color:"#C7A46A"},
+    {icon:"⚡",name:"Karma Action Completed",time:"1:20 PM",color:"#C7A46A"},
+    {icon:"🌙",name:"Evening Reflection Completed",time:"9:15 PM",color:"#C7A46A"},
+    {icon:"🤖",name:"AI Day Summary Generated",time:"9:30 PM",color:"#C7A46A"},
   ];
 
   if(loading) return(
@@ -422,6 +432,12 @@ export default function InnerVoiceJournal() {
       <style>{CSS}</style>
       <StarCanvas/>
       <div className="kj-page">
+        {dashErr&&(
+          <div role="alert" style={{margin:"0 0 14px",padding:"12px 14px",borderRadius:12,border:"1px solid rgba(239,68,68,.45)",background:"rgba(239,68,68,.08)",color:"#fff",fontSize:14,lineHeight:1.55}}>
+            <strong>AI analysis unavailable.</strong> {dashErr} The content below is a sample template, not an analysis of your entries. Your saved journal entries are untouched.
+            <button onClick={init} style={{marginLeft:10,padding:"4px 14px",borderRadius:999,border:"1px solid #C7A46A",background:"transparent",color:"#C7A46A",cursor:"pointer"}}>Try again</button>
+          </div>
+        )}
 
         {/* Header */}
         <div className="kj-hdr">
@@ -446,14 +462,14 @@ export default function InnerVoiceJournal() {
             <svg className="kj-mandala-svg" viewBox="0 0 100 100" fill="none">
               {[0,30,60,90,120,150,180,210,240,270,300,330].map(a=>(
                 <g key={a}>
-                  <line x1="50" y1="50" x2={50+44*Math.cos(a*Math.PI/180)} y2={50+44*Math.sin(a*Math.PI/180)} stroke="#BC6A4D" strokeWidth="1.2"/>
-                  <circle cx={50+30*Math.cos(a*Math.PI/180)} cy={50+30*Math.sin(a*Math.PI/180)} r="2.5" fill="rgba(188,106,77,.9)"/>
+                  <line x1="50" y1="50" x2={50+44*Math.cos(a*Math.PI/180)} y2={50+44*Math.sin(a*Math.PI/180)} stroke="#C7A46A" strokeWidth="1.2"/>
+                  <circle cx={50+30*Math.cos(a*Math.PI/180)} cy={50+30*Math.sin(a*Math.PI/180)} r="2.5" fill="rgba(199,164,106,.9)"/>
                 </g>
               ))}
-              <circle cx="50" cy="50" r="44" stroke="#BC6A4D" strokeWidth="1"/>
-              <circle cx="50" cy="50" r="30" stroke="#BC6A4D" strokeWidth="1"/>
-              <circle cx="50" cy="50" r="15" stroke="#BC6A4D" strokeWidth="1"/>
-              <circle cx="50" cy="50" r="5" fill="#BC6A4D"/>
+              <circle cx="50" cy="50" r="44" stroke="#C7A46A" strokeWidth="1"/>
+              <circle cx="50" cy="50" r="30" stroke="#C7A46A" strokeWidth="1"/>
+              <circle cx="50" cy="50" r="15" stroke="#C7A46A" strokeWidth="1"/>
+              <circle cx="50" cy="50" r="5" fill="#C7A46A"/>
             </svg>
           </div>
         </div>
@@ -476,13 +492,14 @@ export default function InnerVoiceJournal() {
               </div>
             ))}
           </div>
-          {loadingRef&&<div style={{textAlign:"center",padding:"10px 0",fontSize:13,color:"rgba(255,255,255,.8)",fontFamily:"'Astra','Iceland',sans-serif",letterSpacing:1}}>AI is reflecting...</div>}
+          {loadingRef&&<div style={{textAlign:"center",padding:"10px 0",fontSize:13,color:"rgba(255,255,255,.8)",fontFamily: "'DM Sans', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif",letterSpacing:1}}>AI is reflecting...</div>}
           <div className={`kj-ai-box${!aiRef?" kj-ai-placeholder":""}`}>
             <div className="kj-ai-star">✦</div>
             <div>
-              <div className="kj-ai-lbl">AI Reflection</div>
+              <div className="kj-ai-lbl">{dashErr&&!aiRef?"Sample reflection (template, not AI)":"AI Reflection"}</div>
               <div className="kj-ai-txt">{aiRef?.summary||data?.aiReflectionPreview||"Answer all 3 prompts above to get your personalized AI reflection."}</div>
               {aiRef?.nextStep&&<div className="kj-ai-next">{aiRef.nextStep}</div>}
+              {refErr&&<div role="alert" style={{marginTop:8,fontSize:14,color:"#fca5a5"}}>{refErr} <button onClick={()=>runReflection(refs)} style={{marginLeft:8,padding:"2px 12px",borderRadius:999,border:"1px solid #C7A46A",background:"transparent",color:"#C7A46A",cursor:"pointer"}}>Try again</button></div>}
             </div>
           </div>
         </div>
@@ -603,8 +620,9 @@ export default function InnerVoiceJournal() {
                   <div className="kj-eod-preview-txt">You showed awareness in your reactions today and made conscious choices. With more detachment, you will feel lighter and more peaceful.</div>
                   <div className="kj-eod-orb">🌀</div>
                 </div>
+                {eodErr&&<div role="alert" style={{marginTop:10,fontSize:14,color:"#fca5a5"}}>{eodErr}</div>}
                 <button className="kj-eod-btn" onClick={genEod} disabled={loadingEod}>
-                  {loadingEod?"Generating your reflection...":"View Full Summary →"}
+                  {loadingEod?"Generating your reflection...":eodErr?"Try again":"View Full Summary →"}
                 </button>
               </>
             )}

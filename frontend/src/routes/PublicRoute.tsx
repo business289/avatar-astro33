@@ -7,7 +7,7 @@ import { getPostAuthPath } from "@/features/auth/utils/postAuthRedirect";
 function AuthSpinner() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-[#081426]">
-      <Loader2 className="h-7 w-7 animate-spin text-[#BC6A4D]" />
+      <Loader2 className="h-7 w-7 animate-spin text-[#C7A46A]" />
     </div>
   );
 }

@@ -32,7 +32,7 @@ const Footer = () => {
   ];
 
   return (
-    <footer style={{ background: 'rgba(5, 11, 24, 0.96)', width: '100%' }}>
+    <footer style={{ background: 'rgba(5, 11, 24, 0.96)', width: '100%', fontFamily: "'DM Sans', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif" }}>
       <div style={{ width: '100%', padding: '60px 72px 40px 72px' }}>
 
         {/* ── 4-column top area ── */}
@@ -69,7 +69,7 @@ const Footer = () => {
                   key={link.path}
                   to={link.path}
                   style={{ color: '#FFFFFF', fontSize: 18, fontWeight: 500, textDecoration: 'none' }}
-                  onMouseEnter={e => (e.currentTarget.style.color = '#BC6A4D')}
+                  onMouseEnter={e => (e.currentTarget.style.color = '#C7A46A')}
                   onMouseLeave={e => (e.currentTarget.style.color = '#FFFFFF')}
                 >
                   {link.label}
@@ -96,7 +96,7 @@ const Footer = () => {
                   key={link.path}
                   to={link.path}
                   style={{ color: '#FFFFFF', fontSize: 18, fontWeight: 500, textDecoration: 'none' }}
-                  onMouseEnter={e => (e.currentTarget.style.color = '#BC6A4D')}
+                  onMouseEnter={e => (e.currentTarget.style.color = '#C7A46A')}
                   onMouseLeave={e => (e.currentTarget.style.color = '#FFFFFF')}
                 >
                   {link.label}
@@ -146,7 +146,7 @@ const Footer = () => {
                     transition: 'background 0.2s',
                     flexShrink: 0,
                   }}
-                  onMouseEnter={e => (e.currentTarget.style.background = '#BC6A4D')}
+                  onMouseEnter={e => (e.currentTarget.style.background = '#C7A46A')}
                   onMouseLeave={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.08)')}
                 >
                   <Icon size={20} />
@@ -184,14 +184,14 @@ const Footer = () => {
                   width: 44,
                   height: 44,
                   borderRadius: '50%',
-                  background: '#BC6A4D',
+                  background: '#C7A46A',
                   border: 'none',
                   cursor: 'pointer',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
                   flexShrink: 0,
-                  color: '#fff',
+                  color: "#081426",
                 }}
               >
                 <ArrowRight size={18} />
@@ -202,14 +202,14 @@ const Footer = () => {
         </div>
 
         {/* ── Bottom — SPIRITUAL logo + copyright ── */}
-        <div style={{ borderTop: '1px solid rgba(255,255,255,0.08)', paddingTop: 32 }}>
+        <div style={{ paddingTop: 32 }}>
           <p style={{
-            fontFamily: "'ASTRA', 'Iceland', 'Orbitron', sans-serif",
-            fontSize: 90,
+            fontFamily: "'Uncial Antiqua', 'Cinzel', Georgia, serif",
+            fontSize: 'clamp(26px, 7vw, 90px)',
             fontWeight: 400,
-            letterSpacing: 10.4,
+            letterSpacing: '0.08em',
             textTransform: 'uppercase',
-            color: '#BC6A4D',
+            color: '#C7A46A',
             lineHeight: 1,
             marginBottom: 14,
           }}>

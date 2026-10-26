@@ -25,7 +25,7 @@ export default function NameEvolutionLab({ report }: { report: UseNameReport }) 
         <FlaskConical size={22} className="text-gold" />
         <h3
           className="text-2xl sm:text-3xl font-bold text-foreground text-center uppercase tracking-wide"
-          style={{ fontFamily: "'Astra','Cinzel',serif" }}
+          style={{ fontFamily: "'Cinzel', 'Cormorant Garamond', Georgia, 'Times New Roman', serif" }}
         >
           Name Evolution Lab
         </h3>

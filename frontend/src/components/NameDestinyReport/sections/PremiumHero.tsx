@@ -74,7 +74,7 @@ function NameTransformDemo() {
         >
           <div className="flex items-center justify-center gap-3 text-center mb-4">
             <span className="text-white/45 text-sm line-through decoration-white/25">{ex.name}</span>
-            <ArrowRight className="text-[#ff7e47]" size={14} />
+            <ArrowRight className="text-[#C7A46A]" size={14} />
             <span className="text-white font-semibold text-sm">{ex.variant}</span>
           </div>
           <div className="flex items-center justify-center gap-5">
@@ -82,9 +82,9 @@ function NameTransformDemo() {
               <div className="text-[10px] text-white/40 uppercase tracking-widest mb-1">Before</div>
               <div className="text-2xl font-extrabold text-white/40">{ex.before}%</div>
             </div>
-            <div className="text-[#ff7e47] text-xl">→</div>
+            <div className="text-[#C7A46A] text-xl">→</div>
             <div className="text-center">
-              <div className="text-[10px] text-[#ff7e47] uppercase tracking-widest mb-1">After</div>
+              <div className="text-[10px] text-[#C7A46A] uppercase tracking-widest mb-1">After</div>
               <div className="text-2xl font-extrabold text-white">
                 <AnimatedScore value={ex.after} />%
               </div>
@@ -144,13 +144,13 @@ function MandalaVisualization() {
           animate={{ rotate: 360 }}
           transition={{ duration: 44, repeat: Infinity, ease: "linear" }}
           className="absolute inset-0 rounded-full"
-          style={{ border: "1px dashed rgba(255,126,71,0.25)" }}
+          style={{ border: "1px dashed rgba(199,164,106,0.25)" }}
         />
         <motion.div
           animate={{ rotate: -360 }}
           transition={{ duration: 60, repeat: Infinity, ease: "linear" }}
           className="absolute inset-10 rounded-full"
-          style={{ border: "1px solid rgba(255,126,71,0.15)" }}
+          style={{ border: "1px solid rgba(199,164,106,0.15)" }}
         />
 
         {/* Orbiting Sanskrit seed syllables */}
@@ -162,8 +162,8 @@ function MandalaVisualization() {
             transition={{ duration: 30 + i * 7, repeat: Infinity, ease: "linear" }}
           >
             <span
-              className="absolute text-[#ff7e47]/60 text-lg"
-              style={{ fontFamily: "'Astra','Cinzel',serif", top: 0, left: "50%", transform: "translate(-50%,-50%)" }}
+              className="absolute text-[#C7A46A]/60 text-lg"
+              style={{ fontFamily: "'DM Sans', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif", top: 0, left: "50%", transform: "translate(-50%,-50%)" }}
             >
               {s}
             </span>
@@ -175,10 +175,10 @@ function MandalaVisualization() {
           animate={{ scale: [1, 1.06, 1], opacity: [0.85, 1, 0.85] }}
           transition={{ duration: 3.2, repeat: Infinity, ease: "easeInOut" }}
           className="relative w-40 h-40 rounded-full flex items-center justify-center"
-          style={{ background: "radial-gradient(circle, rgba(255,126,71,0.35) 0%, rgba(255,126,71,0.08) 60%, transparent 80%)" }}
+          style={{ background: "radial-gradient(circle, rgba(199,164,106,0.35) 0%, rgba(199,164,106,0.08) 60%, transparent 80%)" }}
         >
-          <div className="w-24 h-24 rounded-full flex items-center justify-center backdrop-blur-sm" style={{ background: "rgba(255,126,71,0.15)", border: "1px solid rgba(255,126,71,0.4)" }}>
-            <Sparkles className="text-[#ff7e47]" size={28} />
+          <div className="w-24 h-24 rounded-full flex items-center justify-center backdrop-blur-sm" style={{ background: "rgba(199,164,106,0.15)", border: "1px solid rgba(199,164,106,0.4)" }}>
+            <Sparkles className="text-[#C7A46A]" size={28} />
           </div>
         </motion.div>
 
@@ -207,14 +207,14 @@ export default function PremiumHero({
           transition={{ duration: 0.7, ease: "easeOut" }}
           className="text-center lg:text-left"
         >
-          <div className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-[rgba(255,126,71,0.12)] text-[#ff7e47] text-xs font-semibold tracking-widest uppercase mb-5">
+          <div className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-[rgba(199,164,106,0.12)] text-[#C7A46A] text-xs font-semibold tracking-widest uppercase mb-5">
             <Sparkles size={12} /> AI Name Analysis
           </div>
 
           <h1
             className="uppercase"
             style={{
-              fontFamily: "'Astra','Cinzel',serif",
+              fontFamily: "'Cinzel', 'Cormorant Garamond', Georgia, 'Times New Roman', serif",
               fontSize: "clamp(30px,4.2vw,52px)",
               fontWeight: 700,
               color: "#fff",
@@ -238,16 +238,16 @@ export default function PremiumHero({
               className="ndr-glow-btn"
               style={{
                 padding: "17px 34px",
-                background: "#ff7e47",
+                background: "#C7A46A",
                 border: "none",
                 borderRadius: 40,
-                color: "#fff",
+                color: "#081426",
                 fontWeight: 800,
                 fontSize: 15,
                 letterSpacing: "0.05em",
                 textTransform: "uppercase",
                 cursor: "pointer",
-                boxShadow: "0 0 30px rgba(255,126,71,0.35)",
+                boxShadow: "0 0 30px rgba(199,164,106,0.35)",
                 transition: "transform 0.2s ease",
               }}
               onMouseOver={(e) => (e.currentTarget.style.transform = "translateY(-2px)")}
@@ -260,9 +260,9 @@ export default function PremiumHero({
               style={{
                 padding: "17px 34px",
                 background: "transparent",
-                border: "1.5px solid rgba(255,126,71,0.4)",
+                border: "1.5px solid rgba(199,164,106,0.4)",
                 borderRadius: 40,
-                color: "#ff7e47",
+                color: "#C7A46A",
                 fontWeight: 700,
                 fontSize: 15,
                 letterSpacing: "0.05em",
@@ -270,7 +270,7 @@ export default function PremiumHero({
                 cursor: "pointer",
                 transition: "background 0.2s ease",
               }}
-              onMouseOver={(e) => (e.currentTarget.style.background = "rgba(255,126,71,0.08)")}
+              onMouseOver={(e) => (e.currentTarget.style.background = "rgba(199,164,106,0.08)")}
               onMouseOut={(e) => (e.currentTarget.style.background = "transparent")}
             >
               View Sample Report
@@ -280,7 +280,7 @@ export default function PremiumHero({
           <div className="flex flex-wrap items-center justify-center lg:justify-start gap-x-6 gap-y-2 mb-10">
             {TRUST_INDICATORS.map((t) => (
               <div key={t} className="flex items-center gap-1.5 text-xs text-white/50">
-                <CheckCircle2 size={13} className="text-[#ff7e47]" /> {t}
+                <CheckCircle2 size={13} className="text-[#C7A46A]" /> {t}
               </div>
             ))}
           </div>

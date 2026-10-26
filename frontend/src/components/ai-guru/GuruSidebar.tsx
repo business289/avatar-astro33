@@ -71,11 +71,11 @@ const GuruSidebar = ({
       {/* Logo */}
       <div className="flex items-center justify-between gap-3 px-5 pb-4 pt-5">
         <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-[#FF9D4D]/25 to-[#E88B3D]/10 text-lg ring-1 ring-[#FF9D4D]/30">
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-[#C7A46A]/25 to-[#C7A46A]/10 text-lg ring-1 ring-[#C7A46A]/30">
             🕉️
           </div>
           <div>
-            <div className="font-['Cormorant_Garamond'] text-lg font-semibold leading-tight text-white">
+            <div className="font-heading text-lg font-semibold leading-tight text-white">
               AI Guru
             </div>
             <div className="text-[11px] leading-tight text-[#6B7280]">Your Vedic Guide</div>
@@ -95,7 +95,7 @@ const GuruSidebar = ({
           whileHover={{ scale: 1.015 }}
           whileTap={{ scale: 0.98 }}
           onClick={onNewConsultation}
-          className="flex w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-[#FF9D4D] to-[#E88B3D] px-4 py-3 text-sm font-semibold text-[#1A0F08] shadow-[0_0_24px_rgba(255,157,77,0.35)] transition-shadow hover:shadow-[0_0_34px_rgba(255,157,77,0.5)]"
+          className="flex w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-[#C7A46A] to-[#C7A46A] px-4 py-3 text-sm font-semibold text-[#1A0F08] shadow-[0_0_24px_rgba(199,164,106,0.35)] transition-shadow hover:shadow-[0_0_34px_rgba(199,164,106,0.5)]"
         >
           <Sparkles className="h-4 w-4" />
           New Consultation
@@ -114,7 +114,7 @@ const GuruSidebar = ({
                 className={cn(
                   "flex w-full items-center gap-3 rounded-xl border border-transparent px-3 py-2.5 text-left text-sm text-[#A3A3B2] transition-colors hover:bg-white/[0.06]",
                   activeTab === key &&
-                    "border-[#FF9D4D]/25 bg-[#FF9D4D]/10 text-[#FF9D4D]",
+                    "border-[#C7A46A]/25 bg-[#C7A46A]/10 text-[#C7A46A]",
                 )}
               >
                 <Icon className="h-[18px] w-[18px] shrink-0" />
@@ -216,7 +216,7 @@ const GuruSidebar = ({
       {/* Pandit profile card */}
       <div className="mx-3 mb-3 rounded-2xl border border-white/[0.08] bg-[#17181F] p-3.5">
         <div className="flex items-center gap-3">
-          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-[#FF9D4D]/40 to-[#E88B3D]/20 text-xl ring-1 ring-[#FF9D4D]/30">
+          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-[#C7A46A]/40 to-[#C7A46A]/20 text-xl ring-1 ring-[#C7A46A]/30">
             🙏
           </div>
           <div className="min-w-0">
@@ -226,7 +226,7 @@ const GuruSidebar = ({
         </div>
         <div className="mt-2.5 flex items-center gap-1.5">
           {Array.from({ length: 5 }, (_, i) => (
-            <Star key={i} className="h-3 w-3 fill-[#F5C76E] text-[#F5C76E]" />
+            <Star key={i} className="h-3 w-3 fill-[#C7A46A] text-[#C7A46A]" />
           ))}
           <span className="text-[11px] text-[#A3A3B2]">4.9 (12K+ Reviews)</span>
         </div>

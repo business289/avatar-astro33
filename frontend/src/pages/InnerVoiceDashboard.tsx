@@ -1,40 +1,37 @@
 import { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
+import { innerVoiceJson, innerVoiceErrorMessage } from "@/lib/innerVoiceApi";
 import { RadarChart, PolarGrid, PolarAngleAxis, Radar, ResponsiveContainer, LineChart, Line, XAxis, YAxis, Tooltip } from "recharts";
 
 const fl = document.createElement("link"); fl.rel = "stylesheet";
 fl.href = "https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Space+Mono:wght@400;700&display=swap";
 if (!document.head.querySelector("link[href*='Cinzel']")) document.head.appendChild(fl);
 
-const GROQ_API_KEY = import.meta.env.VITE_GROQ_API_KEY;
-const GROQ_URL = "https://api.groq.com/openai/v1/chat/completions";
-const GROQ_MODEL = import.meta.env.VITE_GROQ_MODEL || "openai/gpt-oss-120b";
-
 const CSS = `
 *{box-sizing:border-box;margin:0;padding:0;}
-.ivd-app{min-height:100vh;background:#050510;color:#fff;font-family:'Astra','Iceland',sans-serif;overflow-x:hidden;position:relative;}
+.ivd-app{min-height:100vh;background:#050510;color:#fff;font-family:'DM Sans', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;overflow-x:hidden;position:relative;}
 .ivd-wrap{position:relative;z-index:1;max-width:1000px;margin:0 auto;padding:80px 28px 100px;}
 
-.ivd-back{display:inline-flex;align-items:center;gap:7px;font-family:'Astra','Iceland',sans-serif;font-size:11px;letter-spacing:3px;color:rgba(188,106,77,.6);text-transform:uppercase;text-decoration:none;margin-bottom:32px;transition:color .3s;}
-.ivd-back:hover{color:#BC6A4D;}
+.ivd-back{display:inline-flex;align-items:center;gap:7px;font-family:'DM Sans', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;font-size:11px;letter-spacing:3px;color:rgba(199,164,106,.6);text-transform:uppercase;text-decoration:none;margin-bottom:32px;transition:color .3s;}
+.ivd-back:hover{color:#C7A46A;}
 .ivd-hdr{text-align:center;margin-bottom:44px;}
-.ivd-eyebrow{font-family:'Astra','Iceland',sans-serif;font-size:11px;letter-spacing:5px;color:#BC6A4D;text-transform:uppercase;margin-bottom:14px;}
-.ivd-title{font-family:'Astra','Iceland',sans-serif;font-size:clamp(30px,5vw,48px);color:#BC6A4D;text-shadow:0 0 40px rgba(188,106,77,.3);margin-bottom:10px;}
+.ivd-eyebrow{font-family:'DM Sans', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;font-size:11px;letter-spacing:5px;color:#C7A46A;text-transform:uppercase;margin-bottom:14px;}
+.ivd-title{font-family:'Cinzel', 'Cormorant Garamond', Georgia, 'Times New Roman', serif;font-size:clamp(30px,5vw,48px);color:#C7A46A;text-shadow:0 0 40px rgba(199,164,106,.3);margin-bottom:10px;}
 .ivd-sub{color:rgba(255,255,255,.58);font-style:italic;font-size:19px;line-height:1.7;}
 
 /* Setup form */
 .ivd-setup{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:24px;padding:36px;margin-bottom:32px;}
-.ivd-setup-title{font-family:'Astra','Iceland',sans-serif;font-size:22px;color:#BC6A4D;margin-bottom:8px;}
-.ivd-setup-sub{font-family:'Astra','Iceland',sans-serif;font-size:10px;letter-spacing:2px;color:rgba(255,255,255,.4);text-transform:uppercase;margin-bottom:28px;}
+.ivd-setup-title{font-family:'Cinzel', 'Cormorant Garamond', Georgia, 'Times New Roman', serif;font-size:22px;color:#C7A46A;margin-bottom:8px;}
+.ivd-setup-sub{font-family:'DM Sans', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;font-size:10px;letter-spacing:2px;color:rgba(255,255,255,.4);text-transform:uppercase;margin-bottom:28px;}
 .ivd-grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;}
 @media(max-width:540px){.ivd-grid2{grid-template-columns:1fr;}}
-.ivd-field label{font-family:'Astra','Iceland',sans-serif;font-size:10px;letter-spacing:2px;color:rgba(255,255,255,.45);text-transform:uppercase;display:block;margin-bottom:9px;}
-.ivd-input{width:100%;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);border-radius:12px;padding:13px 16px;color:#fff;font-family:'Astra','Iceland',sans-serif;font-size:19px;outline:none;transition:border .3s;}
-.ivd-input:focus{border-color:rgba(188,106,77,.5);}
-.ivd-select{width:100%;background:#0B1020;border:1px solid rgba(255,255,255,.12);border-radius:12px;padding:13px 16px;color:#fff;font-family:'Astra','Iceland',sans-serif;font-size:19px;outline:none;cursor:pointer;}
+.ivd-field label{font-family:'DM Sans', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;font-size:10px;letter-spacing:2px;color:rgba(255,255,255,.45);text-transform:uppercase;display:block;margin-bottom:9px;}
+.ivd-input{width:100%;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);border-radius:12px;padding:13px 16px;color:#fff;font-family:'DM Sans', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;font-size:19px;outline:none;transition:border .3s;}
+.ivd-input:focus{border-color:rgba(199,164,106,.5);}
+.ivd-select{width:100%;background:#0B1020;border:1px solid rgba(255,255,255,.12);border-radius:12px;padding:13px 16px;color:#fff;font-family:'DM Sans', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;font-size:19px;outline:none;cursor:pointer;}
 .ivd-select option{background:#0B1020;}
-.ivd-setup-btn{width:100%;background:linear-gradient(135deg,#BC6A4D,#BC6A4D);color:#050510;border:none;border-radius:13px;padding:17px;font-family:'Astra','Iceland',sans-serif;font-size:12px;letter-spacing:3px;text-transform:uppercase;cursor:pointer;font-weight:700;transition:all .3s;margin-top:8px;}
-.ivd-setup-btn:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 10px 32px rgba(188,106,77,.38);}
+.ivd-setup-btn{width:100%;background:linear-gradient(135deg,#C7A46A,#C7A46A);color:#050510;border:none;border-radius:13px;padding:17px;font-family:'DM Sans', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;font-size:12px;letter-spacing:3px;text-transform:uppercase;cursor:pointer;font-weight:700;transition:all .3s;margin-top:8px;}
+.ivd-setup-btn:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 10px 32px rgba(199,164,106,.38);}
 .ivd-setup-btn:disabled{opacity:.38;cursor:not-allowed;}
 
 /* Score ring */
@@ -44,78 +41,78 @@ const CSS = `
 .ivd-ring-bg{fill:none;stroke:rgba(255,255,255,.07);stroke-width:10;}
 .ivd-ring-fill{fill:none;stroke-width:10;stroke-linecap:round;transition:stroke-dashoffset 1.2s ease;}
 .ivd-ring-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;}
-.ivd-ring-num{font-family:'Astra','Iceland',sans-serif;font-size:40px;color:#BC6A4D;line-height:1;}
-.ivd-ring-den{font-family:'Astra','Iceland',sans-serif;font-size:10px;letter-spacing:2px;color:rgba(255,255,255,.38);margin-top:5px;}
+.ivd-ring-num{font-family:'Cinzel', 'Cormorant Garamond', Georgia, 'Times New Roman', serif;font-size:40px;color:#C7A46A;line-height:1;}
+.ivd-ring-den{font-family:'DM Sans', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;font-size:10px;letter-spacing:2px;color:rgba(255,255,255,.38);margin-top:5px;}
 .ivd-score-meta{max-width:300px;}
-.ivd-score-name{font-family:'Astra','Iceland',sans-serif;font-size:18px;color:#fff;margin-bottom:8px;}
+.ivd-score-name{font-family:'Cinzel', 'Cormorant Garamond', Georgia, 'Times New Roman', serif;font-size:18px;color:#fff;margin-bottom:8px;}
 .ivd-score-msg{font-size:18px;line-height:1.78;color:rgba(255,255,255,.72);font-style:italic;}
-.ivd-score-dasha{font-family:'Astra','Iceland',sans-serif;font-size:10px;color:rgba(188,106,77,.75);margin-top:10px;letter-spacing:1px;line-height:1.6;}
+.ivd-score-dasha{font-family:'DM Sans', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;font-size:10px;color:rgba(199,164,106,.75);margin-top:10px;letter-spacing:1px;line-height:1.6;}
 
 /* Breakdown */
 .ivd-breakdown{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:24px;}
 @media(max-width:540px){.ivd-breakdown{grid-template-columns:1fr 1fr;}}
 .ivd-bk{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.09);border-radius:16px;padding:18px;text-align:center;}
 .ivd-bk-icon{font-size:24px;margin-bottom:8px;}
-.ivd-bk-val{font-family:'Astra','Iceland',sans-serif;font-size:26px;margin-bottom:4px;}
-.ivd-bk-lbl{font-family:'Astra','Iceland',sans-serif;font-size:9px;letter-spacing:2px;color:rgba(255,255,255,.4);text-transform:uppercase;}
+.ivd-bk-val{font-family:'Cinzel', 'Cormorant Garamond', Georgia, 'Times New Roman', serif;font-size:26px;margin-bottom:4px;}
+.ivd-bk-lbl{font-family:'DM Sans', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;font-size:9px;letter-spacing:2px;color:rgba(255,255,255,.4);text-transform:uppercase;}
 
 /* Actions card */
 .ivd-actions-card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.09);border-radius:22px;padding:30px;margin-bottom:24px;}
-.ivd-card-title{font-family:'Astra','Iceland',sans-serif;font-size:22px;color:#BC6A4D;margin-bottom:6px;}
-.ivd-card-sub{font-family:'Astra','Iceland',sans-serif;font-size:10px;letter-spacing:2px;color:rgba(255,255,255,.4);text-transform:uppercase;margin-bottom:22px;}
+.ivd-card-title{font-family:'Cinzel', 'Cormorant Garamond', Georgia, 'Times New Roman', serif;font-size:22px;color:#C7A46A;margin-bottom:6px;}
+.ivd-card-sub{font-family:'DM Sans', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;font-size:10px;letter-spacing:2px;color:rgba(255,255,255,.4);text-transform:uppercase;margin-bottom:22px;}
 .ivd-actions-list{display:flex;flex-direction:column;gap:11px;}
 .ivd-action-row{display:flex;align-items:center;gap:16px;padding:14px 18px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:14px;transition:border .3s;}
-.ivd-action-row.done{border-color:rgba(188,106,77,.25);background:rgba(188,106,77,.04);}
+.ivd-action-row.done{border-color:rgba(199,164,106,.25);background:rgba(199,164,106,.04);}
 .ivd-action-check{width:26px;height:26px;border-radius:50%;border:1.5px solid rgba(255,255,255,.22);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .3s;}
-.ivd-action-check.done{background:#BC6A4D;border-color:#BC6A4D;color:#050510;font-size:13px;}
-.ivd-action-check:not(.done):hover{border-color:rgba(188,106,77,.55);}
+.ivd-action-check.done{background:#C7A46A;border-color:#C7A46A;color:#050510;font-size:13px;}
+.ivd-action-check:not(.done):hover{border-color:rgba(199,164,106,.55);}
 .ivd-action-name{flex:1;font-size:18px;color:rgba(255,255,255,.88);}
 .ivd-action-row.done .ivd-action-name{color:rgba(255,255,255,.38);text-decoration:line-through;}
-.ivd-action-pts{font-family:'Astra','Iceland',sans-serif;font-size:10px;color:rgba(188,106,77,.75);}
-.ivd-action-type{font-family:'Astra','Iceland',sans-serif;font-size:9px;letter-spacing:2px;text-transform:uppercase;border-radius:50px;padding:3px 11px;flex-shrink:0;}
-.at-mantra{background:rgba(188,106,77,.12);border:1px solid rgba(188,106,77,.3);color:#BC6A4D;}
-.at-pooja{background:rgba(188,106,77,.1);border:1px solid rgba(188,106,77,.25);color:#D9895F;}
-.at-charity{background:rgba(188,106,77,.08);border:1px solid rgba(188,106,77,.22);color:#BC6A4D;}
-.at-fast{background:rgba(188,106,77,.08);border:1px solid rgba(188,106,77,.22);color:#fda4af;}
-.at-seva{background:rgba(188,106,77,.08);border:1px solid rgba(188,106,77,.22);color:#BC6A4D;}
-.ivd-save-btn{width:100%;background:linear-gradient(135deg,#BC6A4D,#BC6A4D);color:#050510;border:none;border-radius:13px;padding:16px;font-family:'Astra','Iceland',sans-serif;font-size:11px;letter-spacing:3px;text-transform:uppercase;cursor:pointer;font-weight:700;transition:all .3s;margin-top:18px;}
-.ivd-save-btn:hover{transform:translateY(-2px);box-shadow:0 10px 30px rgba(188,106,77,.38);}
-.ivd-saved{text-align:center;font-family:'Astra','Iceland',sans-serif;font-size:10px;letter-spacing:2px;color:#BC6A4D;margin-top:10px;}
+.ivd-action-pts{font-family:'DM Sans', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;font-size:10px;color:rgba(199,164,106,.75);}
+.ivd-action-type{font-family:'DM Sans', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;font-size:9px;letter-spacing:2px;text-transform:uppercase;border-radius:50px;padding:3px 11px;flex-shrink:0;}
+.at-mantra{background:rgba(199,164,106,.12);border:1px solid rgba(199,164,106,.3);color:#C7A46A;}
+.at-pooja{background:rgba(199,164,106,.1);border:1px solid rgba(199,164,106,.25);color:#C7A46A;}
+.at-charity{background:rgba(199,164,106,.08);border:1px solid rgba(199,164,106,.22);color:#C7A46A;}
+.at-fast{background:rgba(199,164,106,.08);border:1px solid rgba(199,164,106,.22);color:#fda4af;}
+.at-seva{background:rgba(199,164,106,.08);border:1px solid rgba(199,164,106,.22);color:#C7A46A;}
+.ivd-save-btn{width:100%;background:linear-gradient(135deg,#C7A46A,#C7A46A);color:#050510;border:none;border-radius:13px;padding:16px;font-family:'DM Sans', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;font-size:11px;letter-spacing:3px;text-transform:uppercase;cursor:pointer;font-weight:700;transition:all .3s;margin-top:18px;}
+.ivd-save-btn:hover{transform:translateY(-2px);box-shadow:0 10px 30px rgba(199,164,106,.38);}
+.ivd-saved{text-align:center;font-family:'DM Sans', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;font-size:10px;letter-spacing:2px;color:#C7A46A;margin-top:10px;}
 
 /* Transit */
-.ivd-transit{background:rgba(188,106,77,.04);border:1px solid rgba(188,106,77,.18);border-radius:20px;padding:26px;margin-bottom:24px;}
-.ivd-transit-title{font-family:'Astra','Iceland',sans-serif;font-size:11px;letter-spacing:3px;color:#BC6A4D;text-transform:uppercase;margin-bottom:16px;}
+.ivd-transit{background:rgba(199,164,106,.04);border:1px solid rgba(199,164,106,.18);border-radius:20px;padding:26px;margin-bottom:24px;}
+.ivd-transit-title{font-family:'DM Sans', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;font-size:11px;letter-spacing:3px;color:#C7A46A;text-transform:uppercase;margin-bottom:16px;}
 .ivd-t-row{display:flex;gap:14px;align-items:flex-start;padding:11px 0;border-bottom:1px solid rgba(255,255,255,.05);}
 .ivd-t-row:last-child{border-bottom:none;}
 .ivd-t-icon{font-size:20px;flex-shrink:0;margin-top:2px;}
 .ivd-t-text{flex:1;font-size:17px;color:rgba(255,255,255,.78);line-height:1.62;}
 .ivd-t-text strong{color:#fff;}
 .ivd-t-tip{font-size:15px;color:rgba(255,255,255,.48);margin-top:4px;}
-.ivd-t-impact{font-family:'Astra','Iceland',sans-serif;font-size:9px;letter-spacing:2px;border-radius:50px;padding:3px 11px;flex-shrink:0;}
-.ti-pos{background:rgba(188,106,77,.08);border:1px solid rgba(188,106,77,.22);color:#BC6A4D;}
-.ti-neg{background:rgba(188,106,77,.08);border:1px solid rgba(188,106,77,.22);color:#D9895F;}
-.ti-neu{background:rgba(188,106,77,.08);border:1px solid rgba(188,106,77,.2);color:#BC6A4D;}
+.ivd-t-impact{font-family:'DM Sans', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;font-size:9px;letter-spacing:2px;border-radius:50px;padding:3px 11px;flex-shrink:0;}
+.ti-pos{background:rgba(199,164,106,.08);border:1px solid rgba(199,164,106,.22);color:#C7A46A;}
+.ti-neg{background:rgba(199,164,106,.08);border:1px solid rgba(199,164,106,.22);color:#C7A46A;}
+.ti-neu{background:rgba(199,164,106,.08);border:1px solid rgba(199,164,106,.2);color:#C7A46A;}
 
 /* Charts */
 .ivd-chart{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:20px;padding:26px;margin-bottom:24px;}
-.recharts-polar-angle-axis-tick-value{font-family:'Astra','Iceland',sans-serif;font-size:11px;fill:rgba(255,255,255,.55);}
+.recharts-polar-angle-axis-tick-value{font-family:'DM Sans', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;font-size:11px;fill:rgba(255,255,255,.55);}
 
 /* History */
 .ivd-history{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:20px;padding:26px;}
 .ivd-h-row{display:flex;align-items:center;gap:14px;padding:11px 0;border-bottom:1px solid rgba(255,255,255,.05);}
 .ivd-h-row:last-child{border-bottom:none;}
-.ivd-h-date{font-family:'Astra','Iceland',sans-serif;font-size:10px;color:rgba(255,255,255,.38);min-width:70px;}
+.ivd-h-date{font-family:'DM Sans', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;font-size:10px;color:rgba(255,255,255,.38);min-width:70px;}
 .ivd-h-bar{flex:1;height:5px;background:rgba(255,255,255,.07);border-radius:3px;}
-.ivd-h-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,#BC6A4D,#BC6A4D);}
-.ivd-h-score{font-family:'Astra','Iceland',sans-serif;font-size:20px;color:#BC6A4D;min-width:50px;text-align:right;}
-.ivd-h-acts{font-family:'Astra','Iceland',sans-serif;font-size:9px;color:rgba(188,106,77,.6);text-align:right;}
+.ivd-h-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,#C7A46A,#C7A46A);}
+.ivd-h-score{font-family:'DM Sans', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;font-size:20px;color:#C7A46A;min-width:50px;text-align:right;}
+.ivd-h-acts{font-family:'DM Sans', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;font-size:9px;color:rgba(199,164,106,.6);text-align:right;}
 .ivd-empty{text-align:center;color:rgba(255,255,255,.35);font-style:italic;font-size:18px;padding:22px 0;}
 
 /* Loading */
 .ivd-loader-wrap{display:flex;align-items:center;justify-content:center;min-height:60vh;flex-direction:column;gap:18px;}
-.ivd-spin{width:52px;height:52px;border:2px solid rgba(188,106,77,.15);border-top-color:#BC6A4D;border-radius:50%;animation:spin 1s linear infinite;}
+.ivd-spin{width:52px;height:52px;border:2px solid rgba(199,164,106,.15);border-top-color:#C7A46A;border-radius:50%;animation:spin 1s linear infinite;}
 @keyframes spin{to{transform:rotate(360deg);}}
-.ivd-ltxt{font-family:'Astra','Iceland',sans-serif;font-size:11px;letter-spacing:3px;color:rgba(188,106,77,.65);text-transform:uppercase;}
+.ivd-ltxt{font-family:'DM Sans', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;font-size:11px;letter-spacing:3px;color:rgba(199,164,106,.65);text-transform:uppercase;}
 `;
 
 const ZODIAC = ["Aries","Taurus","Gemini","Cancer","Leo","Virgo","Libra","Scorpio","Sagittarius","Capricorn","Aquarius","Pisces"];
@@ -144,7 +141,7 @@ function StarCanvas() {
     const frame=()=>{ ctx.clearRect(0,0,W,H); t+=0.016; shootTimer+=0.016;
       if(shootTimer>3.5+Math.random()*3){spawnShoot();shootTimer=0;}
       stars.forEach(s=>{ const op=s.opacity*(0.6+0.4*Math.sin(t*s.speed*60+s.phase)); ctx.beginPath(); ctx.arc(s.x,s.y,s.r,0,Math.PI*2); ctx.fillStyle=`rgba(255,255,255,${op})`; ctx.fill(); });
-      for(let i=shoots.length-1;i>=0;i--){ const s=shoots[i]; s.x+=Math.cos(s.angle)*s.speed; s.y+=Math.sin(s.angle)*s.speed; s.life-=0.008; if(s.life<=0){shoots.splice(i,1);continue;} const tx=s.x-Math.cos(s.angle)*s.len,ty=s.y-Math.sin(s.angle)*s.len; const g=ctx.createLinearGradient(tx,ty,s.x,s.y); g.addColorStop(0,`rgba(188,106,77,0)`); g.addColorStop(0.6,`rgba(188,106,77,${s.life*0.5})`); g.addColorStop(1,`rgba(255,255,255,${s.life*0.9})`); ctx.beginPath(); ctx.moveTo(tx,ty); ctx.lineTo(s.x,s.y); ctx.strokeStyle=g; ctx.lineWidth=1.5; ctx.stroke(); ctx.beginPath(); ctx.arc(s.x,s.y,2.5,0,Math.PI*2); ctx.fillStyle=`rgba(255,255,255,${s.life*0.8})`; ctx.fill(); }
+      for(let i=shoots.length-1;i>=0;i--){ const s=shoots[i]; s.x+=Math.cos(s.angle)*s.speed; s.y+=Math.sin(s.angle)*s.speed; s.life-=0.008; if(s.life<=0){shoots.splice(i,1);continue;} const tx=s.x-Math.cos(s.angle)*s.len,ty=s.y-Math.sin(s.angle)*s.len; const g=ctx.createLinearGradient(tx,ty,s.x,s.y); g.addColorStop(0,`rgba(199,164,106,0)`); g.addColorStop(0.6,`rgba(199,164,106,${s.life*0.5})`); g.addColorStop(1,`rgba(255,255,255,${s.life*0.9})`); ctx.beginPath(); ctx.moveTo(tx,ty); ctx.lineTo(s.x,s.y); ctx.strokeStyle=g; ctx.lineWidth=1.5; ctx.stroke(); ctx.beginPath(); ctx.arc(s.x,s.y,2.5,0,Math.PI*2); ctx.fillStyle=`rgba(255,255,255,${s.life*0.8})`; ctx.fill(); }
       raf=requestAnimationFrame(frame); };
     raf=requestAnimationFrame(frame);
     const resize=()=>{W=window.innerWidth;H=window.innerHeight;canvas.width=W;canvas.height=H;};
@@ -157,7 +154,7 @@ function StarCanvas() {
 function ScoreRing({ score }) {
   const r=68, circ=2*Math.PI*r;
   const offset=circ-(score/100)*circ;
-  const color=score>=70?"#BC6A4D":score>=50?"#BC6A4D":score>=30?"#D9895F":"#D9895F";
+  const color=score>=70?"#C7A46A":score>=50?"#C7A46A":score>=30?"#C7A46A":"#C7A46A";
   return (
     <div className="ivd-ring-wrap">
       <svg className="ivd-ring-svg" viewBox="0 0 168 168">
@@ -179,6 +176,7 @@ export default function InnerVoiceDashboard() {
   const [done, setDone] = useState(()=>{ const today=new Date().toISOString().slice(0,10); try{return JSON.parse(localStorage.getItem(`iv_done_${today}`)||"[]")}catch{return[]} });
   const [aiData, setAiData] = useState(null);
   const [loadingAI, setLoadingAI] = useState(false);
+  const [aiError, setAiError] = useState("");
   const [saved, setSaved] = useState(false);
 
   useEffect(()=>{ const s=document.createElement("style"); s.textContent=CSS; document.head.appendChild(s); return()=>{document.head.removeChild(s);}; },[]);
@@ -187,28 +185,17 @@ export default function InnerVoiceDashboard() {
   const saveProfile=()=>{ if(!form.name||!form.sign) return; localStorage.setItem("iv_profile",JSON.stringify(form)); setProfile(form); };
 
   const loadAI=async()=>{
-    setLoadingAI(true);
+    setLoadingAI(true); setAiError("");
     const today=new Date().toLocaleDateString("en-IN",{weekday:"long",day:"numeric",month:"long",year:"numeric"});
     try {
-      const res=await fetch(GROQ_URL,{
-        method:"POST",
-        headers:{"Content-Type":"application/json","Authorization":`Bearer ${GROQ_API_KEY}`},
-        body:JSON.stringify({
-          model:GROQ_MODEL, temperature:0.7, max_tokens:1000,
-          response_format:{type:"json_object"},
-          messages:[
-            {role:"system",content:"You are a Vedic astrology karma calculator. Return ONLY valid JSON."},
-            {role:"user",content:`Calculate karma score for: Name: ${profile.name}, Sun Sign: ${profile.sign}, Nakshatra: ${profile.nakshatra||"Unknown"}, Dasha: ${profile.dasha||"Unknown"}, DOB: ${profile.dob||"Unknown"}, Today: ${today}. Return JSON: {composite (0-100), natalBase (0-40), transitBonus (-20 to +30), behaviorBase (0-30), scoreMessage (2 sentences), currentDasha (string), transitAlerts [{planet,event,impact,tip}], radarData [{subject,value 1-10} for Dharma/Artha/Kama/Moksha/Karma/Seva]}`}
-          ]
-        }),
-      });
-      const data=await res.json();
-      if(data.error) throw new Error(data.error.message);
-      const parsed=JSON.parse(data.choices?.[0]?.message?.content||"{}");
+      const parsed=await innerVoiceJson("dashboard-score",[{role:"system",content:"You are a Vedic astrology karma calculator. Return ONLY valid JSON."},{role:"user",content:`Calculate karma score for: Name: ${profile.name}, Sun Sign: ${profile.sign}, Nakshatra: ${profile.nakshatra||"Unknown"}, Dasha: ${profile.dasha||"Unknown"}, DOB: ${profile.dob||"Unknown"}, Today: ${today}. Return JSON: {composite (0-100), natalBase (0-40), transitBonus (-20 to +30), behaviorBase (0-30), scoreMessage (2 sentences), currentDasha (string), transitAlerts [{planet,event,impact,tip}], radarData [{subject,value 1-10} for Dharma/Artha/Kama/Moksha/Karma/Seva]}`}],1000);
+      const nums=["natalBase","transitBonus","behaviorBase"];
+      if(nums.some(k=>typeof parsed[k]!=="number"||!Number.isFinite(parsed[k]))) throw new Error("Incomplete AI scoring data");
       setAiData(parsed);
     } catch (e) {
-      console.error("[Karma Dashboard] AI scoring failed, using fallback data:", e);
-      setAiData({composite:62,natalBase:28,transitBonus:5,behaviorBase:29,scoreMessage:"Your karma shows moderate alignment. Complete your daily remedies to elevate your score.",currentDasha:"Consult Pandit Ji for your current dasha reading.",transitAlerts:[{planet:"Saturn",event:"Saturn's transit requires patience and discipline",impact:"neutral",tip:"Perform Shani Puja on Saturday"},{planet:"Jupiter",event:"Jupiter blesses your dharmic efforts",impact:"positive",tip:"Wear yellow, donate to education"}],radarData:[{subject:"Dharma",value:6},{subject:"Artha",value:5},{subject:"Kama",value:4},{subject:"Moksha",value:7},{subject:"Karma",value:6},{subject:"Seva",value:5}]});
+      console.error("[Karma Dashboard] AI scoring failed:", e);
+      setAiData(null);
+      setAiError(innerVoiceErrorMessage(e, "The AI reply was incomplete. Please try again."));
     } finally { setLoadingAI(false); }
   };
 
@@ -242,6 +229,19 @@ export default function InnerVoiceDashboard() {
     </div>
   );
 
+  if(aiError && !aiData && !loadingAI) return (
+    <div className="ivd-app"><style>{CSS}</style><StarCanvas />
+      <div className="ivd-wrap">
+        <Link to="/inner-voice" className="ivd-back">← Inner Voice</Link>
+        <div className="ivd-loader-wrap" role="alert">
+          <div className="ivd-ltxt">⚠ Your karma score could not be calculated</div>
+          <div className="ivd-ltxt" style={{fontSize:14,opacity:0.75,maxWidth:420,textAlign:"center"}}>{aiError}</div>
+          <button onClick={loadAI} style={{marginTop:6,padding:"10px 26px",borderRadius:999,border:"1px solid #C7A46A",background:"transparent",color:"#C7A46A",cursor:"pointer",fontSize:15}}>Try again</button>
+        </div>
+      </div>
+    </div>
+  );
+
   if(loadingAI) return (
     <div className="ivd-app"><style>{CSS}</style><StarCanvas />
       <div className="ivd-wrap"><div className="ivd-loader-wrap"><div className="ivd-spin"/><div className="ivd-ltxt">Calculating from birth chart + transits...</div></div></div>
@@ -267,9 +267,9 @@ export default function InnerVoiceDashboard() {
 
         {aiData && (
           <div className="ivd-breakdown">
-            <div className="ivd-bk"><div className="ivd-bk-icon">🌟</div><div className="ivd-bk-val" style={{color:"#BC6A4D"}}>{aiData.natalBase}</div><div className="ivd-bk-lbl">Natal Base</div></div>
-            <div className="ivd-bk"><div className="ivd-bk-icon">🪐</div><div className="ivd-bk-val" style={{color:aiData.transitBonus>=0?"#BC6A4D":"#D9895F"}}>{aiData.transitBonus>=0?"+":""}{aiData.transitBonus}</div><div className="ivd-bk-lbl">Transit Bonus</div></div>
-            <div className="ivd-bk"><div className="ivd-bk-icon">⚡</div><div className="ivd-bk-val" style={{color:"#BC6A4D"}}>{behaviorPts}</div><div className="ivd-bk-lbl">Today's Actions</div></div>
+            <div className="ivd-bk"><div className="ivd-bk-icon">🌟</div><div className="ivd-bk-val" style={{color:"#C7A46A"}}>{aiData.natalBase}</div><div className="ivd-bk-lbl">Natal Base</div></div>
+            <div className="ivd-bk"><div className="ivd-bk-icon">🪐</div><div className="ivd-bk-val" style={{color:aiData.transitBonus>=0?"#C7A46A":"#C7A46A"}}>{aiData.transitBonus>=0?"+":""}{aiData.transitBonus}</div><div className="ivd-bk-lbl">Transit Bonus</div></div>
+            <div className="ivd-bk"><div className="ivd-bk-icon">⚡</div><div className="ivd-bk-val" style={{color:"#C7A46A"}}>{behaviorPts}</div><div className="ivd-bk-lbl">Today's Actions</div></div>
           </div>
         )}
 
@@ -313,8 +313,8 @@ export default function InnerVoiceDashboard() {
             <ResponsiveContainer width="100%" height={260}>
               <RadarChart data={aiData.radarData}>
                 <PolarGrid stroke="rgba(255,255,255,0.07)"/>
-                <PolarAngleAxis dataKey="subject" tick={{fill:"rgba(255,255,255,0.55)",fontSize:11,fontFamily:"'Astra','Iceland',sans-serif"}}/>
-                <Radar dataKey="value" stroke="#BC6A4D" fill="#BC6A4D" fillOpacity={0.12} strokeWidth={2}/>
+                <PolarAngleAxis dataKey="subject" tick={{fill:"rgba(255,255,255,0.55)",fontSize:11,fontFamily: "'DM Sans', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif"}}/>
+                <Radar dataKey="value" stroke="#C7A46A" fill="#C7A46A" fillOpacity={0.12} strokeWidth={2}/>
               </RadarChart>
             </ResponsiveContainer>
           </div>
@@ -326,10 +326,10 @@ export default function InnerVoiceDashboard() {
             <div className="ivd-card-sub" style={{marginBottom:18}}>Your composite score over 14 days</div>
             <ResponsiveContainer width="100%" height={180}>
               <LineChart data={lineData}>
-                <XAxis dataKey="date" tick={{fill:"rgba(255,255,255,.35)",fontSize:10,fontFamily:"'Astra','Iceland',sans-serif"}} axisLine={false} tickLine={false}/>
+                <XAxis dataKey="date" tick={{fill:"rgba(255,255,255,.35)",fontSize:10,fontFamily: "'DM Sans', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif"}} axisLine={false} tickLine={false}/>
                 <YAxis domain={[0,100]} tick={{fill:"rgba(255,255,255,.35)",fontSize:10}} axisLine={false} tickLine={false}/>
-                <Tooltip contentStyle={{background:"#0B1020",border:"1px solid rgba(188,106,77,.3)",borderRadius:12,fontFamily:"'Astra','Iceland',sans-serif",fontSize:11}}/>
-                <Line type="monotone" dataKey="score" stroke="#BC6A4D" strokeWidth={2} dot={{fill:"#BC6A4D",r:3}}/>
+                <Tooltip contentStyle={{background:"#0B1020",border:"1px solid rgba(199,164,106,.3)",borderRadius:12,fontFamily: "'DM Sans', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif",fontSize:11}}/>
+                <Line type="monotone" dataKey="score" stroke="#C7A46A" strokeWidth={2} dot={{fill:"#C7A46A",r:3}}/>
               </LineChart>
             </ResponsiveContainer>
           </div>

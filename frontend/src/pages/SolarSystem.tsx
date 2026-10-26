@@ -18,7 +18,7 @@ export default function SolarSystem() {
       <div className="absolute top-4 left-4 z-10">
         <Link
           to="/"
-          className="flex items-center gap-2 px-3 py-2 rounded-lg text-white/70 hover:text-white transition-colors text-sm font-display tracking-wider"
+          className="flex items-center gap-2 px-3 py-2 rounded-lg text-white/70 hover:text-white transition-colors text-sm font-ui tracking-wider"
           style={{ background: "rgba(0,0,0,0.55)", backdropFilter: "blur(8px)", border: "1px solid rgba(255,255,255,0.12)" }}
         >
           <ArrowLeft className="w-4 h-4" />

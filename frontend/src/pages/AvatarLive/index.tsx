@@ -54,7 +54,7 @@ const LiveCard = ({ temple }: { temple: (typeof liveTemples)[0] }) => (
     <div
       style={{
         background: '#FFF', borderRadius: 18,
-        border: '1.5px solid rgba(188,106,77,0.12)',
+        border: '1.5px solid rgba(138,109,53,0.12)',
         boxShadow: '0 4px 20px rgba(120,60,20,0.07)',
         overflow: 'hidden',
         transition: 'transform 0.3s ease, box-shadow 0.3s ease',
@@ -80,10 +80,10 @@ const LiveCard = ({ temple }: { temple: (typeof liveTemples)[0] }) => (
         </div>
       </div>
       <div style={{ padding: '14px 16px' }}>
-        <span style={{ fontSize: 11, fontWeight: 600, color: '#BC6A4D', letterSpacing: '0.08em', textTransform: 'uppercase', background: 'rgba(188,106,77,0.08)', border: '1px solid rgba(188,106,77,0.2)', borderRadius: 99, padding: '2px 8px', display: 'inline-block', marginBottom: 6 }}>
+        <span style={{ fontSize: 11, fontWeight: 600, color: '#8A6D35', letterSpacing: '0.08em', textTransform: 'uppercase', background: 'rgba(138,109,53,0.08)', border: '1px solid rgba(138,109,53,0.2)', borderRadius: 99, padding: '2px 8px', display: 'inline-block', marginBottom: 6 }}>
           {temple.category}
         </span>
-        <p style={{ fontSize: 15, fontWeight: 700, color: '#2C1810', lineHeight: 1.3, marginBottom: 3, fontFamily: 'Iceland, sans-serif', letterSpacing: '0.03em' }}>{temple.name}</p>
+        <p style={{ fontSize: 15, fontWeight: 700, color: '#2C1810', lineHeight: 1.3, marginBottom: 3, fontFamily: "'DM Sans', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif", letterSpacing: '0.03em' }}>{temple.name}</p>
         <p style={{ fontSize: 13, color: '#7A5C42' }}>{temple.city}</p>
       </div>
     </div>
@@ -103,16 +103,16 @@ const AvatarLivePage = () => {
         <section className="text-center" style={{ paddingTop: 52, paddingBottom: 48, paddingLeft: 24, paddingRight: 24 }}>
           <div style={{ maxWidth: 680, margin: '0 auto' }}>
             <div className="flex items-center justify-center gap-3 mb-5">
-              <div style={{ height: 1, width: 40, background: 'linear-gradient(to right, transparent, rgba(188,106,77,0.5))' }} />
-              <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.32em', color: '#BC6A4D', textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: 6 }}>
+              <div style={{ height: 1, width: 40, background: 'linear-gradient(to right, transparent, rgba(138,109,53,0.5))' }} />
+              <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.32em', color: '#8A6D35', textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: 6 }}>
                 <Radio style={{ width: 11, height: 11 }} /> Now Streaming
               </p>
-              <div style={{ height: 1, width: 40, background: 'linear-gradient(to left, transparent, rgba(188,106,77,0.5))' }} />
+              <div style={{ height: 1, width: 40, background: 'linear-gradient(to left, transparent, rgba(138,109,53,0.5))' }} />
             </div>
 
-            <h1 className="font-display font-bold tracking-widest uppercase leading-none mb-5"
-              style={{ fontSize: 'clamp(52px, 8vw, 96px)' }}>
-              <span style={{ background: 'linear-gradient(135deg, #BC6A4D 0%, #BC6A4D 60%, #BC6A4D 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
+            <h1 className="font-heading font-bold tracking-widest uppercase leading-none mb-5"
+              style={{ fontSize: 'clamp(38px, 6vw, 72px)' }}>
+              <span style={{ background: 'linear-gradient(135deg, #8A6D35 0%, #8A6D35 60%, #8A6D35 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
                 Live
               </span>
             </h1>
@@ -125,7 +125,7 @@ const AvatarLivePage = () => {
             <div className="flex items-center justify-center gap-10">
               {[{ num: '9+', label: 'Live Temples' }, { num: '50K+', label: 'Viewers' }, { num: '24/7', label: 'Always Live' }].map(s => (
                 <div key={s.label} style={{ textAlign: 'center' }}>
-                  <p style={{ fontSize: 20, fontWeight: 800, color: '#BC6A4D', fontFamily: 'Iceland, sans-serif' }}>{s.num}</p>
+                  <p style={{ fontSize: 20, fontWeight:700, color: '#8A6D35', fontFamily: "'Cinzel', 'Cormorant Garamond', Georgia, 'Times New Roman', serif" }}>{s.num}</p>
                   <p style={{ fontSize: 11, color: '#9C7B62' }}>{s.label}</p>
                 </div>
               ))}
@@ -149,7 +149,7 @@ const AvatarLivePage = () => {
                     borderRadius: 28, overflow: 'hidden',
                     position: 'relative',
                     minHeight: 480,
-                    background: 'linear-gradient(155deg, #BC6A4D 0%, #BC6A4D 30%, #BC6A4D 65%, #BC6A4D 100%)',
+                    background: 'linear-gradient(155deg, #8A6D35 0%, #8A6D35 30%, #8A6D35 65%, #8A6D35 100%)',
                     cursor: 'pointer',
                     boxShadow: '0 16px 56px rgba(120,60,20,0.22)',
                   }}>
@@ -194,13 +194,13 @@ const AvatarLivePage = () => {
                       {/* Temple tags */}
                       <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 18 }}>
                         {['Siddhivinayak', 'Kashi Vishwanath', 'Tirupati', 'Shirdi'].map(t => (
-                          <span key={t} style={{ fontSize: 11, color: 'rgba(255,255,255,0.80)', background: 'rgba(255,255,255,0.12)', border: '1px solid rgba(255,255,255,0.18)', borderRadius: 99, padding: '4px 11px', fontFamily: "'Astra','Iceland',sans-serif", fontWeight: 600 }}>
+                          <span key={t} style={{ fontSize: 11, color: 'rgba(255,255,255,0.80)', background: 'rgba(255,255,255,0.12)', border: '1px solid rgba(255,255,255,0.18)', borderRadius: 99, padding: '4px 11px', fontFamily: "'DM Sans', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif", fontWeight: 600 }}>
                             {t}
                           </span>
                         ))}
                       </div>
 
-                      <h2 className="font-display font-bold uppercase tracking-wide leading-none mb-4"
+                      <h2 className="font-heading font-bold uppercase tracking-wide leading-none mb-4"
                         style={{ fontSize: 'clamp(36px, 5vw, 52px)', color: '#FFF', textShadow: '0 2px 20px rgba(0,0,0,0.3)' }}>
                         Live Darshan
                       </h2>
@@ -211,10 +211,10 @@ const AvatarLivePage = () => {
 
                       <div style={{
                         display: 'inline-flex', alignItems: 'center', gap: 10,
-                        background: '#FFF', color: '#BC6A4D',
+                        background: '#FFF', color: '#8A6D35',
                         fontSize: 13, fontWeight: 800, letterSpacing: '0.1em', textTransform: 'uppercase',
                         padding: '14px 26px', borderRadius: 14,
-                        fontFamily: 'Iceland, sans-serif',
+                        fontFamily: "'DM Sans', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif",
                         boxShadow: '0 4px 20px rgba(0,0,0,0.2)',
                         transition: 'transform 0.2s',
                       }}>
@@ -236,7 +236,7 @@ const AvatarLivePage = () => {
                     borderRadius: 28, overflow: 'hidden',
                     position: 'relative',
                     minHeight: 480,
-                    background: 'linear-gradient(155deg, #7B4A28 0%, #BC6A4D 30%, #8B5230 65%, #5C3218 100%)',
+                    background: 'linear-gradient(155deg, #7B4A28 0%, #8A6D35 30%, #8B5230 65%, #5C3218 100%)',
                     cursor: 'pointer',
                     boxShadow: '0 16px 56px rgba(80,40,10,0.24)',
                   }}>
@@ -252,7 +252,7 @@ const AvatarLivePage = () => {
                     {/* Event type badges top-left */}
                     <div style={{ position: 'absolute', top: 24, left: 24, display: 'flex', gap: 8, flexWrap: 'wrap', maxWidth: 240 }}>
                       {['Wedding', 'Naming Ceremony', 'Puja'].map(t => (
-                        <span key={t} style={{ fontSize: 10, color: 'rgba(255,255,255,0.85)', background: 'rgba(255,255,255,0.12)', border: '1px solid rgba(255,255,255,0.18)', borderRadius: 99, padding: '4px 11px', fontFamily: "'Astra','Iceland',sans-serif", fontWeight: 600 }}>
+                        <span key={t} style={{ fontSize: 10, color: 'rgba(255,255,255,0.85)', background: 'rgba(255,255,255,0.12)', border: '1px solid rgba(255,255,255,0.18)', borderRadius: 99, padding: '4px 11px', fontFamily: "'DM Sans', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif", fontWeight: 600 }}>
                           {t}
                         </span>
                       ))}
@@ -282,7 +282,7 @@ const AvatarLivePage = () => {
                         ))}
                       </div>
 
-                      <h2 className="font-display font-bold uppercase tracking-wide leading-none mb-4"
+                      <h2 className="font-heading font-bold uppercase tracking-wide leading-none mb-4"
                         style={{ fontSize: 'clamp(36px, 5vw, 52px)', color: '#FFF', textShadow: '0 2px 20px rgba(0,0,0,0.3)' }}>
                         Family Functions
                       </h2>
@@ -296,7 +296,7 @@ const AvatarLivePage = () => {
                         background: 'rgba(255,255,255,0.96)', color: '#7B4A28',
                         fontSize: 13, fontWeight: 800, letterSpacing: '0.1em', textTransform: 'uppercase',
                         padding: '14px 26px', borderRadius: 14,
-                        fontFamily: 'Iceland, sans-serif',
+                        fontFamily: "'DM Sans', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif",
                         boxShadow: '0 4px 20px rgba(0,0,0,0.2)',
                       }}>
                         <Video style={{ width: 15, height: 15 }} />
@@ -315,12 +315,12 @@ const AvatarLivePage = () => {
           <div style={{ paddingLeft: 32, paddingRight: 32, marginBottom: 24 }}>
             <div style={{ maxWidth: 1280, margin: '0 auto', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
               <div>
-                <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.3em', color: '#BC6A4D', textTransform: 'uppercase', marginBottom: 5 }}>LIVE NOW</p>
-                <h2 className="font-display font-bold tracking-wide uppercase" style={{ fontSize: 27, color: '#2C1810' }}>
-                  Featured <span style={{ color: '#BC6A4D' }}>Streams</span>
+                <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.3em', color: '#8A6D35', textTransform: 'uppercase', marginBottom: 5 }}>LIVE NOW</p>
+                <h2 className="font-heading font-bold tracking-wide uppercase" style={{ fontSize: 27, color: '#2C1810' }}>
+                  Featured <span style={{ color: '#8A6D35' }}>Streams</span>
                 </h2>
               </div>
-              <Link to="/avatar-live/darshan" style={{ fontSize: 13, color: '#BC6A4D', textDecoration: 'none', fontWeight: 700, display: 'flex', alignItems: 'center', gap: 5 }}>
+              <Link to="/avatar-live/darshan" style={{ fontSize: 13, color: '#8A6D35', textDecoration: 'none', fontWeight: 700, display: 'flex', alignItems: 'center', gap: 5 }}>
                 See all <ArrowRight style={{ width: 14, height: 14 }} />
               </Link>
             </div>
@@ -333,7 +333,7 @@ const AvatarLivePage = () => {
                 {liveFamilyShort.map(e => (
                   <Link key={e.id} to="/avatar-live/family" className="group flex-shrink-0" style={{ width: 260, textDecoration: 'none' }}>
                     <div style={{
-                      background: '#FFF', borderRadius: 18, border: '1.5px solid rgba(188,106,77,0.12)',
+                      background: '#FFF', borderRadius: 18, border: '1.5px solid rgba(138,109,53,0.12)',
                       boxShadow: '0 4px 20px rgba(120,60,20,0.07)', overflow: 'hidden',
                       transition: 'transform 0.3s ease, box-shadow 0.3s ease',
                     }}
@@ -350,10 +350,10 @@ const AvatarLivePage = () => {
                         </div>
                       </div>
                       <div style={{ padding: '14px 16px' }}>
-                        <span style={{ fontSize: 10, fontWeight: 600, color: '#BC6A4D', background: 'rgba(188,106,77,0.08)', border: '1px solid rgba(188,106,77,0.2)', borderRadius: 99, padding: '2px 8px', display: 'inline-block', marginBottom: 6 }}>
+                        <span style={{ fontSize: 10, fontWeight: 600, color: '#8A6D35', background: 'rgba(138,109,53,0.08)', border: '1px solid rgba(138,109,53,0.2)', borderRadius: 99, padding: '2px 8px', display: 'inline-block', marginBottom: 6 }}>
                           {e.type}
                         </span>
-                        <p style={{ fontSize: 14, fontWeight: 700, color: '#2C1810', marginBottom: 3, fontFamily: 'Iceland, sans-serif' }}>{e.title}</p>
+                        <p style={{ fontSize: 14, fontWeight: 700, color: '#2C1810', marginBottom: 3, fontFamily: "'DM Sans', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif" }}>{e.title}</p>
                         <p style={{ fontSize: 12, color: '#7A5C42' }}>{e.family} · {e.city}</p>
                       </div>
                     </div>
@@ -372,8 +372,8 @@ const AvatarLivePage = () => {
               {/* Timeline */}
               <div>
                 <div className="flex items-center gap-3 mb-6">
-                  <Calendar style={{ width: 20, height: 20, color: '#BC6A4D' }} />
-                  <h2 className="font-display font-bold tracking-wide uppercase" style={{ fontSize: 22, color: '#2C1810' }}>Upcoming Events</h2>
+                  <Calendar style={{ width: 20, height: 20, color: '#8A6D35' }} />
+                  <h2 className="font-heading font-bold tracking-wide uppercase" style={{ fontSize: 22, color: '#2C1810' }}>Upcoming Events</h2>
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
                   {upcomingEvents.slice(0, 5).map((ev, i) => (
@@ -382,15 +382,15 @@ const AvatarLivePage = () => {
                       viewport={{ once: true }} transition={{ delay: i * 0.07, duration: 0.4 }}
                       style={{
                         background: '#FFF', borderRadius: 14, padding: '14px 18px',
-                        border: '1.5px solid rgba(188,106,77,0.12)',
+                        border: '1.5px solid rgba(138,109,53,0.12)',
                         boxShadow: '0 2px 12px rgba(120,60,20,0.05)',
                         display: 'flex', alignItems: 'center', gap: 14,
                       }}
                     >
                       <div style={{
                         width: 46, height: 46, borderRadius: 12, flexShrink: 0,
-                        background: ev.category === 'darshan' ? 'rgba(188,106,77,0.10)' : 'rgba(140,80,30,0.08)',
-                        border: `1.5px solid ${ev.category === 'darshan' ? 'rgba(188,106,77,0.22)' : 'rgba(140,80,30,0.18)'}`,
+                        background: ev.category === 'darshan' ? 'rgba(138,109,53,0.10)' : 'rgba(140,80,30,0.08)',
+                        border: `1.5px solid ${ev.category === 'darshan' ? 'rgba(138,109,53,0.22)' : 'rgba(140,80,30,0.18)'}`,
                         display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 22,
                       }}>
                         {ev.category === 'darshan' ? '🛕' : '💒'}
@@ -400,8 +400,8 @@ const AvatarLivePage = () => {
                         <p style={{ fontSize: 12, color: '#9C7B62' }}>{ev.subtitle}</p>
                       </div>
                       <div style={{ textAlign: 'right', flexShrink: 0 }}>
-                        <p style={{ fontSize: 13, fontWeight: 700, color: ev.isToday ? '#BC6A4D' : '#9C7B62', fontFamily: 'Iceland, sans-serif' }}>{ev.time}</p>
-                        {ev.isToday && <p style={{ fontSize: 10, color: '#BC6A4D', fontWeight: 600, marginTop: 2 }}>TODAY</p>}
+                        <p style={{ fontSize: 13, fontWeight: 700, color: ev.isToday ? '#8A6D35' : '#9C7B62', fontFamily: "'DM Sans', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif" }}>{ev.time}</p>
+                        {ev.isToday && <p style={{ fontSize: 10, color: '#8A6D35', fontWeight: 600, marginTop: 2 }}>TODAY</p>}
                       </div>
                     </motion.div>
                   ))}
@@ -411,8 +411,8 @@ const AvatarLivePage = () => {
               {/* Stats grid */}
               <div>
                 <div className="flex items-center gap-3 mb-6">
-                  <Sparkles style={{ width: 20, height: 20, color: '#BC6A4D' }} />
-                  <h2 className="font-display font-bold tracking-wide uppercase" style={{ fontSize: 22, color: '#2C1810' }}>Live Stats</h2>
+                  <Sparkles style={{ width: 20, height: 20, color: '#8A6D35' }} />
+                  <h2 className="font-heading font-bold tracking-wide uppercase" style={{ fontSize: 22, color: '#2C1810' }}>Live Stats</h2>
                 </div>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
                   {[
@@ -421,10 +421,10 @@ const AvatarLivePage = () => {
                     { icon: '💒', label: 'Family Events',   value: '4',    sub: 'live & upcoming' },
                     { icon: '🙏', label: 'Prayers Offered', value: '1.2K', sub: 'last hour' },
                   ].map(s => (
-                    <div key={s.label} style={{ background: '#FFF', borderRadius: 16, padding: '20px 18px', border: '1.5px solid rgba(188,106,77,0.12)', boxShadow: '0 2px 12px rgba(120,60,20,0.05)' }}>
+                    <div key={s.label} style={{ background: '#FFF', borderRadius: 16, padding: '20px 18px', border: '1.5px solid rgba(138,109,53,0.12)', boxShadow: '0 2px 12px rgba(120,60,20,0.05)' }}>
                       <div style={{ fontSize: 24, marginBottom: 10 }}>{s.icon}</div>
                       <p style={{ fontSize: 10, color: '#9C7B62', marginBottom: 4, fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase' }}>{s.label}</p>
-                      <p style={{ fontSize: 26, fontWeight: 800, color: '#2C1810', fontFamily: 'Iceland, sans-serif' }}>{s.value}</p>
+                      <p style={{ fontSize: 26, fontWeight:700, color: '#2C1810', fontFamily: "'Cinzel', 'Cormorant Garamond', Georgia, 'Times New Roman', serif" }}>{s.value}</p>
                       <p style={{ fontSize: 11, color: '#B09070', marginTop: 2 }}>{s.sub}</p>
                     </div>
                   ))}
@@ -438,14 +438,14 @@ const AvatarLivePage = () => {
         <section style={{ paddingLeft: 32, paddingRight: 32, paddingBottom: 80 }}>
           <div style={{ maxWidth: 1280, margin: '0 auto' }}>
             <div style={{
-              background: 'linear-gradient(135deg, #BC6A4D 0%, #BC6A4D 50%, #BC6A4D 100%)',
+              background: 'linear-gradient(135deg, #8A6D35 0%, #8A6D35 50%, #8A6D35 100%)',
               borderRadius: 28, padding: '56px 48px', textAlign: 'center',
               position: 'relative', overflow: 'hidden',
             }}>
               <div style={{ position: 'absolute', top: -40, left: -40, width: 180, height: 180, borderRadius: '50%', background: 'rgba(255,255,255,0.07)' }} />
               <div style={{ position: 'absolute', bottom: -30, right: -30, width: 140, height: 140, borderRadius: '50%', background: 'rgba(255,255,255,0.05)' }} />
               <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.3em', color: 'rgba(255,255,255,0.7)', textTransform: 'uppercase', marginBottom: 14 }}>✦ FOR FAMILIES & TEMPLES ✦</p>
-              <h2 className="font-display font-bold tracking-wide uppercase" style={{ fontSize: 'clamp(26px, 4vw, 42px)', color: '#FFF', marginBottom: 14 }}>
+              <h2 className="font-heading font-bold tracking-wide uppercase" style={{ fontSize: 'clamp(26px, 4vw, 42px)', color: '#FFF', marginBottom: 14 }}>
                 Bring Your Sacred Moments Online
               </h2>
               <p style={{ fontSize: 16, color: 'rgba(255,255,255,0.8)', lineHeight: 1.7, maxWidth: 480, margin: '0 auto 32px' }}>
@@ -453,11 +453,11 @@ const AvatarLivePage = () => {
               </p>
               <button style={{
                 display: 'inline-flex', alignItems: 'center', gap: 8,
-                background: '#FFF', color: '#BC6A4D', fontSize: 14, fontWeight: 700,
+                background: '#FFF', color: '#8A6D35', fontSize: 14, fontWeight: 700,
                 letterSpacing: '0.1em', textTransform: 'uppercase',
                 padding: '16px 32px', borderRadius: 14,
                 boxShadow: '0 4px 20px rgba(0,0,0,0.15)',
-                fontFamily: 'Iceland, sans-serif', cursor: 'pointer', border: 'none',
+                fontFamily: "'DM Sans', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif", cursor: 'pointer', border: 'none',
               }}>
                 <Video style={{ width: 16, height: 16 }} /> Create Live Event
               </button>

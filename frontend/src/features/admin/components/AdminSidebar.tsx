@@ -68,7 +68,7 @@ export function AdminSidebar({
     <div className="flex h-full flex-col">
       <div className="flex items-center justify-between border-b border-white/10 px-5 py-5">
         <div>
-          <p className="font-display text-lg tracking-wide text-white">Astro</p>
+          <p className="font-ui text-lg tracking-wide text-white">Astro</p>
           <p className="text-xs text-white/50">Admin Console</p>
         </div>
         {showClose && (
@@ -96,7 +96,7 @@ export function AdminSidebar({
               cn(
                 "flex items-center gap-3 rounded-md px-3 py-2.5 text-sm transition-colors",
                 isActive
-                  ? "bg-[#BC6A4D]/15 text-[#BC6A4D]"
+                  ? "bg-[#C7A46A]/15 text-[#C7A46A]"
                   : "text-white/70 hover:bg-white/5 hover:text-white",
               )
             }
@@ -113,7 +113,7 @@ export function AdminSidebar({
             className={cn(
               "flex w-full items-center gap-3 rounded-md px-3 py-2.5 text-sm transition-colors",
               isShopRoute
-                ? "bg-[#BC6A4D]/15 text-[#BC6A4D]"
+                ? "bg-[#C7A46A]/15 text-[#C7A46A]"
                 : "text-white/70 hover:bg-white/5 hover:text-white",
             )}
             aria-expanded={shopExpanded}
@@ -139,7 +139,7 @@ export function AdminSidebar({
                     cn(
                       "flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors",
                       isActive
-                        ? "bg-[#BC6A4D]/15 text-[#BC6A4D]"
+                        ? "bg-[#C7A46A]/15 text-[#C7A46A]"
                         : "text-white/60 hover:bg-white/5 hover:text-white",
                     )
                   }
@@ -174,7 +174,7 @@ export function AdminSidebar({
           </AlertDialogTrigger>
           <AlertDialogContent className="border-white/10 bg-[#0a1628] text-white">
             <AlertDialogHeader>
-              <AlertDialogTitle className="font-display text-lg tracking-wide text-white">Confirm Logout</AlertDialogTitle>
+              <AlertDialogTitle className="font-heading text-lg tracking-wide text-white">Confirm Logout</AlertDialogTitle>
               <AlertDialogDescription className="text-white/60">
                 Are you sure you want to log out of the admin console?
               </AlertDialogDescription>
@@ -185,7 +185,7 @@ export function AdminSidebar({
               </AlertDialogCancel>
               <AlertDialogAction
                 onClick={handleLogout}
-                className="bg-[#BC6A4D] text-white hover:bg-[#BC6A4D]/80"
+                className="bg-[#C7A46A] text-white hover:bg-[#C7A46A]/80"
               >
                 Logout
               </AlertDialogAction>

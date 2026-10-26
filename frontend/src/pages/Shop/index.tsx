@@ -75,7 +75,7 @@ const ShopPage = () => {
                   height: 1,
                   width: 56,
                   background:
-                    "linear-gradient(to right, transparent, rgba(188,106,77,0.5))",
+                    "linear-gradient(to right, transparent, rgba(138,109,53,0.5))",
                 }}
               />
               <p
@@ -83,7 +83,7 @@ const ShopPage = () => {
                   fontSize: 11,
                   fontWeight: 700,
                   letterSpacing: "0.32em",
-                  color: "#BC6A4D",
+                  color: "#8A6D35",
                   textTransform: "uppercase",
                   display: "flex",
                   alignItems: "center",
@@ -97,20 +97,20 @@ const ShopPage = () => {
                   height: 1,
                   width: 56,
                   background:
-                    "linear-gradient(to left, transparent, rgba(188,106,77,0.5))",
+                    "linear-gradient(to left, transparent, rgba(138,109,53,0.5))",
                 }}
               />
             </div>
 
             <h1
-              className="shop-hero-title font-display font-bold tracking-widest uppercase leading-none mb-5"
-              style={{ fontSize: "clamp(54px, 8vw, 96px)" }}
+              className="shop-hero-title font-heading font-bold tracking-widest uppercase leading-none mb-5"
+              style={{ fontSize: "clamp(38px, 6vw, 72px)" }}
             >
               <span style={{ color: "#2C1810" }}>Divine </span>
               <span
                 style={{
                   background:
-                    "linear-gradient(135deg, #BC6A4D 0%, #BC6A4D 60%, #BC6A4D 100%)",
+                    "linear-gradient(135deg, #8A6D35 0%, #8A6D35 60%, #8A6D35 100%)",
                   WebkitBackgroundClip: "text",
                   WebkitTextFillColor: "transparent",
                   backgroundClip: "text",
@@ -143,7 +143,7 @@ const ShopPage = () => {
                     transform: "translateY(-50%)",
                     width: 20,
                     height: 20,
-                    color: "#BC6A4D",
+                    color: "#8A6D35",
                     pointerEvents: "none",
                   }}
                 />
@@ -160,18 +160,18 @@ const ShopPage = () => {
                     fontSize: 15,
                     color: "#2C1810",
                     background: "#FFFFFF",
-                    border: "1.5px solid rgba(188,106,77,0.22)",
+                    border: "1.5px solid rgba(138,109,53,0.22)",
                     borderRadius: 16,
-                    boxShadow: "0 4px 20px rgba(188,106,77,0.08)",
+                    boxShadow: "0 4px 20px rgba(138,109,53,0.08)",
                     outline: "none",
                   }}
                   onFocus={(e) => {
                     (e.target as HTMLInputElement).style.borderColor =
-                      "rgba(188,106,77,0.55)";
+                      "rgba(138,109,53,0.55)";
                   }}
                   onBlur={(e) => {
                     (e.target as HTMLInputElement).style.borderColor =
-                      "rgba(188,106,77,0.22)";
+                      "rgba(138,109,53,0.22)";
                   }}
                 />
               </div>
@@ -198,14 +198,14 @@ const ShopPage = () => {
                   <button
                     key={cat.slug}
                     onClick={() => setActiveCategory(cat.slug)}
-                    className={`flex-shrink-0 font-display text-xs tracking-wider px-4 py-2 rounded-full border transition-all duration-200 ${
+                    className={`flex-shrink-0 font-ui text-xs tracking-wider px-4 py-2 rounded-full border transition-all duration-200 ${
                       activeCategory === cat.slug
-                        ? "border-[#BC6A4D] text-[#BC6A4D]"
-                        : "border-[#D4B896] text-[#7A5C42] hover:border-[#BC6A4D] hover:text-[#BC6A4D]"
+                        ? "border-[#8A6D35] text-[#8A6D35]"
+                        : "border-[#D4B896] text-[#7A5C42] hover:border-[#8A6D35] hover:text-[#8A6D35]"
                     }`}
                     style={
                       activeCategory === cat.slug
-                        ? { background: "rgba(188,106,77,0.1)" }
+                        ? { background: "rgba(138,109,53,0.1)" }
                         : { background: "transparent" }
                     }
                   >
@@ -234,7 +234,7 @@ const ShopPage = () => {
                     style={{
                       background: "#FFFFFF",
                       borderRadius: 18,
-                      border: "1.5px solid rgba(188,106,77,0.13)",
+                      border: "1.5px solid rgba(138,109,53,0.13)",
                       boxShadow: "0 4px 20px rgba(120,60,20,0.07)",
                       overflow: "hidden",
                       textDecoration: "none",
@@ -245,13 +245,13 @@ const ShopPage = () => {
                       const el = e.currentTarget as HTMLElement;
                       el.style.transform = "translateY(-4px)";
                       el.style.boxShadow = "0 12px 36px rgba(120,60,20,0.12)";
-                      el.style.borderColor = "rgba(188,106,77,0.35)";
+                      el.style.borderColor = "rgba(138,109,53,0.35)";
                     }}
                     onMouseLeave={(e) => {
                       const el = e.currentTarget as HTMLElement;
                       el.style.transform = "translateY(0)";
                       el.style.boxShadow = "0 4px 20px rgba(120,60,20,0.07)";
-                      el.style.borderColor = "rgba(188,106,77,0.13)";
+                      el.style.borderColor = "rgba(138,109,53,0.13)";
                     }}
                   >
                     {/* Image */}
@@ -293,7 +293,7 @@ const ShopPage = () => {
                             style={{
                               fontSize: 10,
                               color: "#FFF",
-                              background: "#BC6A4D",
+                              background: "#8A6D35",
                               padding: "3px 8px",
                               borderRadius: 99,
                               fontWeight: 700,
@@ -308,7 +308,7 @@ const ShopPage = () => {
                     {/* Card content */}
                     <div className="p-5">
                       <h3
-                        className="font-display text-sm tracking-wider uppercase mb-2 line-clamp-1 group-hover:text-[#BC6A4D] transition-colors duration-300"
+                        className="font-heading text-sm tracking-wider uppercase mb-2 line-clamp-1 group-hover:text-[#8A6D35] transition-colors duration-300"
                         style={{ color: "#2C1810" }}
                       >
                         {product.name}
@@ -321,7 +321,7 @@ const ShopPage = () => {
                       </p>
                       <div className="flex items-center justify-between">
                         <div className="flex items-baseline gap-1.5">
-                          <span className="text-[#BC6A4D] font-bold text-lg">
+                          <span className="text-[#8A6D35] font-bold text-lg">
                             ₹{product.price.toLocaleString()}
                           </span>
                           {product.originalPrice && (
@@ -355,7 +355,7 @@ const ShopPage = () => {
                     style={{
                       fontSize: 22,
                       color: "#9C7B62",
-                      fontFamily: "Iceland, sans-serif",
+                      fontFamily: "'Cinzel', 'Cormorant Garamond', Georgia, 'Times New Roman', serif",
                       letterSpacing: "0.1em",
                     }}
                   >
@@ -379,7 +379,7 @@ const ShopPage = () => {
                     style={{
                       fontSize: 22,
                       color: "#9C7B62",
-                      fontFamily: "Iceland, sans-serif",
+                      fontFamily: "'Cinzel', 'Cormorant Garamond', Georgia, 'Times New Roman', serif",
                       letterSpacing: "0.1em",
                     }}
                   >

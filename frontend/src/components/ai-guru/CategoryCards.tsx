@@ -32,8 +32,8 @@ const STYLES = [
   },
   {
     icon: Flower2,
-    gradient: "from-[#FF9D4D]/25 via-[#7C2D12]/10 to-transparent",
-    ring: "group-hover:ring-[#FF9D4D]/40",
+    gradient: "from-[#C7A46A]/25 via-[#7C2D12]/10 to-transparent",
+    ring: "group-hover:ring-[#C7A46A]/40",
     ctaLabel: "Ask about your health path",
   },
 ];
@@ -63,13 +63,13 @@ const CategoryCards = ({ suggestions, onSelect }: CategoryCardsProps) => {
             <div className="mb-4 flex h-11 w-11 items-center justify-center rounded-xl bg-white/10">
               <Icon className="h-5 w-5 text-white" />
             </div>
-            <h3 className="mb-1.5 font-['Cormorant_Garamond'] text-xl font-semibold text-white">
+            <h3 className="mb-1.5 font-heading text-xl font-semibold text-white">
               {s.title}
             </h3>
             <p className="mb-5 text-sm leading-relaxed text-[#A3A3B2]">{s.sub}</p>
             <div className="flex items-center gap-2 text-xs font-medium text-white/85">
               {style.ctaLabel}
-              <span className="flex h-7 w-7 items-center justify-center rounded-full border border-white/25 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:border-[#FF9D4D]">
+              <span className="flex h-7 w-7 items-center justify-center rounded-full border border-white/25 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:border-[#C7A46A]">
                 <ArrowRight className="h-3.5 w-3.5" />
               </span>
             </div>

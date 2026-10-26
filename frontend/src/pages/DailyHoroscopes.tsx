@@ -56,7 +56,7 @@ const DailyHoroscopes = () => {
       <div className="container mx-auto px-4">
         {/* Header */}
         <div className="text-center mb-12">
-          <h1 className="page-title font-display text-4xl md:text-5xl lg:text-6xl text-glow text-primary mb-4">
+          <h1 className="page-title font-heading text-4xl md:text-5xl lg:text-6xl text-glow text-primary mb-4">
             Daily Horoscopes
           </h1>
           <p className="text-muted-foreground max-w-2xl mx-auto">
@@ -77,7 +77,7 @@ const DailyHoroscopes = () => {
                     {selectedZodiac.symbol}
                   </span>
                   <div>
-                    <div className="font-display text-foreground">{selectedZodiac.name}</div>
+                    <div className="font-ui text-foreground">{selectedZodiac.name}</div>
                     <div className="text-sm text-muted-foreground">{selectedZodiac.dates}</div>
                   </div>
                 </div>
@@ -102,7 +102,7 @@ const DailyHoroscopes = () => {
                   >
                     <span className="text-2xl">{sign.symbol}</span>
                     <div className="text-left">
-                      <div className="font-display text-sm text-foreground">{sign.name}</div>
+                      <div className="font-ui text-sm text-foreground">{sign.name}</div>
                       <div className="text-xs text-muted-foreground">{sign.dates}</div>
                     </div>
                   </button>
@@ -123,7 +123,7 @@ const DailyHoroscopes = () => {
               >
                 {selectedZodiac.symbol}
               </div>
-              <h2 className="font-display text-3xl text-foreground mb-2">{selectedZodiac.name}</h2>
+              <h2 className="font-heading text-3xl text-foreground mb-2">{selectedZodiac.name}</h2>
               <p className="text-muted-foreground">{new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</p>
             </div>
 

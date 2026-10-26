@@ -799,10 +799,10 @@ const ScrollStorytelling = () => {
             style={{ left: Math.min(tooltipPosition.x + 20, window.innerWidth - 320), top: Math.min(tooltipPosition.y - 20, window.innerHeight - 250) }}
           >
             <div className="p-4 rounded-xl" style={{ background: 'linear-gradient(135deg, rgba(30, 27, 75, 0.95) 0%, rgba(15, 23, 42, 0.95) 100%)', border: '1px solid rgba(99, 102, 241, 0.4)', boxShadow: '0 0 30px rgba(99, 102, 241, 0.15), 0 20px 60px rgba(0, 0, 0, 0.8)' }}>
-              <h3 className="font-display text-lg tracking-wider mb-2" style={{ color: '#A5B4FC', textShadow: '0 0 10px rgba(165, 180, 252, 0.5)' }}>{hoveredConstellation.name}</h3>
+              <h3 className="font-heading text-lg tracking-wider mb-2" style={{ color: '#A5B4FC', textShadow: '0 0 10px rgba(165, 180, 252, 0.5)' }}>{hoveredConstellation.name}</h3>
               <p className="text-sm text-muted-foreground mb-3 leading-relaxed">{hoveredConstellation.mythology.origin}</p>
               <div className="text-xs mb-3 p-2 rounded-lg" style={{ background: 'rgba(99, 102, 241, 0.1)', border: '1px solid rgba(99, 102, 241, 0.2)' }}>
-                <span style={{ color: '#818CF8' }} className="font-display tracking-wider">MEANING: </span>
+                <span style={{ color: '#818CF8' }} className="font-ui tracking-wider">MEANING: </span>
                 <span className="text-foreground/80">{hoveredConstellation.mythology.meaning}</span>
               </div>
               <div className="flex flex-wrap gap-2">

@@ -41,11 +41,11 @@ const SuggestedQuestions = ({ onSelectSuggestion }: SuggestedQuestionsProps) => 
             onClick={() => handleClick(text)}
             animate={{ opacity: pulsedText === text ? [1, 0.35, 1] : 1 }}
             transition={{ duration: 0.28, ease: "easeInOut" }}
-            className="group flex w-full items-center gap-3 rounded-xl border border-white/[0.08] bg-[#0F1015] px-3.5 py-3 text-left text-sm text-[#A3A3B2] transition-all hover:border-[#FF9D4D]/30 hover:bg-[#1D1E27] hover:text-white"
+            className="group flex w-full items-center gap-3 rounded-xl border border-white/[0.08] bg-[#0F1015] px-3.5 py-3 text-left text-sm text-[#A3A3B2] transition-all hover:border-[#C7A46A]/30 hover:bg-[#1D1E27] hover:text-white"
           >
-            <Icon className="h-4 w-4 shrink-0 text-[#FF9D4D]" />
+            <Icon className="h-4 w-4 shrink-0 text-[#C7A46A]" />
             <span className="flex-1">{text}</span>
-            <ChevronRight className="h-4 w-4 shrink-0 text-[#6B7280] transition-transform group-hover:translate-x-0.5 group-hover:text-[#FF9D4D]" />
+            <ChevronRight className="h-4 w-4 shrink-0 text-[#6B7280] transition-transform group-hover:translate-x-0.5 group-hover:text-[#C7A46A]" />
           </motion.button>
         ))}
       </div>

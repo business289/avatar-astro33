@@ -5,14 +5,13 @@ import Hero from "@/components/hero/Hero";
 import AstrologyToolsSection from "@/components/AstrologyToolsSection";
 import FeatureShowcase from "@/components/FeatureShowcase";
 import HomeBlogSection from "@/components/HomeBlogSection";
-import WhyAstrologySection from "@/components/WhyAstrologySection";
 import FaqSection from "@/components/FaqSection";
 
 /* ── Component ─────────────────────────────────────────────────────────── */
 
 const Index = () => {
   return (
-    <div className="relative">
+    <div className="relative font-ui">
       <div className="relative z-10">
         {/* ── HERO ──────────────────────────────────────────────────── */}
         <Hero />
@@ -27,7 +26,7 @@ const Index = () => {
             style={{
               background:
                 "linear-gradient(135deg, rgba(8,20,38,0.85) 0%, rgba(11,42,91,0.6) 50%, rgba(8,20,38,0.85) 100%)",
-              border: "1px solid rgba(188,106,77,0.18)",
+              border: "1px solid rgba(199,164,106,0.18)",
               boxShadow: "0 0 80px rgba(11,42,91,0.4)",
             }}
           >
@@ -41,14 +40,14 @@ const Index = () => {
             />
 
             <p
-              className="text-xs font-display tracking-[0.35em] uppercase mb-4"
-              style={{ color: "#BC6A4D" }}
+              className="text-xs font-ui font-semibold tracking-[0.3em] uppercase mb-4"
+              style={{ color: "#C7A46A" }}
             >
               Interactive Experience
             </p>
-            <h2 className="font-display text-4xl md:text-5xl font-bold tracking-widest uppercase mb-4 leading-tight text-white">
+            <h2 className="font-heading text-3xl sm:text-4xl md:text-5xl font-semibold tracking-[0.08em] uppercase mb-4 leading-[1.12] text-white">
               Explore the
-              <span className="block" style={{ color: "#BC6A4D" }}>
+              <span className="block" style={{ color: "#C7A46A" }}>
                 Solar System
               </span>
             </h2>
@@ -59,12 +58,12 @@ const Index = () => {
 
             <Link
               to="/solar-system"
-              className="group relative inline-flex items-center gap-3 px-8 py-4 rounded-full font-display text-sm tracking-[0.22em] uppercase transition-all duration-300"
+              className="group relative inline-flex items-center gap-3 px-8 py-4 rounded-full font-ui text-sm tracking-[0.18em] uppercase transition-all duration-300"
               style={{
-                background: "linear-gradient(135deg, #BC6A4D, #D9895F)",
+                background: "linear-gradient(135deg, #C7A46A, #C7A46A)",
                 color: "#020B1F",
                 fontWeight: 700,
-                boxShadow: "0 0 32px rgba(188,106,77,0.35)",
+                boxShadow: "0 0 32px rgba(199,164,106,0.35)",
               }}
             >
               <span>Launch Solar System</span>
@@ -81,9 +80,6 @@ const Index = () => {
 
         {/* ── OUR ASTROLOGY (BLOG) ──────────────────────────────────── */}
         <HomeBlogSection />
-
-        {/* ── WHY DO YOU NEED ASTROLOGY ─────────────────────────────── */}
-        <WhyAstrologySection />
 
         {/* ── FAQ ────────────────────────────────────────────────────── */}
         <FaqSection />

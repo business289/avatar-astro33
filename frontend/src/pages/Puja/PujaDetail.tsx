@@ -78,7 +78,7 @@ const Carousel = ({ images, gradient, name }: { images: string[]; gradient: stri
 
         {/* Counter */}
         {total > 1 && (
-          <div className="absolute top-4 right-4 bg-black/60 backdrop-blur-sm text-white/90 text-xs font-display px-3 py-1 rounded-full tracking-wider">
+          <div className="absolute top-4 right-4 bg-black/60 backdrop-blur-sm text-white/90 text-xs font-ui px-3 py-1 rounded-full tracking-wider">
             {idx + 1} / {total}
           </div>
         )}
@@ -130,7 +130,7 @@ const PujaDetail = () => {
       <DevotionLayout>
         <div className="min-h-screen pt-24 flex items-center justify-center">
           <div className="text-center">
-            <p className="font-display text-3xl tracking-wider text-muted-foreground mb-4">Could not load temple</p>
+            <p className="font-heading text-3xl tracking-wider text-muted-foreground mb-4">Could not load temple</p>
             <Link to="/puja" className="btn-outline-cosmic px-6 py-3 rounded-lg inline-flex items-center gap-2">
               <ArrowLeft className="w-4 h-4" /> Back to Puja
             </Link>
@@ -145,7 +145,7 @@ const PujaDetail = () => {
       <DevotionLayout>
         <div className="min-h-screen pt-24 flex items-center justify-center">
           <div className="text-center">
-            <p className="font-display text-3xl tracking-wider text-muted-foreground mb-4">Temple not found</p>
+            <p className="font-heading text-3xl tracking-wider text-muted-foreground mb-4">Temple not found</p>
             <Link to="/puja" className="btn-outline-cosmic px-6 py-3 rounded-lg inline-flex items-center gap-2">
               <ArrowLeft className="w-4 h-4" /> Back to Puja
             </Link>
@@ -169,7 +169,7 @@ const PujaDetail = () => {
       <div className="container mx-auto px-6 lg:px-16">
 
         {/* Back */}
-        <Link to="/puja" className="inline-flex items-center gap-2 text-sm text-primary/70 hover:text-primary mb-10 transition-colors font-display tracking-wider">
+        <Link to="/puja" className="inline-flex items-center gap-2 text-sm text-primary/70 hover:text-primary mb-10 transition-colors font-ui tracking-wider">
           <ArrowLeft className="w-4 h-4" /> Back to all temples
         </Link>
 
@@ -194,7 +194,7 @@ const PujaDetail = () => {
 
               {/* Temple name */}
               <div>
-                <h1 className="font-display tracking-widest uppercase text-foreground leading-none mb-3"
+                <h1 className="font-heading tracking-widest uppercase text-foreground leading-none mb-3"
                     style={{ fontSize: 44 }}>
                   {temple.name}
                 </h1>
@@ -274,7 +274,7 @@ const PujaDetail = () => {
             HOW IT WORKS
         ══════════════════════════════════════════════════════ */}
         <section className="mb-24">
-          <h2 className="font-display tracking-widest uppercase text-center mb-14"
+          <h2 className="font-heading tracking-widest uppercase text-center mb-14"
               style={{ fontSize: 36 }}>
             <span className="text-foreground">How It </span>
             <span className="text-primary">Works</span>
@@ -293,7 +293,7 @@ const PujaDetail = () => {
                 transition={{ delay: i * 0.12, duration: 0.5 }}
                 className="flex flex-col items-center text-center flex-1 relative z-10 px-3"
               >
-                <div className="w-20 h-20 rounded-2xl glass-card border border-primary/20 flex items-center justify-center text-3xl mb-4 hover:border-primary/60 hover:scale-105 transition-all duration-300 cursor-default shadow-[0_0_20px_rgba(188,106,77,0.08)]">
+                <div className="w-20 h-20 rounded-2xl glass-card border border-primary/20 flex items-center justify-center text-3xl mb-4 hover:border-primary/60 hover:scale-105 transition-all duration-300 cursor-default shadow-[0_0_20px_rgba(138,109,53,0.08)]">
                   {step.icon}
                 </div>
                 <p className="font-semibold text-primary uppercase tracking-wider mb-2" style={{ fontSize: 13 }}>{step.title}</p>
@@ -307,7 +307,7 @@ const PujaDetail = () => {
             AVAILABLE PUJAS
         ══════════════════════════════════════════════════════ */}
         <section className="mb-24" ref={pujaRef}>
-          <h2 className="font-display tracking-widest uppercase mb-4" style={{ fontSize: 36 }}>
+          <h2 className="font-heading tracking-widest uppercase mb-4" style={{ fontSize: 36 }}>
             <span className="text-foreground">Available </span>
             <span className="text-primary">Pujas</span>
           </h2>
@@ -328,12 +328,12 @@ const PujaDetail = () => {
                   onClick={() => setSelectedPuja(puja)}
                   className={`glass-card-hover rounded-2xl p-8 flex flex-col cursor-pointer border transition-all duration-300 ${
                     isSelected
-                      ? 'border-primary shadow-[0_0_40px_rgba(188,106,77,0.18)]'
+                      ? 'border-primary shadow-[0_0_40px_rgba(138,109,53,0.18)]'
                       : 'border-border/20 hover:border-primary/40'
                   }`}
                 >
                   {/* Puja name */}
-                  <h3 className="font-display tracking-wider uppercase text-foreground mb-2 leading-tight" style={{ fontSize: 22 }}>
+                  <h3 className="font-heading tracking-wider uppercase text-foreground mb-2 leading-tight" style={{ fontSize: 22 }}>
                     {puja.name}
                   </h3>
 
@@ -376,11 +376,11 @@ const PujaDetail = () => {
             BOOKING SUMMARY CARD
         ══════════════════════════════════════════════════════ */}
         <section className="mb-16">
-          <div className="glass-card rounded-2xl p-8 md:p-10 max-w-2xl mx-auto border border-primary/20 shadow-[0_0_60px_rgba(188,106,77,0.08)]">
+          <div className="glass-card rounded-2xl p-8 md:p-10 max-w-2xl mx-auto border border-primary/20 shadow-[0_0_60px_rgba(138,109,53,0.08)]">
 
             <div className="flex items-center gap-3 mb-8">
               <ShieldCheck className="w-6 h-6 text-primary" />
-              <h3 className="font-display tracking-wider uppercase text-foreground" style={{ fontSize: 24 }}>
+              <h3 className="font-heading tracking-wider uppercase text-foreground" style={{ fontSize: 24 }}>
                 Booking Summary
               </h3>
             </div>

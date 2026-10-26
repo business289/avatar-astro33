@@ -121,7 +121,7 @@ const FloatingParticles: React.FC = () => (
   <>
     <div
       className="tarot-particle tarot-anim-drift"
-      style={{ width: 160, height: 160, left: "8%", top: "18%", background: "rgba(188,106,77,0.10)", animationDelay: "0s" }}
+      style={{ width: 160, height: 160, left: "8%", top: "18%", background: "rgba(199,164,106,0.10)", animationDelay: "0s" }}
     />
     <div
       className="tarot-particle tarot-anim-drift"
@@ -133,7 +133,7 @@ const FloatingParticles: React.FC = () => (
     />
     <div
       className="tarot-particle tarot-anim-drift"
-      style={{ width: 130, height: 130, right: "16%", bottom: "12%", background: "rgba(188,106,77,0.08)", animationDelay: "1.2s" }}
+      style={{ width: 130, height: 130, right: "16%", bottom: "12%", background: "rgba(199,164,106,0.08)", animationDelay: "1.2s" }}
     />
   </>
 );

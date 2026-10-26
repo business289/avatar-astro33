@@ -12,7 +12,7 @@ export const tools: AstrologyTool[] = [
     title: "AI Tarot Reading",
     description:
       "Receive AI-powered tarot guidance for love, career, finance, and life's important decisions.",
-    image: "/placeholders/tarot-card.webp",
+    image: "/images/tools/tarot.jpg",
     button: "Try Now",
     path: "/tarot",
   },
@@ -20,7 +20,7 @@ export const tools: AstrologyTool[] = [
     title: "Birth Chart",
     description:
       "Generate your complete birth chart with detailed astrological insights.",
-    image: "/placeholders/Birth-Chart.webp",
+    image: "/images/tools/birth-chart.jpg",
     button: "Generate",
     path: "/birth-chart",
   },
@@ -28,7 +28,7 @@ export const tools: AstrologyTool[] = [
     title: "Compatibility",
     description:
       "Discover relationship compatibility using advanced astrology matching.",
-    image: "/placeholders/Compatibility.webp",
+    image: "/images/tools/compatibility.jpg",
     button: "Check Now",
     path: "/compatibility",
   },
@@ -36,7 +36,7 @@ export const tools: AstrologyTool[] = [
     title: "Palm Reading",
     description:
       "Upload your palm and receive an AI-generated palm analysis.",
-    image: "/placeholders/Palm-Reading.webp",
+    image: "/images/tools/palm-reading.jpg",
     button: "Analyze",
     path: "/palm-reading",
   },
@@ -57,3 +57,15 @@ export const tools: AstrologyTool[] = [
     path: "/horoscopes",
   },
 ];
+
+/**
+ * The four tools shown, in this order, in the homepage "Explore Our Astrology Tools" row.
+ * The other tools stay in the catalogue above and keep their routes and menu links.
+ */
+export const HOMEPAGE_TOOL_PATHS = ["/birth-chart", "/tarot", "/compatibility", "/palm-reading"] as const;
+
+export const homepageTools: AstrologyTool[] = HOMEPAGE_TOOL_PATHS.map((path) => {
+  const tool = tools.find((t) => t.path === path);
+  if (!tool) throw new Error(`Homepage tool ${path} is missing from the tools catalogue`);
+  return tool;
+});

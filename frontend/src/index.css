@@ -16,25 +16,29 @@
     --popover: 215 20% 8%;
     --popover-foreground: 40 20% 92%;
 
-    /* Burnt-terracotta Accent #BC6A4D */
-    --primary: 16 45% 52%;
-    --primary-foreground: 0 0% 100%;
+    /* The one brand accent: antique gold #C7A46A. Use `brand-accent` in Tailwind or var(--brand-accent). */
+    --brand-accent-rgb: 199 164 106;
+    --brand-accent: rgb(var(--brand-accent-rgb));
 
-    --secondary: 16 45% 62%;
-    --secondary-foreground: 0 0% 100%;
+    /* Burnt-terracotta Accent #C7A46A */
+    --primary: 37.4 45.4% 59.8%; /* #C7A46A */
+    --primary-foreground: 226 80% 8%; /* dark navy label on gold fills */
+
+    --secondary: 37.4 45.4% 59.8%;
+    --secondary-foreground: 226 80% 8%;
 
     --muted: 215 15% 12%;
     --muted-foreground: 0 0% 92%;
 
-    --accent: 16 50% 60%;
-    --accent-foreground: 0 0% 100%;
+    --accent: 37.4 45.4% 59.8%;
+    --accent-foreground: 226 80% 8%;
 
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
 
     --border: 215 15% 18%;
     --input: 215 15% 12%;
-    --ring: 16 45% 52%;
+    --ring: 37.4 45.4% 59.8%;
 
     --radius: 0.75rem;
 
@@ -42,9 +46,9 @@
     --cosmic-dark: 215 30% 5%;
     --cosmic-charcoal: 215 20% 10%;
     --star-white: 40 30% 95%;
-    --gold: 16 45% 52%;
-    --gold-dim: 16 40% 44%;
-    --gold-glow: 16 50% 60%;
+    --gold: 37.4 45.4% 59.8%;
+    --gold-dim: 37.4 45.4% 59.8%;
+    --gold-glow: 37.4 45.4% 59.8%;
 
     /* Gradients */
     --gradient-cosmic: linear-gradient(180deg, hsl(215 30% 5%) 0%, hsl(215 20% 8%) 50%, hsl(215 25% 10%) 100%);
@@ -70,13 +74,15 @@
     background: #081426;
     margin: 0;
     @apply text-foreground antialiased;
-    font-family: 'Iceland', sans-serif;
+    font-family:'DM Sans', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
     min-height: 100vh;
   }
 
   h1, h2, h3, h4, h5, h6 {
-    font-family: 'Iceland', sans-serif;
-    letter-spacing: 0.1em;
+    font-family:'Cinzel', 'Cormorant Garamond', Georgia, 'Times New Roman', serif;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    line-height: 1.2;
     text-transform: uppercase;
   }
 }
@@ -118,13 +124,13 @@
   .element-btn:hover .element-icon-wrap,
   .element-btn:focus-visible .element-icon-wrap {
     transform: scale(1.08);
-    filter: drop-shadow(0 0 10px rgba(188,106,77,0.55))
-            drop-shadow(0 0 22px rgba(188,106,77,0.22));
+    filter: drop-shadow(0 0 10px rgba(199,164,106,0.55))
+            drop-shadow(0 0 22px rgba(199,164,106,0.22));
   }
 
   .element-btn--active .element-icon-wrap {
-    filter: drop-shadow(0 0 12px rgba(188,106,77,0.70))
-            drop-shadow(0 0 28px rgba(188,106,77,0.30));
+    filter: drop-shadow(0 0 12px rgba(199,164,106,0.70))
+            drop-shadow(0 0 28px rgba(199,164,106,0.30));
   }
 
   .element-btn--active:hover .element-icon-wrap {
@@ -170,14 +176,14 @@
   }
 
   .element-label {
-    font-family: 'Iceland', 'Cinzel', sans-serif;
+    font-family:'DM Sans', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
     font-size: 13px;
     letter-spacing: 0.12em;
     text-transform: uppercase;
     color: rgba(255, 255, 255, 0.80);
     padding: 5px 18px;
     border-radius: 99px;
-    border: 1px solid rgba(188,106,77,0.32);
+    border: 1px solid rgba(199,164,106,0.32);
     background: rgba(8, 20, 38, 0.65);
     transition: border-color 260ms ease, background 260ms ease, color 260ms ease;
     white-space: nowrap;
@@ -185,19 +191,19 @@
   }
 
   .element-btn:hover .element-label {
-    border-color: rgba(188,106,77,0.65);
+    border-color: rgba(199,164,106,0.65);
     background: rgba(8, 20, 38, 0.85);
     color: #fff;
   }
 
   .element-label--active {
-    border-color: rgba(188,106,77,0.90);
-    background: rgba(188,106,77,0.12);
+    border-color: rgba(199,164,106,0.90);
+    background: rgba(199,164,106,0.12);
     color: #fff;
   }
 
   .element-btn:focus-visible .element-label {
-    outline: 2px solid rgba(188,106,77,0.80);
+    outline: 2px solid rgba(199,164,106,0.80);
     outline-offset: 3px;
   }
 
@@ -279,7 +285,7 @@
 
   /* Zodiac symbol styling */
   .zodiac-symbol {
-    font-family: 'Iceland', sans-serif;
+    font-family:'DM Sans', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
     color: hsl(var(--gold));
     text-shadow: 0 0 10px hsl(var(--gold) / 0.5);
   }
@@ -301,7 +307,7 @@
   .btn-cosmic {
     background: linear-gradient(135deg, hsl(var(--gold)) 0%, hsl(var(--gold-dim)) 100%);
     color: hsl(var(--cosmic-dark));
-    font-family: 'Iceland', sans-serif;
+    font-family:'DM Sans', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
     font-weight: 400;
     letter-spacing: 0.15em;
     text-transform: uppercase;
@@ -318,7 +324,7 @@
     background: transparent;
     border: 1px solid hsl(var(--gold));
     color: hsl(var(--gold));
-    font-family: 'Iceland', sans-serif;
+    font-family:'DM Sans', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
     font-weight: 400;
     letter-spacing: 0.15em;
     text-transform: uppercase;
@@ -467,7 +473,7 @@
 
 /* Zodiac name — Astra, large bold uppercase, the visual focal point */
 .zodiac-card-name {
-  font-family: 'Astra', 'Cinzel', serif;
+  font-family:'Cinzel', 'Cormorant Garamond', Georgia, 'Times New Roman', serif;
   font-size: 30px;
   font-weight: 700;
   letter-spacing: 0.10em;
@@ -702,9 +708,9 @@
   --tarot-bg:           #060914;
   --tarot-bg-mid:       #0a0f22;
   --tarot-bg-card:      rgba(12, 16, 32, 0.55);
-  --tarot-gold:         #BC6A4D;
-  --tarot-gold-light:   #D08D6F;
-  --tarot-gold-mid:     #BC6A4D;
+  --tarot-gold:         #C7A46A;
+  --tarot-gold-light:   #C7A46A;
+  --tarot-gold-mid:     #C7A46A;
   --tarot-gold-dark:    #954E36;
   --tarot-purple:       #8B6FD8;
   --tarot-purple-light: #B39EE8;
@@ -731,7 +737,7 @@
   justify-content: center;
   overflow: hidden;
   color: var(--tarot-text-body);
-  font-family: 'Lato', 'Inter', system-ui, sans-serif;
+  font-family:'DM Sans', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
   padding: 76px 24px 32px;
   box-sizing: border-box;
 }
@@ -748,7 +754,7 @@
   position: absolute;
   inset: 0;
   background:
-    radial-gradient(ellipse 55% 35% at 12% 85%, rgba(188, 106, 77, 0.06) 0%, transparent 70%),
+    radial-gradient(ellipse 55% 35% at 12% 85%, rgba(199, 164, 106, 0.06) 0%, transparent 70%),
     radial-gradient(ellipse 50% 32% at 88% 15%, rgba(139, 111, 216, 0.06) 0%, transparent 70%);
   pointer-events: none;
   z-index: 0;
@@ -765,7 +771,7 @@
 
 /* ── Typography ──────────────────────────────────────────────────────────────── */
 .tarot-eyebrow {
-  font-family: 'Montserrat', sans-serif;
+  font-family:'DM Sans', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
   font-weight: 600;
   font-size: 17px;
   letter-spacing: 0.2em;
@@ -775,7 +781,7 @@
 }
 
 .tarot-headline {
-  font-family: 'Iceland', 'Cinzel', sans-serif;
+  font-family:'Cinzel', 'Cormorant Garamond', Georgia, 'Times New Roman', serif;
   font-weight: 700;
   font-size: clamp(38px, 6vw, 68px);
   text-align: center;
@@ -789,7 +795,7 @@
 .tarot-headline-line2 { display: block; color: var(--tarot-gold); }
 
 .tarot-card-title {
-  font-family: 'Cinzel', 'Playfair Display', Georgia, serif;
+  font-family:'Cinzel', 'Cormorant Garamond', Georgia, 'Times New Roman', serif;
   font-weight: 700;
   font-size: 26px;
   text-transform: uppercase;
@@ -803,7 +809,7 @@
 .tarot-card-title--purple { color: var(--tarot-purple-light); }
 
 .tarot-card-body {
-  font-family: 'Lato', 'Inter', sans-serif;
+  font-family:'DM Sans', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
   font-weight: 400;
   font-size: 17px;
   line-height: 1.7;
@@ -812,7 +818,7 @@
 }
 
 .tarot-cta {
-  font-family: 'Montserrat', sans-serif;
+  font-family:'DM Sans', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
   font-weight: 700;
   font-size: 18px;
   letter-spacing: 0.1em;
@@ -832,7 +838,7 @@
 }
 
 .tarot-footer-label {
-  font-family: 'Montserrat', sans-serif;
+  font-family:'DM Sans', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
   font-weight: 500;
   font-size: 9px;
   letter-spacing: 0.2em;
@@ -845,7 +851,7 @@
   display: inline-block;
   padding: 7px 16px;
   border-radius: 99px;
-  font-family: 'Montserrat', sans-serif;
+  font-family:'DM Sans', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
   font-weight: 600;
   font-size: 14px;
   letter-spacing: 0.05em;
@@ -856,11 +862,11 @@
 }
 
 .tarot-pill--gold {
-  border: 1px solid rgba(188, 106, 77, 0.55);
+  border: 1px solid rgba(199, 164, 106, 0.55);
   color: var(--tarot-gold-light);
 }
 
-.tarot-pill--gold:hover { background: rgba(188, 106, 77, 0.1); }
+.tarot-pill--gold:hover { background: rgba(199, 164, 106, 0.1); }
 
 .tarot-pill--purple {
   border: 1px solid rgba(139, 111, 216, 0.55);
@@ -882,7 +888,7 @@
 .tarot-diamond--glow {
   text-shadow:
     0 0 10px var(--tarot-gold),
-    0 0 20px rgba(188, 106, 77, 0.4);
+    0 0 20px rgba(199, 164, 106, 0.4);
 }
 
 .tarot-divider-line {
@@ -927,13 +933,13 @@
 .tarot-mode-card:hover { transform: translateY(-3px); }
 
 .tarot-mode-card--gold {
-  border: 1px solid rgba(188, 106, 77, 0.4);
+  border: 1px solid rgba(199, 164, 106, 0.4);
   box-shadow: 0 0 0 rgba(0,0,0,0);
 }
 
 .tarot-mode-card--gold:hover {
-  border-color: rgba(188, 106, 77, 0.75);
-  box-shadow: 0 8px 30px rgba(188, 106, 77, 0.14);
+  border-color: rgba(199, 164, 106, 0.75);
+  box-shadow: 0 8px 30px rgba(199, 164, 106, 0.14);
 }
 
 .tarot-mode-card--purple {
@@ -1102,7 +1108,7 @@
 .devotion-bg .glass-card {
   background: rgba(255, 252, 248, 0.82);
   backdrop-filter: blur(20px);
-  border: 1px solid rgba(188, 106, 77, 0.14);
+  border: 1px solid rgba(199, 164, 106, 0.14);
   box-shadow: 0 4px 20px rgba(120, 60, 20, 0.07), inset 0 1px 0 rgba(255, 255, 255, 0.9);
 }
 
@@ -1110,17 +1116,17 @@
 .devotion-bg .glass-card-hover {
   background: rgba(255, 252, 248, 0.82);
   backdrop-filter: blur(20px);
-  border: 1px solid rgba(188, 106, 77, 0.12);
+  border: 1px solid rgba(199, 164, 106, 0.12);
   box-shadow: 0 4px 20px rgba(120, 60, 20, 0.07);
   transition: all 0.5s;
 }
 
 .page-light .glass-card-hover:hover,
 .devotion-bg .glass-card-hover:hover {
-  border-color: rgba(188, 106, 77, 0.42);
+  border-color: rgba(199, 164, 106, 0.42);
   box-shadow:
     0 14px 40px rgba(120, 60, 20, 0.12),
-    0 0 28px rgba(188, 106, 77, 0.10),
+    0 0 28px rgba(199, 164, 106, 0.10),
     inset 0 1px 0 rgba(255, 255, 255, 0.95);
   transform: translateY(-4px);
 }
@@ -1129,7 +1135,7 @@
 .page-light .input-cosmic,
 .devotion-bg .input-cosmic {
   background: rgba(255, 255, 255, 0.88);
-  border: 1px solid rgba(188, 106, 77, 0.24);
+  border: 1px solid rgba(199, 164, 106, 0.24);
   color: hsl(20 35% 13%);
 }
 
@@ -1140,8 +1146,8 @@
 
 .page-light .input-cosmic:focus,
 .devotion-bg .input-cosmic:focus {
-  border-color: rgba(188, 106, 77, 0.55);
-  box-shadow: 0 0 18px rgba(188, 106, 77, 0.14);
+  border-color: rgba(199, 164, 106, 0.55);
+  box-shadow: 0 0 18px rgba(199, 164, 106, 0.14);
   outline: none;
 }
 
@@ -1149,8 +1155,8 @@
 .page-light .text-glow,
 .devotion-bg .text-glow {
   text-shadow:
-    0 0 18px rgba(188, 106, 77, 0.38),
-    0 0 36px rgba(188, 106, 77, 0.18);
+    0 0 18px rgba(199, 164, 106, 0.38),
+    0 0 36px rgba(199, 164, 106, 0.18);
 }
 
 /* Textarea inherits same light treatment */

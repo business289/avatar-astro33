@@ -117,7 +117,7 @@ export const ZodiacFormation = ({ isVisible, hasAssembled }: ZodiacFormationProp
               
               {/* Symbol container */}
               <div className="relative w-full h-full rounded-full border border-primary/40 bg-card/80 backdrop-blur-sm flex items-center justify-center group">
-                <span className="text-2xl md:text-3xl text-primary font-display">
+                <span className="text-2xl md:text-3xl text-primary font-heading">
                   {zodiac.symbol}
                 </span>
               </div>
@@ -126,7 +126,7 @@ export const ZodiacFormation = ({ isVisible, hasAssembled }: ZodiacFormationProp
               <motion.span 
                 animate={hasAssembled ? { rotate: -360 } : {}}
                 transition={{ duration: 60, repeat: Infinity, ease: 'linear' }}
-                className="absolute -bottom-6 text-xs text-muted-foreground font-display tracking-wider whitespace-nowrap"
+                className="absolute -bottom-6 text-xs text-muted-foreground font-ui tracking-wider whitespace-nowrap"
               >
                 {zodiac.name}
               </motion.span>

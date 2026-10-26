@@ -76,7 +76,7 @@ export function TemplePujasDialog({
       >
         <DialogContent className="max-h-[90vh] overflow-y-auto border-white/10 bg-[#0a1628] text-white sm:max-w-2xl">
           <DialogHeader>
-            <DialogTitle className="font-display text-lg tracking-wide text-white">
+            <DialogTitle className="font-heading text-lg tracking-wide text-white">
               {templeName ?? temple?.name ?? "Temple"}
             </DialogTitle>
             <DialogDescription className="text-white/60">
@@ -101,7 +101,7 @@ export function TemplePujasDialog({
               <Button
                 type="button"
                 onClick={openCreate}
-                className="bg-[#BC6A4D] text-white hover:bg-[#BC6A4D]/90"
+                className="bg-[#C7A46A] text-white hover:bg-[#C7A46A]/90"
               >
                 <Plus className="h-4 w-4" />
                 Add Puja
@@ -117,7 +117,7 @@ export function TemplePujasDialog({
                   <div className="min-w-0 space-y-1.5">
                     <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
                       <span className="font-medium text-white">{puja.name}</span>
-                      <span className="text-sm text-[#BC6A4D]">
+                      <span className="text-sm text-[#C7A46A]">
                         {formatPrice(puja.price)}
                       </span>
                       <span className="text-sm text-white/50">
@@ -168,7 +168,7 @@ export function TemplePujasDialog({
               <Button
                 type="button"
                 onClick={openCreate}
-                className="bg-[#BC6A4D] text-white hover:bg-[#BC6A4D]/90"
+                className="bg-[#C7A46A] text-white hover:bg-[#C7A46A]/90"
               >
                 <Plus className="h-4 w-4" />
                 Add Puja
@@ -193,7 +193,7 @@ export function TemplePujasDialog({
       >
         <AlertDialogContent className="border-white/10 bg-[#0a1628] text-white">
           <AlertDialogHeader>
-            <AlertDialogTitle className="font-display text-lg tracking-wide text-white">
+            <AlertDialogTitle className="font-heading text-lg tracking-wide text-white">
               Delete {pujaToDelete?.name}?
             </AlertDialogTitle>
             <AlertDialogDescription className="text-white/60">

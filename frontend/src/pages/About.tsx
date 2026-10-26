@@ -26,7 +26,7 @@ const About = () => {
       <div className="container mx-auto px-4">
         {/* Header */}
         <div className="text-center mb-16">
-          <h1 className="page-title font-display text-4xl md:text-5xl lg:text-6xl text-glow text-primary mb-4">
+          <h1 className="page-title font-heading text-4xl md:text-5xl lg:text-6xl text-glow text-primary mb-4">
             About Celestial
           </h1>
           <p className="text-muted-foreground max-w-2xl mx-auto">
@@ -37,7 +37,7 @@ const About = () => {
         {/* Mission */}
         <div className="about-section glass-card rounded-3xl p-8 md:p-12 max-w-4xl mx-auto mb-12 text-center">
           <Sparkles className="w-12 h-12 text-primary mx-auto mb-6" />
-          <h2 className="font-display text-2xl md:text-3xl text-foreground mb-6">Our Mission</h2>
+          <h2 className="font-heading text-2xl md:text-3xl text-foreground mb-6">Our Mission</h2>
           <p className="text-muted-foreground text-lg leading-relaxed">
             At Celestial, we believe that the stars hold profound wisdom for those who seek to understand. 
             Our mission is to make astrology accessible, meaningful, and practical for modern life. 
@@ -47,12 +47,12 @@ const About = () => {
 
         {/* Values */}
         <div className="about-section mb-12">
-          <h2 className="font-display text-2xl text-primary text-center mb-8">Our Values</h2>
+          <h2 className="font-heading text-2xl text-primary text-center mb-8">Our Values</h2>
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
             {values.map((value) => (
               <div key={value.title} className="glass-card rounded-2xl p-6 text-center">
                 <value.icon className="w-10 h-10 text-primary mx-auto mb-4" />
-                <h3 className="font-display text-lg text-foreground mb-2">{value.title}</h3>
+                <h3 className="font-heading text-lg text-foreground mb-2">{value.title}</h3>
                 <p className="text-muted-foreground text-sm">{value.description}</p>
               </div>
             ))}
@@ -61,7 +61,7 @@ const About = () => {
 
         {/* Story */}
         <div className="about-section glass-card rounded-3xl p-8 md:p-12 max-w-4xl mx-auto">
-          <h2 className="font-display text-2xl text-primary text-center mb-6">Our Story</h2>
+          <h2 className="font-heading text-2xl text-primary text-center mb-6">Our Story</h2>
           <div className="prose prose-invert max-w-none text-muted-foreground space-y-4">
             <p>
               Celestial was born from a fascination with the night sky and a desire to share its wisdom. 

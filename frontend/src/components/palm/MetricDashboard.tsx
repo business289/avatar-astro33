@@ -17,12 +17,12 @@ export function MetricDashboard({ metrics }: MetricDashboardProps) {
         @keyframes md-card-in{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
       `}</style>
       {metrics.map((m, i) => {
-        const color = m.color ?? "#BC6A4D";
+        const color = m.color ?? "#C7A46A";
         return (
           <div
             key={m.label}
             style={{
-              background: "rgba(255,255,255,0.035)", border: "1px solid rgba(188,106,77,0.14)",
+              background: "rgba(255,255,255,0.035)", border: "1px solid rgba(199,164,106,0.14)",
               borderRadius: 16, padding: "20px", animation: `md-card-in 0.5s ease ${i * 0.05}s both`,
             }}
           >
@@ -36,7 +36,7 @@ export function MetricDashboard({ metrics }: MetricDashboardProps) {
             <div style={{ height: 7, background: "rgba(255,255,255,0.07)", borderRadius: 6, overflow: "hidden" }}>
               <div
                 style={{
-                  height: "100%", width: `${m.value}%`, background: `linear-gradient(90deg, ${color}, #BC6A4D)`,
+                  height: "100%", width: `${m.value}%`, background: `linear-gradient(90deg, ${color}, #C7A46A)`,
                   borderRadius: 6, boxShadow: `0 0 8px ${color}60`,
                   animation: `md-bar-fill 1.1s cubic-bezier(0.22,1,0.36,1) ${i * 0.05 + 0.15}s both`,
                 }}

@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Menu, X, ChevronDown, Radio, LogIn, LogOut, User } from "lucide-react";
 import gsap from "gsap";
+import BrandLogo from "@/components/BrandLogo";
 import { useAuthStore } from "@/store/authStore";
 import { useLogoutMutation } from "@/features/auth/hooks/useAuthMutations";
 import {
@@ -104,14 +105,14 @@ const NavDropdown = ({ label, menuId, items, currentPath, lightNav }: DropdownPr
         ref={triggerRef}
         aria-haspopup="true" aria-expanded={open} aria-controls={menuId}
         onKeyDown={onTriggerKey} onClick={() => setOpen((v) => !v)}
-        className={`relative flex items-center gap-1.5 font-astra text-sm font-semibold tracking-wider transition-colors duration-300
-          focus:outline-none focus-visible:ring-2 focus-visible:ring-[#BC6A4D] focus-visible:ring-offset-2
+        className={`relative flex items-center gap-1.5 font-ui text-sm font-semibold tracking-wide transition-colors duration-300
+          focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-accent focus-visible:ring-offset-2
           focus-visible:ring-offset-background rounded-sm
-          ${isActive ? "text-[#BC6A4D]" : lightNav ? "text-[#2C1810]/60 hover:text-[#BC6A4D]" : "text-foreground/70 hover:text-[#BC6A4D]"}`}
+          ${isActive ? "text-brand-accent" : lightNav ? "text-[#2C1810]/60 hover:text-brand-accent" : "text-foreground/70 hover:text-brand-accent"}`}
       >
         {label}
         <ChevronDown size={14} aria-hidden="true" className={`transition-transform duration-200 ${open ? "rotate-180" : ""}`} />
-        {isActive && <span className="absolute -bottom-1 left-0 right-0 h-[2px] bg-[#BC6A4D] rounded-full" />}
+        {isActive && <span className="absolute -bottom-1 left-0 right-0 h-[2px] bg-brand-accent rounded-full" />}
       </button>
 
       <div className={`absolute top-full left-1/2 -translate-x-1/2 pt-3 w-52 ${open ? "pointer-events-auto" : "pointer-events-none"}`}>
@@ -125,9 +126,9 @@ const NavDropdown = ({ label, menuId, items, currentPath, lightNav }: DropdownPr
               <Link
                 key={item.path} to={item.path} role="menuitem"
                 tabIndex={open ? 0 : -1} onKeyDown={(e) => onItemKey(e, i)}
-                className={`block px-4 py-2.5 font-body text-sm tracking-wide transition-colors duration-200
-                  focus:outline-none focus-visible:bg-[#BC6A4D]/10
-                  ${currentPath === item.path ? "text-[#BC6A4D] bg-[#BC6A4D]/10" : "text-foreground/70 hover:text-[#BC6A4D] hover:bg-[#BC6A4D]/10"}`}
+                className={`block px-4 py-2.5 font-ui text-sm tracking-wide transition-colors duration-200
+                  focus:outline-none focus-visible:bg-brand-accent/10
+                  ${currentPath === item.path ? "text-brand-accent bg-brand-accent/10" : "text-foreground/70 hover:text-brand-accent hover:bg-brand-accent/10"}`}
               >
                 {item.name}
               </Link>
@@ -178,14 +179,14 @@ const AvatarLiveDropdown = ({ currentPath, lightNav }: AvatarLiveDropdownProps) 
         ref={triggerRef}
         aria-haspopup="true" aria-expanded={open} aria-controls="avatar-live-menu"
         onKeyDown={onTriggerKey} onClick={() => setOpen((v) => !v)}
-        className={`relative flex items-center gap-1.5 font-astra text-sm font-semibold tracking-wider transition-colors duration-300
-          focus:outline-none focus-visible:ring-2 focus-visible:ring-[#BC6A4D] focus-visible:ring-offset-2
+        className={`relative flex items-center gap-1.5 font-ui text-sm font-semibold tracking-wide transition-colors duration-300
+          focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-accent focus-visible:ring-offset-2
           focus-visible:ring-offset-background rounded-sm
-          ${isActive ? "text-[#BC6A4D]" : lightNav ? "text-[#2C1810]/60 hover:text-[#BC6A4D]" : "text-foreground/70 hover:text-[#BC6A4D]"}`}
+          ${isActive ? "text-brand-accent" : lightNav ? "text-[#2C1810]/60 hover:text-brand-accent" : "text-foreground/70 hover:text-brand-accent"}`}
       >
         Live
         <ChevronDown size={14} aria-hidden="true" className={`transition-transform duration-200 ${open ? "rotate-180" : ""}`} />
-        {isActive && <span className="absolute -bottom-1 left-0 right-0 h-[2px] bg-[#BC6A4D] rounded-full" />}
+        {isActive && <span className="absolute -bottom-1 left-0 right-0 h-[2px] bg-brand-accent rounded-full" />}
       </button>
 
       {/* Panel — positioned left-aligned so it doesn't clip */}
@@ -196,7 +197,7 @@ const AvatarLiveDropdown = ({ currentPath, lightNav }: AvatarLiveDropdownProps) 
             ${open ? "opacity-100 scale-100" : "opacity-0 scale-95"}`}
           style={{
             background: '#FFFAF6',
-            border: '1.5px solid rgba(188,106,77,0.18)',
+            border: '1.5px solid rgba(138,109,53,0.18)',
             boxShadow: '0 24px 64px rgba(120,60,20,0.16), 0 4px 16px rgba(0,0,0,0.04)',
           }}
         >
@@ -205,12 +206,12 @@ const AvatarLiveDropdown = ({ currentPath, lightNav }: AvatarLiveDropdownProps) 
             to="/avatar-live"
             role="menuitem"
             onClick={() => setOpen(false)}
-            style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 10, padding: '13px 20px 11px', borderBottom: '1px solid rgba(188,106,77,0.10)' }}
-            onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(188,106,77,0.05)'; }}
+            style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 10, padding: '13px 20px 11px', borderBottom: '1px solid rgba(138,109,53,0.10)' }}
+            onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(138,109,53,0.05)'; }}
             onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
           >
-            <Radio style={{ width: 13, height: 13, color: '#BC6A4D', flexShrink: 0 }} />
-            <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.2em', color: '#BC6A4D', textTransform: 'uppercase', fontFamily: "'Astra','Iceland',sans-serif" }}>
+            <Radio style={{ width: 13, height: 13, color: '#8A6D35', flexShrink: 0 }} />
+            <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.2em', color: '#8A6D35', textTransform: 'uppercase', fontFamily: "'DM Sans', system-ui, sans-serif" }}>
               Live Hub
             </span>
             {/* Live pulse dot */}
@@ -225,23 +226,23 @@ const AvatarLiveDropdown = ({ currentPath, lightNav }: AvatarLiveDropdownProps) 
             to="/avatar-live/darshan"
             role="menuitem"
             onClick={() => setOpen(false)}
-            style={{ textDecoration: 'none', display: 'flex', gap: 16, padding: '18px 20px 16px', borderBottom: '1px solid rgba(188,106,77,0.08)', transition: 'background 0.18s' }}
-            onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(188,106,77,0.05)'; }}
+            style={{ textDecoration: 'none', display: 'flex', gap: 16, padding: '18px 20px 16px', borderBottom: '1px solid rgba(138,109,53,0.08)', transition: 'background 0.18s' }}
+            onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(138,109,53,0.05)'; }}
             onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
           >
             <div style={{
               width: 46, height: 46, borderRadius: 13, flexShrink: 0,
-              background: 'linear-gradient(135deg, rgba(188,106,77,0.15) 0%, rgba(212,133,74,0.10) 100%)',
-              border: '1.5px solid rgba(188,106,77,0.22)',
+              background: 'linear-gradient(135deg, rgba(138,109,53,0.15) 0%, rgba(138,109,53,0.10) 100%)',
+              border: '1.5px solid rgba(138,109,53,0.22)',
               display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 22,
             }}>
               🛕
             </div>
             <div>
-              <p style={{ fontSize: 15, fontWeight: 800, color: '#2C1810', marginBottom: 5, fontFamily: 'Iceland, sans-serif', letterSpacing: '0.04em', lineHeight: 1 }}>
+              <p style={{ fontSize: 15, fontWeight: 800, color: '#2C1810', marginBottom: 5, fontFamily: "'DM Sans', system-ui, sans-serif", letterSpacing: '0.04em', lineHeight: 1 }}>
                 Live Darshan
               </p>
-              <p style={{ fontSize: 12, color: 'rgba(44,24,16,0.55)', lineHeight: 1.55, fontFamily: "'Astra','Iceland',sans-serif" }}>
+              <p style={{ fontSize: 12, color: 'rgba(44,24,16,0.55)', lineHeight: 1.55, fontFamily: "'DM Sans', system-ui, sans-serif" }}>
                 Watch live temple darshans, aartis, and spiritual broadcasts from famous temples across India.
               </p>
             </div>
@@ -253,22 +254,22 @@ const AvatarLiveDropdown = ({ currentPath, lightNav }: AvatarLiveDropdownProps) 
             role="menuitem"
             onClick={() => setOpen(false)}
             style={{ textDecoration: 'none', display: 'flex', gap: 16, padding: '16px 20px 18px', transition: 'background 0.18s' }}
-            onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(188,106,77,0.05)'; }}
+            onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(138,109,53,0.05)'; }}
             onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
           >
             <div style={{
               width: 46, height: 46, borderRadius: 13, flexShrink: 0,
-              background: 'linear-gradient(135deg, rgba(212,133,74,0.15) 0%, rgba(188,106,77,0.10) 100%)',
-              border: '1.5px solid rgba(188,106,77,0.22)',
+              background: 'linear-gradient(135deg, rgba(138,109,53,0.15) 0%, rgba(138,109,53,0.10) 100%)',
+              border: '1.5px solid rgba(138,109,53,0.22)',
               display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 22,
             }}>
               💒
             </div>
             <div>
-              <p style={{ fontSize: 15, fontWeight: 800, color: '#2C1810', marginBottom: 5, fontFamily: 'Iceland, sans-serif', letterSpacing: '0.04em', lineHeight: 1 }}>
+              <p style={{ fontSize: 15, fontWeight: 800, color: '#2C1810', marginBottom: 5, fontFamily: "'DM Sans', system-ui, sans-serif", letterSpacing: '0.04em', lineHeight: 1 }}>
                 Family Functions
               </p>
-              <p style={{ fontSize: 12, color: 'rgba(44,24,16,0.55)', lineHeight: 1.55, fontFamily: "'Astra','Iceland',sans-serif" }}>
+              <p style={{ fontSize: 12, color: 'rgba(44,24,16,0.55)', lineHeight: 1.55, fontFamily: "'DM Sans', system-ui, sans-serif" }}>
                 Attend weddings, pujas, naming ceremonies, birthdays, memorials, and family celebrations online.
               </p>
             </div>
@@ -296,9 +297,9 @@ const MobileAccordion = ({ label, items, currentPath, onNavigate }: MobileAccord
       <button
         aria-expanded={open}
         onClick={() => setOpen((v) => !v)}
-        className={`w-full flex items-center justify-between font-display text-base font-medium px-2 py-2 rounded-lg
+        className={`w-full flex items-center justify-between font-ui text-base font-medium px-2 py-2 rounded-lg
           transition-colors duration-300 focus:outline-none
-          ${isActive ? "text-[#BC6A4D]" : "text-foreground/70 hover:text-[#BC6A4D]"}`}
+          ${isActive ? "text-brand-accent" : "text-foreground/70 hover:text-brand-accent"}`}
       >
         {label}
         <ChevronDown size={18} aria-hidden="true" className={`transition-transform duration-200 ${open ? "rotate-180" : ""}`} />
@@ -308,8 +309,8 @@ const MobileAccordion = ({ label, items, currentPath, onNavigate }: MobileAccord
           {items.map((item) => (
             <Link
               key={item.path} to={item.path} onClick={onNavigate}
-              className={`font-display text-sm py-1.5 transition-colors duration-300 ${
-                currentPath === item.path ? "text-[#BC6A4D]" : "text-foreground/70 hover:text-[#BC6A4D]"
+              className={`font-ui text-sm py-1.5 transition-colors duration-300 ${
+                currentPath === item.path ? "text-brand-accent" : "text-foreground/70 hover:text-brand-accent"
               }`}
             >
               {item.name}
@@ -364,12 +365,12 @@ const Navbar = () => {
   const lightNav       = isDevotionPage;
 
   const desktopLinkCls = (active: boolean) =>
-    `relative font-astra text-sm font-semibold tracking-wider transition-colors duration-300 ${
+    `relative font-ui text-sm font-semibold tracking-wide transition-colors duration-300 ${
       active
-        ? "text-[#BC6A4D]"
+        ? "text-brand-accent"
         : lightNav
-          ? "text-[#2C1810]/60 hover:text-[#BC6A4D]"
-          : "text-foreground/70 hover:text-[#BC6A4D]"
+          ? "text-[#2C1810]/60 hover:text-brand-accent"
+          : "text-foreground/70 hover:text-brand-accent"
     }`;
 
   return (
@@ -381,25 +382,20 @@ const Navbar = () => {
             ? 'glass-card py-3'
             : 'py-5 bg-transparent'
       }`}
-      style={isDevotionPage ? { background: '#F8F4EC' } : undefined}
+      style={isDevotionPage ? ({ background: '#F8F4EC', '--brand-accent-rgb': '138 109 53' } as React.CSSProperties) : undefined}
     >
       <div className="container mx-auto px-4 md:px-6">
         <div className="flex items-center justify-between">
 
           {/* Logo */}
-          <Link to="/" className="flex items-center gap-2 group select-none">
-            <svg viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5 text-[#BC6A4D] transition-transform duration-500 group-hover:rotate-90">
-              <path d="M12 2L14.8 9.2L22 12L14.8 14.8L12 22L9.2 14.8L2 12L9.2 9.2L12 2Z" />
-            </svg>
-            <span className="font-display text-lg font-bold tracking-[0.25em] text-[#BC6A4D]">SPIRITUAL</span>
-          </Link>
+          <BrandLogo />
 
           {/* ── Desktop nav ─────────────────────────────────────────────── */}
           <div className="hidden lg:flex items-center gap-8">
 
             <Link to="/" className={desktopLinkCls(location.pathname === "/")}>
               Home
-              {location.pathname === "/" && <span className="absolute -bottom-1 left-0 right-0 h-[2px] bg-[#BC6A4D] rounded-full" />}
+              {location.pathname === "/" && <span className="absolute -bottom-1 left-0 right-0 h-[2px] bg-brand-accent rounded-full" />}
             </Link>
 
             <NavDropdown label="Astrology Tools" menuId="astrology-tools-menu" items={astrologyTools} currentPath={location.pathname} lightNav={lightNav} />
@@ -412,21 +408,21 @@ const Navbar = () => {
             {topLinks.map((link) => (
               <Link key={link.path} to={link.path} className={desktopLinkCls(location.pathname === link.path)}>
                 {link.name}
-                {location.pathname === link.path && <span className="absolute -bottom-1 left-0 right-0 h-[2px] bg-[#BC6A4D] rounded-full" />}
+                {location.pathname === link.path && <span className="absolute -bottom-1 left-0 right-0 h-[2px] bg-brand-accent rounded-full" />}
               </Link>
             ))}
 
             {isAuthenticated ? (
               <div className="flex items-center gap-3 pl-2 border-l border-border/30">
-                <span className={`flex items-center gap-1.5 font-display text-xs tracking-wider ${lightNav ? "text-[#2C1810]/70" : "text-foreground/70"}`}>
-                  <User size={14} className="text-[#BC6A4D]" />
+                <span className={`flex items-center gap-1.5 font-ui text-xs tracking-wider ${lightNav ? "text-[#2C1810]/70" : "text-foreground/70"}`}>
+                  <User size={14} className="text-brand-accent" />
                   {displayName}
                 </span>
                 <button
                   type="button"
                   onClick={() => setShowLogoutConfirm(true)}
                   disabled={logoutMutation.isPending}
-                  className="inline-flex items-center gap-1.5 font-display text-xs font-semibold tracking-wider text-[#BC6A4D] transition-opacity hover:opacity-80 disabled:opacity-50"
+                  className="inline-flex items-center gap-1.5 font-ui text-xs font-semibold tracking-wider text-brand-accent transition-opacity hover:opacity-80 disabled:opacity-50"
                 >
                   <LogOut size={14} />
                   Sign out
@@ -435,7 +431,7 @@ const Navbar = () => {
             ) : (
               <Link
                 to="/login"
-                className="inline-flex items-center gap-1.5 rounded-full border border-[#BC6A4D]/40 bg-[#BC6A4D]/10 px-4 py-2 font-display text-xs font-semibold tracking-wider text-[#BC6A4D] transition-colors hover:bg-[#BC6A4D]/20"
+                className="inline-flex items-center gap-1.5 rounded-full border border-brand-accent/40 bg-brand-accent/10 px-4 py-2 font-ui text-xs font-semibold tracking-wider text-brand-accent transition-colors hover:bg-brand-accent/20"
               >
                 <LogIn size={14} />
                 Sign in
@@ -463,8 +459,8 @@ const Navbar = () => {
               <Link
                 to="/"
                 onClick={() => setIsOpen(false)}
-                className={`mobile-nav-link font-display text-base font-medium px-2 py-2 rounded-lg transition-colors duration-300 ${
-                  location.pathname === "/" ? "text-[#BC6A4D]" : "text-foreground/70 hover:text-[#BC6A4D]"
+                className={`mobile-nav-link font-ui text-base font-medium px-2 py-2 rounded-lg transition-colors duration-300 ${
+                  location.pathname === "/" ? "text-brand-accent" : "text-foreground/70 hover:text-brand-accent"
                 }`}
               >
                 Home
@@ -485,8 +481,8 @@ const Navbar = () => {
               {topLinks.map((link) => (
                 <Link
                   key={link.path} to={link.path} onClick={() => setIsOpen(false)}
-                  className={`mobile-nav-link font-display text-base font-medium px-2 py-2 rounded-lg transition-colors duration-300 ${
-                    location.pathname === link.path ? "text-[#BC6A4D]" : "text-foreground/70 hover:text-[#BC6A4D]"
+                  className={`mobile-nav-link font-ui text-base font-medium px-2 py-2 rounded-lg transition-colors duration-300 ${
+                    location.pathname === link.path ? "text-brand-accent" : "text-foreground/70 hover:text-brand-accent"
                   }`}
                 >
                   {link.name}
@@ -500,7 +496,7 @@ const Navbar = () => {
                     setIsOpen(false);
                     setShowLogoutConfirm(true);
                   }}
-                  className="mobile-nav-link font-display text-base font-medium px-2 py-2 rounded-lg text-[#BC6A4D] text-left"
+                  className="mobile-nav-link font-ui text-base font-medium px-2 py-2 rounded-lg text-brand-accent text-left"
                 >
                   Sign out ({displayName})
                 </button>
@@ -508,7 +504,7 @@ const Navbar = () => {
                 <Link
                   to="/login"
                   onClick={() => setIsOpen(false)}
-                  className="mobile-nav-link font-display text-base font-medium px-2 py-2 rounded-lg text-[#BC6A4D]"
+                  className="mobile-nav-link font-ui text-base font-medium px-2 py-2 rounded-lg text-brand-accent"
                 >
                   Sign in
                 </Link>
@@ -519,7 +515,7 @@ const Navbar = () => {
       <AlertDialog open={showLogoutConfirm} onOpenChange={setShowLogoutConfirm}>
         <AlertDialogContent className="border-border/30 bg-[#081426] text-white">
           <AlertDialogHeader>
-            <AlertDialogTitle className="font-display text-lg tracking-wide text-[#BC6A4D]">Confirm Logout</AlertDialogTitle>
+            <AlertDialogTitle className="font-ui text-lg tracking-wide text-brand-accent">Confirm Logout</AlertDialogTitle>
             <AlertDialogDescription className="text-foreground/70">
               Are you sure you want to sign out of your account?
             </AlertDialogDescription>
@@ -533,7 +529,7 @@ const Navbar = () => {
                 setShowLogoutConfirm(false);
                 void handleLogout();
               }}
-              className="bg-[#BC6A4D] text-white hover:bg-[#BC6A4D]/80"
+              className="bg-brand-accent text-[#081426] hover:bg-brand-accent/80"
             >
               Sign out
             </AlertDialogAction>

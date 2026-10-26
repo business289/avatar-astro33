@@ -26,7 +26,7 @@ export function AuthSubmitButton({
         // separator and the candidate is silently dropped from the build.
         "flex w-full items-center justify-center gap-2 rounded-xl py-3.5",
         "bg-transparent text-star-white border border-[hsl(var(--gold)_/_0.45)]",
-        "font-display text-sm font-semibold uppercase tracking-widest",
+        "font-ui text-sm font-semibold uppercase tracking-widest",
         "transition-all duration-300",
         "hover:-translate-y-0.5 hover:border-[hsl(var(--gold)_/_0.8)] hover:bg-[hsl(var(--gold)_/_0.08)]",
         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[hsl(var(--gold)_/_0.5)]",

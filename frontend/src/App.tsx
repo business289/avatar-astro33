@@ -16,6 +16,7 @@ import CompatibilityChecker from "./pages/CompatibilityChecker";
 import BirthChart from "./pages/BirthChart";
 import NameDestinyReportPage from "./pages/NameDestinyReportPage";
 import Blog from "./pages/Blog";
+import BlogArticle from "./pages/BlogArticle";
 import About from "./pages/About";
 import Contact from "./pages/Contact";
 import PalmReading from "./pages/PalmReading";
@@ -180,6 +181,14 @@ const AnimatedRoutes = () => {
           element={
             <PageTransition>
               <Blog />
+            </PageTransition>
+          }
+        />
+        <Route
+          path="/blog/:slug"
+          element={
+            <PageTransition>
+              <BlogArticle />
             </PageTransition>
           }
         />

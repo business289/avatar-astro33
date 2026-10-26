@@ -43,7 +43,7 @@ export default function PricingPaywall({
         </div>
         <h3
           className="text-2xl sm:text-3xl font-extrabold text-foreground mb-2 uppercase tracking-wide"
-          style={{ fontFamily: "'Astra','Cinzel',serif" }}
+          style={{ fontFamily: "'Cinzel', 'Cormorant Garamond', Georgia, 'Times New Roman', serif" }}
         >
           Unlock Your Complete AI Destiny Report
         </h3>

@@ -62,7 +62,7 @@ function CounterStat({ value, suffix, label }: { value: number; suffix: string; 
 function StaticStat({ label }: { label: string }) {
   return (
     <div className="glass-card rounded-2xl py-7 px-4 text-center flex flex-col items-center justify-center">
-      <div className="w-2 h-2 rounded-full bg-[#ff7e47] mb-3" style={{ boxShadow: "0 0 10px rgba(255,126,71,0.7)" }} />
+      <div className="w-2 h-2 rounded-full bg-[#C7A46A] mb-3" style={{ boxShadow: "0 0 10px rgba(199,164,106,0.7)" }} />
       <div className="text-xs md:text-sm text-white/70 font-semibold tracking-wide">{label}</div>
     </div>
   );

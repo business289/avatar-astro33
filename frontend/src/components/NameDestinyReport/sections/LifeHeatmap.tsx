@@ -27,7 +27,7 @@ export default function LifeHeatmap({ profile }: { profile: NameProfileScore }) 
     <div className="px-6 sm:px-10 pb-12">
       <h3
         className="text-2xl sm:text-3xl font-bold text-foreground text-center mb-2 uppercase tracking-wide"
-        style={{ fontFamily: "'Astra','Cinzel',serif" }}
+        style={{ fontFamily: "'Cinzel', 'Cormorant Garamond', Georgia, 'Times New Roman', serif" }}
       >
         AI Life Heatmap
       </h3>

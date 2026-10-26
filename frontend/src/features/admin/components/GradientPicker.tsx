@@ -39,7 +39,7 @@ export function GradientPicker({ value, onChange }: GradientPickerProps) {
   const parsed = parseGradient(value);
   const [advanced, setAdvanced] = useState(Boolean(value) && !parsed);
   const [from, setFrom] = useState(parsed?.from ?? "#2D1B69");
-  const [to, setTo] = useState(parsed?.to ?? "#BC6A4D");
+  const [to, setTo] = useState(parsed?.to ?? "#C7A46A");
   const [angle, setAngle] = useState(parsed?.angle ?? 135);
 
   // Re-sync local color state when a different product is loaded into the form.
@@ -145,7 +145,7 @@ export function GradientPicker({ value, onChange }: GradientPickerProps) {
         <Input
           value={value}
           onChange={(e) => onChange(e.target.value)}
-          placeholder="linear-gradient(135deg, #2D1B69 0%, #BC6A4D 100%)"
+          placeholder="linear-gradient(135deg, #2D1B69 0%, #C7A46A 100%)"
           className="border-white/10 bg-white/[0.03] text-white"
         />
       )}

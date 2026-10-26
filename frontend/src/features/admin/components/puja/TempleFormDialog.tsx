@@ -207,7 +207,7 @@ export function TempleFormDialog({
     <Dialog open={open} onOpenChange={(next) => !isSubmitting && onOpenChange(next)}>
       <DialogContent className="max-h-[90vh] overflow-y-auto border-white/10 bg-[#0a1628] text-white sm:max-w-2xl">
         <DialogHeader>
-          <DialogTitle className="font-display text-lg tracking-wide text-white">
+          <DialogTitle className="font-heading text-lg tracking-wide text-white">
             {isEdit ? `Edit ${temple?.name}` : "Add Temple"}
           </DialogTitle>
           <DialogDescription className="text-white/60">
@@ -366,7 +366,7 @@ export function TempleFormDialog({
             <Button
               type="submit"
               disabled={isSubmitting}
-              className="bg-[#BC6A4D] text-white hover:bg-[#BC6A4D]/90"
+              className="bg-[#C7A46A] text-white hover:bg-[#C7A46A]/90"
             >
               {isSubmitting && <Loader2 className="h-4 w-4 animate-spin" />}
               {uploadImages.isPending
@@ -397,7 +397,7 @@ function Field({
     <div className="space-y-1.5">
       <Label className="text-sm text-white/80">
         {label}
-        {required && <span className="ml-0.5 text-[#BC6A4D]">*</span>}
+        {required && <span className="ml-0.5 text-[#C7A46A]">*</span>}
       </Label>
       {children}
       {error && <p className="text-xs text-red-400">{error}</p>}

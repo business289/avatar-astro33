@@ -113,7 +113,7 @@ export default function AdminChadhawaPage() {
     <div className="mx-auto max-w-7xl space-y-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div className="space-y-2">
-          <h2 className="font-display text-2xl tracking-wide text-white sm:text-3xl">
+          <h2 className="font-heading text-2xl tracking-wide text-white sm:text-3xl">
             Chadhawa Management
           </h2>
           <p className="max-w-2xl text-sm text-white/60 sm:text-base">
@@ -124,7 +124,7 @@ export default function AdminChadhawaPage() {
         <Button
           type="button"
           onClick={openCreate}
-          className="shrink-0 bg-[#BC6A4D] text-white hover:bg-[#BC6A4D]/90"
+          className="shrink-0 bg-[#C7A46A] text-white hover:bg-[#C7A46A]/90"
         >
           <Plus className="h-4 w-4" />
           Add Offering
@@ -209,7 +209,7 @@ export default function AdminChadhawaPage() {
               <Button
                 type="button"
                 onClick={openCreate}
-                className="mt-1 bg-[#BC6A4D] text-white hover:bg-[#BC6A4D]/90"
+                className="mt-1 bg-[#C7A46A] text-white hover:bg-[#C7A46A]/90"
               >
                 <Plus className="h-4 w-4" />
                 Add Offering
@@ -266,7 +266,7 @@ export default function AdminChadhawaPage() {
                       {offering.description}
                     </p>
                   </TableCell>
-                  <TableCell className="whitespace-nowrap text-sm text-[#BC6A4D]">
+                  <TableCell className="whitespace-nowrap text-sm text-[#C7A46A]">
                     {formatPrice(offering.price)}
                   </TableCell>
                   <TableCell>
@@ -367,7 +367,7 @@ export default function AdminChadhawaPage() {
       >
         <AlertDialogContent className="border-white/10 bg-[#0a1628] text-white">
           <AlertDialogHeader>
-            <AlertDialogTitle className="font-display text-lg tracking-wide text-white">
+            <AlertDialogTitle className="font-heading text-lg tracking-wide text-white">
               Delete {toDelete?.name}?
             </AlertDialogTitle>
             <AlertDialogDescription className="text-white/60">

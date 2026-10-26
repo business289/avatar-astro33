@@ -19,7 +19,7 @@ export const birthChartFeature: BirthChartFeature = {
     "Generate your accurate Kundli in seconds with AI and get detailed planetary insights.",
   buttonLabel: "Generate Your Chart",
   buttonPath: "/birth-chart",
-  image: "/placeholders/birth-chart-placeholder.svg",
+  image: "/images/tools/birth-chart-feature.jpg",
   checklist: [
     "Detailed Planet Positions",
     "Dasha & Predictions",
@@ -27,6 +27,69 @@ export const birthChartFeature: BirthChartFeature = {
     "Remedies & Guidance",
   ],
 };
+
+/** One slide of the homepage featured carousel. */
+export interface FeaturedSlide extends BirthChartFeature {
+  id: string;
+  imageAlt: string;
+}
+
+/**
+ * Slides of the featured carousel: the four tools in the homepage tools row.
+ * Checklists only list things each tool really does (see the tool pages).
+ */
+export const featuredSlides: FeaturedSlide[] = [
+  { id: "birth-chart", imageAlt: "A printed natal chart being marked with a pen", ...birthChartFeature },
+  {
+    id: "tarot",
+    badge: "Featured",
+    title: "AI Tarot Reading",
+    description:
+      "Receive AI-powered tarot guidance for love, career, finance, and life's important decisions.",
+    buttonLabel: "Start Your Reading",
+    buttonPath: "/tarot",
+    image: "/images/tools/tarot-feature.jpg",
+    imageAlt: "Tarot cards and a lit candle on a wooden table",
+    checklist: [
+      "Life Timeline 5-card spread",
+      "Karma Mirror 3-card reading",
+      "Choose your question category",
+      "Personalised AI interpretation",
+    ],
+  },
+  {
+    id: "compatibility",
+    badge: "Featured",
+    title: "Compatibility Report",
+    description: "Discover relationship compatibility using advanced astrology matching.",
+    buttonLabel: "Check Compatibility",
+    buttonPath: "/compatibility",
+    image: "/images/tools/compatibility-feature.jpg",
+    imageAlt: "A couple sitting across a table by a lake",
+    checklist: [
+      "Overall compatibility score",
+      "Love, chemistry & communication",
+      "Green flags & red flags",
+      "Marriage-window insight",
+    ],
+  },
+  {
+    id: "palm",
+    badge: "Featured",
+    title: "AI Palm Reading",
+    description: "Upload your palm and receive an AI-generated palm analysis.",
+    buttonLabel: "Scan Your Palm",
+    buttonPath: "/palm-reading",
+    image: "/images/tools/palm-reading-feature.jpg",
+    imageAlt: "A palm being read during a consultation",
+    checklist: [
+      "Camera or photo hand scan",
+      "Heart, head, life & fate lines",
+      "Six planetary mounts",
+      "Life-phase timeline",
+    ],
+  },
+];
 
 export interface LiveDarshanFeature {
   title: string;
@@ -57,6 +120,7 @@ export interface AIGuruFeature {
   title: string;
   description: string;
   image: string;
+  imageAlt: string;
   inputPlaceholder: string;
   buttonLabel: string;
   buttonPath: string;
@@ -66,7 +130,8 @@ export const aiGuruFeature: AIGuruFeature = {
   title: "AI Guru",
   description:
     "Ask anything, anytime. Get spiritual guidance, answers and clarity from our AI-powered guru.",
-  image: "/placeholders/guruji.webp",
+  image: "/images/tools/ai-guru.jpg",
+  imageAlt: "A man meditating on the riverside steps at Varanasi in the early morning",
   inputPlaceholder: "Ask your question...",
   buttonLabel: "Talk to AI Guru",
   buttonPath: "/inner-voice/chat",
@@ -89,6 +154,8 @@ export const devotionItems: DevotionItem[] = [
 
 export const devotionFeature = {
   title: "Devotion & Spirituality",
+  /** One line that only restates the six tiles below it. */
+  description: "Temples, festivals, daily aarti, spiritual books, remedies and mantras in one place.",
   items: devotionItems,
   buttonLabel: "Explore All",
   buttonPath: "/puja",

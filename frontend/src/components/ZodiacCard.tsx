@@ -39,7 +39,7 @@ const ZodiacCard = ({ sign, index, compact = false }: ZodiacCardProps) => {
         <div className="w-16 h-16 mx-auto mb-3 transition-all duration-300 group-hover:scale-110 group-hover:drop-shadow-[0_0_15px_rgba(245,195,106,0.5)]">
           <img src={zodiacImage} alt={sign.name} className="w-full h-full object-contain" />
         </div>
-        <h3 className="font-display text-lg tracking-wider text-foreground mb-1 group-hover:text-primary transition-colors">
+        <h3 className="font-heading text-lg tracking-wider text-foreground mb-1 group-hover:text-primary transition-colors">
           {sign.name}
         </h3>
         <p className="text-xs text-muted-foreground">{sign.dates}</p>

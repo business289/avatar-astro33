@@ -1,76 +1,70 @@
 import { Link } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
-import { blogPosts } from "@/data/blogPosts";
+import { articleReadMinutes, formatPostDate, getPublishedArticles } from "@/data/blogArticles";
+import SectionContainer from "./SectionContainer";
 
-/**
- * Continues the Hero/AstrologyToolsSection's Inter-based visual language
- * rather than the Iceland/uppercase display styling used elsewhere on the page.
- */
+/** Homepage blog: the four newest published articles, newest first. */
 const HomeBlogSection = () => {
-  const posts = blogPosts.slice(0, 4);
+  const posts = getPublishedArticles().slice(0, 4);
 
   return (
-    <section className="relative z-10 w-full py-16 md:py-20">
-      <div className="container relative mx-auto px-4 md:px-6">
-        <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-6 mb-10 md:mb-12 text-center sm:text-left">
+    <section className="relative z-10 w-full py-12 md:py-16" data-testid="home-blog">
+      <SectionContainer>
+        <div className="mb-8 flex flex-col gap-5 text-center sm:flex-row sm:items-end sm:justify-between sm:text-left">
           <div>
-            <p className="font-['Inter'] text-xs font-semibold tracking-[0.25em] uppercase text-[#e8935f] mb-3">
+            <p className="mb-2 font-ui text-xs font-semibold uppercase tracking-[0.25em] text-[#C7A46A]">
               Insights &amp; Stories
             </p>
-            <h2 className="font-['Inter'] font-bold tracking-tight leading-tight text-3xl sm:text-4xl md:text-5xl text-white">
-              Read from our{" "}
-              <span className="text-[#e8935f]">blog.</span>
+            <h2 className="font-heading text-3xl font-semibold normal-case leading-[1.15] tracking-[0.02em] text-white sm:text-4xl md:text-[2.6rem]">
+              Read from our <span className="text-[#C7A46A]">blog.</span>
             </h2>
           </div>
 
           <Link
             to="/blog"
-            className="group inline-flex items-center gap-2 self-center sm:self-auto rounded-full px-6 py-3 font-['Inter'] font-semibold text-sm text-[#1a0f08] transition-transform duration-300 hover:-translate-y-0.5 shrink-0"
-            style={{
-              background: "linear-gradient(135deg, #f2a35f, #d9895f)",
-              boxShadow: "0 0 32px rgba(217,137,95,0.35)",
-            }}
+            className="group inline-flex h-11 shrink-0 items-center gap-2 self-center rounded-full bg-[#C7A46A] px-6 font-ui text-sm font-semibold text-[#081426] transition-transform duration-300 hover:-translate-y-0.5 motion-reduce:transition-none sm:self-auto"
           >
             View all blogs
-            <ArrowRight className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" />
+            <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1 motion-reduce:transition-none" />
           </Link>
         </div>
 
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-4">
           {posts.map((post) => (
             <Link
-              key={post.id}
-              to="/blog"
-              className="group rounded-2xl overflow-hidden border border-white/10 bg-white/[0.03] transition-all duration-300 hover:border-white/20 hover:-translate-y-1"
+              key={post.slug}
+              to={`/blog/${post.slug}`}
+              className="group flex flex-col overflow-hidden rounded-2xl border border-white/10 bg-white/[0.03] transition-all duration-300 hover:-translate-y-1 hover:border-[#C7A46A]/40 motion-reduce:transition-none motion-reduce:hover:translate-y-0"
             >
-              <div className="h-40 bg-gradient-to-br from-[#123a75]/60 to-[#0b1c3d]/60 flex items-center justify-center">
-                <span className="text-5xl">{post.image}</span>
+              <div className="aspect-video w-full overflow-hidden bg-[#0b1c3d]">
+                <img
+                  src={post.image}
+                  alt={post.imageAlt}
+                  width={800}
+                  height={450}
+                  loading="lazy"
+                  decoding="async"
+                  className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105 motion-reduce:transition-none motion-reduce:group-hover:scale-100"
+                  style={{ objectPosition: `50% ${post.imageFocus ?? 50}%` }}
+                />
               </div>
 
-              <div className="p-5">
-                <span className="font-['Inter'] text-xs font-semibold tracking-wider uppercase text-[#e8935f]">
-                  {post.category}
-                </span>
-
-                <h3 className="font-['Inter'] font-semibold text-white text-base leading-snug mt-2 mb-3 line-clamp-2 transition-colors group-hover:text-[#e8935f]">
+              <div className="flex flex-1 flex-col p-5">
+                <span className="font-ui text-xs font-semibold uppercase tracking-wider text-[#C7A46A]">{post.category}</span>
+                <h3 className="mb-2 mt-2 font-heading text-[1.05rem] font-semibold normal-case leading-snug text-white transition-colors group-hover:text-[#C7A46A]">
                   {post.title}
                 </h3>
-
-                <div className="flex items-center justify-between font-['Inter'] text-xs text-white/45">
-                  <span>{post.readTime}</span>
-                  <span>
-                    {new Date(post.date).toLocaleDateString("en-US", {
-                      month: "short",
-                      day: "numeric",
-                      year: "numeric",
-                    })}
-                  </span>
+                <p className="mb-4 line-clamp-3 font-ui text-sm leading-relaxed text-white/60">{post.excerpt}</p>
+                <div className="mt-auto flex items-center gap-2 font-ui text-xs text-white/50">
+                  <time dateTime={post.date}>{formatPostDate(post.date)}</time>
+                  <span aria-hidden="true">·</span>
+                  <span>{articleReadMinutes(post)} min read</span>
                 </div>
               </div>
             </Link>
           ))}
         </div>
-      </div>
+      </SectionContainer>
     </section>
   );
 };

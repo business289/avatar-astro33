@@ -52,7 +52,7 @@ const SUIT_THEMES: Record<string, CardTheme> = {
 
 const MAJOR_THEME: CardTheme = {
   bg: 'linear-gradient(165deg, #140b1a 0%, #0a0510 55%, #120818 100%)',
-  border: '#BC6A4D', glow: 'rgba(188,106,77,0.55)', accent: '#BC6A4D', dim: 'rgba(188,106,77,0.35)',
+  border: '#C7A46A', glow: 'rgba(199,164,106,0.55)', accent: '#C7A46A', dim: 'rgba(199,164,106,0.35)',
 };
 
 const getCardTheme = (card: TarotCard): CardTheme => {
@@ -70,29 +70,29 @@ const CardBackSVG = () => (
       </radialGradient>
     </defs>
     <rect width="100" height="160" rx="7" fill="url(#cb)" />
-    <rect x="2.5" y="2.5" width="95" height="155" rx="5.5" fill="none" stroke="#BC6A4D" strokeWidth="1.4" opacity="0.9" />
-    <rect x="5.5" y="5.5" width="89" height="149" rx="4" fill="none" stroke="#BC6A4D" strokeWidth="0.5" opacity="0.4" />
-    <circle cx="50" cy="80" r="38" fill="none" stroke="#BC6A4D" strokeWidth="0.4" opacity="0.4" strokeDasharray="2 5" />
-    <circle cx="50" cy="80" r="28" fill="none" stroke="#BC6A4D" strokeWidth="0.6" opacity="0.45" />
-    <circle cx="50" cy="80" r="16" fill="none" stroke="#BC6A4D" strokeWidth="1" opacity="0.7" />
-    <path d="M50,42 L53.5,66 L72,50 L57,70 L76,80 L57,90 L72,110 L53.5,94 L50,118 L46.5,94 L28,110 L43,90 L24,80 L43,70 L28,50 L46.5,66 Z" fill="none" stroke="#BC6A4D" strokeWidth="0.6" opacity="0.6" />
-    <ellipse cx="50" cy="80" rx="9" ry="6" fill="none" stroke="#BC6A4D" strokeWidth="1" opacity="0.8" />
-    <circle cx="50" cy="80" r="3" fill="#BC6A4D" opacity="0.6" />
-    <circle cx="50" cy="80" r="1.3" fill="#BC6A4D" opacity="0.9" />
+    <rect x="2.5" y="2.5" width="95" height="155" rx="5.5" fill="none" stroke="#C7A46A" strokeWidth="1.4" opacity="0.9" />
+    <rect x="5.5" y="5.5" width="89" height="149" rx="4" fill="none" stroke="#C7A46A" strokeWidth="0.5" opacity="0.4" />
+    <circle cx="50" cy="80" r="38" fill="none" stroke="#C7A46A" strokeWidth="0.4" opacity="0.4" strokeDasharray="2 5" />
+    <circle cx="50" cy="80" r="28" fill="none" stroke="#C7A46A" strokeWidth="0.6" opacity="0.45" />
+    <circle cx="50" cy="80" r="16" fill="none" stroke="#C7A46A" strokeWidth="1" opacity="0.7" />
+    <path d="M50,42 L53.5,66 L72,50 L57,70 L76,80 L57,90 L72,110 L53.5,94 L50,118 L46.5,94 L28,110 L43,90 L24,80 L43,70 L28,50 L46.5,66 Z" fill="none" stroke="#C7A46A" strokeWidth="0.6" opacity="0.6" />
+    <ellipse cx="50" cy="80" rx="9" ry="6" fill="none" stroke="#C7A46A" strokeWidth="1" opacity="0.8" />
+    <circle cx="50" cy="80" r="3" fill="#C7A46A" opacity="0.6" />
+    <circle cx="50" cy="80" r="1.3" fill="#C7A46A" opacity="0.9" />
     {Array.from({ length: 12 }, (_, i) => {
       const a = (i * 30 - 90) * (Math.PI / 180);
-      return <circle key={i} cx={50 + Math.cos(a) * 38} cy={80 + Math.sin(a) * 38} r="1.2" fill="#BC6A4D" opacity="0.7" />;
+      return <circle key={i} cx={50 + Math.cos(a) * 38} cy={80 + Math.sin(a) * 38} r="1.2" fill="#C7A46A" opacity="0.7" />;
     })}
     {([[10, 11], [90, 11], [10, 149], [90, 149]] as [number, number][]).map(([x, y], i) => (
       <g key={i}>
-        <circle cx={x} cy={y} r="5.5" fill="none" stroke="#BC6A4D" strokeWidth="0.7" opacity="0.55" />
-        <circle cx={x} cy={y} r="2.5" fill="#BC6A4D" opacity="0.35" />
+        <circle cx={x} cy={y} r="5.5" fill="none" stroke="#C7A46A" strokeWidth="0.7" opacity="0.55" />
+        <circle cx={x} cy={y} r="2.5" fill="#C7A46A" opacity="0.35" />
       </g>
     ))}
-    <line x1="50" y1="16" x2="50" y2="26" stroke="#BC6A4D" strokeWidth="0.6" opacity="0.5" />
-    <line x1="50" y1="134" x2="50" y2="144" stroke="#BC6A4D" strokeWidth="0.6" opacity="0.5" />
-    <line x1="16" y1="80" x2="26" y2="80" stroke="#BC6A4D" strokeWidth="0.6" opacity="0.5" />
-    <line x1="74" y1="80" x2="84" y2="80" stroke="#BC6A4D" strokeWidth="0.6" opacity="0.5" />
+    <line x1="50" y1="16" x2="50" y2="26" stroke="#C7A46A" strokeWidth="0.6" opacity="0.5" />
+    <line x1="50" y1="134" x2="50" y2="144" stroke="#C7A46A" strokeWidth="0.6" opacity="0.5" />
+    <line x1="16" y1="80" x2="26" y2="80" stroke="#C7A46A" strokeWidth="0.6" opacity="0.5" />
+    <line x1="74" y1="80" x2="84" y2="80" stroke="#C7A46A" strokeWidth="0.6" opacity="0.5" />
   </svg>
 );
 
@@ -137,10 +137,10 @@ const CardFace = ({ card, size = 'md', category }: { card: TarotCard; size?: 'sm
           style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center', display: 'block' }}
         />
         <div style={{ position: 'absolute', top: 0, left: 0, right: 0, padding: size === 'sm' ? '4px 0' : '6px 0', textAlign: 'center', background: 'linear-gradient(to bottom, rgba(0,0,0,0.65), transparent)' }}>
-          <span style={{ fontSize: `${cfg.numSize}px`, color: '#fff', letterSpacing: '2px', fontFamily: "'Astra','Iceland',sans-serif", textTransform: 'uppercase', fontWeight: 600 }}>{topLabel}</span>
+          <span style={{ fontSize: `${cfg.numSize}px`, color: '#fff', letterSpacing: '2px', fontFamily: "'DM Sans', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif", textTransform: 'uppercase', fontWeight: 600 }}>{topLabel}</span>
         </div>
         <div style={{ position: 'absolute', left: 0, right: 0, bottom: 0, padding: size === 'sm' ? '4px 3px 5    px' : '8px 6px 10px', textAlign: 'center', background: 'linear-gradient(to top, rgba(0,0,0,0.82) 0%, transparent 100%)' }}>
-          <span style={{ fontSize: `${cfg.name}px`, color: '#fff', fontFamily: "'Astra','Iceland',sans-serif", textTransform: 'uppercase', letterSpacing: '1px', lineHeight: 1.2 }}>{card.name}</span>
+          <span style={{ fontSize: `${cfg.name}px`, color: '#fff', fontFamily: "'DM Sans', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif", textTransform: 'uppercase', letterSpacing: '1px', lineHeight: 1.2 }}>{card.name}</span>
         </div>
       </div>
     );
@@ -168,7 +168,7 @@ const CardFace = ({ card, size = 'md', category }: { card: TarotCard; size?: 'sm
       <div style={{ position: 'absolute', inset: 0, background: `radial-gradient(ellipse at 50% 55%, ${theme.glow} 0%, transparent 65%)`, pointerEvents: 'none' }} />
 
       {/* Top label */}
-      <div style={{ fontSize: `${cfg.numSize}px`, color: theme.accent, letterSpacing: '2px', opacity: 0.95, fontFamily: 'Iceland, sans-serif', textTransform: 'uppercase', zIndex: 1, fontWeight: 600 }}>
+      <div style={{ fontSize: `${cfg.numSize}px`, color: theme.accent, letterSpacing: '2px', opacity: 0.95, fontFamily: "'DM Sans', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif", textTransform: 'uppercase', zIndex: 1, fontWeight: 600 }}>
         {topLabel}
       </div>
 
@@ -182,7 +182,7 @@ const CardFace = ({ card, size = 'md', category }: { card: TarotCard; size?: 'sm
       </div>
 
       {/* Name */}
-      <div style={{ fontSize: `${cfg.name}px`, color: theme.accent, fontFamily: 'Iceland, sans-serif', textTransform: 'uppercase', letterSpacing: '1px', textAlign: 'center', lineHeight: 1.2, zIndex: 1 }}>
+      <div style={{ fontSize: `${cfg.name}px`, color: theme.accent, fontFamily: "'DM Sans', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif", textTransform: 'uppercase', letterSpacing: '1px', textAlign: 'center', lineHeight: 1.2, zIndex: 1 }}>
         {card.name}
       </div>
 
@@ -213,9 +213,9 @@ const Particles = ({ count = 40 }: { count?: number }) => {
         <div key={p.id} style={{
           position: 'absolute', left: `${p.left}%`, top: `${p.top}%`,
           width: `${p.size}px`, height: `${p.size}px`, borderRadius: '50%',
-          background: p.type === 0 ? '#BC6A4D' : p.type === 1 ? 'rgba(255,248,220,0.9)' : 'rgba(188,106,77,0.35)',
+          background: p.type === 0 ? '#C7A46A' : p.type === 1 ? 'rgba(255,248,220,0.9)' : 'rgba(199,164,106,0.35)',
           animation: `floatParticle ${p.duration}s ${p.delay}s ease-in-out infinite`,
-          boxShadow: `0 0 ${p.size * 2}px rgba(188,106,77,0.7)`,
+          boxShadow: `0 0 ${p.size * 2}px rgba(199,164,106,0.7)`,
         }} />
       ))}
     </div>
@@ -223,7 +223,7 @@ const Particles = ({ count = 40 }: { count?: number }) => {
 };
 
 // ─── Score Circle ─────────────────────────────────────────────────────────────
-const ScoreCircle = ({ score, label, color = '#BC6A4D' }: { score: number; label: string; color?: string }) => {
+const ScoreCircle = ({ score, label, color = '#C7A46A' }: { score: number; label: string; color?: string }) => {
   const [displayed, setDisplayed] = useState(0);
   const r = 40;
   const circ = 2 * Math.PI * r;
@@ -252,10 +252,10 @@ const ScoreCircle = ({ score, label, color = '#BC6A4D' }: { score: number; label
             strokeLinecap="round" style={{ filter: `drop-shadow(0 0 8px ${color})` }} />
         </svg>
         <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column' }}>
-          <span style={{ fontSize: '24px', fontWeight: 'bold', color, fontFamily: 'Iceland, sans-serif' }}>{displayed}</span>
+          <span style={{ fontSize: '24px', fontWeight: 'bold', color, fontFamily: "'Cinzel', 'Cormorant Garamond', Georgia, 'Times New Roman', serif" }}>{displayed}</span>
         </div>
       </div>
-      <span style={{ fontSize: '14px', color: 'rgba(255,255,255,0.8)', textTransform: 'uppercase', letterSpacing: '1.5px', textAlign: 'center', fontFamily: 'Iceland, sans-serif' }}>{label}</span>
+      <span style={{ fontSize: '14px', color: 'rgba(255,255,255,0.8)', textTransform: 'uppercase', letterSpacing: '1.5px', textAlign: 'center', fontFamily: "'DM Sans', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif" }}>{label}</span>
     </div>
   );
 };
@@ -267,12 +267,12 @@ const OpeningScene = ({ onBegin }: { onBegin: () => void }) => (
     <motion.div initial={{ opacity: 0, y: 40 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 1.4 }}
       style={{ textAlign: 'center', zIndex: 10, padding: '0 24px', maxWidth: '700px' }}>
       <motion.h1 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.8, duration: 1 }}
-        style={{ fontSize: 'clamp(42px, 8vw, 80px)', fontFamily: 'Iceland, sans-serif', textTransform: 'uppercase', letterSpacing: '8px', lineHeight: 1.1, marginBottom: '16px', background: 'linear-gradient(135deg, #FFF8DC 0%, #BC6A4D 50%, #FFC200 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
+        style={{ fontSize: 'clamp(42px, 8vw, 80px)', fontFamily: "'DM Sans', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif", textTransform: 'uppercase', letterSpacing: '8px', lineHeight: 1.1, marginBottom: '16px', background: 'linear-gradient(135deg, #FFF8DC 0%, #C7A46A 50%, #FFC200 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
         Welcome<br />Seeker
       </motion.h1>
       <motion.button initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 2.4, type: 'spring' }}
         onClick={onBegin}
-        style={{ padding: '18px 52px', fontSize: '16px', fontFamily: 'Iceland, sans-serif', letterSpacing: '4px', textTransform: 'uppercase', color: '#0a0c14', cursor: 'pointer', border: 'none', background: 'linear-gradient(135deg, #BC6A4D 0%, #FFC200 50%, #BC6A4D 100%)', borderRadius: '4px', boxShadow: '0 0 30px rgba(188,106,77,0.5)' }}>
+        style={{ padding: '18px 52px', fontSize: '16px', fontFamily: "'DM Sans', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif", letterSpacing: '4px', textTransform: 'uppercase', color: '#0a0c14', cursor: 'pointer', border: 'none', background: 'linear-gradient(135deg, #C7A46A 0%, #FFC200 50%, #C7A46A 100%)', borderRadius: '4px', boxShadow: '0 0 30px rgba(199,164,106,0.5)' }}>
         Begin Journey
       </motion.button>
     </motion.div>
@@ -308,7 +308,7 @@ const ShuffleScene = ({ onComplete }: { onComplete: () => void }) => {
           </motion.div>
         ))}
       </div>
-      <button onClick={onComplete} style={{ position: 'absolute', bottom: '30px', background: 'transparent', border: '1px solid rgba(188,106,77,0.3)', color: 'rgba(188,106,77,0.5)', fontFamily: 'Iceland, sans-serif', letterSpacing: '3px', fontSize: '11px', padding: '8px 20px', cursor: 'pointer', textTransform: 'uppercase', borderRadius: '2px' }}>Skip</button>
+      <button onClick={onComplete} style={{ position: 'absolute', bottom: '30px', background: 'transparent', border: '1px solid rgba(199,164,106,0.3)', color: 'rgba(199,164,106,0.5)', fontFamily: "'DM Sans', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif", letterSpacing: '3px', fontSize: '11px', padding: '8px 20px', cursor: 'pointer', textTransform: 'uppercase', borderRadius: '2px' }}>Skip</button>
     </div>
   );
 };
@@ -342,7 +342,7 @@ const QuestionSelectScene = ({ onSelect }: { onSelect: (q: string) => void }) =>
   }, []);
 
   const meta: Record<string,{icon:string;bg:string;color:string}> = {
-    'Career':      {icon:'📈',bg:'#120a00',color:'#BC6A4D'},
+    'Career':      {icon:'📈',bg:'#120a00',color:'#C7A46A'},
     'Love':        {icon:'❤️',bg:'#1a0015',color:'#FF6B9D'},
     'Marriage':    {icon:'💍',bg:'#150a00',color:'#FFB6C1'},
     'Business':    {icon:'🚀',bg:'#001520',color:'#4FC3F7'},
@@ -366,7 +366,7 @@ const QuestionSelectScene = ({ onSelect }: { onSelect: (q: string) => void }) =>
       <svg viewBox="0 0 210 155" preserveAspectRatio="xMidYMid slice" style={{width:'100%',height:'100%',display:'block'}}>
         <defs>
           <linearGradient id="qsCrBg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#030818"/><stop offset="70%" stopColor="#0c1840"/><stop offset="100%" stopColor="#1a2860"/></linearGradient>
-          <radialGradient id="qsCrGl" cx="50%" cy="68%" r="40%"><stop offset="0%" stopColor="#BC6A4D" stopOpacity="0.75"/><stop offset="100%" stopColor="#FF8C00" stopOpacity="0"/></radialGradient>
+          <radialGradient id="qsCrGl" cx="50%" cy="68%" r="40%"><stop offset="0%" stopColor="#C7A46A" stopOpacity="0.75"/><stop offset="100%" stopColor="#FF8C00" stopOpacity="0"/></radialGradient>
         </defs>
         <rect width="210" height="155" fill="url(#qsCrBg)"/>
         <ellipse cx="105" cy="105" rx="90" ry="38" fill="url(#qsCrGl)"/>
@@ -374,7 +374,7 @@ const QuestionSelectScene = ({ onSelect }: { onSelect: (q: string) => void }) =>
           <rect key={i} x={x} y={y} width={w} height={h} fill={i>=4&&i<=6?'#060b20':'#08102e'}/>
         ))}
         {[[79,60],[84,68],[98,53],[103,61],[110,54],[101,70]].map(([x,y],i)=>(
-          <rect key={i} x={x} y={y} width="2.5" height="3.5" fill="rgba(188,106,77,0.75)"/>
+          <rect key={i} x={x} y={y} width="2.5" height="3.5" fill="rgba(199,164,106,0.75)"/>
         ))}
         <polygon points="96,155 114,155 112,128 98,128" fill="rgba(255,180,0,0.2)"/>
         <polygon points="99,128 111,128 109,108 101,108" fill="rgba(255,180,0,0.28)"/>
@@ -417,7 +417,7 @@ const QuestionSelectScene = ({ onSelect }: { onSelect: (q: string) => void }) =>
       <svg viewBox="0 0 210 155" preserveAspectRatio="xMidYMid slice" style={{width:'100%',height:'100%',display:'block'}}>
         <defs>
           <radialGradient id="qsMrBg" cx="50%" cy="50%" r="60%"><stop offset="0%" stopColor="#1c1035"/><stop offset="100%" stopColor="#06040e"/></radialGradient>
-          <radialGradient id="qsMrGl" cx="50%" cy="50%" r="50%"><stop offset="0%" stopColor="#BC6A4D" stopOpacity="0.5"/><stop offset="100%" stopColor="#FF8C00" stopOpacity="0"/></radialGradient>
+          <radialGradient id="qsMrGl" cx="50%" cy="50%" r="50%"><stop offset="0%" stopColor="#C7A46A" stopOpacity="0.5"/><stop offset="100%" stopColor="#FF8C00" stopOpacity="0"/></radialGradient>
         </defs>
         <rect width="210" height="155" fill="url(#qsMrBg)"/>
         <ellipse cx="105" cy="88" rx="65" ry="58" fill="url(#qsMrGl)"/>
@@ -428,13 +428,13 @@ const QuestionSelectScene = ({ onSelect }: { onSelect: (q: string) => void }) =>
         <rect x="176" y="33" width="18" height="6" fill="#1c1040" stroke="rgba(201,139,42,0.45)" strokeWidth="0.6"/>
         <rect x="176" y="137" width="18" height="6" fill="#1c1040" stroke="rgba(201,139,42,0.35)" strokeWidth="0.6"/>
         <path d="M32,38 Q105,16 178,38" stroke="rgba(201,139,42,0.45)" strokeWidth="1.8" fill="none"/>
-        <circle cx="88" cy="88" r="28" fill="none" stroke="#BC6A4D" strokeWidth="7" opacity="0.92"/>
+        <circle cx="88" cy="88" r="28" fill="none" stroke="#C7A46A" strokeWidth="7" opacity="0.92"/>
         <circle cx="88" cy="88" r="28" fill="none" stroke="#FFF8DC" strokeWidth="2.5" opacity="0.35"/>
         <circle cx="122" cy="88" r="23" fill="none" stroke="#C98B2A" strokeWidth="7" opacity="0.92"/>
         <circle cx="122" cy="88" r="23" fill="none" stroke="#FFD97A" strokeWidth="2.5" opacity="0.35"/>
         <ellipse cx="80" cy="79" rx="7" ry="3" fill="rgba(255,255,200,0.28)" transform="rotate(-30,80,79)"/>
         <ellipse cx="116" cy="82" rx="6" ry="2.5" fill="rgba(255,255,200,0.22)" transform="rotate(-25,116,82)"/>
-        {[[55,52],[158,58],[105,42],[68,132],[142,130],[48,98],[162,104],[105,148]].map(([x,y],i)=>(<circle key={i} cx={x} cy={y} r={i%2===0?1.3:0.9} fill="rgba(188,106,77,0.55)"/>))}
+        {[[55,52],[158,58],[105,42],[68,132],[142,130],[48,98],[162,104],[105,148]].map(([x,y],i)=>(<circle key={i} cx={x} cy={y} r={i%2===0?1.3:0.9} fill="rgba(199,164,106,0.55)"/>))}
       </svg>
     ),
     'Business': (
@@ -453,7 +453,7 @@ const QuestionSelectScene = ({ onSelect }: { onSelect: (q: string) => void }) =>
         <ellipse cx="105" cy="138" rx="20" ry="30" fill="url(#qsBsEx)"/>
         <polygon points="93,126 105,155 117,126" fill="#FF4500" opacity="0.92"/>
         <polygon points="97,126 105,148 113,126" fill="#FF8C00" opacity="0.88"/>
-        <polygon points="100,126 105,140 110,126" fill="#BC6A4D" opacity="0.85"/>
+        <polygon points="100,126 105,140 110,126" fill="#C7A46A" opacity="0.85"/>
         <rect x="92" y="62" width="26" height="64" fill="#C0C8D8" rx="4"/>
         <polygon points="92,62 105,26 118,62" fill="#D0D8E8"/>
         <circle cx="105" cy="76" r="7.5" fill="#0a1a38" stroke="rgba(80,150,220,0.65)" strokeWidth="1.5"/>
@@ -468,7 +468,7 @@ const QuestionSelectScene = ({ onSelect }: { onSelect: (q: string) => void }) =>
       <svg viewBox="0 0 210 155" preserveAspectRatio="xMidYMid slice" style={{width:'100%',height:'100%',display:'block'}}>
         <defs>
           <radialGradient id="qsFnBg" cx="50%" cy="80%" r="70%"><stop offset="0%" stopColor="#1c1200"/><stop offset="100%" stopColor="#060408"/></radialGradient>
-          <radialGradient id="qsFnGl" cx="50%" cy="40%" r="55%"><stop offset="0%" stopColor="#BC6A4D" stopOpacity="0.65"/><stop offset="100%" stopColor="#CC8800" stopOpacity="0"/></radialGradient>
+          <radialGradient id="qsFnGl" cx="50%" cy="40%" r="55%"><stop offset="0%" stopColor="#C7A46A" stopOpacity="0.65"/><stop offset="100%" stopColor="#CC8800" stopOpacity="0"/></radialGradient>
         </defs>
         <rect width="210" height="155" fill="url(#qsFnBg)"/>
         <rect x="0" y="128" width="210" height="27" fill="#0c0800"/>
@@ -478,13 +478,13 @@ const QuestionSelectScene = ({ onSelect }: { onSelect: (q: string) => void }) =>
           <line key={i} x1={x1} y1={y1} x2={x2} y2={y2} stroke="#1a0e00" strokeWidth={5-i*0.4} strokeLinecap="round"/>
         ))}
         {[[46,60,20],[70,54,18],[105,46,20],[132,50,18],[158,52,20],[62,76,16],[90,56,17],[120,54,17],[148,68,16],[78,44,14],[108,38,16],[126,44,14]].map(([x,y,r],i)=>(
-          <circle key={i} cx={x} cy={y} r={r} fill={i%2===0?'#CC8800':'#BC6A4D'} opacity={i%2===0?0.72:0.5}/>
+          <circle key={i} cx={x} cy={y} r={r} fill={i%2===0?'#CC8800':'#C7A46A'} opacity={i%2===0?0.72:0.5}/>
         ))}
         {[[72,2],[85,2],[100,3],[115,2],[128,2]].map(([x,h],i)=>(
           <g key={i}>
             <ellipse cx={x} cy={138} rx="6.5" ry="2.5" fill="#CC8800"/>
             <rect x={x-6.5} y={138-h*3} width="13" height={h*3} fill="#BB7700"/>
-            <ellipse cx={x} cy={138-h*3} rx="6.5" ry="2.5" fill="#BC6A4D"/>
+            <ellipse cx={x} cy={138-h*3} rx="6.5" ry="2.5" fill="#C7A46A"/>
           </g>
         ))}
       </svg>
@@ -561,21 +561,21 @@ const QuestionSelectScene = ({ onSelect }: { onSelect: (q: string) => void }) =>
       <div style={{position:'relative',zIndex:10,width:'100%',maxWidth:1300,padding:'0 20px'}}>
         <div style={{textAlign:'center',marginBottom:50}}>
           <div style={{display:'flex',alignItems:'center',justifyContent:'center',flexWrap:'wrap',gap:'10px 16px',marginBottom:20,padding:'0 12px'}}>
-            <div style={{width:'clamp(24px,6vw,52px)',height:1,background:'linear-gradient(to right,transparent,rgba(188,106,77,0.6))'}}/>
-            <p style={{fontFamily:"'Montserrat',sans-serif",fontWeight:600,fontSize:12,letterSpacing:'clamp(0.14em,1.4vw,0.5em)',color:'#BC6A4D',textTransform:'uppercase',margin:0,whiteSpace:'nowrap'}}>
+            <div style={{width:'clamp(24px,6vw,52px)',height:1,background:'linear-gradient(to right,transparent,rgba(199,164,106,0.6))'}}/>
+            <p style={{fontFamily: "'DM Sans', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif",fontWeight:600,fontSize:12,letterSpacing:'clamp(0.14em,1.4vw,0.5em)',color:'#C7A46A',textTransform:'uppercase',margin:0,whiteSpace:'nowrap'}}>
               ✦&nbsp; Life Timeline Tarot &nbsp;✦
             </p>
-            <div style={{width:'clamp(24px,6vw,52px)',height:1,background:'linear-gradient(to left,transparent,rgba(188,106,77,0.6))'}}/>
+            <div style={{width:'clamp(24px,6vw,52px)',height:1,background:'linear-gradient(to left,transparent,rgba(199,164,106,0.6))'}}/>
           </div>
 
-          <h1 style={{fontFamily:"'Astra','Iceland',sans-serif",fontWeight:700,margin:'0 auto',lineHeight:1.3,textAlign:'center',maxWidth:840}}>
+          <h1 style={{fontFamily: "'Cinzel', 'Cormorant Garamond', Georgia, 'Times New Roman', serif",fontWeight:700,margin:'0 auto',lineHeight:1.3,textAlign:'center',maxWidth:840}}>
             <span style={{display:'block',fontSize:36,color:'#FFFFFF',letterSpacing:0}}>What Calls To</span>
-            <span style={{display:'block',fontSize:36,color:'#BC6A4D',letterSpacing:0}}>Your Soul</span>
+            <span style={{display:'block',fontSize:36,color:'#C7A46A',letterSpacing:0}}>Your Soul</span>
           </h1>
 
           <div style={{display:'flex',alignItems:'center',justifyContent:'center',gap:14,marginTop:25}}>
             <div style={{width:48,height:1,background:'linear-gradient(to right,transparent,rgba(201,139,42,0.5))'}}/>
-            <p style={{fontFamily:"'Lato',sans-serif",fontSize:19,color:'rgba(222,222,232,0.72)',letterSpacing:'0.04em',margin:0}}>Choose the area of life you wish to illuminate</p>
+            <p style={{fontFamily: "'DM Sans', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif",fontSize:19,color:'rgba(222,222,232,0.72)',letterSpacing:'0.04em',margin:0}}>Choose the area of life you wish to illuminate</p>
             <div style={{width:48,height:1,background:'linear-gradient(to left,transparent,rgba(201,139,42,0.5))'}}/>
           </div>
         </div>
@@ -668,7 +668,7 @@ const QuestionSelectScene = ({ onSelect }: { onSelect: (q: string) => void }) =>
         <div style={{textAlign:'center',marginTop:50}}>
           <div style={{display:'flex',alignItems:'center',justifyContent:'center',gap:14,opacity:0.62}}>
             <div style={{width:55,height:1,background:'linear-gradient(to right,transparent,rgba(201,139,42,0.55))'}}/>
-            <span style={{fontFamily:"'Lato',sans-serif",fontSize:14,color:'rgba(201,139,42,0.78)',letterSpacing:'0.2em',whiteSpace:'nowrap'}}>Your answers are within...</span>
+            <span style={{fontFamily: "'DM Sans', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif",fontSize:14,color:'rgba(201,139,42,0.78)',letterSpacing:'0.2em',whiteSpace:'nowrap'}}>Your answers are within...</span>
             <div style={{width:55,height:1,background:'linear-gradient(to left,transparent,rgba(201,139,42,0.55))'}}/>
           </div>
         </div>
@@ -951,9 +951,9 @@ const CardSpreadScene = ({ numCards, positions, question, onComplete }: { numCar
       opacity: selected.length > 0 && !s ? 0.55 : 1,
       transition: 'opacity 0.3s ease, box-shadow 0.3s ease',
       boxShadow: s
-        ? '0 0 40px rgba(188,106,77,0.75), 0 16px 48px rgba(0,0,0,0.7)'
-        : h ? '0 0 26px rgba(188,106,77,0.55), 0 12px 30px rgba(0,0,0,0.55)'
-        : '0 6px 20px rgba(0,0,0,0.55), 0 0 14px rgba(188,106,77,0.15)',
+        ? '0 0 40px rgba(199,164,106,0.75), 0 16px 48px rgba(0,0,0,0.7)'
+        : h ? '0 0 26px rgba(199,164,106,0.55), 0 12px 30px rgba(0,0,0,0.55)'
+        : '0 6px 20px rgba(0,0,0,0.55), 0 0 14px rgba(199,164,106,0.15)',
       willChange: 'transform',
     };
   };
@@ -970,21 +970,21 @@ const CardSpreadScene = ({ numCards, positions, question, onComplete }: { numCar
 
       <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} style={{ textAlign: 'center', zIndex: 10, marginBottom: '20px', padding: '0 24px' }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 14, marginBottom: 16 }}>
-          <div style={{ width: 44, height: 1, background: 'linear-gradient(to right,transparent,rgba(188,106,77,0.6))' }} />
-          <p style={{ letterSpacing: '0.4em', fontSize: '12px', color: '#BC6A4D', textTransform: 'uppercase', fontFamily: "'Astra','Iceland',sans-serif", margin: 0, whiteSpace: 'nowrap' }}>
+          <div style={{ width: 44, height: 1, background: 'linear-gradient(to right,transparent,rgba(199,164,106,0.6))' }} />
+          <p style={{ letterSpacing: '0.4em', fontSize: '12px', color: '#C7A46A', textTransform: 'uppercase', fontFamily: "'DM Sans', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif", margin: 0, whiteSpace: 'nowrap' }}>
             ✦&nbsp; {selected.length} / {numCards} Cards Selected &nbsp;✦
           </p>
-          <div style={{ width: 44, height: 1, background: 'linear-gradient(to left,transparent,rgba(188,106,77,0.6))' }} />
+          <div style={{ width: 44, height: 1, background: 'linear-gradient(to left,transparent,rgba(199,164,106,0.6))' }} />
         </div>
-        <h2 style={{ margin: 0, fontFamily: "'Astra','Iceland',sans-serif", fontWeight: 700, lineHeight: 1.3 }}>
+        <h2 style={{ margin: 0, fontFamily: "'Cinzel', 'Cormorant Garamond', Georgia, 'Times New Roman', serif", fontWeight: 700, lineHeight: 1.3 }}>
           <span style={{ display: 'block', fontSize: 'clamp(22px, 3.6vw, 34px)', textTransform: 'uppercase', color: '#FFFFFF' }}>
             Select {numCards} Cards For
           </span>
-          <span style={{ display: 'block', fontSize: 'clamp(22px, 3.6vw, 34px)', textTransform: 'uppercase', color: '#BC6A4D' }}>
+          <span style={{ display: 'block', fontSize: 'clamp(22px, 3.6vw, 34px)', textTransform: 'uppercase', color: '#C7A46A' }}>
             Your {guidanceLabel} Guidance
           </span>
         </h2>
-        <p style={{ color: 'rgba(222,222,232,0.65)', fontSize: '14px', marginTop: '14px', fontFamily: "'Lato',sans-serif", letterSpacing: '0.02em', fontStyle: 'italic' }}>
+        <p style={{ color: 'rgba(222,222,232,0.65)', fontSize: '14px', marginTop: '14px', fontFamily: "'DM Sans', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif", letterSpacing: '0.02em', fontStyle: 'italic' }}>
           Hover over each card · Trust your instinct · Let your next path reveal itself
         </p>
       </motion.div>
@@ -997,10 +997,10 @@ const CardSpreadScene = ({ numCards, positions, question, onComplete }: { numCar
           return (
             <motion.div key={pos} initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: i * 0.1 }}
               style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
-              <div style={{ width: `${slotW}px`, height: `${slotH}px`, borderRadius: '14px', border: s ? `1.5px solid ${theme!.border}` : '1.5px dashed rgba(188,106,77,0.4)', background: s ? 'transparent' : 'rgba(188,106,77,0.05)', position: 'relative', overflow: 'hidden', boxShadow: s ? `0 0 22px ${theme!.glow}` : 'none', transition: 'all 0.4s' }}>
+              <div style={{ width: `${slotW}px`, height: `${slotH}px`, borderRadius: '14px', border: s ? `1.5px solid ${theme!.border}` : '1.5px dashed rgba(199,164,106,0.4)', background: s ? 'transparent' : 'rgba(199,164,106,0.05)', position: 'relative', overflow: 'hidden', boxShadow: s ? `0 0 22px ${theme!.glow}` : 'none', transition: 'all 0.4s' }}>
                 {s && <CardFace card={s.card} size="lg" category={question} />}
               </div>
-              <span style={{ fontSize: '13px', letterSpacing: '1.5px', color: s ? '#BC6A4D' : 'rgba(188,106,77,0.55)', fontFamily: "'Lato',sans-serif", textTransform: 'uppercase', textAlign: 'center', maxWidth: `${slotW}px` }}>{pos}</span>
+              <span style={{ fontSize: '13px', letterSpacing: '1.5px', color: s ? '#C7A46A' : 'rgba(199,164,106,0.55)', fontFamily: "'DM Sans', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif", textTransform: 'uppercase', textAlign: 'center', maxWidth: `${slotW}px` }}>{pos}</span>
             </motion.div>
           );
         })}
@@ -1012,7 +1012,7 @@ const CardSpreadScene = ({ numCards, positions, question, onComplete }: { numCar
         <div ref={glowRef} style={{
           position: 'absolute', left: '50%', bottom: '10px', width: 460, height: 340,
           transform: 'translateX(-50%)', borderRadius: '50%', opacity: 0, pointerEvents: 'none', zIndex: 0,
-          background: 'radial-gradient(ellipse at center, rgba(188,106,77,0.55) 0%, rgba(188,106,77,0.14) 45%, transparent 72%)',
+          background: 'radial-gradient(ellipse at center, rgba(199,164,106,0.55) 0%, rgba(199,164,106,0.14) 45%, transparent 72%)',
         }} />
         {/* ambient star-brighten wash */}
         <div ref={brightenRef} style={{
@@ -1048,7 +1048,7 @@ const CardSpreadScene = ({ numCards, positions, question, onComplete }: { numCar
                   </motion.div>
                 </div>
                 {hovered === i && !s && uiPhase === 'idle' && (
-                  <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse at center, rgba(188,106,77,0.22) 0%, transparent 70%)', borderRadius: '14px', pointerEvents: 'none' }} />
+                  <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse at center, rgba(199,164,106,0.22) 0%, transparent 70%)', borderRadius: '14px', pointerEvents: 'none' }} />
                 )}
               </div>
             );
@@ -1065,13 +1065,13 @@ const CardSpreadScene = ({ numCards, positions, question, onComplete }: { numCar
           marginTop: '4px', zIndex: 20,
           padding: '14px 42px',
           borderRadius: 999,
-          border: '1.5px solid #BC6A4D',
+          border: '1.5px solid #C7A46A',
           background: 'rgba(8,6,18,0.85)',
           color: '#E8B79A',
-          fontFamily: "'Astra','Iceland',sans-serif",
+          fontFamily: "'DM Sans', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif",
           fontSize: '15px', letterSpacing: '0.18em', textTransform: 'uppercase', fontWeight: 700,
           cursor: uiPhase === 'idle' ? 'pointer' : 'default',
-          boxShadow: '0 0 18px rgba(188,106,77,0.35), inset 0 0 12px rgba(188,106,77,0.08)',
+          boxShadow: '0 0 18px rgba(199,164,106,0.35), inset 0 0 12px rgba(199,164,106,0.08)',
           opacity: uiPhase === 'idle' ? 1 : 0.6,
           transition: 'box-shadow 0.3s ease, opacity 0.3s ease',
         }}
@@ -1106,7 +1106,7 @@ const ShuffleSparkles: React.FC<{ runKey: number; cosmic: boolean }> = ({ runKey
     size: Math.random() * 3 + (cosmic ? 2 : 1),
     delay: Math.random() * 1.4,
     dur: 1.1 + Math.random() * 1.3,
-    color: cosmic ? (i % 2 === 0 ? '#D8A9FF' : '#BC6A4D') : '#E8B79A',
+    color: cosmic ? (i % 2 === 0 ? '#D8A9FF' : '#C7A46A') : '#E8B79A',
   })), [runKey, cosmic]);
 
   return (
@@ -1152,13 +1152,13 @@ const CardRevealScene = ({ cards, positions, question, onComplete }: { cards: Ta
       <Particles count={40} />
 
       <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ textAlign: 'center', marginBottom: '48px', zIndex: 10 }}>
-        <p style={{ letterSpacing: '6px', fontSize: '14px', color: 'rgba(255,255,255,0.8)', textTransform: 'uppercase', fontFamily: 'Iceland, sans-serif', marginBottom: '12px' }}>
+        <p style={{ letterSpacing: '6px', fontSize: '14px', color: 'rgba(255,255,255,0.8)', textTransform: 'uppercase', fontFamily: "'DM Sans', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif", marginBottom: '12px' }}>
           The Cards Reveal Themselves
         </p>
-        <h2 style={{ fontSize: 'clamp(26px, 4vw, 44px)', fontFamily: 'Iceland, sans-serif', letterSpacing: '5px', textTransform: 'uppercase', color: '#BC6A4D', textShadow: '0 0 30px rgba(188,106,77,0.4)' }}>
+        <h2 style={{ fontSize: 'clamp(26px, 4vw, 44px)', fontFamily: "'Cinzel', 'Cormorant Garamond', Georgia, 'Times New Roman', serif", letterSpacing: '5px', textTransform: 'uppercase', color: '#C7A46A', textShadow: '0 0 30px rgba(199,164,106,0.4)' }}>
           Your Sacred Reading
         </h2>
-        <div style={{ width: '80px', height: '1px', background: 'linear-gradient(90deg,transparent,#BC6A4D,transparent)', margin: '16px auto 0' }} />
+        <div style={{ width: '80px', height: '1px', background: 'linear-gradient(90deg,transparent,#C7A46A,transparent)', margin: '16px auto 0' }} />
       </motion.div>
 
       <div style={{ display: 'flex', gap: 'clamp(14px, 3vw, 32px)', justifyContent: 'center', flexWrap: 'wrap', zIndex: 10 }}>
@@ -1191,7 +1191,7 @@ const CardRevealScene = ({ cards, positions, question, onComplete }: { cards: Ta
               </div>
 
               {/* Position label */}
-              <span style={{ fontSize: '13px', fontWeight: 600, letterSpacing: '2.5px', color: revealed[i] ? 'rgba(255,255,255,0.85)' : 'rgba(188,106,77,0.45)', fontFamily: 'Iceland, sans-serif', textTransform: 'uppercase', textAlign: 'center', maxWidth: '150px', transition: 'color 0.6s' }}>
+              <span style={{ fontSize: '13px', fontWeight: 600, letterSpacing: '2.5px', color: revealed[i] ? 'rgba(255,255,255,0.85)' : 'rgba(199,164,106,0.45)', fontFamily: "'DM Sans', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif", textTransform: 'uppercase', textAlign: 'center', maxWidth: '150px', transition: 'color 0.6s' }}>
                 {positions[i]}
               </span>
 
@@ -1199,8 +1199,8 @@ const CardRevealScene = ({ cards, positions, question, onComplete }: { cards: Ta
                 {revealed[i] && (
                   <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.7 }}
                     style={{ textAlign: 'center' }}>
-                    <p style={{ fontSize: '18px', color: theme.accent, fontFamily: 'Iceland, sans-serif', letterSpacing: '1.5px', textTransform: 'uppercase', marginBottom: '4px' }}>{card.name}</p>
-                    <p style={{ fontSize: '14px', color: 'rgba(255,248,220,0.85)', fontFamily: 'Iceland, sans-serif' }}>{card.keywords[0]}</p>
+                    <p style={{ fontSize: '18px', color: theme.accent, fontFamily: "'DM Sans', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif", letterSpacing: '1.5px', textTransform: 'uppercase', marginBottom: '4px' }}>{card.name}</p>
+                    <p style={{ fontSize: '14px', color: 'rgba(255,248,220,0.85)', fontFamily: "'DM Sans', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif" }}>{card.keywords[0]}</p>
                   </motion.div>
                 )}
               </AnimatePresence>
@@ -1213,7 +1213,7 @@ const CardRevealScene = ({ cards, positions, question, onComplete }: { cards: Ta
         {current >= cards.length && (
           <motion.button initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6 }}
             onClick={onComplete}
-            style={{ marginTop: '56px', padding: '18px 52px', fontFamily: 'Iceland, sans-serif', letterSpacing: '5px', fontSize: '15px', textTransform: 'uppercase', color: '#0a0c14', background: 'linear-gradient(135deg, #BC6A4D, #FFC200)', border: 'none', borderRadius: '4px', cursor: 'pointer', boxShadow: '0 0 35px rgba(188,106,77,0.55)', zIndex: 10 }}>
+            style={{ marginTop: '56px', padding: '18px 52px', fontFamily: "'DM Sans', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif", letterSpacing: '5px', fontSize: '15px', textTransform: 'uppercase', color: '#0a0c14', background: 'linear-gradient(135deg, #C7A46A, #FFC200)', border: 'none', borderRadius: '4px', cursor: 'pointer', boxShadow: '0 0 35px rgba(199,164,106,0.55)', zIndex: 10 }}>
             Reveal My Reading
           </motion.button>
         )}
@@ -1241,7 +1241,7 @@ const CardThumb = ({ card, width, height, size }: { card: TarotCard; width: numb
 
 /** One labelled section card in the insight grid */
 const InsightCard = ({
-  icon, label, value, accent = '#BC6A4D', delay = 0,
+  icon, label, value, accent = '#C7A46A', delay = 0,
 }: { icon: string; label: string; value?: string; accent?: string; delay?: number }) => {
   if (!value) return null;
   return (
@@ -1262,12 +1262,12 @@ const InsightCard = ({
         <span style={{ fontSize: '22px', lineHeight: 1 }}>{icon}</span>
         <span style={{
           fontSize: '13px', letterSpacing: '2.5px', textTransform: 'uppercase',
-          color: 'rgba(255,255,255,0.85)', fontFamily: 'Iceland, sans-serif', fontWeight: 600,
+          color: 'rgba(255,255,255,0.85)', fontFamily: "'DM Sans', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif", fontWeight: 600,
         }}>{label}</span>
       </div>
       <p style={{
         margin: 0, color: 'rgba(255,248,220,0.92)', fontSize: '18px',
-        lineHeight: 1.78, fontFamily: 'Iceland, sans-serif',
+        lineHeight: 1.78, fontFamily: "'DM Sans', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif",
         wordBreak: 'break-word', overflowWrap: 'break-word',
       }}>{value}</p>
     </motion.div>
@@ -1299,13 +1299,13 @@ const ResultCard: React.FC<{
         transition={{ duration: 0.25, ease: 'easeOut' }}
         style={{
           position: 'relative', width: 200, height: 300, padding: 0, cursor: 'pointer',
-          border: `1px solid ${active ? 'rgba(188,106,77,0.9)' : 'rgba(188,106,77,0.35)'}`,
+          border: `1px solid ${active ? 'rgba(199,164,106,0.9)' : 'rgba(199,164,106,0.35)'}`,
           borderRadius: '14px', background: 'linear-gradient(160deg,#0c1424 0%,#070d18 100%)',
           overflow: 'hidden',
           boxShadow: active
-            ? '0 0 32px rgba(188,106,77,0.55), 0 12px 26px rgba(0,0,0,0.55)'
+            ? '0 0 32px rgba(199,164,106,0.55), 0 12px 26px rgba(0,0,0,0.55)'
             : hovered
-            ? '0 0 26px rgba(188,106,77,0.45), 0 12px 24px rgba(0,0,0,0.5)'
+            ? '0 0 26px rgba(199,164,106,0.45), 0 12px 24px rgba(0,0,0,0.5)'
             : '0 4px 16px rgba(0,0,0,0.45)',
         }}
       >
@@ -1320,16 +1320,16 @@ const ResultCard: React.FC<{
             <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, rgba(7,13,24,0.6) 0%, transparent 26%, transparent 64%, rgba(7,13,24,0.88) 100%)' }} />
           </>
         )}
-        <span style={{ position: 'absolute', top: 14, left: 0, right: 0, textAlign: 'center', fontSize: 14, letterSpacing: 1.5, color: imgSrc ? 'rgba(255,255,255,0.9)' : 'rgba(255,255,255,0.8)', fontFamily: "'Astra','Iceland',sans-serif" }}>{card.number}</span>
-        {!imgSrc && <span style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%,-52%)', fontSize: 90, filter: 'drop-shadow(0 0 14px rgba(188,106,77,0.55))' }}>{card.symbol}</span>}
-        <span style={{ position: 'absolute', bottom: 16, left: 10, right: 10, textAlign: 'center', fontSize: 18, letterSpacing: 0.5, color: '#E8B79A', fontFamily: "'Astra','Iceland',sans-serif", lineHeight: 1.25, fontWeight: 600 }}>{card.name}</span>
+        <span style={{ position: 'absolute', top: 14, left: 0, right: 0, textAlign: 'center', fontSize: 14, letterSpacing: 1.5, color: imgSrc ? 'rgba(255,255,255,0.9)' : 'rgba(255,255,255,0.8)', fontFamily: "'DM Sans', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif" }}>{card.number}</span>
+        {!imgSrc && <span style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%,-52%)', fontSize: 90, filter: 'drop-shadow(0 0 14px rgba(199,164,106,0.55))' }}>{card.symbol}</span>}
+        <span style={{ position: 'absolute', bottom: 16, left: 10, right: 10, textAlign: 'center', fontSize: 18, letterSpacing: 0.5, color: '#E8B79A', fontFamily: "'DM Sans', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif", lineHeight: 1.25, fontWeight: 600 }}>{card.name}</span>
 
         {hovered && <span className="result-card-shine" />}
         {hovered && Array.from({ length: 3 }).map((_, i) => (
           <span key={i} className="result-card-sparkle" style={{ left: `${20 + i * 28}%`, animationDelay: `${i * 0.15}s` }} />
         ))}
       </motion.button>
-      <span style={{ fontSize: 17, letterSpacing: '1px', color: '#BC6A4D', fontFamily: "'Astra','Iceland',sans-serif", textTransform: 'uppercase', textAlign: 'center', maxWidth: 200 }}>{label}</span>
+      <span style={{ fontSize: 17, letterSpacing: '1px', color: '#C7A46A', fontFamily: "'DM Sans', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif", textTransform: 'uppercase', textAlign: 'center', maxWidth: 200 }}>{label}</span>
     </motion.div>
   );
 };
@@ -1358,16 +1358,16 @@ const ProbabilityRing: React.FC<{ score: number; delay: number }> = ({ score, de
     <motion.div initial={{ opacity: 0, scale: 0.85 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay, duration: 0.6 }}
       style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
       <div style={{ position: 'relative', width: 184, height: 184 }}>
-        <div style={{ position: 'absolute', inset: -18, borderRadius: '50%', background: 'radial-gradient(circle, rgba(188,106,77,0.32) 0%, transparent 70%)', filter: 'blur(6px)' }} />
+        <div style={{ position: 'absolute', inset: -18, borderRadius: '50%', background: 'radial-gradient(circle, rgba(199,164,106,0.32) 0%, transparent 70%)', filter: 'blur(6px)' }} />
         <svg width="184" height="184" viewBox="0 0 184 184" style={{ position: 'relative', transform: 'rotate(-90deg)' }}>
           <circle cx="92" cy="92" r={r} fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="4" />
-          <circle cx="92" cy="92" r={r} fill="none" stroke="#BC6A4D" strokeWidth="4"
+          <circle cx="92" cy="92" r={r} fill="none" stroke="#C7A46A" strokeWidth="4"
             strokeDasharray={circ} strokeDashoffset={offset} strokeLinecap="round"
-            style={{ filter: 'drop-shadow(0 0 10px rgba(188,106,77,0.85))' }} />
+            style={{ filter: 'drop-shadow(0 0 10px rgba(199,164,106,0.85))' }} />
         </svg>
         <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
-          <span style={{ fontSize: 44, fontWeight: 700, color: '#FFFFFF', fontFamily: "'Astra','Iceland',sans-serif", lineHeight: 1 }}>{displayed}</span>
-          <span style={{ fontSize: 14, letterSpacing: '1px', color: '#BC6A4D', textTransform: 'uppercase', fontFamily: "'Astra','Iceland',sans-serif", marginTop: 8, whiteSpace: 'nowrap' }}>Path Probability</span>
+          <span style={{ fontSize: 44, fontWeight: 700, color: '#FFFFFF', fontFamily: "'Cinzel', 'Cormorant Garamond', Georgia, 'Times New Roman', serif", lineHeight: 1 }}>{displayed}</span>
+          <span style={{ fontSize: 14, letterSpacing: '1px', color: '#C7A46A', textTransform: 'uppercase', fontFamily: "'DM Sans', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif", marginTop: 8, whiteSpace: 'nowrap' }}>Path Probability</span>
         </div>
       </div>
     </motion.div>
@@ -1376,8 +1376,8 @@ const ProbabilityRing: React.FC<{ score: number; delay: number }> = ({ score, de
 
 const DetailRow: React.FC<{ label: string; value: string }> = ({ label, value }) => (
   <div style={{ marginBottom: 16 }}>
-    <p style={{ margin: '0 0 4px', fontSize: 14, letterSpacing: '1.5px', color: 'rgba(255,255,255,0.8)', textTransform: 'uppercase', fontFamily: "'Astra','Iceland',sans-serif" }}>{label}</p>
-    <p style={{ margin: 0, fontSize: 18, lineHeight: 1.75, color: 'rgba(255,248,220,0.92)', fontFamily: "'Astra','Iceland',sans-serif" }}>{value}</p>
+    <p style={{ margin: '0 0 4px', fontSize: 14, letterSpacing: '1.5px', color: 'rgba(255,255,255,0.8)', textTransform: 'uppercase', fontFamily: "'DM Sans', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif" }}>{label}</p>
+    <p style={{ margin: 0, fontSize: 18, lineHeight: 1.75, color: 'rgba(255,248,220,0.92)', fontFamily: "'DM Sans', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif" }}>{value}</p>
   </div>
 );
 
@@ -1386,7 +1386,7 @@ const StoryCardThumb: React.FC<{ card: TarotCard; category?: string }> = ({ card
   const [imgFailed, setImgFailed] = useState(false);
   const imgSrc = !imgFailed ? getCategoryCardImage(category, card) : null;
   return (
-    <div style={{ width: 88, height: 132, margin: '0 auto 16px', borderRadius: 10, border: '1px solid rgba(188,106,77,0.4)', overflow: 'hidden', position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(188,106,77,0.05)' }}>
+    <div style={{ width: 88, height: 132, margin: '0 auto 16px', borderRadius: 10, border: '1px solid rgba(199,164,106,0.4)', overflow: 'hidden', position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(199,164,106,0.05)' }}>
       {imgSrc
         ? <img src={imgSrc} alt={card.name} onError={() => setImgFailed(true)} style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center', display: 'block' }} />
         : <span style={{ fontSize: 38 }}>{card.symbol}</span>}
@@ -1406,12 +1406,12 @@ const CardDetailPanel: React.FC<{
     style={{
       width: '100%', maxWidth: 620, margin: '0 auto',
       padding: '30px 34px', borderRadius: '16px',
-      background: 'linear-gradient(160deg,rgba(188,106,77,0.08) 0%,rgba(188,106,77,0.02) 100%)',
-      border: '1px solid rgba(188,106,77,0.3)',
+      background: 'linear-gradient(160deg,rgba(199,164,106,0.08) 0%,rgba(199,164,106,0.02) 100%)',
+      border: '1px solid rgba(199,164,106,0.3)',
     }}
   >
-    <p style={{ margin: '0 0 6px', fontSize: 13, letterSpacing: '2.5px', color: 'rgba(188,106,77,0.75)', textTransform: 'uppercase', fontFamily: "'Astra','Iceland',sans-serif" }}>{label}</p>
-    <h4 style={{ margin: '0 0 18px', fontSize: 28, color: '#BC6A4D', fontFamily: "'Astra','Iceland',sans-serif", letterSpacing: '2px' }}>{card.name}</h4>
+    <p style={{ margin: '0 0 6px', fontSize: 13, letterSpacing: '2.5px', color: 'rgba(199,164,106,0.75)', textTransform: 'uppercase', fontFamily: "'DM Sans', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif" }}>{label}</p>
+    <h4 style={{ margin: '0 0 18px', fontSize: 28, color: '#C7A46A', fontFamily: "'Cinzel', 'Cormorant Garamond', Georgia, 'Times New Roman', serif", letterSpacing: '2px' }}>{card.name}</h4>
 
     <DetailRow label="Meaning" value={card.meaning} />
     {insight && <DetailRow label="Interpretation" value={insight} />}
@@ -1428,7 +1428,7 @@ const SectionHeading: React.FC<{ children: React.ReactNode }> = ({ children }) =
     whileInView={{ opacity: 1, y: 0 }}
     viewport={{ once: true, margin: '-80px' }}
     transition={{ duration: 0.5 }}
-    style={{ margin: 0, fontSize: 30, fontWeight: 600, color: '#FFFFFF', fontFamily: "'Astra','Iceland',sans-serif", letterSpacing: '2px', textAlign: 'center', textTransform: 'uppercase' }}
+    style={{ margin: 0, fontSize: 30, fontWeight: 600, color: '#FFFFFF', fontFamily: "'Cinzel', 'Cormorant Garamond', Georgia, 'Times New Roman', serif", letterSpacing: '2px', textAlign: 'center', textTransform: 'uppercase' }}
   >
     {children}
   </motion.h3>
@@ -1437,13 +1437,13 @@ const SectionHeading: React.FC<{ children: React.ReactNode }> = ({ children }) =
 /** Tiny copper celestial glyph used to separate the two insight-grid rows */
 const SacredDivider: React.FC = () => (
   <div className="trd-divider" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 14, gridColumn: '1 / -1' }}>
-    <div style={{ width: 60, height: 1, background: 'linear-gradient(to right, transparent, rgba(188,106,77,0.45))' }} />
+    <div style={{ width: 60, height: 1, background: 'linear-gradient(to right, transparent, rgba(199,164,106,0.45))' }} />
     <svg width="16" height="16" viewBox="0 0 16 16" style={{ opacity: 0.7, flexShrink: 0 }}>
-      <circle cx="8" cy="8" r="6" fill="none" stroke="#BC6A4D" strokeWidth="0.6" strokeDasharray="2 3" />
-      <path d="M8,2 L8,14 M2,8 L14,8" stroke="#BC6A4D" strokeWidth="0.6" opacity="0.6" />
-      <circle cx="8" cy="8" r="1.8" fill="#BC6A4D" opacity="0.8" />
+      <circle cx="8" cy="8" r="6" fill="none" stroke="#C7A46A" strokeWidth="0.6" strokeDasharray="2 3" />
+      <path d="M8,2 L8,14 M2,8 L14,8" stroke="#C7A46A" strokeWidth="0.6" opacity="0.6" />
+      <circle cx="8" cy="8" r="1.8" fill="#C7A46A" opacity="0.8" />
     </svg>
-    <div style={{ width: 60, height: 1, background: 'linear-gradient(to left, transparent, rgba(188,106,77,0.45))' }} />
+    <div style={{ width: 60, height: 1, background: 'linear-gradient(to left, transparent, rgba(199,164,106,0.45))' }} />
   </div>
 );
 
@@ -1463,17 +1463,17 @@ const InsightGridCard: React.FC<{ icon: React.ReactNode; title: string; value?: 
       style={{
         position: 'relative', padding: '30px 28px', borderRadius: '19px',
         background: 'linear-gradient(160deg,#0c1424 0%,#070d18 100%)',
-        border: `1px solid ${hovered ? 'rgba(188,106,77,0.6)' : 'rgba(188,106,77,0.35)'}`,
-        boxShadow: hovered ? '0 8px 26px rgba(0,0,0,0.5), 0 0 24px rgba(188,106,77,0.25)' : '0 4px 16px rgba(0,0,0,0.4)',
+        border: `1px solid ${hovered ? 'rgba(199,164,106,0.6)' : 'rgba(199,164,106,0.35)'}`,
+        boxShadow: hovered ? '0 8px 26px rgba(0,0,0,0.5), 0 0 24px rgba(199,164,106,0.25)' : '0 4px 16px rgba(0,0,0,0.4)',
         transition: 'border-color 0.3s ease, box-shadow 0.3s ease',
         overflow: 'hidden',
       }}
     >
       <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 14 }}>
-        <span style={{ color: '#BC6A4D', display: 'flex' }}>{icon}</span>
-        <span style={{ fontSize: 16, letterSpacing: '1.5px', textTransform: 'uppercase', color: '#BC6A4D', fontFamily: "'Astra','Iceland',sans-serif", fontWeight: 600 }}>{title}</span>
+        <span style={{ color: '#C7A46A', display: 'flex' }}>{icon}</span>
+        <span style={{ fontSize: 16, letterSpacing: '1.5px', textTransform: 'uppercase', color: '#C7A46A', fontFamily: "'DM Sans', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif", fontWeight: 600 }}>{title}</span>
       </div>
-      <p style={{ margin: 0, color: 'rgba(255,248,220,0.82)', fontSize: 18, lineHeight: 1.8, fontFamily: "'Astra','Iceland',sans-serif" }}>{value}</p>
+      <p style={{ margin: 0, color: 'rgba(255,248,220,0.82)', fontSize: 18, lineHeight: 1.8, fontFamily: "'DM Sans', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif" }}>{value}</p>
 
       {hovered && <span className="result-card-shine" />}
       {hovered && Array.from({ length: 3 }).map((_, i) => (
@@ -1497,14 +1497,14 @@ const TimelineReadingDisplay = ({
 
       <motion.div initial={{ opacity: 0, y: -14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}
         style={{ textAlign: 'center', zIndex: 10, marginBottom: 32 }}>
-        <p style={{ letterSpacing: '4px', fontSize: 16, color: '#BC6A4D', textTransform: 'none', fontFamily: "'Astra','Iceland',sans-serif", marginBottom: 14 }}>
+        <p style={{ letterSpacing: '4px', fontSize: 16, color: '#C7A46A', textTransform: 'none', fontFamily: "'DM Sans', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif", marginBottom: 14 }}>
           Life Timeline Tarot™ • {question}
         </p>
-        <h1 style={{ margin: '0 0 16px', fontSize: 'clamp(32px,5vw,48px)', fontFamily: "'Astra','Iceland',sans-serif", letterSpacing: '3px', textTransform: 'uppercase', fontWeight: 700 }}>
+        <h1 style={{ margin: '0 0 16px', fontSize: 'clamp(32px,5vw,48px)', fontFamily: "'Cinzel', 'Cormorant Garamond', Georgia, 'Times New Roman', serif", letterSpacing: '3px', textTransform: 'uppercase', fontWeight: 700 }}>
           <span style={{ color: '#FFFFFF' }}>Your Soul&apos;s </span>
-          <span style={{ color: '#BC6A4D' }}>Timeline</span>
+          <span style={{ color: '#C7A46A' }}>Timeline</span>
         </h1>
-        <p style={{ margin: 0, fontSize: 18, fontStyle: 'italic', color: 'rgba(255,255,255,0.65)', fontFamily: "'Lato',sans-serif" }}>
+        <p style={{ margin: 0, fontSize: 18, fontStyle: 'italic', color: 'rgba(255,255,255,0.65)', fontFamily: "'DM Sans', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif" }}>
           Hover over each card · Trust your instinct · Let your next path reveal itself
         </p>
       </motion.div>
@@ -1537,7 +1537,7 @@ const TimelineReadingDisplay = ({
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: '-60px' }}
             transition={{ duration: 0.5, delay: 0.1 }}
-            style={{ maxWidth: 700, margin: '24px auto 0', textAlign: 'center', fontSize: 18, lineHeight: 1.9, color: 'rgba(255,255,255,0.72)', fontFamily: "'Lato',sans-serif", padding: '0 20px' }}
+            style={{ maxWidth: 700, margin: '24px auto 0', textAlign: 'center', fontSize: 18, lineHeight: 1.9, color: 'rgba(255,255,255,0.72)', fontFamily: "'DM Sans', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif", padding: '0 20px' }}
           >
             {reading.overallMessage}
           </motion.p>
@@ -1573,18 +1573,18 @@ const TimelineReadingDisplay = ({
                     style={{
                       width: 260, boxSizing: 'border-box', padding: '32px 26px', borderRadius: '18px', textAlign: 'center',
                       background: 'linear-gradient(160deg,#0c1424 0%,#070d18 100%)',
-                      border: '1px solid rgba(188,106,77,0.35)',
+                      border: '1px solid rgba(199,164,106,0.35)',
                     }}
                   >
                     <StoryCardThumb card={card} category={question} />
-                    <p style={{ margin: '0 0 14px', fontSize: 22, color: '#BC6A4D', fontFamily: "'Astra','Iceland',sans-serif", fontWeight: 600, letterSpacing: '1px' }}>{card.name}</p>
-                    <p style={{ margin: '0 0 6px', fontSize: 15, letterSpacing: '1px', textTransform: 'uppercase', color: 'rgba(255,255,255,0.8)', fontFamily: "'Astra','Iceland',sans-serif" }}>Meaning</p>
-                    <p style={{ margin: '0 0 14px', fontSize: 17, lineHeight: 1.7, color: 'rgba(255,248,220,0.9)', fontFamily: "'Astra','Iceland',sans-serif" }}>{card.meaning}</p>
-                    <p style={{ margin: '0 0 6px', fontSize: 15, letterSpacing: '1px', textTransform: 'uppercase', color: 'rgba(255,255,255,0.8)', fontFamily: "'Astra','Iceland',sans-serif" }}>Interpretation</p>
-                    <p style={{ margin: 0, fontSize: 17, lineHeight: 1.7, color: 'rgba(255,248,220,0.9)', fontFamily: "'Astra','Iceland',sans-serif" }}>{n.insight}</p>
+                    <p style={{ margin: '0 0 14px', fontSize: 22, color: '#C7A46A', fontFamily: "'Cinzel', 'Cormorant Garamond', Georgia, 'Times New Roman', serif", fontWeight: 600, letterSpacing: '1px' }}>{card.name}</p>
+                    <p style={{ margin: '0 0 6px', fontSize: 15, letterSpacing: '1px', textTransform: 'uppercase', color: 'rgba(255,255,255,0.8)', fontFamily: "'DM Sans', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif" }}>Meaning</p>
+                    <p style={{ margin: '0 0 14px', fontSize: 17, lineHeight: 1.7, color: 'rgba(255,248,220,0.9)', fontFamily: "'DM Sans', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif" }}>{card.meaning}</p>
+                    <p style={{ margin: '0 0 6px', fontSize: 15, letterSpacing: '1px', textTransform: 'uppercase', color: 'rgba(255,255,255,0.8)', fontFamily: "'DM Sans', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif" }}>Interpretation</p>
+                    <p style={{ margin: 0, fontSize: 17, lineHeight: 1.7, color: 'rgba(255,248,220,0.9)', fontFamily: "'DM Sans', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif" }}>{n.insight}</p>
                   </motion.div>
                   {i < reading.timelineNarrative!.length - 1 && (
-                    <span className="trd-story-arrow" style={{ color: 'rgba(188,106,77,0.5)', fontSize: 26, alignSelf: 'center', padding: '0 12px' }}>→</span>
+                    <span className="trd-story-arrow" style={{ color: 'rgba(199,164,106,0.5)', fontSize: 26, alignSelf: 'center', padding: '0 12px' }}>→</span>
                   )}
                 </React.Fragment>
               );
@@ -1614,7 +1614,7 @@ const TimelineReadingDisplay = ({
         }
         .result-card-sparkle {
           position: absolute; bottom: 10px; width: 3px; height: 3px; border-radius: 50%;
-          background: #BC6A4D; box-shadow: 0 0 6px #BC6A4D;
+          background: #C7A46A; box-shadow: 0 0 6px #C7A46A;
           animation: resultCardSparkle 1s ease-out forwards;
           pointer-events: none;
         }
@@ -1671,16 +1671,16 @@ const KarmaMirrorDisplay = ({
       {/* ── Header ─────────────────────────────────────────────────────── */}
       <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }}
         style={{ textAlign: 'center', marginBottom: '52px', position: 'relative', zIndex: 10 }}>
-        <p style={{ letterSpacing: '6px', fontSize: '14px', color: 'rgba(255,255,255,0.8)', textTransform: 'uppercase', fontFamily: 'Iceland, sans-serif', marginBottom: '10px' }}>
+        <p style={{ letterSpacing: '6px', fontSize: '14px', color: 'rgba(255,255,255,0.8)', textTransform: 'uppercase', fontFamily: "'DM Sans', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif", marginBottom: '10px' }}>
           Karma Mirror™ Reading
         </p>
-        <h2 style={{ fontSize: 'clamp(26px,5vw,52px)', fontFamily: 'Iceland, sans-serif', letterSpacing: '5px', textTransform: 'uppercase', color: '#BC6A4D', textShadow: '0 0 30px rgba(188,106,77,0.4)', marginBottom: '12px' }}>
+        <h2 style={{ fontSize: 'clamp(26px,5vw,52px)', fontFamily: "'Cinzel', 'Cormorant Garamond', Georgia, 'Times New Roman', serif", letterSpacing: '5px', textTransform: 'uppercase', color: '#C7A46A', textShadow: '0 0 30px rgba(199,164,106,0.4)', marginBottom: '12px' }}>
           The Mirror Reveals
         </h2>
-        <p style={{ color: 'rgba(255,248,220,0.8)', fontFamily: 'Iceland, sans-serif', fontSize: '18px', fontStyle: 'italic' }}>
+        <p style={{ color: 'rgba(255,248,220,0.8)', fontFamily: "'DM Sans', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif", fontSize: '18px', fontStyle: 'italic' }}>
           "The cards do not judge. They reflect."
         </p>
-        <div style={{ width: '100px', height: '1px', background: 'linear-gradient(90deg,transparent,#BC6A4D,transparent)', margin: '16px auto 0' }} />
+        <div style={{ width: '100px', height: '1px', background: 'linear-gradient(90deg,transparent,#C7A46A,transparent)', margin: '16px auto 0' }} />
       </motion.div>
 
       {/* ── Journey: 3 cards with flow arrows ─────────────────────────── */}
@@ -1696,7 +1696,7 @@ const KarmaMirrorDisplay = ({
                 {/* Journey label above card */}
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                   <span style={{ fontSize: '20px' }}>{journeyIcons[i]}</span>
-                  <span style={{ fontSize: '13px', letterSpacing: '2px', color: kt.color, fontFamily: 'Iceland, sans-serif', textTransform: 'uppercase', fontWeight: 600 }}>{journeyLabels[i]}</span>
+                  <span style={{ fontSize: '13px', letterSpacing: '2px', color: kt.color, fontFamily: "'DM Sans', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif", textTransform: 'uppercase', fontWeight: 600 }}>{journeyLabels[i]}</span>
                 </div>
                 {/* Card — fixed container with position:relative */}
                 <div style={{
@@ -1707,14 +1707,14 @@ const KarmaMirrorDisplay = ({
                 }}>
                   <CardFace card={card} size="lg" />
                 </div>
-                <p style={{ margin: 0, fontSize: '17px', color: '#BC6A4D', fontFamily: 'Iceland, sans-serif', textTransform: 'uppercase', textAlign: 'center', letterSpacing: '1px', maxWidth: '130px' }}>{card.name}</p>
+                <p style={{ margin: 0, fontSize: '17px', color: '#C7A46A', fontFamily: "'DM Sans', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif", textTransform: 'uppercase', textAlign: 'center', letterSpacing: '1px', maxWidth: '130px' }}>{card.name}</p>
               </motion.div>
 
               {/* Arrow connector between cards */}
               {i < cards.length - 1 && (
                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '0 12px', marginBottom: '56px' }}>
                   <div style={{ width: '32px', height: '1px', background: `linear-gradient(90deg,${karmaThemes[i].color}80,${karmaThemes[i+1].color}80)` }} />
-                  <span style={{ fontSize: '14px', color: 'rgba(188,106,77,0.4)', marginTop: '4px' }}>→</span>
+                  <span style={{ fontSize: '14px', color: 'rgba(199,164,106,0.4)', marginTop: '4px' }}>→</span>
                 </div>
               )}
             </div>
@@ -1731,13 +1731,13 @@ const KarmaMirrorDisplay = ({
       {/* ── Life areas affected ────────────────────────────────────────── */}
       {reading.lifeAreasAffected && reading.lifeAreasAffected.length > 0 && (
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.55 }}
-          style={{ padding: '22px 26px', border: '1px solid rgba(188,106,77,0.2)', borderRadius: '16px', marginBottom: '32px', position: 'relative', zIndex: 10 }}>
-          <p style={{ fontSize: '13px', letterSpacing: '2.5px', color: 'rgba(255,255,255,0.8)', fontFamily: 'Iceland, sans-serif', textTransform: 'uppercase', marginBottom: '14px' }}>
+          style={{ padding: '22px 26px', border: '1px solid rgba(199,164,106,0.2)', borderRadius: '16px', marginBottom: '32px', position: 'relative', zIndex: 10 }}>
+          <p style={{ fontSize: '13px', letterSpacing: '2.5px', color: 'rgba(255,255,255,0.8)', fontFamily: "'DM Sans', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif", textTransform: 'uppercase', marginBottom: '14px' }}>
             Life Areas Being Affected
           </p>
           <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
             {reading.lifeAreasAffected.map(area => (
-              <span key={area} style={{ padding: '6px 16px', background: 'rgba(188,106,77,0.15)', border: '1px solid rgba(188,106,77,0.4)', borderRadius: '24px', fontSize: '15px', color: '#fff', fontFamily: 'Iceland, sans-serif', letterSpacing: '1px' }}>
+              <span key={area} style={{ padding: '6px 16px', background: 'rgba(199,164,106,0.15)', border: '1px solid rgba(199,164,106,0.4)', borderRadius: '24px', fontSize: '15px', color: '#fff', fontFamily: "'DM Sans', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif", letterSpacing: '1px' }}>
                 {area}
               </span>
             ))}
@@ -1747,19 +1747,19 @@ const KarmaMirrorDisplay = ({
 
       {/* ── Score circles ──────────────────────────────────────────────── */}
       <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.62 }}
-        style={{ display: 'flex', gap: '36px', justifyContent: 'center', flexWrap: 'wrap', padding: '32px', background: 'linear-gradient(135deg,rgba(188,106,77,0.07) 0%,rgba(188,106,77,0.02) 100%)', border: '1px solid rgba(188,106,77,0.16)', borderRadius: '20px', marginBottom: '40px', position: 'relative', zIndex: 10 }}>
-        <ScoreCircle score={reading.energyScore ?? 65}          label="Your Energy"       color="#BC6A4D" />
+        style={{ display: 'flex', gap: '36px', justifyContent: 'center', flexWrap: 'wrap', padding: '32px', background: 'linear-gradient(135deg,rgba(199,164,106,0.07) 0%,rgba(199,164,106,0.02) 100%)', border: '1px solid rgba(199,164,106,0.16)', borderRadius: '20px', marginBottom: '40px', position: 'relative', zIndex: 10 }}>
+        <ScoreCircle score={reading.energyScore ?? 65}          label="Your Energy"       color="#C7A46A" />
         <ScoreCircle score={reading.karmaBlockScore ?? 70}      label="Karma Block Level" color="#FF7043" />
         <ScoreCircle score={reading.spiritualGrowthScore ?? 58} label="Growth Potential"  color="#4DB6AC" />
       </motion.div>
 
       {/* ── Action Plan ────────────────────────────────────────────────── */}
       <div style={{ marginBottom: '40px', position: 'relative', zIndex: 10 }}>
-        <h3 style={{ fontFamily: 'Iceland, sans-serif', fontSize: '24px', letterSpacing: '4px', color: '#BC6A4D', textTransform: 'uppercase', marginBottom: '22px', textAlign: 'center' }}>
+        <h3 style={{ fontFamily: "'Cinzel', 'Cormorant Garamond', Georgia, 'Times New Roman', serif", fontSize: '24px', letterSpacing: '4px', color: '#C7A46A', textTransform: 'uppercase', marginBottom: '22px', textAlign: 'center' }}>
           Your Healing Action Plan
         </h3>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(240px,1fr))', gap: '16px' }}>
-          <InsightCard icon="☀" label="Do This Every Day"    value={reading.dailyAction}       delay={0.7}  accent="#BC6A4D" />
+          <InsightCard icon="☀" label="Do This Every Day"    value={reading.dailyAction}       delay={0.7}  accent="#C7A46A" />
           <InsightCard icon="🌙" label="Do This Every Week"   value={reading.weeklyAction}      delay={0.76} accent="#CE93D8" />
           <InsightCard icon="🧘" label="Spiritual Practice"   value={reading.spiritualPractice} delay={0.82} accent="#4DB6AC" />
           <InsightCard icon="⭐" label="New Habit To Build"   value={reading.recommendedHabit}  delay={0.88} accent="#4FC3F7" />
@@ -1771,15 +1771,15 @@ const KarmaMirrorDisplay = ({
         {reading.reflectionQuestion && (
           <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.95 }}
             style={{ padding: '26px', background: 'linear-gradient(135deg,rgba(100,80,200,0.1) 0%,rgba(100,80,200,0.03) 100%)', border: '1px solid rgba(150,100,255,0.22)', borderRadius: '16px' }}>
-            <p style={{ margin: '0 0 12px', fontSize: '13px', letterSpacing: '2.5px', color: 'rgba(255,255,255,0.85)', fontFamily: 'Iceland, sans-serif', textTransform: 'uppercase' }}>🔍 Think About This</p>
-            <p style={{ margin: 0, color: 'rgba(255,248,220,0.92)', fontSize: '19px', lineHeight: 1.8, fontFamily: 'Iceland, sans-serif', fontStyle: 'italic', wordBreak: 'break-word' }}>"{reading.reflectionQuestion}"</p>
+            <p style={{ margin: '0 0 12px', fontSize: '13px', letterSpacing: '2.5px', color: 'rgba(255,255,255,0.85)', fontFamily: "'DM Sans', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif", textTransform: 'uppercase' }}>🔍 Think About This</p>
+            <p style={{ margin: 0, color: 'rgba(255,248,220,0.92)', fontSize: '19px', lineHeight: 1.8, fontFamily: "'DM Sans', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif", fontStyle: 'italic', wordBreak: 'break-word' }}>"{reading.reflectionQuestion}"</p>
           </motion.div>
         )}
         {reading.positiveAffirmation && (
           <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 1.04 }}
-            style={{ padding: '26px', background: 'linear-gradient(135deg,rgba(188,106,77,0.1) 0%,rgba(255,180,0,0.03) 100%)', border: '1px solid rgba(188,106,77,0.28)', borderRadius: '16px' }}>
-            <p style={{ margin: '0 0 12px', fontSize: '13px', letterSpacing: '2.5px', color: 'rgba(255,255,255,0.85)', fontFamily: 'Iceland, sans-serif', textTransform: 'uppercase' }}>✨ Say This To Yourself</p>
-            <p style={{ margin: 0, color: '#E8935F', fontSize: '19px', lineHeight: 1.8, fontFamily: 'Iceland, sans-serif', fontStyle: 'italic', textShadow: '0 0 20px rgba(188,106,77,0.3)', wordBreak: 'break-word' }}>"{reading.positiveAffirmation}"</p>
+            style={{ padding: '26px', background: 'linear-gradient(135deg,rgba(199,164,106,0.1) 0%,rgba(255,180,0,0.03) 100%)', border: '1px solid rgba(199,164,106,0.28)', borderRadius: '16px' }}>
+            <p style={{ margin: '0 0 12px', fontSize: '13px', letterSpacing: '2.5px', color: 'rgba(255,255,255,0.85)', fontFamily: "'DM Sans', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif", textTransform: 'uppercase' }}>✨ Say This To Yourself</p>
+            <p style={{ margin: 0, color: '#C7A46A', fontSize: '19px', lineHeight: 1.8, fontFamily: "'DM Sans', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif", fontStyle: 'italic', textShadow: '0 0 20px rgba(199,164,106,0.3)', wordBreak: 'break-word' }}>"{reading.positiveAffirmation}"</p>
           </motion.div>
         )}
       </div>
@@ -1787,7 +1787,7 @@ const KarmaMirrorDisplay = ({
       {/* ── Card-by-card insights ──────────────────────────────────────── */}
       {reading.cardInsights && reading.cardInsights.length > 0 && (
         <div style={{ marginBottom: '48px', position: 'relative', zIndex: 10 }}>
-          <h3 style={{ fontFamily: 'Iceland, sans-serif', fontSize: '24px', letterSpacing: '4px', color: '#BC6A4D', textTransform: 'uppercase', marginBottom: '22px', textAlign: 'center' }}>
+          <h3 style={{ fontFamily: "'Cinzel', 'Cormorant Garamond', Georgia, 'Times New Roman', serif", fontSize: '24px', letterSpacing: '4px', color: '#C7A46A', textTransform: 'uppercase', marginBottom: '22px', textAlign: 'center' }}>
             What Each Card Is Telling You
           </h3>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
@@ -1807,8 +1807,8 @@ const KarmaMirrorDisplay = ({
                     </div>
                   )}
                   <div style={{ flex: 1, minWidth: 0 }}>
-                    <p style={{ margin: '0 0 4px', fontSize: '13px', letterSpacing: '2px', color: 'rgba(255,255,255,0.75)', fontFamily: 'Iceland, sans-serif', textTransform: 'uppercase' }}>{n.position}</p>
-                    <p style={{ margin: '0 0 10px', fontSize: '16px', color: kt.color, fontFamily: 'Iceland, sans-serif', fontWeight: 600 }}>{n.card}</p>
+                    <p style={{ margin: '0 0 4px', fontSize: '13px', letterSpacing: '2px', color: 'rgba(255,255,255,0.75)', fontFamily: "'DM Sans', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif", textTransform: 'uppercase' }}>{n.position}</p>
+                    <p style={{ margin: '0 0 10px', fontSize: '16px', color: kt.color, fontFamily: "'DM Sans', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif", fontWeight: 600 }}>{n.card}</p>
                     <p style={{ margin: 0, fontSize: '17px', color: 'rgba(255,248,220,0.9)', lineHeight: 1.76, wordBreak: 'break-word' }}>{n.insight}</p>
                   </div>
                 </motion.div>
@@ -1828,9 +1828,9 @@ const ResetButton = ({ onReset }: { onReset: () => void }) => (
   <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.2 }}
     style={{ textAlign: 'center', paddingBottom: '48px', position: 'relative', zIndex: 10 }}>
     <button onClick={onReset}
-      style={{ display: 'inline-flex', alignItems: 'center', gap: '10px', padding: '16px 36px', background: 'transparent', border: '1px solid rgba(188,106,77,0.45)', color: 'rgba(255,255,255,0.85)', fontFamily: 'Iceland, sans-serif', letterSpacing: '4px', fontSize: '15px', textTransform: 'uppercase', borderRadius: '4px', cursor: 'pointer', transition: 'all 0.3s' }}
-      onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = 'rgba(188,106,77,0.75)'; (e.currentTarget as HTMLElement).style.color = '#fff'; (e.currentTarget as HTMLElement).style.boxShadow = '0 0 24px rgba(188,106,77,0.22)'; }}
-      onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = 'rgba(188,106,77,0.45)'; (e.currentTarget as HTMLElement).style.color = 'rgba(255,255,255,0.85)'; (e.currentTarget as HTMLElement).style.boxShadow = 'none'; }}>
+      style={{ display: 'inline-flex', alignItems: 'center', gap: '10px', padding: '16px 36px', background: 'transparent', border: '1px solid rgba(199,164,106,0.45)', color: 'rgba(255,255,255,0.85)', fontFamily: "'DM Sans', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif", letterSpacing: '4px', fontSize: '15px', textTransform: 'uppercase', borderRadius: '4px', cursor: 'pointer', transition: 'all 0.3s' }}
+      onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = 'rgba(199,164,106,0.75)'; (e.currentTarget as HTMLElement).style.color = '#fff'; (e.currentTarget as HTMLElement).style.boxShadow = '0 0 24px rgba(199,164,106,0.22)'; }}
+      onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = 'rgba(199,164,106,0.45)'; (e.currentTarget as HTMLElement).style.color = 'rgba(255,255,255,0.85)'; (e.currentTarget as HTMLElement).style.boxShadow = 'none'; }}>
       <RotateCcw size={15} /> Begin New Reading
     </button>
   </motion.div>
@@ -1869,20 +1869,20 @@ const LoadingOverlay = () => {
       {/* Nested spinning rings */}
       <div style={{ position: 'relative', width: 120, height: 120, marginBottom: '40px' }}>
         <motion.div animate={{ rotate: 360 }} transition={{ duration: 3, repeat: Infinity, ease: 'linear' }}
-          style={{ position: 'absolute', inset: 0, border: '2px solid transparent', borderTop: '2px solid #BC6A4D', borderRadius: '50%', boxShadow: '0 0 20px rgba(188,106,77,0.5)' }} />
+          style={{ position: 'absolute', inset: 0, border: '2px solid transparent', borderTop: '2px solid #C7A46A', borderRadius: '50%', boxShadow: '0 0 20px rgba(199,164,106,0.5)' }} />
         <motion.div animate={{ rotate: -360 }} transition={{ duration: 5, repeat: Infinity, ease: 'linear' }}
-          style={{ position: 'absolute', inset: '14px', border: '1px solid transparent', borderTop: '1px solid rgba(188,106,77,0.5)', borderRadius: '50%' }} />
+          style={{ position: 'absolute', inset: '14px', border: '1px solid transparent', borderTop: '1px solid rgba(199,164,106,0.5)', borderRadius: '50%' }} />
         <motion.div animate={{ rotate: 360 }} transition={{ duration: 8, repeat: Infinity, ease: 'linear' }}
-          style={{ position: 'absolute', inset: '28px', border: '1px solid transparent', borderBottom: '1px solid rgba(188,106,77,0.3)', borderRadius: '50%' }} />
+          style={{ position: 'absolute', inset: '28px', border: '1px solid transparent', borderBottom: '1px solid rgba(199,164,106,0.3)', borderRadius: '50%' }} />
         <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           <motion.span animate={{ opacity: [0.5, 1, 0.5] }} transition={{ duration: 2, repeat: Infinity }} style={{ fontSize: '28px' }}>🔮</motion.span>
         </div>
       </div>
 
       <p style={{
-        color: 'rgba(188,106,77,0.85)', fontFamily: 'Iceland, sans-serif', letterSpacing: '4px', fontSize: '15px',
+        color: 'rgba(199,164,106,0.85)', fontFamily: "'DM Sans', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif", letterSpacing: '4px', fontSize: '15px',
         textTransform: 'uppercase', transition: 'opacity 0.4s ease', opacity: fade ? 1 : 0,
-        textShadow: '0 0 20px rgba(188,106,77,0.4)',
+        textShadow: '0 0 20px rgba(199,164,106,0.4)',
       }}>
         {LOADING_MESSAGES[msgIdx]}
       </p>

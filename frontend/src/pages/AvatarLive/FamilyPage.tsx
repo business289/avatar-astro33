@@ -22,7 +22,7 @@ const FamilyCard = ({ event, index }: { event: (typeof familyEvents)[0]; index: 
     <div
       style={{
         background: '#FFF', borderRadius: 20,
-        border: '1.5px solid rgba(188,106,77,0.13)',
+        border: '1.5px solid rgba(138,109,53,0.13)',
         boxShadow: '0 4px 20px rgba(120,60,20,0.07)',
         overflow: 'hidden',
         transition: 'transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease',
@@ -32,13 +32,13 @@ const FamilyCard = ({ event, index }: { event: (typeof familyEvents)[0]; index: 
         const el = e.currentTarget as HTMLElement;
         el.style.transform = 'translateY(-5px)';
         el.style.boxShadow = '0 16px 48px rgba(120,60,20,0.13)';
-        el.style.borderColor = 'rgba(188,106,77,0.38)';
+        el.style.borderColor = 'rgba(138,109,53,0.38)';
       }}
       onMouseLeave={e => {
         const el = e.currentTarget as HTMLElement;
         el.style.transform = 'translateY(0)';
         el.style.boxShadow = '0 4px 20px rgba(120,60,20,0.07)';
-        el.style.borderColor = 'rgba(188,106,77,0.13)';
+        el.style.borderColor = 'rgba(138,109,53,0.13)';
       }}
     >
       {/* Thumbnail */}
@@ -85,16 +85,16 @@ const FamilyCard = ({ event, index }: { event: (typeof familyEvents)[0]; index: 
           <span style={{ fontSize: 14 }}>{eventEmoji[event.type] ?? '🎊'}</span>
           <span style={{
             fontSize: 10, fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase',
-            color: '#BC6A4D', background: 'rgba(188,106,77,0.1)', padding: '3px 10px', borderRadius: 99,
+            color: '#8A6D35', background: 'rgba(138,109,53,0.1)', padding: '3px 10px', borderRadius: 99,
           }}>{event.type}</span>
         </div>
 
-        <h3 className="font-display uppercase tracking-wide leading-tight" style={{ fontSize: 24, fontWeight: 700, color: '#2C1810', marginBottom: 5 }}>
+        <h3 className="font-heading uppercase tracking-wide leading-tight" style={{ fontSize: 24, fontWeight: 700, color: '#2C1810', marginBottom: 5 }}>
           {event.title}
         </h3>
-        <p style={{ fontSize: 14, color: '#BC6A4D', fontWeight: 600, marginBottom: 7 }}>{event.family}</p>
+        <p style={{ fontSize: 14, color: '#8A6D35', fontWeight: 600, marginBottom: 7 }}>{event.family}</p>
         <p style={{ fontSize: 15, color: '#6B4E3D', display: 'flex', alignItems: 'center', gap: 5, marginBottom: 14 }}>
-          <MapPin style={{ width: 13, height: 13, color: '#BC6A4D', flexShrink: 0 }} />
+          <MapPin style={{ width: 13, height: 13, color: '#8A6D35', flexShrink: 0 }} />
           {event.city}
         </p>
 
@@ -102,7 +102,7 @@ const FamilyCard = ({ event, index }: { event: (typeof familyEvents)[0]; index: 
           {event.description}
         </p>
 
-        <div style={{ height: 1, background: 'rgba(188,106,77,0.12)', marginBottom: 14 }} />
+        <div style={{ height: 1, background: 'rgba(138,109,53,0.12)', marginBottom: 14 }} />
 
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <span style={{ fontSize: 11, color: '#9C7B62' }}>
@@ -111,13 +111,13 @@ const FamilyCard = ({ event, index }: { event: (typeof familyEvents)[0]; index: 
           <span style={{
             display: 'inline-flex', alignItems: 'center', gap: 6,
             background: event.isLive
-              ? 'linear-gradient(135deg, #BC6A4D 0%, #BC6A4D 100%)'
-              : 'rgba(188,106,77,0.10)',
-            color: event.isLive ? '#FFF' : '#BC6A4D',
+              ? 'linear-gradient(135deg, #8A6D35 0%, #8A6D35 100%)'
+              : 'rgba(138,109,53,0.10)',
+            color: event.isLive ? '#FFF' : '#8A6D35',
             fontSize: 12, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase',
             padding: '9px 16px', borderRadius: 10,
-            fontFamily: 'Iceland, sans-serif',
-            border: event.isLive ? 'none' : '1px solid rgba(188,106,77,0.25)',
+            fontFamily: "'DM Sans', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif",
+            border: event.isLive ? 'none' : '1px solid rgba(138,109,53,0.25)',
           }}>
             <Play style={{ width: 12, height: 12 }} />
             {event.isLive ? 'Join Live' : 'Set Reminder'}
@@ -148,20 +148,20 @@ const FamilyPage = () => {
         {/* ── HERO ──────────────────────────────────────────────────────── */}
         <section className="text-center" style={{ paddingTop: 56, paddingBottom: 56, paddingLeft: 48, paddingRight: 48 }}>
           <div style={{ maxWidth: 780, margin: '0 auto' }}>
-            <Link to="/avatar-live" style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 12, color: '#BC6A4D', textDecoration: 'none', fontWeight: 600, marginBottom: 24, letterSpacing: '0.05em' }}>
+            <Link to="/avatar-live" style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 12, color: '#8A6D35', textDecoration: 'none', fontWeight: 600, marginBottom: 24, letterSpacing: '0.05em' }}>
               ← Live
             </Link>
 
             <div className="flex items-center justify-center gap-3 mb-5">
-              <div style={{ height: 1, width: 56, background: 'linear-gradient(to right, transparent, rgba(188,106,77,0.5))' }} />
-              <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.32em', color: '#BC6A4D', textTransform: 'uppercase' }}>✦ Live Celebrations ✦</p>
-              <div style={{ height: 1, width: 56, background: 'linear-gradient(to left, transparent, rgba(188,106,77,0.5))' }} />
+              <div style={{ height: 1, width: 56, background: 'linear-gradient(to right, transparent, rgba(138,109,53,0.5))' }} />
+              <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.32em', color: '#8A6D35', textTransform: 'uppercase' }}>✦ Live Celebrations ✦</p>
+              <div style={{ height: 1, width: 56, background: 'linear-gradient(to left, transparent, rgba(138,109,53,0.5))' }} />
             </div>
 
-            <h1 className="font-display font-bold tracking-widest uppercase leading-none mb-5"
-              style={{ fontSize: 'clamp(64px, 10vw, 116px)' }}>
+            <h1 className="font-heading font-bold tracking-widest uppercase leading-none mb-5"
+              style={{ fontSize: 'clamp(40px, 6.5vw, 76px)' }}>
               <span style={{ color: '#2C1810' }}>Family </span>
-              <span style={{ background: 'linear-gradient(135deg, #BC6A4D 0%, #BC6A4D 60%, #BC6A4D 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
+              <span style={{ background: 'linear-gradient(135deg, #8A6D35 0%, #8A6D35 60%, #8A6D35 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
                 Functions
               </span>
             </h1>
@@ -172,7 +172,7 @@ const FamilyPage = () => {
 
             {/* Search */}
             <div style={{ maxWidth: 520, margin: '0 auto', position: 'relative' }}>
-              <Search style={{ position: 'absolute', left: 18, top: '50%', transform: 'translateY(-50%)', width: 20, height: 20, color: '#BC6A4D', pointerEvents: 'none' }} />
+              <Search style={{ position: 'absolute', left: 18, top: '50%', transform: 'translateY(-50%)', width: 20, height: 20, color: '#8A6D35', pointerEvents: 'none' }} />
               <input
                 type="text"
                 value={query}
@@ -181,11 +181,11 @@ const FamilyPage = () => {
                 style={{
                   width: '100%', height: 54, paddingLeft: 52, paddingRight: 20,
                   fontSize: 15, color: '#2C1810', background: '#FFFFFF',
-                  border: '1.5px solid rgba(188,106,77,0.22)', borderRadius: 14,
-                  boxShadow: '0 4px 20px rgba(188,106,77,0.08)', outline: 'none',
+                  border: '1.5px solid rgba(138,109,53,0.22)', borderRadius: 14,
+                  boxShadow: '0 4px 20px rgba(138,109,53,0.08)', outline: 'none',
                 }}
-                onFocus={e => { (e.target as HTMLInputElement).style.borderColor = 'rgba(188,106,77,0.55)'; }}
-                onBlur={e => { (e.target as HTMLInputElement).style.borderColor = 'rgba(188,106,77,0.22)'; }}
+                onFocus={e => { (e.target as HTMLInputElement).style.borderColor = 'rgba(138,109,53,0.55)'; }}
+                onBlur={e => { (e.target as HTMLInputElement).style.borderColor = 'rgba(138,109,53,0.22)'; }}
               />
             </div>
           </div>
@@ -203,9 +203,9 @@ const FamilyPage = () => {
                   flexShrink: 0,
                   padding: '8px 18px', borderRadius: 99, fontSize: 12, fontWeight: 600,
                   letterSpacing: '0.04em', cursor: 'pointer',
-                  border: active === cat ? '1.5px solid #BC6A4D' : '1.5px solid rgba(188,106,77,0.25)',
-                  background: active === cat ? 'rgba(188,106,77,0.1)' : 'transparent',
-                  color: active === cat ? '#BC6A4D' : '#7A5C42',
+                  border: active === cat ? '1.5px solid #8A6D35' : '1.5px solid rgba(138,109,53,0.25)',
+                  background: active === cat ? 'rgba(138,109,53,0.1)' : 'transparent',
+                  color: active === cat ? '#8A6D35' : '#7A5C42',
                   transition: 'all 0.2s',
                 }}
               >
@@ -236,9 +236,9 @@ const FamilyPage = () => {
         <section style={{ paddingLeft: 48, paddingRight: 48, paddingTop: 32, paddingBottom: 48 }}>
           <div style={{ maxWidth: 1280, margin: '0 auto' }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 24 }}>
-              <h2 className="font-display font-bold tracking-wide uppercase" style={{ fontSize: 32, color: '#2C1810' }}>
+              <h2 className="font-heading font-bold tracking-wide uppercase" style={{ fontSize: 32, color: '#2C1810' }}>
                 All Events
-                <span style={{ fontSize: 16, color: '#9C7B62', fontWeight: 400, marginLeft: 12, fontFamily: "'Astra','Iceland',sans-serif", textTransform: 'none', letterSpacing: 0 }}>
+                <span style={{ fontSize: 16, color: '#9C7B62', fontWeight: 400, marginLeft: 12, fontFamily: "'DM Sans', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif", textTransform: 'none', letterSpacing: 0 }}>
                   {filtered.length} events
                 </span>
               </h2>
@@ -252,7 +252,7 @@ const FamilyPage = () => {
               </div>
             ) : (
               <div style={{ textAlign: 'center', paddingTop: 64, paddingBottom: 64 }}>
-                <p style={{ fontSize: 22, color: '#9C7B62', fontFamily: 'Iceland, sans-serif', letterSpacing: '0.1em' }}>No events found</p>
+                <p style={{ fontSize: 22, color: '#9C7B62', fontFamily: "'Cinzel', 'Cormorant Garamond', Georgia, 'Times New Roman', serif", letterSpacing: '0.1em' }}>No events found</p>
                 <p style={{ fontSize: 14, color: '#B09070', marginTop: 8 }}>Try a different search or filter</p>
               </div>
             )}
@@ -264,14 +264,14 @@ const FamilyPage = () => {
           <div style={{ maxWidth: 1280, margin: '0 auto' }}>
             <div style={{
               borderRadius: 24, overflow: 'hidden',
-              background: 'linear-gradient(135deg, #BC6A4D 0%, #BC6A4D 50%, #BC6A4D 100%)',
+              background: 'linear-gradient(135deg, #8A6D35 0%, #8A6D35 50%, #8A6D35 100%)',
               padding: '56px 64px',
               display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between', gap: 32,
               boxShadow: '0 20px 60px rgba(120,60,20,0.2)',
             }}>
               <div>
                 <p style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.28em', color: 'rgba(255,255,255,0.7)', textTransform: 'uppercase', marginBottom: 12 }}>Host Your Event</p>
-                <h2 className="font-display uppercase tracking-wide" style={{ fontSize: 'clamp(28px, 4vw, 42px)', color: '#FFF', fontWeight: 800, lineHeight: 1.1, marginBottom: 12 }}>
+                <h2 className="font-heading uppercase tracking-wide" style={{ fontSize: 'clamp(28px, 4vw, 42px)', color: '#FFF', fontWeight: 700, lineHeight: 1.1, marginBottom: 12 }}>
                   Stream Your Sacred<br />Moments Live
                 </h2>
                 <p style={{ fontSize: 17, color: 'rgba(255,255,255,0.78)', maxWidth: 440, lineHeight: 1.7 }}>
@@ -281,10 +281,10 @@ const FamilyPage = () => {
               <div style={{ display: 'flex', flexDirection: 'column', gap: 14, flexShrink: 0 }}>
                 <button style={{
                   display: 'inline-flex', alignItems: 'center', gap: 10,
-                  background: '#FFF', color: '#BC6A4D',
+                  background: '#FFF', color: '#8A6D35',
                   fontSize: 13, fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase',
                   padding: '16px 32px', borderRadius: 12, cursor: 'pointer', border: 'none',
-                  fontFamily: 'Iceland, sans-serif',
+                  fontFamily: "'DM Sans', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif",
                 }}>
                   <ArrowRight style={{ width: 15, height: 15 }} /> Book Your Stream
                 </button>

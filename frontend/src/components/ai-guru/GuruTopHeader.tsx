@@ -22,15 +22,15 @@ const GuruTopHeader = ({ onOpenSidebar }: GuruTopHeaderProps) => {
       </button>
 
       <div className="flex min-w-0 items-center gap-3">
-        <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-[#FF9D4D]/40 to-[#E88B3D]/15 text-xl ring-2 ring-[#FF9D4D]/30">
+        <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-[#C7A46A]/40 to-[#C7A46A]/15 text-xl ring-2 ring-[#C7A46A]/30">
           🙏
         </div>
         <div className="min-w-0">
           <div className="flex items-center gap-1.5">
-            <span className="truncate font-['Cormorant_Garamond'] text-lg font-semibold text-white">
+            <span className="truncate font-heading text-lg font-semibold text-white">
               Pandit Rameshwar Ji
             </span>
-            <BadgeCheck className="h-4 w-4 shrink-0 text-[#FF9D4D]" aria-label="Verified" />
+            <BadgeCheck className="h-4 w-4 shrink-0 text-[#C7A46A]" aria-label="Verified" />
           </div>
           <div className="text-xs text-[#A3A3B2]">40+ Years of Vedic Wisdom</div>
         </div>
@@ -47,8 +47,8 @@ const GuruTopHeader = ({ onOpenSidebar }: GuruTopHeaderProps) => {
             className={cn(
               "rounded-full border px-3.5 py-1.5 text-xs font-medium transition-all duration-300",
               activePill === i
-                ? "border-[#FF9D4D]/50 bg-[#FF9D4D]/12 text-[#FF9D4D] shadow-[0_0_16px_rgba(255,157,77,0.2)]"
-                : "border-white/[0.08] bg-[#17181F] text-[#A3A3B2] hover:border-[#FF9D4D]/30 hover:text-white",
+                ? "border-[#C7A46A]/50 bg-[#C7A46A]/12 text-[#C7A46A] shadow-[0_0_16px_rgba(199,164,106,0.2)]"
+                : "border-white/[0.08] bg-[#17181F] text-[#A3A3B2] hover:border-[#C7A46A]/30 hover:text-white",
             )}
           >
             {label}

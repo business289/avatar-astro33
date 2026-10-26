@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowRight, ChevronLeft, ChevronRight } from 'lucide-react';
 import { zodiacSigns, ZodiacSign } from '@/data/zodiacData';
+import SectionContainer from './SectionContainer';
 
 import ariesImg from '@/assets/zodiac/aries.png';
 import taurusImg from '@/assets/zodiac/taurus.png';
@@ -30,17 +31,43 @@ const AUTO_SLIDE_DELAY = 4500;
 // Consistent blue glow — matches Capricorn reference image, identical for every sign
 const GLOW = '132, 168, 255';
 
+// Card geometry per breakpoint: active card size, neighbour scale/offset and track height.
+interface Geometry { size: number; scale: number; gap: number; trackH: number }
+
+const readGeometry = (): Geometry => {
+  const w = typeof window === 'undefined' ? 1280 : window.innerWidth;
+  if (w < 480) return { size: 180, scale: 0.6, gap: 142, trackH: 190 };
+  if (w < 768) return { size: 204, scale: 0.65, gap: 172, trackH: 214 };
+  if (w < 1024) return { size: 236, scale: 0.72, gap: 222, trackH: 246 };
+  return { size: 256, scale: 0.72, gap: 244, trackH: 264 };
+};
+
+const useGeometry = (): Geometry => {
+  const [g, setG] = useState<Geometry>(readGeometry);
+  useEffect(() => {
+    const on = () => setG(readGeometry());
+    window.addEventListener('resize', on);
+    return () => window.removeEventListener('resize', on);
+  }, []);
+  return g;
+};
+
 // Card position & style for each offset from center (-2 … +2)
-function getSlotAnimate(offset: number) {
-  if (offset === 0)             return { x: 0,    scale: 1.00, opacity: 1.00 };
-  if (Math.abs(offset) === 1)   return { x: offset * 295, scale: 0.72, opacity: 0.50 };
-  return                               { x: offset < 0 ? -640 : 640, scale: 0.55, opacity: 0.00 };
+function getSlotAnimate(offset: number, g: Geometry) {
+  if (offset === 0)           return { x: 0, scale: 1.0, opacity: 1.0 };
+  if (Math.abs(offset) === 1) return { x: offset * g.gap, scale: g.scale, opacity: 0.5 };
+  return { x: (offset < 0 ? -1 : 1) * g.gap * 2.2, scale: 0.5, opacity: 0 };
 }
+
+const arrowStyle = { border: '1px solid rgba(199,164,106,0.4)', background: 'rgba(199,164,106,0.08)' };
+const arrowClass =
+  'flex h-10 w-10 shrink-0 items-center justify-center rounded-full transition-all duration-300 hover:scale-110';
 
 export const ZodiacWheelSection = () => {
   const navigate = useNavigate();
+  const geo = useGeometry();
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [direction, setDirection]       = useState(1);
+  const [, setDirection] = useState(1);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   // Track direction in a ref so AnimatePresence initial/exit closures always read the latest value
   const dirRef = useRef(1);
@@ -79,223 +106,179 @@ export const ZodiacWheelSection = () => {
   }, [startAutoSlide]);
 
   return (
-    <section
-      className="relative z-10 overflow-hidden"
-      style={{ background: 'transparent', padding: '80px 0 100px' }}
-    >
+    <section className="relative z-10 scroll-mt-16 py-8 md:py-10" style={{ background: 'transparent' }}>
       {/* Fixed ambient glow — same blue for every sign */}
       <div className="absolute inset-0 pointer-events-none">
         <div
-          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] rounded-full blur-[160px]"
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[560px] h-[560px] rounded-full blur-[140px]"
           style={{ background: `rgba(${GLOW}, 0.06)` }}
         />
       </div>
 
-      {/* ── Header ── */}
-      <div className="text-center mb-16 px-4">
-        <h2
-          className="font-display tracking-wider leading-tight mb-4"
-          style={{ fontSize: 'clamp(40px, 6vw, 72px)' }}
-        >
-          <span className="text-white block">THE TWELVE</span>
-          <span className="block" style={{ color: '#BC6A4D' }}>ZODIAC SIGNS</span>
-        </h2>
-        <p className="text-white/55 text-lg tracking-wide">
-          Explore the cosmic wisdom of each celestial sign
-        </p>
-      </div>
+      <SectionContainer className="relative z-10">
+        {/* ── Header ── */}
+        <div className="mb-4 text-center md:mb-5">
+          <h2
+            className="mb-2 font-heading font-semibold leading-[1.15] tracking-[0.04em]"
+            style={{ fontSize: 'clamp(28px, 4.6vw, 50px)' }}
+          >
+            <span className="block text-white md:inline">THE TWELVE </span>
+            <span className="block md:inline" style={{ color: '#C7A46A' }}>ZODIAC SIGNS</span>
+          </h2>
+          <p className="font-ui text-base tracking-wide text-white/55 md:text-[18.5px]">
+            Explore the cosmic wisdom of each celestial sign
+          </p>
+        </div>
 
-      {/* ── Carousel ── */}
-      <div className="relative">
+        {/* ── Carousel: arrows beside the track on tablet/desktop, under it on phones ── */}
+        <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 md:flex-nowrap md:gap-x-6">
+          <button
+            onClick={() => paginate(-1)}
+            aria-label="Previous sign"
+            className={`${arrowClass} order-2 md:order-none`}
+            style={arrowStyle}
+          >
+            <ChevronLeft className="h-5 w-5" style={{ color: '#C7A46A' }} />
+          </button>
 
-        {/* Navigation arrows — outside overflow:hidden so they're never clipped */}
-        <button
-          onClick={() => paginate(-1)}
-          aria-label="Previous sign"
-          className="absolute left-4 md:left-10 z-30 w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300 hover:scale-110"
-          style={{
-            top: 130,
-            border: '1px solid rgba(188,106,77,0.4)',
-            background: 'rgba(188,106,77,0.08)',
-          }}
-        >
-          <ChevronLeft className="w-6 h-6" style={{ color: '#BC6A4D' }} />
-        </button>
-        <button
-          onClick={() => paginate(1)}
-          aria-label="Next sign"
-          className="absolute right-4 md:right-10 z-30 w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300 hover:scale-110"
-          style={{
-            top: 130,
-            border: '1px solid rgba(188,106,77,0.4)',
-            background: 'rgba(188,106,77,0.08)',
-          }}
-        >
-          <ChevronRight className="w-6 h-6" style={{ color: '#BC6A4D' }} />
-        </button>
+          {/* Sliding card track: clips only the off-screen neighbours on the x axis */}
+          <div
+            className="relative order-first w-full max-w-[720px] md:order-none md:flex-1"
+            style={{ overflowX: 'clip', height: geo.trackH }}
+          >
+            <AnimatePresence initial={false}>
+              {([-2, -1, 0, 1, 2] as const).map(offset => {
+                const idx = wrap(currentIndex + offset, zodiacSigns.length);
+                const sign = zodiacSigns[idx];
+                const isCenter = offset === 0;
 
-        {/* Physical sliding card track — overflow:hidden clips off-screen cards */}
-        <div style={{ overflow: 'hidden', position: 'relative', height: 310 }}>
-          <AnimatePresence initial={false}>
-            {([-2, -1, 0, 1, 2] as const).map(offset => {
-              const idx    = wrap(currentIndex + offset, zodiacSigns.length);
-              const sign   = zodiacSigns[idx];
-              const isCenter = offset === 0;
-              const slotAnim = getSlotAnimate(offset);
-
-              return (
-                <motion.div
-                  key={sign.name}
-                  // Framer Motion smoothly transitions each card to its new slot position
-                  animate={slotAnim}
-                  // New cards entering the DOM start from off-screen in the direction of travel
-                  initial={{
-                    x: dirRef.current > 0 ? 720 : -720,
-                    scale: 0.50,
-                    opacity: 0,
-                  }}
-                  // Removed cards exit in the direction of travel
-                  exit={{
-                    x: dirRef.current > 0 ? -720 : 720,
-                    scale: 0.50,
-                    opacity: 0,
-                  }}
-                  transition={{ duration: 0.60, ease: [0.25, 0.10, 0.25, 1.00] }}
-                  onClick={!isCenter ? () => paginate(offset > 0 ? 1 : -1) : undefined}
-                  style={{
-                    position: 'absolute',
-                    top: '50%',
-                    left: '50%',
-                    width: 280,
-                    height: 280,
-                    marginLeft: -140,
-                    marginTop: -140,
-                    zIndex: isCenter ? 10 : Math.abs(offset) === 1 ? 5 : 1,
-                    cursor: !isCenter ? 'pointer' : 'default',
-                    // Off-screen cards: disable pointer events to avoid invisible click targets
-                    pointerEvents: Math.abs(offset) >= 2 ? 'none' : 'auto',
-                    borderRadius: 20,
-                    border: isCenter
-                      ? `1px solid rgba(${GLOW}, 0.35)`
-                      : `1px solid rgba(${GLOW}, 0.10)`,
-                    boxShadow: isCenter
-                      ? [
-                          `0 0 12px rgba(${GLOW}, 0.18)`,
-                          `0 0 30px rgba(${GLOW}, 0.10)`,
-                          `inset 0 0 10px rgba(${GLOW}, 0.05)`,
-                        ].join(', ')
-                      : 'none',
-                    background: isCenter
-                      ? `rgba(${GLOW}, 0.04)`
-                      : `rgba(${GLOW}, 0.01)`,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                  }}
-                >
-                  <img
-                    src={zodiacImages[sign.name]}
-                    alt={sign.name}
-                    draggable={false}
+                return (
+                  <motion.div
+                    key={sign.name}
+                    animate={getSlotAnimate(offset, geo)}
+                    // New cards entering the DOM start from off-screen in the direction of travel
+                    initial={{ x: dirRef.current > 0 ? geo.gap * 2.4 : -geo.gap * 2.4, scale: 0.5, opacity: 0 }}
+                    // Removed cards exit in the direction of travel
+                    exit={{ x: dirRef.current > 0 ? -geo.gap * 2.4 : geo.gap * 2.4, scale: 0.5, opacity: 0 }}
+                    transition={{ duration: 0.6, ease: [0.25, 0.1, 0.25, 1.0] }}
+                    onClick={!isCenter ? () => paginate(offset > 0 ? 1 : -1) : undefined}
                     style={{
-                      width: '92%',
-                      height: '92%',
-                      objectFit: 'contain',
-                      mixBlendMode: 'screen',
-                      userSelect: 'none',
-                      filter: isCenter
-                        ? `drop-shadow(0 0 18px rgba(${GLOW}, 0.35))`
-                        : undefined,
+                      position: 'absolute',
+                      top: '50%',
+                      left: '50%',
+                      width: geo.size,
+                      height: geo.size,
+                      marginLeft: -geo.size / 2,
+                      marginTop: -geo.size / 2,
+                      zIndex: isCenter ? 10 : Math.abs(offset) === 1 ? 5 : 1,
+                      cursor: !isCenter ? 'pointer' : 'default',
+                      pointerEvents: Math.abs(offset) >= 2 ? 'none' : 'auto',
+                      borderRadius: 16,
+                      border: isCenter ? `1px solid rgba(${GLOW}, 0.35)` : `1px solid rgba(${GLOW}, 0.10)`,
+                      boxShadow: isCenter
+                        ? `0 0 10px rgba(${GLOW}, 0.16), inset 0 0 8px rgba(${GLOW}, 0.05)`
+                        : 'none',
+                      background: isCenter ? `rgba(${GLOW}, 0.04)` : `rgba(${GLOW}, 0.01)`,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
                     }}
-                  />
-                </motion.div>
-              );
-            })}
-          </AnimatePresence>
+                  >
+                    <img
+                      src={zodiacImages[sign.name]}
+                      alt={sign.name}
+                      draggable={false}
+                      style={{
+                        width: '92%',
+                        height: '92%',
+                        objectFit: 'contain',
+                        mixBlendMode: 'screen',
+                        userSelect: 'none',
+                        filter: isCenter ? `drop-shadow(0 0 10px rgba(${GLOW}, 0.3))` : undefined,
+                      }}
+                    />
+                  </motion.div>
+                );
+              })}
+            </AnimatePresence>
+          </div>
+
+          <button
+            onClick={() => paginate(1)}
+            aria-label="Next sign"
+            className={`${arrowClass} order-3 md:order-none`}
+            style={arrowStyle}
+          >
+            <ChevronRight className="h-5 w-5" style={{ color: '#C7A46A' }} />
+          </button>
         </div>
 
         {/* Text content — fades independently so it doesn't interfere with card physics */}
-        <div className="relative text-center" style={{ zIndex: 20, marginTop: 28 }}>
+        <div className="relative mt-3 text-center" style={{ zIndex: 20 }}>
           <AnimatePresence mode="wait">
             <motion.div
               key={current.name + '-text'}
-              initial={{ opacity: 0, y: 10 }}
+              initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
+              exit={{ opacity: 0, y: -8 }}
               transition={{ duration: 0.38, ease: 'easeInOut' }}
             >
-              {/* Sign name */}
               <h3
-                className="font-display text-white tracking-[0.2em] mb-1"
-                style={{ fontSize: 36 }}
+                className="mb-1 font-heading font-semibold leading-tight tracking-[0.12em] text-white"
+                style={{ fontSize: 'clamp(28px, 3.2vw, 38px)' }}
               >
                 {current.name.toUpperCase()}
               </h3>
 
-              {/* Dates */}
-              <p
-                className="tracking-widest uppercase mb-6 text-sm"
-                style={{ color: 'rgba(255,255,255,0.5)' }}
-              >
+              <p className="mb-3 font-ui text-base md:text-[16.5px] uppercase tracking-widest" style={{ color: 'rgba(255,255,255,0.5)' }}>
                 {current.dates}
               </p>
 
-              {/* Trait pills */}
-              <div className="flex flex-wrap justify-center gap-2 mb-8">
+              <div className="flex flex-wrap items-center justify-center gap-2">
                 {current.traits.slice(0, 4).map((trait, i) => (
                   <span
                     key={i}
-                    className="px-4 py-1.5 text-sm rounded-full"
+                    className="inline-flex h-11 items-center rounded-full px-4 font-ui text-sm"
                     style={{
-                      border: '1px solid rgba(188,106,77,0.35)',
-                      color: 'rgba(188,106,77,0.9)',
-                      background: 'rgba(188,106,77,0.08)',
-                      fontFamily: "'Iceland', 'Cinzel', sans-serif",
+                      border: '1px solid rgba(199,164,106,0.35)',
+                      color: 'rgba(199,164,106,0.9)',
+                      background: 'rgba(199,164,106,0.08)',
                       letterSpacing: '0.08em',
                     }}
                   >
                     {trait}
                   </span>
                 ))}
+                <button
+                  onClick={() => navigate(`/zodiac/${current.name.toLowerCase()}`)}
+                  className="inline-flex h-11 items-center gap-2 px-3 font-ui text-base text-white transition-opacity hover:opacity-70"
+                  style={{ letterSpacing: '0.1em' }}
+                >
+                  Read Full Profile
+                  <ArrowRight className="h-4 w-4" />
+                </button>
               </div>
-
-              {/* Read full profile */}
-              <button
-                onClick={() => navigate(`/zodiac/${current.name.toLowerCase()}`)}
-                className="inline-flex items-center gap-2 transition-opacity hover:opacity-70"
-                style={{
-                  color: 'white',
-                  fontFamily: "'Iceland', 'Cinzel', sans-serif",
-                  fontSize: 16,
-                  letterSpacing: '0.1em',
-                }}
-              >
-                Read Full Profile
-                <ArrowRight className="w-4 h-4" />
-              </button>
             </motion.div>
           </AnimatePresence>
         </div>
-      </div>
 
-      {/* ── Dot indicators ── */}
-      <div className="flex justify-center gap-2 mt-10">
-        {zodiacSigns.map((_, i) => (
-          <button
-            key={i}
-            onClick={() => goToIndex(i, currentIndex)}
-            aria-label={zodiacSigns[i].name}
-            className="rounded-full transition-all duration-300"
-            style={{
-              width: i === currentIndex ? 24 : 6,
-              height: 6,
-              background: i === currentIndex
-                ? '#BC6A4D'
-                : 'rgba(188,106,77,0.25)',
-            }}
-          />
-        ))}
-      </div>
+        {/* ── Dot indicators ── */}
+        <div className="mt-3 flex justify-center gap-2">
+          {zodiacSigns.map((_, i) => (
+            <button
+              key={i}
+              onClick={() => goToIndex(i, currentIndex)}
+              aria-label={zodiacSigns[i].name}
+              className="rounded-full transition-all duration-300"
+              style={{
+                width: i === currentIndex ? 24 : 6,
+                height: 6,
+                background: i === currentIndex ? '#C7A46A' : 'rgba(199,164,106,0.25)',
+              }}
+            />
+          ))}
+        </div>
+      </SectionContainer>
     </section>
   );
 };

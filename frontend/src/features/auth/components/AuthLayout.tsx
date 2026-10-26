@@ -21,11 +21,11 @@ export function AuthLayout({ children, title, subtitle }: AuthLayoutProps) {
             <svg
               viewBox="0 0 24 24"
               fill="currentColor"
-              className="h-5 w-5 text-[#BC6A4D] transition-transform duration-500 group-hover:rotate-90"
+              className="h-5 w-5 text-[#C7A46A] transition-transform duration-500 group-hover:rotate-90"
             >
               <path d="M12 2L14.8 9.2L22 12L14.8 14.8L12 22L9.2 14.8L2 12L9.2 9.2L12 2Z" />
             </svg>
-            <span className="font-display text-lg font-bold tracking-[0.25em] text-[#BC6A4D]">
+            <span className="font-ui text-lg font-bold tracking-[0.25em] text-[#C7A46A]">
               SPIRITUAL
             </span>
           </Link>
@@ -36,10 +36,10 @@ export function AuthLayout({ children, title, subtitle }: AuthLayoutProps) {
             initial={{ opacity: 0, y: 18 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
-            className="glass-card rounded-3xl border border-border/30 p-6 shadow-[0_0_60px_rgba(188,106,77,0.08)] md:p-8"
+            className="glass-card rounded-3xl border border-border/30 p-6 shadow-[0_0_60px_rgba(199,164,106,0.08)] md:p-8"
           >
             <div className="mb-8 text-center">
-              <h1 className="font-display text-2xl tracking-[0.12em] text-primary text-glow md:text-3xl">
+              <h1 className="font-heading text-2xl tracking-[0.12em] text-primary text-glow md:text-3xl">
                 {title}
               </h1>
               {subtitle ? (

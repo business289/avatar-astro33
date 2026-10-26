@@ -47,7 +47,7 @@ export default function ForgotPasswordPage() {
             <MailCheck className="h-6 w-6 text-primary" />
           </div>
           <div>
-            <h2 className="font-display text-lg tracking-wider text-foreground">
+            <h2 className="font-heading text-lg tracking-wider text-foreground">
               Check your inbox
             </h2>
             <p className="mt-2 text-sm leading-relaxed text-muted-foreground">

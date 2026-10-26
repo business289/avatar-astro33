@@ -1,240 +1,175 @@
 import { Router, Request, Response } from "express";
+import { ChatMessage, InnerVoiceAIError, groqCompletion } from "../services/groqService.js";
+import { rateLimit } from "../utils/rateLimit.js";
 
-const router = Router();
+/**
+ * Inner Voice API (mounted at /api/inner-voice).
+ *
+ *   POST /complete  – every Inner Voice AI request (Groq, server-side key only)
+ *   POST /tts       – Sarvam text-to-speech proxy
+ *
+ * The browser never talks to Groq and never holds its key. Prompts are still built
+ * by the pages, so this endpoint is deliberately narrow: only whitelisted features,
+ * server-controlled temperature / output format / token caps, bounded message
+ * counts and sizes, per-IP rate limits and a global in-flight cap.
+ *
+ * Responses: success `{ status: true, data }`; failure `{ status: false, data: { code }, message }`.
+ */
 
-const OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions";
-const MODEL = "google/gemma-4-31b-it:free";
+type Format = "json" | "text";
 
-async function callAI(apiKey: string, prompt: string, maxTokens = 1000): Promise<string> {
-  const res = await fetch(OPENROUTER_URL, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "Authorization": `Bearer ${apiKey}`,
-      "HTTP-Referer": "https://spiritual-ai.app",
-      "X-Title": "Spiritual AI Inner Voice",
-    },
-    body: JSON.stringify({
-      model: MODEL,
-      max_tokens: maxTokens,
-      messages: [{ role: "user", content: prompt }],
-    }),
-  });
-  const data = await res.json() as any;
-  if (data.error) throw new Error(data.error.message);
-  return data.choices?.[0]?.message?.content ?? "";
+interface FeatureConfig {
+  format: Format;
+  temperature: number;
+  /** Largest visible output the client may request for this feature. */
+  maxTokens: number;
 }
 
-function parseJSON(raw: string): any {
-  const clean = raw.replace(/```json|```/g, "").trim();
-  const match = clean.match(/\{[\s\S]*\}/);
-  if (!match) throw new Error("Could not parse JSON from AI response");
-  return JSON.parse(match[0]);
+export const INNER_VOICE_FEATURES: Record<string, FeatureConfig> = {
+  "karma-diagnosis": { format: "json", temperature: 0.7, maxTokens: 1500 },
+  "guru-chat": { format: "json", temperature: 0.7, maxTokens: 1000 },
+  "chat-report": { format: "json", temperature: 0.6, maxTokens: 4000 },
+  "dashboard-score": { format: "json", temperature: 0.7, maxTokens: 1000 },
+  "journal-dashboard": { format: "json", temperature: 0.7, maxTokens: 1500 },
+  "journal-reflection": { format: "json", temperature: 0.7, maxTokens: 800 },
+  "journal-eod": { format: "json", temperature: 0.7, maxTokens: 800 },
+  wisdom: { format: "json", temperature: 0.7, maxTokens: 1500 },
+  "voice-reply": { format: "text", temperature: 0.75, maxTokens: 380 },
+  "voice-translate": { format: "text", temperature: 0.3, maxTokens: 400 },
+};
+
+const MAX_MESSAGES = 30;
+const MAX_MESSAGE_CHARS = 12_000;
+const MAX_TOTAL_CHARS = 48_000;
+const MAX_IN_FLIGHT = 10;
+const ROLES = new Set(["system", "user", "assistant"]);
+
+const fail = (res: Response, status: number, code: string, message: string) =>
+  res.status(status).json({ status: false, data: { code }, message });
+
+interface ValidRequest {
+  feature: string;
+  config: FeatureConfig;
+  messages: ChatMessage[];
+  maxTokens: number;
 }
 
-// ── POST /api/inner-voice/diagnose ────────────────────────────────────────────
-router.post("/diagnose", async (req: Request, res: Response) => {
-  try {
-    const { text } = req.body;
-    if (!text?.trim()) return res.status(400).json({ error: "text is required" });
+export function validateCompleteBody(body: unknown): { ok: true; value: ValidRequest } | { ok: false; message: string } {
+  const b = (body ?? {}) as Record<string, unknown>;
+  const feature = typeof b.feature === "string" ? b.feature : "";
+  const config = Object.prototype.hasOwnProperty.call(INNER_VOICE_FEATURES, feature) ? INNER_VOICE_FEATURES[feature] : undefined;
+  if (!config) return { ok: false, message: "Unknown feature" };
 
-    const apiKey = process.env.OPENROUTER_API_KEY;
-    if (!apiKey) return res.status(500).json({ error: "OpenRouter API key not configured" });
+  if (!Array.isArray(b.messages) || b.messages.length === 0) return { ok: false, message: "messages must be a non-empty array" };
+  if (b.messages.length > MAX_MESSAGES) return { ok: false, message: `messages may contain at most ${MAX_MESSAGES} items` };
 
-    const prompt = `You are a compassionate Vedic karma counselor and spiritual guide with deep knowledge of dharma, karma, and the Bhagavad Gita.
-
-A person has shared the following with you:
-"${text}"
-
-Analyze this through the lens of karma and dharma. Respond ONLY with valid JSON (no markdown, no code fences) in EXACTLY this structure:
-{
-  "lifeDomain": "The primary life area this concerns — one of: Career & Purpose, Relationships & Love, Family & Ancestors, Health & Body, Wealth & Abundance, Spiritual Growth, Mind & Emotions, Social & Community",
-  "emotionalState": "The core emotional state detected — one of: Anxious, Grieving, Angry, Confused, Hopeful, Stagnant, Overwhelmed, Seeking, Grateful, Fearful",
-  "karmicPattern": "A 2-3 sentence description of the karmic pattern or soul lesson at play. Be specific, insightful, and compassionate. Reference specific karma concepts.",
-  "spiritualInsight": "A 2-3 sentence deeper spiritual insight connecting this to dharma, past karma, or soul growth. Draw from Vedic wisdom — mention specific concepts like prarabdha karma, sanchita, nishkama karma, etc.",
-  "suggestedAction": "A single concrete, practical spiritual action the person can take in the next 24 hours to shift this karma. Be specific and actionable.",
-  "karmaType": "One of: Prarabdha (past-life karma playing out), Kriyamana (karma being created now), Agami (future karma being sown), Sanchita (accumulated karma surfacing)",
-  "severity": "One of: Gentle Lesson, Significant Challenge, Deep Karmic Debt, Karmic Breakthrough",
-  "affirmation": "A short, powerful spiritual affirmation (1-2 sentences) personalized to this situation"
-}`;
-
-    const raw = await callAI(apiKey, prompt, 900);
-    const result = parseJSON(raw);
-    return res.json(result);
-  } catch (err: any) {
-    console.error("Karma diagnosis error:", err.message);
-    return res.status(500).json({ error: "Failed to generate karma diagnosis" });
+  const messages: ChatMessage[] = [];
+  let total = 0;
+  for (const m of b.messages as unknown[]) {
+    const item = (m ?? {}) as Record<string, unknown>;
+    if (typeof item.role !== "string" || !ROLES.has(item.role)) return { ok: false, message: "Invalid message role" };
+    if (typeof item.content !== "string" || !item.content.trim()) return { ok: false, message: "Each message needs text content" };
+    if (item.content.length > MAX_MESSAGE_CHARS) return { ok: false, message: "A message is too long" };
+    total += item.content.length;
+    messages.push({ role: item.role as ChatMessage["role"], content: item.content });
   }
-});
+  if (total > MAX_TOTAL_CHARS) return { ok: false, message: "The request is too long" };
+  if (!messages.some((m) => m.role === "user")) return { ok: false, message: "At least one user message is required" };
 
-// ── POST /api/inner-voice/guru-chat ───────────────────────────────────────────
-router.post("/guru-chat", async (req: Request, res: Response) => {
-  try {
-    const { message, history = [] } = req.body;
-    if (!message?.trim()) return res.status(400).json({ error: "message is required" });
-
-    const apiKey = process.env.OPENROUTER_API_KEY;
-    if (!apiKey) return res.status(500).json({ error: "OpenRouter API key not configured" });
-
-    const historyText = (history as { role: string; content: string }[])
-      .slice(-6)
-      .map((m) => `${m.role === "user" ? "Seeker" : "Guru"}: ${m.content}`)
-      .join("\n");
-
-    const prompt = `You are Pandit Rameshwar Ji, a revered Jyotish Acharya and Vedic Guru with 40 years of experience in temples, Vedic astrology, and spiritual healing. You speak with the authority of a real Indian astrologer — warm, compassionate, and deeply rooted in Vedic tradition.
-
-Your identity:
-- You are a real Pandit Ji, not a chatbot, therapist, or life coach
-- You speak with the calm wisdom of a temple priest and Jyotish expert
-- You ground all guidance in Vedic astrology, dharma, karma, and Sanskrit scriptures
-- You use Sanskrit terms naturally (karma, dharma, Shani, Rahu, maya, dasha, prarabdha) and briefly explain them
-- You give practical Vedic remedies: mantras, poojas, daan (donations), vrats (fasts), and planetary remedies
-
-NEVER SAY:
-- Update LinkedIn, build a portfolio, learn new skills, network, or any career coaching advice
-- "Stay positive", "believe in yourself", or generic motivational phrases
-- Anything that sounds like a therapist, life coach, or corporate mentor
-
-ALWAYS INCLUDE:
-- A planetary insight (Shani, Rahu, Mangal, Guru, Chandra, Surya) relevant to the situation
-- A Vedic remedy: specific mantra with count (e.g., 108 times), OR a daan (donation) suggestion, OR a puja, OR a vrat
-- Guidance rooted in: Bhagavad Gita, Vedas, Brihat Parashara Hora Shastra, Lal Kitab, temple traditions
-
-${historyText ? `Previous conversation:\n${historyText}\n\n` : ""}Seeker asks: "${message}"
-
-Respond ONLY with valid JSON (no markdown, no code fences) in EXACTLY this structure:
-{
-  "guidance": "2-3 sentences of warm, spiritually grounded guidance as a real Pandit Ji. Reference the relevant planetary influence or Vedic concept that applies to this situation.",
-  "reflection": "1-2 sentences helping the seeker understand the karmic or spiritual root of this situation — connect to a specific karma concept (prarabdha, Shani dasha, etc.).",
-  "action": "One specific Vedic remedy for the next 24 hours — a mantra with repetition count, a specific daan (donation), a temple visit, or a ritual. Be very specific (e.g., 'Chant Om Sham Shanicharaya Namah 108 times at sunset facing west').",
-  "spiritualPractice": "A Vedic practice for 7-21 days addressing the root issue — include the name of the practice, specific instructions, and the deity or planet it propitates.",
-  "question": "One caring follow-up question a real Pandit Ji would ask to understand the seeker's situation better."
-}`;
-
-    const raw = await callAI(apiKey, prompt, 800);
-    const result = parseJSON(raw);
-    return res.json(result);
-  } catch (err: any) {
-    console.error("Guru chat error:", err.message);
-    return res.status(500).json({ error: "Failed to get guru response" });
+  let maxTokens = config.maxTokens;
+  if (b.maxTokens !== undefined) {
+    if (typeof b.maxTokens !== "number" || !Number.isInteger(b.maxTokens) || b.maxTokens < 1) {
+      return { ok: false, message: "maxTokens must be a positive integer" };
+    }
+    maxTokens = Math.min(b.maxTokens, config.maxTokens);
   }
-});
+  return { ok: true, value: { feature, config, messages, maxTokens } };
+}
 
-// ── POST /api/inner-voice/analyze-journal ─────────────────────────────────────
-router.post("/analyze-journal", async (req: Request, res: Response) => {
-  try {
-    const { entry, date } = req.body;
-    if (!entry?.trim()) return res.status(400).json({ error: "entry is required" });
+export interface InnerVoiceRouterOptions {
+  perMinute?: number;
+  perDay?: number;
+}
 
-    const apiKey = process.env.OPENROUTER_API_KEY;
-    if (!apiKey) return res.status(500).json({ error: "OpenRouter API key not configured" });
+export function createInnerVoiceRouter(options: InnerVoiceRouterOptions = {}): Router {
+  const router = Router();
+  const perMinute = rateLimit(options.perMinute ?? 20, 60_000);
+  const perDay = rateLimit(options.perDay ?? 300, 24 * 60 * 60_000);
+  let inFlight = 0;
 
-    const prompt = `You are a Vedic karma analyst and spiritual counselor. A seeker has written the following journal entry${date ? ` on ${date}` : ""}:
+  router.post("/complete", perMinute, perDay, async (req: Request, res: Response) => {
+    const parsed = validateCompleteBody(req.body);
+    if (!parsed.ok) return fail(res, 400, "INVALID_REQUEST", parsed.message);
+    const { feature, config, messages, maxTokens } = parsed.value;
 
-"${entry}"
-
-Analyze this journal entry for karmic patterns, emotional states, and spiritual growth opportunities. Respond ONLY with valid JSON (no markdown, no code fences) in EXACTLY this structure:
-{
-  "karmaImpact": "One of: Positive Karma Generated, Neutral, Karma Being Processed, Negative Pattern Detected, Karmic Breakthrough",
-  "karmaScore": A number from 1-10 representing the karmic quality of this entry (10 = highest positive karma),
-  "emotionalPattern": "2 sentences identifying the core emotional pattern in this entry and what karmic seed it represents",
-  "dominantEnergy": "One of: Rajasic (active/passionate), Tamasic (dull/heavy), Sattvic (clear/pure) — with a 1-sentence explanation",
-  "insight": "2-3 sentences of deep spiritual insight about what this entry reveals about the seeker's soul journey and current karma",
-  "action": "One specific action to either reinforce positive karma or transform a negative pattern identified in this entry",
-  "affirmation": "A personalized short affirmation (1 sentence) based on the content of this entry"
-}`;
-
-    const raw = await callAI(apiKey, prompt, 700);
-    const result = parseJSON(raw);
-    return res.json(result);
-  } catch (err: any) {
-    console.error("Journal analysis error:", err.message);
-    return res.status(500).json({ error: "Failed to analyze journal entry" });
-  }
-});
-
-// ── POST /api/inner-voice/wisdom ──────────────────────────────────────────────
-router.post("/wisdom", async (req: Request, res: Response) => {
-  try {
-    const { situation, mood, domain } = req.body;
-    if (!situation?.trim()) return res.status(400).json({ error: "situation is required" });
-
-    const apiKey = process.env.OPENROUTER_API_KEY;
-    if (!apiKey) return res.status(500).json({ error: "OpenRouter API key not configured" });
-
-    const prompt = `You are a Sanskrit scholar and Vedic wisdom keeper with mastery of the Bhagavad Gita, Upanishads, Vedas, Yoga Sutras of Patanjali, and Dharmashastra.
-
-A seeker is facing this situation: "${situation}"
-${mood ? `Their current mood: ${mood}` : ""}
-${domain ? `Life domain: ${domain}` : ""}
-
-Select the most relevant Sanskrit shloka (verse) from authentic scriptures that speaks directly to this situation. Choose from: Bhagavad Gita, Upanishads (Kena, Katha, Isha, Mundaka, Mandukya), Yoga Sutras, Rig Veda, Arthashastra, Chanakya Niti, or Thirukkural.
-
-Respond ONLY with valid JSON (no markdown, no code fences) in EXACTLY this structure:
-{
-  "shloka": "The exact Sanskrit shloka/verse in Devanagari script",
-  "transliteration": "The romanized transliteration with diacritical marks",
-  "source": "Source text and chapter/verse number (e.g., Bhagavad Gita 2.47, Katha Upanishad 1.2.23)",
-  "wordByWord": "Brief word-by-word breakdown of key Sanskrit terms (3-5 key words)",
-  "meaning": "The complete, beautiful English meaning of the shloka — 2-3 sentences",
-  "application": "2-3 sentences explaining exactly how this shloka applies to the seeker's specific situation",
-  "action": "One concrete action the seeker can take today inspired by this verse's teaching",
-  "mantra": "A short mantra or phrase from this verse the seeker can repeat for contemplation"
-}`;
-
-    const raw = await callAI(apiKey, prompt, 900);
-    const result = parseJSON(raw);
-    return res.json(result);
-  } catch (err: any) {
-    console.error("Wisdom/shloka error:", err.message);
-    return res.status(500).json({ error: "Failed to fetch shloka wisdom" });
-  }
-});
-
-// ── POST /api/inner-voice/tts ─────────────────────────────────────────────────
-router.post("/tts", async (req: Request, res: Response) => {
-  try {
-    const { text, language } = req.body;
-    if (!text?.trim()) return res.status(400).json({ error: "text is required" });
-
-    const apiKey = process.env.SARVAM_API_KEY;
-    if (!apiKey) return res.status(500).json({ error: "SARVAM_API_KEY not configured" });
-
-    const langCode = (language as string)?.startsWith("en") ? "en-IN" : "hi-IN";
-    console.log("[Sarvam TTS] Request — model: bulbul:v3, speaker: manan, lang:", langCode, "chars:", text.trim().length);
-
-    const sarvamRes = await fetch("https://api.sarvam.ai/text-to-speech", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "api-subscription-key": apiKey,
-      },
-      body: JSON.stringify({
-        inputs: [text.slice(0, 500)],
-        target_language_code: langCode,
-        speaker: "manan",
-        pace: 0.85,
-        speech_sample_rate: 22050,
-        model: "bulbul:v3",
-        temperature: 0.4,
-      }),
-    });
-
-    if (!sarvamRes.ok) {
-      const errText = await sarvamRes.text();
-      console.error("Sarvam TTS error:", sarvamRes.status, errText);
-      return res.status(502).json({ error: "Sarvam TTS request failed" });
+    if (inFlight >= MAX_IN_FLIGHT) {
+      res.setHeader("Retry-After", "5");
+      return fail(res, 503, "AI_BUSY", "The AI service is busy. Please try again in a moment.");
     }
 
-    const data = await sarvamRes.json() as any;
-    const audio = data.audios?.[0];
-    if (!audio) return res.status(502).json({ error: "No audio in Sarvam response" });
+    inFlight += 1;
+    try {
+      const result = await groqCompletion({ messages, maxTokens, temperature: config.temperature, format: config.format });
+      return res.json({ status: true, data: result.format === "json" ? result.data : { text: result.text } });
+    } catch (err) {
+      if (err instanceof InnerVoiceAIError) {
+        if (err.retryAfterSeconds) res.setHeader("Retry-After", String(err.retryAfterSeconds));
+        return fail(res, err.status, err.code, err.message);
+      }
+      console.error(`[InnerVoice AI] unexpected error in "${feature}":`, (err as Error)?.message);
+      return fail(res, 500, "AI_INTERNAL_ERROR", "Something went wrong. Please try again.");
+    } finally {
+      inFlight -= 1;
+    }
+  });
 
-    return res.json({ audio });
-  } catch (err: any) {
-    console.error("TTS proxy error:", err.message);
-    return res.status(500).json({ error: "TTS proxy failed" });
-  }
-});
+  // ── POST /api/inner-voice/tts (Sarvam, unchanged) ───────────────────────────
+  router.post("/tts", async (req: Request, res: Response) => {
+    try {
+      const { text, language } = req.body;
+      if (!text?.trim()) return res.status(400).json({ error: "text is required" });
 
-export default router;
+      const apiKey = process.env.SARVAM_API_KEY;
+      if (!apiKey) return res.status(500).json({ error: "SARVAM_API_KEY not configured" });
+
+      const langCode = (language as string)?.startsWith("en") ? "en-IN" : "hi-IN";
+      console.log("[Sarvam TTS] Request — model: bulbul:v3, speaker: manan, lang:", langCode, "chars:", text.trim().length);
+
+      const sarvamRes = await fetch("https://api.sarvam.ai/text-to-speech", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "api-subscription-key": apiKey,
+        },
+        body: JSON.stringify({
+          inputs: [text.slice(0, 500)],
+          target_language_code: langCode,
+          speaker: "manan",
+          pace: 0.85,
+          speech_sample_rate: 22050,
+          model: "bulbul:v3",
+          temperature: 0.4,
+        }),
+      });
+
+      if (!sarvamRes.ok) {
+        const errText = await sarvamRes.text();
+        console.error("Sarvam TTS error:", sarvamRes.status, errText);
+        return res.status(502).json({ error: "Sarvam TTS request failed" });
+      }
+
+      const data = (await sarvamRes.json()) as any;
+      const audio = data.audios?.[0];
+      if (!audio) return res.status(502).json({ error: "No audio in Sarvam response" });
+
+      return res.json({ audio });
+    } catch (err: any) {
+      console.error("TTS proxy error:", err.message);
+      return res.status(500).json({ error: "TTS proxy failed" });
+    }
+  });
+
+  return router;
+}
+
+export default createInnerVoiceRouter();

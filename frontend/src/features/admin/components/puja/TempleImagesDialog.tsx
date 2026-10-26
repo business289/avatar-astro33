@@ -69,7 +69,7 @@ export function TempleImagesDialog({
     <Dialog open={open} onOpenChange={(next) => !busy && onOpenChange(next)}>
       <DialogContent className="max-h-[90vh] overflow-y-auto border-white/10 bg-[#0a1628] text-white sm:max-w-2xl">
         <DialogHeader>
-          <DialogTitle className="font-display text-lg tracking-wide text-white">
+          <DialogTitle className="font-heading text-lg tracking-wide text-white">
             Temple Images
           </DialogTitle>
           <DialogDescription className="text-white/60">
@@ -132,7 +132,7 @@ export function TempleImagesDialog({
             type="button"
             onClick={() => fileInputRef.current?.click()}
             disabled={busy || !templeId}
-            className="bg-[#BC6A4D] text-white hover:bg-[#BC6A4D]/90"
+            className="bg-[#C7A46A] text-white hover:bg-[#C7A46A]/90"
           >
             {uploadImages.isPending ? (
               <Loader2 className="h-4 w-4 animate-spin" />

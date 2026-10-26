@@ -21,7 +21,7 @@ export const ShopCardSkeleton = () => (
     style={{
       background: '#FFFFFF',
       borderRadius: 18,
-      border: '1.5px solid rgba(188,106,77,0.13)',
+      border: '1.5px solid rgba(138,109,53,0.13)',
       boxShadow: '0 4px 20px rgba(120,60,20,0.07)',
       overflow: 'hidden',
     }}

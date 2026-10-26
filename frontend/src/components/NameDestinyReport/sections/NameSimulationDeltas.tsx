@@ -27,7 +27,7 @@ export default function NameSimulationDeltas({
         <TrendingUp size={22} className="text-gold" />
         <h3
           className="text-2xl sm:text-3xl font-bold text-foreground text-center uppercase tracking-wide"
-          style={{ fontFamily: "'Astra','Cinzel',serif" }}
+          style={{ fontFamily: "'Cinzel', 'Cormorant Garamond', Georgia, 'Times New Roman', serif" }}
         >
           AI Name Simulation
         </h3>

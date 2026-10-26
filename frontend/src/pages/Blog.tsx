@@ -4,10 +4,11 @@ import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { ArrowRight, Calendar } from 'lucide-react';
 import { blogPosts } from '@/data/blogPosts';
+import { articleReadMinutes, formatPostDate, getPublishedArticles } from '@/data/blogArticles';
 
 gsap.registerPlugin(ScrollTrigger);
 
-const categories = ['All', 'Beginner Astrology', 'Celestial Events', 'Planetary Transits', 'Rituals & Practices', 'Life Cycles'];
+const categories = ['All', 'Astrology Basics', 'Moon & Emotions', 'Beginner Astrology', 'Celestial Events', 'Planetary Transits', 'Rituals & Practices', 'Life Cycles'];
 
 const Blog = () => {
   const pageRef = useRef<HTMLDivElement>(null);
@@ -40,7 +41,7 @@ const Blog = () => {
       <div className="container mx-auto px-4">
         {/* Header */}
         <div className="text-center mb-12">
-          <h1 className="page-title font-display text-4xl md:text-5xl lg:text-6xl text-glow text-primary mb-4">
+          <h1 className="page-title font-heading text-4xl md:text-5xl lg:text-6xl text-glow text-primary mb-4">
             Celestial Blog
           </h1>
           <p className="text-muted-foreground max-w-2xl mx-auto">
@@ -66,6 +67,43 @@ const Blog = () => {
 
         {/* Blog Grid */}
         <div className="blog-grid grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {getPublishedArticles().map((post) => (
+            <article key={post.slug} className="blog-card glass-card-hover rounded-2xl overflow-hidden group">
+              <Link to={`/blog/${post.slug}`} className="block">
+                <div className="aspect-video w-full overflow-hidden">
+                  <img
+                    src={post.image}
+                    alt={post.imageAlt}
+                    width={800}
+                    height={450}
+                    loading="lazy"
+                    className="h-full w-full object-cover"
+                    style={{ objectPosition: `50% ${post.imageFocus ?? 50}%` }}
+                  />
+                </div>
+                <div className="p-6">
+                  <div className="flex items-center gap-3 mb-3">
+                    <span className="text-xs px-2 py-1 rounded-full bg-primary/10 text-primary">{post.category}</span>
+                    <span className="text-xs text-muted-foreground">{articleReadMinutes(post)} min read</span>
+                  </div>
+                  <h2 className="font-heading text-lg text-foreground mb-2 group-hover:text-primary transition-colors">{post.title}</h2>
+                  <p className="text-muted-foreground text-sm mb-4 line-clamp-3">{post.excerpt}</p>
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs text-muted-foreground flex items-center gap-1">
+                      <Calendar className="w-3 h-3" />
+                      {formatPostDate(post.date)}
+                    </span>
+                    <span className="text-primary text-sm flex items-center gap-1">
+                      Read article
+                      <ArrowRight className="w-4 h-4" />
+                    </span>
+                  </div>
+                </div>
+              </Link>
+            </article>
+          ))}
+
+          {/* Archive: earlier posts keep their original dates and have no detail page */}
           {blogPosts.map((post) => (
             <article key={post.id} className="blog-card glass-card-hover rounded-2xl overflow-hidden group">
               {/* Thumbnail */}
@@ -82,7 +120,7 @@ const Blog = () => {
                   <span className="text-xs text-muted-foreground">{post.readTime}</span>
                 </div>
                 
-                <h2 className="font-display text-lg text-foreground mb-2 group-hover:text-primary transition-colors">
+                <h2 className="font-heading text-lg text-foreground mb-2 group-hover:text-primary transition-colors">
                   {post.title}
                 </h2>
                 
@@ -95,13 +133,7 @@ const Blog = () => {
                     <Calendar className="w-3 h-3" />
                     {new Date(post.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                   </span>
-                  <Link 
-                    to={`/blog/${post.id}`}
-                    className="text-primary text-sm flex items-center gap-1 hover:gap-2 transition-all"
-                  >
-                    Read More
-                    <ArrowRight className="w-4 h-4" />
-                  </Link>
+                  <span className="text-xs text-muted-foreground">Archive</span>
                 </div>
               </div>
             </article>

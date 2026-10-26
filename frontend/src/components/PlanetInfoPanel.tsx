@@ -95,7 +95,7 @@ export const PlanetInfoPanel = ({ planet, influence, isOpen, onClose, zodiacSign
               }}
             />
             <div>
-              <h2 className="text-2xl font-display tracking-widest leading-none">{planet.name.toUpperCase()}</h2>
+              <h2 className="text-2xl font-heading tracking-widest leading-none">{planet.name.toUpperCase()}</h2>
               <p className="text-[10px] text-white/45 uppercase tracking-[0.22em] mt-0.5">
                 {zodiacSign.charAt(0).toUpperCase() + zodiacSign.slice(1)}'s Cosmic Guide
               </p>

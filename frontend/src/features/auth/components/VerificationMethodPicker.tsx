@@ -50,7 +50,7 @@ export function VerificationMethodPicker({
             className={cn(
               "flex w-full items-start gap-4 rounded-2xl border px-4 py-4 text-left transition-all duration-300",
               selected
-                ? "border-primary/60 bg-primary/10 shadow-[0_0_24px_rgba(188,106,77,0.12)]"
+                ? "border-primary/60 bg-primary/10 shadow-[0_0_24px_rgba(199,164,106,0.12)]"
                 : "border-border/40 bg-background/20 hover:border-primary/30",
             )}
           >
@@ -65,7 +65,7 @@ export function VerificationMethodPicker({
               <Icon className="h-4 w-4" />
             </span>
             <span className="min-w-0 flex-1">
-              <span className="block font-display text-sm tracking-wider text-foreground">
+              <span className="block font-ui text-sm tracking-wider text-foreground">
                 {option.title}
               </span>
               <span className="mt-1 block text-xs leading-relaxed text-muted-foreground">

@@ -23,7 +23,7 @@ export const PujaCardSkeleton = () => (
     style={{
       background: '#FFFFFF',
       borderRadius: 20,
-      border: '1.5px solid rgba(188,106,77,0.13)',
+      border: '1.5px solid rgba(138,109,53,0.13)',
       boxShadow: '0 4px 20px rgba(120,60,20,0.07), 0 1px 3px rgba(0,0,0,0.04)',
       overflow: 'hidden',
       display: 'flex',
@@ -62,7 +62,7 @@ export const PujaCardSkeleton = () => (
       <div className="puja-shimmer-bg" style={{ width: '60%', height: 16, borderRadius: 4 }} />
 
       {/* Divider */}
-      <div style={{ height: 1, background: 'rgba(188,106,77,0.12)', marginTop: 8, marginBottom: 8 }} />
+      <div style={{ height: 1, background: 'rgba(138,109,53,0.12)', marginTop: 8, marginBottom: 8 }} />
 
       {/* Price & CTA */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>

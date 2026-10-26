@@ -32,26 +32,26 @@ const MandalaSVG = () => {
   return (
     <svg viewBox="0 0 240 240" fill="none" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%">
       {rings.map((r, i) => (
-        <circle key={i} cx="120" cy="120" r={r} stroke="#BC6A4D" strokeWidth={i % 2 === 0 ? 1 : 0.6} />
+        <circle key={i} cx="120" cy="120" r={r} stroke="#C7A46A" strokeWidth={i % 2 === 0 ? 1 : 0.6} />
       ))}
       {petals.map((a, i) => (
         <line key={i}
           x1={120 + Math.cos(a) * 20} y1={120 + Math.sin(a) * 20}
           x2={120 + Math.cos(a) * 110} y2={120 + Math.sin(a) * 110}
-          stroke="#BC6A4D" strokeWidth="0.5"
+          stroke="#C7A46A" strokeWidth="0.5"
         />
       ))}
       {petals.map((a, i) => (
-        <circle key={i} cx={120 + Math.cos(a) * 50} cy={120 + Math.sin(a) * 50} r="3.5" fill="#BC6A4D" />
+        <circle key={i} cx={120 + Math.cos(a) * 50} cy={120 + Math.sin(a) * 50} r="3.5" fill="#C7A46A" />
       ))}
       {petals.map((a, i) => (
         <circle key={i}
           cx={120 + Math.cos(a + Math.PI / 8) * 68}
           cy={120 + Math.sin(a + Math.PI / 8) * 68}
-          r="2" fill="#BC6A4D" fillOpacity="0.5"
+          r="2" fill="#C7A46A" fillOpacity="0.5"
         />
       ))}
-      <circle cx="120" cy="120" r="8" fill="#BC6A4D" fillOpacity="0.3" />
+      <circle cx="120" cy="120" r="8" fill="#C7A46A" fillOpacity="0.3" />
     </svg>
   );
 };

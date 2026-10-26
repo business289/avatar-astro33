@@ -56,7 +56,7 @@ export default function CelebrityCarousel() {
     <div className="px-6 sm:px-10 py-12">
       <h3
         className="text-2xl sm:text-3xl font-bold text-foreground text-center mb-2 uppercase tracking-wide"
-        style={{ fontFamily: "'Astra','Cinzel',serif" }}
+        style={{ fontFamily: "'Cinzel', 'Cormorant Garamond', Georgia, 'Times New Roman', serif" }}
       >
         ⭐ Real-Life Celebrity Name Changes
       </h3>
@@ -127,7 +127,7 @@ export default function CelebrityCarousel() {
                   </div>
                   <div
                     className="text-white font-extrabold text-3xl sm:text-4xl leading-tight uppercase tracking-wide mb-3"
-                    style={{ fontFamily: "'Astra','Cinzel',serif" }}
+                    style={{ fontFamily: "'DM Sans', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif" }}
                   >
                     {c.currentName}
                     {c.isStageName && <span className="block text-xs tracking-widest text-white/50 normal-case mt-1">(Stage Name)</span>}

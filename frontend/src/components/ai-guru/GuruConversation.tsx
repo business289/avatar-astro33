@@ -29,7 +29,7 @@ const GuruConversation = forwardRef<HTMLDivElement, GuruConversationProps>(
               className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-base ${
                 msg.role === "user"
                   ? "bg-white/10 ring-1 ring-white/15"
-                  : "bg-gradient-to-br from-[#FF9D4D]/40 to-[#E88B3D]/15 ring-1 ring-[#FF9D4D]/30"
+                  : "bg-gradient-to-br from-[#C7A46A]/40 to-[#C7A46A]/15 ring-1 ring-[#C7A46A]/30"
               }`}
             >
               {msg.role === "user" ? "🙏" : "🧘"}
@@ -37,7 +37,7 @@ const GuruConversation = forwardRef<HTMLDivElement, GuruConversationProps>(
             <div
               className={`max-w-[85%] rounded-2xl px-4 py-3 text-[15px] leading-relaxed ${
                 msg.role === "user"
-                  ? "rounded-tr-sm bg-gradient-to-br from-[#FF9D4D] to-[#E88B3D] text-[#1A0F08]"
+                  ? "rounded-tr-sm bg-gradient-to-br from-[#C7A46A] to-[#C7A46A] text-[#1A0F08]"
                   : "rounded-tl-sm border border-white/[0.08] bg-[#17181F] text-[#E5E5E5] shadow-[0_2px_16px_rgba(0,0,0,0.25)]"
               }`}
             >
@@ -51,7 +51,7 @@ const GuruConversation = forwardRef<HTMLDivElement, GuruConversationProps>(
 
       {loading && (
         <div className="flex items-start gap-3">
-          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-[#FF9D4D]/40 to-[#E88B3D]/15 text-base ring-1 ring-[#FF9D4D]/30">
+          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-[#C7A46A]/40 to-[#C7A46A]/15 text-base ring-1 ring-[#C7A46A]/30">
             🧘
           </div>
           <div className="flex items-center gap-1.5 rounded-2xl rounded-tl-sm border border-white/[0.08] bg-[#17181F] px-4 py-3.5">

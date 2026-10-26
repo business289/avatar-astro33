@@ -35,17 +35,17 @@ const faqs = [
 ];
 
 const FaqSection = () => (
-  <section className="relative z-10 w-full py-16 md:py-24">
+  <section className="relative z-10 w-full py-10 md:py-14">
     <div className="container relative mx-auto px-4 md:px-6">
-      <div className="grid lg:grid-cols-2 gap-10 lg:gap-16">
+      <div className="grid lg:grid-cols-2 gap-8 lg:gap-14">
         <div className="text-center lg:text-left">
-          <p className="font-['Inter'] text-xs font-semibold tracking-[0.25em] uppercase text-[#e8935f] mb-3">
+          <p className="font-ui text-[13px] font-semibold tracking-[0.25em] uppercase text-[#C7A46A] mb-2">
             Questions, Answered
           </p>
-          <h2 className="font-['Inter'] font-bold tracking-tight leading-tight text-4xl sm:text-5xl text-white">
+          <h2 className="font-heading font-semibold tracking-[0.02em] normal-case leading-[1.2] text-[1.75rem] sm:text-[2rem] lg:text-[2.125rem] text-white">
             Start Your Journey
             <br />
-            With <span className="text-[#e8935f]">Clarity.</span>
+            With <span className="text-[#C7A46A]">Clarity.</span>
           </h2>
         </div>
 
@@ -62,19 +62,19 @@ const FaqSection = () => (
               className="border-b border-white/10 group"
             >
               <AccordionPrimitive.Header>
-                <AccordionPrimitive.Trigger className="flex w-full items-center justify-between gap-4 py-5 text-left">
-                  <span className="font-['Inter'] font-semibold text-white text-base sm:text-lg">
+                <AccordionPrimitive.Trigger className="flex w-full items-center justify-between gap-4 py-4 text-left">
+                  <span className="font-ui font-semibold text-white text-[1.0625rem] leading-snug sm:text-[1.125rem]">
                     {faq.question}
                   </span>
                   <span
-                    className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border transition-colors duration-300 group-data-[state=open]:border-transparent group-data-[state=open]:bg-[#e8935f] border-white/15 text-white/70 group-data-[state=open]:text-[#1a0f08]"
+                    className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full border transition-colors duration-300 group-data-[state=open]:border-transparent group-data-[state=open]:bg-[#C7A46A] border-white/15 text-white/70 group-data-[state=open]:text-[#1a0f08]"
                   >
-                    <Plus className="w-4 h-4 transition-transform duration-300 group-data-[state=open]:rotate-45" />
+                    <Plus className="w-3.5 h-3.5 transition-transform duration-300 group-data-[state=open]:rotate-45" />
                   </span>
                 </AccordionPrimitive.Trigger>
               </AccordionPrimitive.Header>
               <AccordionPrimitive.Content className="overflow-hidden data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down">
-                <p className="font-['Inter'] text-white/55 text-sm sm:text-base leading-relaxed pb-5 pr-12">
+                <p className="font-ui text-white/60 text-[0.9375rem] leading-[1.65] pb-4 pr-10">
                   {faq.answer}
                 </p>
               </AccordionPrimitive.Content>

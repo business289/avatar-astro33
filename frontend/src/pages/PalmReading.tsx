@@ -167,12 +167,12 @@ function buildDashboardMetrics(result: PalmResult, analysis: PalmAnalysisResult)
   const heart = analysis.lines.heart, fate = analysis.lines.fate, life = analysis.lines.life, head = analysis.lines.head;
 
   return [
-    { label: "Overall Palm Score", icon: "🤚", color: "#BC6A4D", value: clampScore(result.score * 10) },
+    { label: "Overall Palm Score", icon: "🤚", color: "#C7A46A", value: clampScore(result.score * 10) },
     { label: "Love & Relationships", icon: "❤️", color: "#e879a0", value: clampScore(55 + curviness(heart) * 22) },
     { label: "Career", icon: "💼", color: "#60a5fa", value: clampScore(55 + curviness(fate) * 18) },
     { label: "Health & Vitality", icon: "🌿", color: "#4ade80", value: clampScore(55 + curviness(life) * 20) },
     { label: "Finance", icon: "💰", color: "#e8b23f", value: clampScore(mountStrength("Mercury")) },
-    { label: "Leadership", icon: "👑", color: "#BC6A4D", value: clampScore(trait("Leadership")) },
+    { label: "Leadership", icon: "👑", color: "#C7A46A", value: clampScore(trait("Leadership")) },
     { label: "Creativity", icon: "🎨", color: "#b070e8", value: clampScore(trait("Creativity")) },
     { label: "Spiritual Growth", icon: "🔮", color: "#9b6bf0", value: clampScore((mountStrength("Moon") + mountStrength("Sun")) / 2) },
     { label: "Decision Making", icon: "🎯", color: "#4f8ff0", value: clampScore(trait("Decision Making") - (curviness(head) - 1) * 40) },
@@ -180,10 +180,10 @@ function buildDashboardMetrics(result: PalmResult, analysis: PalmAnalysisResult)
 }
 
 // ─── Sub-components ───────────────────────────────────────────────────────────
-function ScoreBar({ value, color = "#BC6A4D" }: { value: number; color?: string }) {
+function ScoreBar({ value, color = "#C7A46A" }: { value: number; color?: string }) {
   return (
     <div style={{ background: "rgba(255,255,255,0.06)", borderRadius: 6, height: 8, overflow: "hidden" }}>
-      <div style={{ height: "100%", width: `${Math.min(value,100)}%`, background: `linear-gradient(90deg, ${color}, #BC6A4D)`, borderRadius: 6, boxShadow: `0 0 8px ${color}60`, transition: "width 1.2s ease" }} />
+      <div style={{ height: "100%", width: `${Math.min(value,100)}%`, background: `linear-gradient(90deg, ${color}, #C7A46A)`, borderRadius: 6, boxShadow: `0 0 8px ${color}60`, transition: "width 1.2s ease" }} />
     </div>
   );
 }
@@ -192,7 +192,7 @@ function SectionTitle({ icon, title }: { icon: string; title: string }) {
   return (
     <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 28 }}>
       <span style={{ fontSize: 22 }}>{icon}</span>
-      <h2 style={{ color: "#BC6A4D", fontSize: 15, fontWeight: 800, letterSpacing: "0.2em", textTransform: "uppercase", margin: 0 }}>{title}</h2>
+      <h2 style={{ color: "#C7A46A", fontSize: 15, fontWeight: 800, letterSpacing: "0.2em", textTransform: "uppercase", margin: 0 }}>{title}</h2>
     </div>
   );
 }
@@ -482,9 +482,9 @@ export default function PalmReading() {
     e.target.value = ""; // allow re-selecting the same file after a retake
   };
 
-  const sec: React.CSSProperties = { background: "rgba(255,255,255,0.025)", border: "1px solid rgba(188,106,77,0.18)", borderRadius: 24, padding: "36px 40px", marginBottom: 28 };
-  const card: React.CSSProperties = { background: "rgba(255,255,255,0.035)", border: "1px solid rgba(188,106,77,0.14)", borderRadius: 16, padding: "24px" };
-  const goldBtn: React.CSSProperties = { background: "linear-gradient(135deg,#BC6A4D,#BC6A4D,#BC6A4D)", color: "#000", fontWeight: 800, fontSize: 16, letterSpacing: "0.1em", padding: "16px 36px", borderRadius: 32, border: "none", cursor: "pointer", boxShadow: "0 0 24px rgba(188,106,77,0.4)" };
+  const sec: React.CSSProperties = { background: "rgba(255,255,255,0.025)", border: "1px solid rgba(199,164,106,0.18)", borderRadius: 24, padding: "36px 40px", marginBottom: 28 };
+  const card: React.CSSProperties = { background: "rgba(255,255,255,0.035)", border: "1px solid rgba(199,164,106,0.14)", borderRadius: 16, padding: "24px" };
+  const goldBtn: React.CSSProperties = { background: "linear-gradient(135deg,#C7A46A,#C7A46A,#C7A46A)", color: "#000", fontWeight: 800, fontSize: 16, letterSpacing: "0.1em", padding: "16px 36px", borderRadius: 32, border: "none", cursor: "pointer", boxShadow: "0 0 24px rgba(199,164,106,0.4)" };
 
   // Shared across landing + retake so both can trigger the same upload dialog.
   const fileInput = <input ref={fileRef} type="file" accept="image/*" onChange={handleFile} style={{ display: "none" }} />;
@@ -494,11 +494,11 @@ export default function PalmReading() {
     <div>
       <style>{`
         @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
-        @keyframes pulse-glow{0%,100%{box-shadow:0 0 20px rgba(188,106,77,0.3)}50%{box-shadow:0 0 50px rgba(188,106,77,0.7)}}
+        @keyframes pulse-glow{0%,100%{box-shadow:0 0 20px rgba(199,164,106,0.3)}50%{box-shadow:0 0 50px rgba(199,164,106,0.7)}}
         @keyframes shimmer{0%{background-position:200% center}100%{background-position:-200% center}}
         @keyframes fade-in{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
         @keyframes fade-in-hero-img{from{opacity:0;transform:translateY(16px) scale(0.98)}to{opacity:1;transform:translateY(0) scale(1)}}
-        .pr-card:hover{transform:translateY(-6px);border-color:rgba(188,106,77,0.5)!important;transition:all 0.3s ease}
+        .pr-card:hover{transform:translateY(-6px);border-color:rgba(199,164,106,0.5)!important;transition:all 0.3s ease}
         .pr-card{transition:all 0.3s ease}
         .pr-hero-img-wrap{display:inline-block;width:480px;max-width:92vw;animation:float 5s ease-in-out infinite,pulse-glow 4s ease-in-out infinite,fade-in-hero-img 0.9s ease 0.15s both}
         @media (max-width:1024px){.pr-hero-img-wrap{width:380px}}
@@ -508,10 +508,10 @@ export default function PalmReading() {
 
         {/* Hero */}
         <div style={{ textAlign: "center", marginBottom: 72, animation: "fade-in 0.7s ease" }}>
-          <div style={{ fontSize: 14, color: "rgba(188,106,77,0.6)", letterSpacing: "0.3em", marginBottom: 16, fontWeight: 600 }}>✦ PREMIUM AI CONSULTATION ✦</div>
+          <div style={{ fontSize: 14, color: "rgba(199,164,106,0.6)", letterSpacing: "0.3em", marginBottom: 16, fontWeight: 600 }}>✦ PREMIUM AI CONSULTATION ✦</div>
           <h1 style={{ fontSize: 58, fontWeight: 900, color: "#fff", letterSpacing: "0.06em", margin: "0 0 20px", lineHeight: 1.1 }}>
             AI Palm Reading<br/>
-            <span style={{ background: "linear-gradient(135deg,#BC6A4D,#BC6A4D,#BC6A4D)", backgroundSize: "200% auto", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", animation: "shimmer 3s linear infinite" }}>Analysis</span>
+            <span style={{ background: "linear-gradient(135deg,#C7A46A,#C7A46A,#C7A46A)", backgroundSize: "200% auto", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", animation: "shimmer 3s linear infinite" }}>Analysis</span>
           </h1>
           <p style={{ fontSize: 20, color: "rgba(232,224,240,0.65)", maxWidth: 620, margin: "0 auto 40px", lineHeight: 1.8 }}>
             Discover your personality, relationships, career path, wealth potential, and life journey through advanced AI-powered palm analysis rooted in ancient Vedic palmistry.
@@ -534,14 +534,14 @@ export default function PalmReading() {
           <div className="pr-card" style={{ ...sec, textAlign: "center", cursor: "pointer", marginBottom: 0 }} onClick={() => fileRef.current?.click()}>
             {fileInput}
             <div style={{ fontSize: 56, marginBottom: 20 }}>🖼️</div>
-            <h3 style={{ color: "#BC6A4D", fontSize: 22, fontWeight: 800, marginBottom: 12 }}>Upload Palm Photo</h3>
+            <h3 style={{ color: "#C7A46A", fontSize: 22, fontWeight: 800, marginBottom: 12 }}>Upload Palm Photo</h3>
             <p style={{ color: "rgba(232,224,240,0.6)", fontSize: 16, lineHeight: 1.7, marginBottom: 28 }}>Upload an existing photo of your palm from your device for instant analysis.</p>
             <button style={goldBtn}>📤 Upload Photo</button>
           </div>
           {/* Live scan */}
           <div className="pr-card" style={{ ...sec, textAlign: "center", marginBottom: 0 }}>
             <div style={{ fontSize: 56, marginBottom: 20 }}>📷</div>
-            <h3 style={{ color: "#BC6A4D", fontSize: 22, fontWeight: 800, marginBottom: 12 }}>Live Palm Scan</h3>
+            <h3 style={{ color: "#C7A46A", fontSize: 22, fontWeight: 800, marginBottom: 12 }}>Live Palm Scan</h3>
             <p style={{ color: "rgba(232,224,240,0.6)", fontSize: 16, lineHeight: 1.7, marginBottom: 28 }}>Use your camera for a real-time palm scan with a live blueprint hand-tracking overlay.</p>
             <button style={goldBtn} onClick={() => setStage("live")}>📱 Start Live Scan</button>
           </div>
@@ -579,7 +579,7 @@ export default function PalmReading() {
             {HAND_TYPE_LEGEND.map(h=>(
               <div key={h.type} style={{ ...card, textAlign: "center" }}>
                 <div style={{ fontSize: 32, marginBottom: 10 }}>{h.emoji}</div>
-                <div style={{ color: "#BC6A4D", fontWeight: 700, fontSize: 14, marginBottom: 6 }}>{h.label}</div>
+                <div style={{ color: "#C7A46A", fontWeight: 700, fontSize: 14, marginBottom: 6 }}>{h.label}</div>
                 <div style={{ color: "rgba(255,255,255,0.4)", fontSize: 11, marginBottom: 8 }}>{h.shape}</div>
                 <div style={{ color: "rgba(232,224,240,0.6)", fontSize: 13, lineHeight: 1.5 }}>{h.traits}</div>
               </div>
@@ -611,7 +611,7 @@ export default function PalmReading() {
             ].map(i=>(
               <div key={i.item} style={{ ...card, textAlign: "center" }}>
                 <div style={{ fontSize: 28, marginBottom: 8 }}>{i.icon}</div>
-                <div style={{ color: "#BC6A4D", fontWeight: 600, fontSize: 14 }}>{i.item}</div>
+                <div style={{ color: "#C7A46A", fontWeight: 600, fontSize: 14 }}>{i.item}</div>
               </div>
             ))}
           </div>
@@ -626,11 +626,11 @@ export default function PalmReading() {
     <div>
       <style>{`@keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}`}</style>
       <div style={{ minHeight: "80vh", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "40px 24px", color: "#e8e0f0" }}>
-        <div style={{ fontSize: 14, color: "rgba(188,106,77,0.6)", letterSpacing: "0.3em", marginBottom: 32, fontWeight: 600 }}>✦ AI VISION ENGINE ✦</div>
-        <div style={{ width: 64, height: 64, borderRadius: "50%", border: "3px solid rgba(188,106,77,0.18)", borderTopColor: "#BC6A4D", animation: "spin 0.9s linear infinite", marginBottom: 28 }}/>
-        <div style={{ color: "#BC6A4D", fontSize: 16, fontWeight: 700, letterSpacing: "0.04em", marginBottom: 22, textAlign: "center" }}>{processingMessage}</div>
+        <div style={{ fontSize: 14, color: "rgba(199,164,106,0.6)", letterSpacing: "0.3em", marginBottom: 32, fontWeight: 600 }}>✦ AI VISION ENGINE ✦</div>
+        <div style={{ width: 64, height: 64, borderRadius: "50%", border: "3px solid rgba(199,164,106,0.18)", borderTopColor: "#C7A46A", animation: "spin 0.9s linear infinite", marginBottom: 28 }}/>
+        <div style={{ color: "#C7A46A", fontSize: 16, fontWeight: 700, letterSpacing: "0.04em", marginBottom: 22, textAlign: "center" }}>{processingMessage}</div>
         <div style={{ width: "100%", maxWidth: 320, height: 6, background: "rgba(255,255,255,0.08)", borderRadius: 6, overflow: "hidden" }}>
-          <div style={{ height: "100%", width: `${processingPct}%`, background: "linear-gradient(90deg,#BC6A4D,#e8b23f)", borderRadius: 6, boxShadow: "0 0 10px rgba(232,178,63,0.5)", transition: "width 0.3s ease" }}/>
+          <div style={{ height: "100%", width: `${processingPct}%`, background: "linear-gradient(90deg,#C7A46A,#e8b23f)", borderRadius: 6, boxShadow: "0 0 10px rgba(232,178,63,0.5)", transition: "width 0.3s ease" }}/>
         </div>
       </div>
     </div>
@@ -642,8 +642,8 @@ export default function PalmReading() {
       <style>{`@keyframes pulse-glow{0%,100%{opacity:0.6;transform:scale(1)}50%{opacity:1;transform:scale(1.3)}}`}</style>
       {fileInput}
       <div style={{ minHeight: "80vh", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "40px 24px", textAlign: "center", color: "#e8e0f0" }}>
-        <div style={{ fontSize: 14, color: "rgba(188,106,77,0.6)", letterSpacing: "0.3em", marginBottom: 32, fontWeight: 600 }}>✦ LIVE PALM SCANNER ✦</div>
-        <div style={{ width: "100%", maxWidth: 880, marginBottom: 28, position: "relative", borderRadius: 26, overflow: "hidden", border: "2px solid rgba(188,106,77,0.25)", boxShadow: "0 0 40px rgba(188,106,77,0.16)" }}>
+        <div style={{ fontSize: 14, color: "rgba(199,164,106,0.6)", letterSpacing: "0.3em", marginBottom: 32, fontWeight: 600 }}>✦ LIVE PALM SCANNER ✦</div>
+        <div style={{ width: "100%", maxWidth: 880, marginBottom: 28, position: "relative", borderRadius: 26, overflow: "hidden", border: "2px solid rgba(199,164,106,0.25)", boxShadow: "0 0 40px rgba(199,164,106,0.16)" }}>
           <video
             ref={videoRef}
             style={{ width: "100%", height: "auto", display: "block", background: "#000" }}
@@ -661,7 +661,7 @@ export default function PalmReading() {
                   boxShadow: `0 0 8px ${liveLocked ? "#4ade80" : "#e8b23f"}`,
                   animation: "pulse-glow 1.4s ease-in-out infinite",
                 }} />
-                <span style={{ fontSize: 13, color: liveLocked ? "#86efac" : "rgba(188,106,77,0.9)", letterSpacing: "0.2em", fontWeight: 700 }}>
+                <span style={{ fontSize: 13, color: liveLocked ? "#86efac" : "rgba(199,164,106,0.9)", letterSpacing: "0.2em", fontWeight: 700 }}>
                   {liveLocked ? "PALM LOCKED" : "SCANNING"}
                 </span>
               </div>
@@ -681,7 +681,7 @@ export default function PalmReading() {
               )}
             </div>
             <button
-              style={{ ...goldBtn, background: "rgba(188,106,77,0.18)", color: "#fff", boxShadow: "none" }}
+              style={{ ...goldBtn, background: "rgba(199,164,106,0.18)", color: "#fff", boxShadow: "none" }}
               onClick={() => { cleanupCamera(); resetToLanding(); }}
             >
               ✕ Cancel Scan
@@ -701,7 +701,7 @@ export default function PalmReading() {
         {/* Hand type reference while the user waits for a stable lock */}
         <div style={{ display: "flex", gap: 10, flexWrap: "wrap", justifyContent: "center", marginTop: 28, maxWidth: 880 }}>
           {HAND_TYPE_LEGEND.map(h => (
-            <div key={h.type} style={{ display: "flex", alignItems: "center", gap: 8, background: "rgba(255,255,255,0.03)", border: "1px solid rgba(188,106,77,0.16)", borderRadius: 20, padding: "6px 14px" }}>
+            <div key={h.type} style={{ display: "flex", alignItems: "center", gap: 8, background: "rgba(255,255,255,0.03)", border: "1px solid rgba(199,164,106,0.16)", borderRadius: 20, padding: "6px 14px" }}>
               <span style={{ fontSize: 16 }}>{h.emoji}</span>
               <span style={{ fontSize: 12, color: "rgba(232,224,240,0.6)" }}>{h.label}</span>
             </div>
@@ -724,7 +724,7 @@ export default function PalmReading() {
         </p>
         <div style={{ display: "flex", gap: 16, flexWrap: "wrap", justifyContent: "center" }}>
           <button style={goldBtn} onClick={() => fileRef.current?.click()}>📤 Upload Another Photo</button>
-          <button style={{ ...goldBtn, background: "rgba(188,106,77,0.12)", color: "#BC6A4D", boxShadow: "none", border: "1px solid rgba(188,106,77,0.35)" }} onClick={resetToLanding}>← Back</button>
+          <button style={{ ...goldBtn, background: "rgba(199,164,106,0.12)", color: "#C7A46A", boxShadow: "none", border: "1px solid rgba(199,164,106,0.35)" }} onClick={resetToLanding}>← Back</button>
         </div>
       </div>
     </div>
@@ -736,10 +736,10 @@ export default function PalmReading() {
     return (
       <div>
         <div style={{ minHeight: "80vh", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "40px 24px", color: "#e8e0f0" }}>
-          <div style={{ fontSize: 14, color: "rgba(188,106,77,0.6)", letterSpacing: "0.3em", marginBottom: 32, fontWeight: 600 }}>✦ AI ANALYSIS IN PROGRESS ✦</div>
+          <div style={{ fontSize: 14, color: "rgba(199,164,106,0.6)", letterSpacing: "0.3em", marginBottom: 32, fontWeight: 600 }}>✦ AI ANALYSIS IN PROGRESS ✦</div>
           <div style={{
             width: "100%", maxWidth: 440, aspectRatio: `${imageDims.width} / ${imageDims.height}`,
-            borderRadius: 20, overflow: "hidden", border: "2px solid rgba(188,106,77,0.4)", boxShadow: "0 0 40px rgba(188,106,77,0.25)",
+            borderRadius: 20, overflow: "hidden", border: "2px solid rgba(199,164,106,0.4)", boxShadow: "0 0 40px rgba(199,164,106,0.25)",
           }}>
             <ScanSequence imageUrl={imageUrl} result={analysis} onComplete={() => setStage("results")} />
           </div>
@@ -757,13 +757,13 @@ export default function PalmReading() {
       <style>{`
         @keyframes fade-in{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
         @keyframes shimmer{0%{background-position:200% center}100%{background-position:-200% center}}
-        .tab-btn:hover{border-color:rgba(188,106,77,0.5)!important}
+        .tab-btn:hover{border-color:rgba(199,164,106,0.5)!important}
       `}</style>
       <div style={{ maxWidth: 1100, margin: "0 auto", padding: "40px 32px 80px", color: "#e8e0f0" }}>
 
         {/* Header */}
         <div style={{ textAlign: "center", marginBottom: 48, animation: "fade-in 0.6s ease" }}>
-          <div style={{ fontSize: 13, color: "rgba(188,106,77,0.6)", letterSpacing: "0.3em", marginBottom: 12, fontWeight: 600 }}>✦ YOUR PALM READING CONSULTATION ✦</div>
+          <div style={{ fontSize: 13, color: "rgba(199,164,106,0.6)", letterSpacing: "0.3em", marginBottom: 12, fontWeight: 600 }}>✦ YOUR PALM READING CONSULTATION ✦</div>
           <h1 style={{ fontSize: 44, fontWeight: 900, color: "#fff", margin: "0 0 12px" }}>Your Cosmic Palm Report</h1>
           <p style={{ color: "rgba(232,224,240,0.5)", fontSize: 16 }}>Prepared exclusively based on your palm analysis</p>
         </div>
@@ -774,24 +774,24 @@ export default function PalmReading() {
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 24, marginBottom: 28 }}>
             {/* Score card */}
             <div style={{ ...card, textAlign: "center" }}>
-              <div style={{ fontSize: 13, color: "rgba(188,106,77,0.6)", letterSpacing: "0.2em", marginBottom: 16 }}>PALM STRENGTH SCORE</div>
-              <div style={{ fontSize: 56, fontWeight: 900, background: "linear-gradient(135deg,#BC6A4D,#BC6A4D)", backgroundSize: "200% auto", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", animation: "shimmer 3s linear infinite" }}>
+              <div style={{ fontSize: 13, color: "rgba(199,164,106,0.6)", letterSpacing: "0.2em", marginBottom: 16 }}>PALM STRENGTH SCORE</div>
+              <div style={{ fontSize: 56, fontWeight: 900, background: "linear-gradient(135deg,#C7A46A,#C7A46A)", backgroundSize: "200% auto", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", animation: "shimmer 3s linear infinite" }}>
                 {result.score.toFixed(1)}<span style={{ fontSize: 24 }}>/10</span>
               </div>
               <div style={{ marginTop: 16 }}>
-                <ScoreBar value={result.score * 10} color="#BC6A4D"/>
+                <ScoreBar value={result.score * 10} color="#C7A46A"/>
               </div>
             </div>
             {/* Stats */}
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
               {[
                 { label: "Confidence Level", value: `${result.confidence}%`, color: "#4ade80" },
-                { label: "Hand Type",        value: result.handType,         color: "#BC6A4D" },
+                { label: "Hand Type",        value: result.handType,         color: "#C7A46A" },
                 { label: "Element",          value: result.handElement,      color: "#60a5fa" },
                 { label: "Dominance",        value: result.dominance,        color: "#e879a0" },
               ].map(s=>(
                 <div key={s.label} style={{ ...card, textAlign: "center" }}>
-                  <div style={{ fontSize: 11, color: "rgba(188,106,77,0.55)", letterSpacing: "0.15em", marginBottom: 8, textTransform: "uppercase" }}>{s.label}</div>
+                  <div style={{ fontSize: 11, color: "rgba(199,164,106,0.55)", letterSpacing: "0.15em", marginBottom: 8, textTransform: "uppercase" }}>{s.label}</div>
                   <div style={{ fontSize: 15, fontWeight: 700, color: s.color }}>{s.value}</div>
                 </div>
               ))}
@@ -805,7 +805,7 @@ export default function PalmReading() {
             </div>
           )}
           <div style={{ ...card, marginTop: 24 }}>
-            <div style={{ fontSize: 13, color: "rgba(188,106,77,0.6)", letterSpacing: "0.15em", marginBottom: 12 }}>CONSULTATION SUMMARY</div>
+            <div style={{ fontSize: 13, color: "rgba(199,164,106,0.6)", letterSpacing: "0.15em", marginBottom: 12 }}>CONSULTATION SUMMARY</div>
             <p style={{ color: "rgba(232,224,240,0.8)", fontSize: 17, lineHeight: 1.85, margin: 0, fontStyle: "italic" }}>"{result.summary}"</p>
           </div>
         </div>
@@ -886,12 +886,12 @@ export default function PalmReading() {
               <div key={m.name} style={card}>
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 12 }}>
                   <div>
-                    <div style={{ color: "#BC6A4D", fontWeight: 700, fontSize: 14 }}>{m.name}</div>
+                    <div style={{ color: "#C7A46A", fontWeight: 700, fontSize: 14 }}>{m.name}</div>
                     <div style={{ color: "rgba(255,255,255,0.4)", fontSize: 12 }}>Planet: {m.planet}</div>
                   </div>
-                  <div style={{ fontSize: 18, fontWeight: 800, color: m.strength>75?"#4ade80":"#BC6A4D" }}>{m.strength}%</div>
+                  <div style={{ fontSize: 18, fontWeight: 800, color: m.strength>75?"#4ade80":"#C7A46A" }}>{m.strength}%</div>
                 </div>
-                <ScoreBar value={m.strength} color={m.strength>75?"#4ade80":"#BC6A4D"}/>
+                <ScoreBar value={m.strength} color={m.strength>75?"#4ade80":"#C7A46A"}/>
                 <p style={{ color: "rgba(232,224,240,0.6)", fontSize: 13, lineHeight: 1.6, margin: "12px 0 0" }}>{m.meaning}</p>
               </div>
             ))}
@@ -909,7 +909,7 @@ export default function PalmReading() {
                     <span style={{ fontSize: 20 }}>{t.icon}</span>
                     <span style={{ color: "#e8e0f0", fontWeight: 700, fontSize: 15 }}>{t.name}</span>
                   </div>
-                  <span style={{ color: "#BC6A4D", fontWeight: 800, fontSize: 16 }}>{t.score}%</span>
+                  <span style={{ color: "#C7A46A", fontWeight: 800, fontSize: 16 }}>{t.score}%</span>
                 </div>
                 <ScoreBar value={t.score}/>
               </div>
@@ -928,7 +928,7 @@ export default function PalmReading() {
               </div>
             ))}
             <div style={{ marginTop: 20 }}>
-              <div style={{ fontSize: 12, color: "rgba(188,106,77,0.6)", letterSpacing: "0.15em", marginBottom: 12 }}>RELATIONSHIP STRENGTHS</div>
+              <div style={{ fontSize: 12, color: "rgba(199,164,106,0.6)", letterSpacing: "0.15em", marginBottom: 12 }}>RELATIONSHIP STRENGTHS</div>
               <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
                 {result.loveStrengths.map(s=>(
                   <span key={s} style={{ background: "rgba(232,121,160,0.1)", border: "1px solid rgba(232,121,160,0.3)", borderRadius: 20, padding: "4px 14px", fontSize: 13, color: "#e879a0" }}>{s}</span>
@@ -940,15 +940,15 @@ export default function PalmReading() {
             <SectionTitle icon="💼" title="Career & Wealth"/>
             {result.career.map(c=>(
               <div key={c} style={{ display: "flex", gap: 12, marginBottom: 12 }}>
-                <span style={{ color: "#BC6A4D", fontSize: 16, flexShrink: 0 }}>✦</span>
+                <span style={{ color: "#C7A46A", fontSize: 16, flexShrink: 0 }}>✦</span>
                 <span style={{ fontSize: 16, color: "rgba(232,224,240,0.8)", lineHeight: 1.5 }}>{c}</span>
               </div>
             ))}
             <div style={{ marginTop: 20 }}>
-              <div style={{ fontSize: 12, color: "rgba(188,106,77,0.6)", letterSpacing: "0.15em", marginBottom: 12 }}>IDEAL CAREER PATHS</div>
+              <div style={{ fontSize: 12, color: "rgba(199,164,106,0.6)", letterSpacing: "0.15em", marginBottom: 12 }}>IDEAL CAREER PATHS</div>
               <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
                 {result.careerTypes.map(c=>(
-                  <span key={c} style={{ background: "rgba(188,106,77,0.1)", border: "1px solid rgba(188,106,77,0.3)", borderRadius: 20, padding: "4px 14px", fontSize: 13, color: "#BC6A4D" }}>{c}</span>
+                  <span key={c} style={{ background: "rgba(199,164,106,0.1)", border: "1px solid rgba(199,164,106,0.3)", borderRadius: 20, padding: "4px 14px", fontSize: 13, color: "#C7A46A" }}>{c}</span>
                 ))}
               </div>
             </div>
@@ -959,14 +959,14 @@ export default function PalmReading() {
         <div style={sec}>
           <SectionTitle icon="🌍" title="Life Journey Timeline"/>
           <div style={{ position: "relative" }}>
-            <div style={{ position: "absolute", left: 20, top: 0, bottom: 0, width: 2, background: "linear-gradient(180deg,#BC6A4D,rgba(188,106,77,0.1))" }}/>
+            <div style={{ position: "absolute", left: 20, top: 0, bottom: 0, width: 2, background: "linear-gradient(180deg,#C7A46A,rgba(199,164,106,0.1))" }}/>
             {result.timeline.map((t,i)=>(
               <div key={i} style={{ display: "flex", gap: 28, marginBottom: 32, paddingLeft: 56, position: "relative" }}>
-                <div style={{ position: "absolute", left: 10, top: 4, width: 22, height: 22, borderRadius: "50%", background: "#BC6A4D", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, fontWeight: 800, color: "#000" }}>{i+1}</div>
+                <div style={{ position: "absolute", left: 10, top: 4, width: 22, height: 22, borderRadius: "50%", background: "#C7A46A", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, fontWeight: 800, color: "#000" }}>{i+1}</div>
                 <div style={card}>
                   <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 10 }}>
-                    <div style={{ color: "#BC6A4D", fontWeight: 800, fontSize: 17 }}>{t.phase}</div>
-                    <div style={{ color: "rgba(188,106,77,0.55)", fontSize: 13, fontWeight: 600 }}>{t.years}</div>
+                    <div style={{ color: "#C7A46A", fontWeight: 800, fontSize: 17 }}>{t.phase}</div>
+                    <div style={{ color: "rgba(199,164,106,0.55)", fontSize: 13, fontWeight: 600 }}>{t.years}</div>
                   </div>
                   <div style={{ color: "rgba(255,255,255,0.5)", fontSize: 12, letterSpacing: "0.15em", marginBottom: 10 }}>{t.theme}</div>
                   <p style={{ color: "rgba(232,224,240,0.7)", fontSize: 15, lineHeight: 1.7, margin: 0 }}>{t.insight}</p>
@@ -982,7 +982,7 @@ export default function PalmReading() {
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
             {result.hiddenStrengths.map((s,i)=>(
               <div key={i} style={{ ...card, display: "flex", gap: 14, alignItems: "flex-start" }}>
-                <div style={{ width: 36, height: 36, borderRadius: "50%", background: "linear-gradient(135deg,#BC6A4D,#BC6A4D)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 14, fontWeight: 800, color: "#000", flexShrink: 0 }}>{i+1}</div>
+                <div style={{ width: 36, height: 36, borderRadius: "50%", background: "linear-gradient(135deg,#C7A46A,#C7A46A)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 14, fontWeight: 800, color: "#000", flexShrink: 0 }}>{i+1}</div>
                 <span style={{ fontSize: 16, color: "rgba(232,224,240,0.85)", lineHeight: 1.6 }}>{s}</span>
               </div>
             ))}
@@ -996,7 +996,7 @@ export default function PalmReading() {
             {result.recommendations.map(r=>(
               <div key={r.category} style={card}>
                 <div style={{ fontSize: 28, marginBottom: 12 }}>{r.icon}</div>
-                <div style={{ color: "#BC6A4D", fontWeight: 700, fontSize: 14, marginBottom: 10 }}>{r.category}</div>
+                <div style={{ color: "#C7A46A", fontWeight: 700, fontSize: 14, marginBottom: 10 }}>{r.category}</div>
                 <p style={{ color: "rgba(232,224,240,0.7)", fontSize: 14, lineHeight: 1.65, margin: 0 }}>{r.tip}</p>
               </div>
             ))}
@@ -1004,13 +1004,13 @@ export default function PalmReading() {
         </div>
 
         {/* CTA */}
-        <div style={{ ...sec, textAlign: "center", background: "linear-gradient(135deg,rgba(188,106,77,0.08),rgba(0,0,0,0))" }}>
+        <div style={{ ...sec, textAlign: "center", background: "linear-gradient(135deg,rgba(199,164,106,0.08),rgba(0,0,0,0))" }}>
           <div style={{ fontSize: 36, marginBottom: 16 }}>✨</div>
-          <h3 style={{ color: "#BC6A4D", fontSize: 24, fontWeight: 800, marginBottom: 12 }}>Want a Deeper Reading?</h3>
+          <h3 style={{ color: "#C7A46A", fontSize: 24, fontWeight: 800, marginBottom: 12 }}>Want a Deeper Reading?</h3>
           <p style={{ color: "rgba(232,224,240,0.6)", fontSize: 16, marginBottom: 28, maxWidth: 480, margin: "0 auto 28px" }}>Combine your palm reading with your birth chart and zodiac profile for a complete cosmic consultation.</p>
           <div style={{ display: "flex", gap: 16, justifyContent: "center", flexWrap: "wrap" }}>
             <button style={goldBtn} onClick={()=>setStage("landing")}>🔄 New Palm Reading</button>
-            <button style={{ ...goldBtn, background: "rgba(188,106,77,0.12)", color: "#BC6A4D", boxShadow: "none", border: "1px solid rgba(188,106,77,0.35)" }}>🌌 View Birth Chart</button>
+            <button style={{ ...goldBtn, background: "rgba(199,164,106,0.12)", color: "#C7A46A", boxShadow: "none", border: "1px solid rgba(199,164,106,0.35)" }}>🌌 View Birth Chart</button>
           </div>
         </div>
 

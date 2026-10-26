@@ -14,9 +14,16 @@ export default {
     },
     extend: {
       fontFamily: {
-        display: ["Iceland", "sans-serif"],
-        body: ["Iceland", "sans-serif"],
-        astra: ["Astra", "Iceland", "sans-serif"],
+        // display/body/astra are legacy names used across older pages; they now resolve to the
+        // standard system (Cinzel headings, DM Sans interface text) so nothing falls back to Iceland.
+        display: ["Cinzel", "Cormorant Garamond", "Georgia", "Times New Roman", "serif"],
+        body: ["DM Sans", "system-ui", "-apple-system", "Segoe UI", "Roboto", "Helvetica Neue", "Arial", "sans-serif"],
+        astra: ["DM Sans", "system-ui", "-apple-system", "Segoe UI", "Roboto", "Helvetica Neue", "Arial", "sans-serif"],
+        // Typography system: Cinzel for display headings, DM Sans for UI/body text,
+        // Uncial Antiqua for the brand wordmark only. Loaded in index.html.
+        heading: ["Cinzel", "Cormorant Garamond", "Georgia", "Times New Roman", "serif"],
+        ui: ["DM Sans", "system-ui", "-apple-system", "Segoe UI", "Roboto", "Helvetica Neue", "Arial", "sans-serif"],
+        brand: ["Uncial Antiqua", "Cinzel", "Georgia", "serif"],
       },
       // Bumped up from Tailwind's stock scale — sitewide text was reading too
       // small across nav, cards, labels, and body copy. Line-heights keep
@@ -32,6 +39,9 @@ export default {
         "4xl": ["2.625rem", { lineHeight: "2.875rem" }],    // 42px (Tailwind default: 36px)
       },
       colors: {
+        // The one brand accent: antique gold #C7A46A. Driven by --brand-accent-rgb so a scope (e.g. the light devotion pages)
+        // can switch to a darker gold of the same hue; opacity modifiers like border-brand-accent/25 keep working.
+        "brand-accent": "rgb(var(--brand-accent-rgb) / <alpha-value>)",
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",

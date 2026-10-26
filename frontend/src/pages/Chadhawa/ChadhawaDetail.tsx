@@ -75,7 +75,7 @@ const ImageCarousel = ({ images, name, gradient }: { images: string[]; name: str
             ) : (
               <div className="w-full h-full flex flex-col items-center justify-center gap-3 text-white/30">
                 <span className="text-8xl">🛕</span>
-                <span className="font-display text-lg tracking-widest uppercase">{name}</span>
+                <span className="font-ui text-lg tracking-widest uppercase">{name}</span>
               </div>
             )}
           </motion.div>
@@ -83,7 +83,7 @@ const ImageCarousel = ({ images, name, gradient }: { images: string[]; name: str
 
         {/* Counter */}
         {total > 1 && (
-          <div className="absolute top-4 right-4 z-20 bg-black/50 backdrop-blur-sm text-white text-xs px-3 py-1 rounded-full font-display tracking-wider">
+          <div className="absolute top-4 right-4 z-20 bg-black/50 backdrop-blur-sm text-white text-xs px-3 py-1 rounded-full font-ui tracking-wider">
             {current + 1} / {total}
           </div>
         )}
@@ -147,7 +147,7 @@ const ChadhawaDetail = () => {
       <DevotionLayout>
         <div className="min-h-screen pt-24 flex items-center justify-center">
           <div className="text-center">
-            <p className="font-display text-3xl tracking-wider text-muted-foreground mb-4">Could not load temple</p>
+            <p className="font-heading text-3xl tracking-wider text-muted-foreground mb-4">Could not load temple</p>
             <Link to="/chadhawa" className="btn-outline-cosmic px-6 py-3 rounded-lg inline-flex items-center gap-2">
               <ArrowLeft className="w-4 h-4" /> Back to Chadhawa
             </Link>
@@ -162,7 +162,7 @@ const ChadhawaDetail = () => {
       <DevotionLayout>
         <div className="min-h-screen pt-24 flex items-center justify-center">
           <div className="text-center">
-            <p className="font-display text-3xl tracking-wider text-muted-foreground mb-4">Temple not found</p>
+            <p className="font-heading text-3xl tracking-wider text-muted-foreground mb-4">Temple not found</p>
             <Link to="/chadhawa" className="btn-outline-cosmic px-6 py-3 rounded-lg inline-flex items-center gap-2">
               <ArrowLeft className="w-4 h-4" /> Back to Chadhawa
             </Link>
@@ -196,7 +196,7 @@ const ChadhawaDetail = () => {
       {/* ── Breadcrumb ────────────────────────────────────────────────────── */}
       <div className="border-b border-border/20">
         <div className="mx-auto px-6 lg:px-16 py-3" style={{ maxWidth: 1400 }}>
-          <div className="flex items-center gap-2 text-xs text-muted-foreground font-display">
+          <div className="flex items-center gap-2 text-xs text-muted-foreground font-ui">
             <Link to="/" className="hover:text-primary transition-colors">Home</Link>
             <span>/</span>
             <Link to="/chadhawa" className="hover:text-primary transition-colors">Mandir Chadhawa</Link>
@@ -230,7 +230,7 @@ const ChadhawaDetail = () => {
 
               {/* Temple name */}
               <div>
-                <h1 className="font-display text-4xl md:text-5xl tracking-widest uppercase text-foreground leading-tight mb-2">
+                <h1 className="font-heading text-4xl md:text-5xl tracking-widest uppercase text-foreground leading-tight mb-2">
                   {temple.name}
                 </h1>
                 <div className="flex items-center gap-2 text-muted-foreground text-sm mt-2">
@@ -298,8 +298,8 @@ const ChadhawaDetail = () => {
         {/* ── CHOOSE YOUR OFFERING ──────────────────────────────────────────── */}
         <section className="mb-16" id="offerings">
           <div className="text-center mb-10">
-            <p className="text-xs font-display tracking-[0.3em] text-primary/70 uppercase mb-3">Sacred Items</p>
-            <h2 className="font-display text-3xl md:text-4xl tracking-widest uppercase">
+            <p className="text-xs font-ui tracking-[0.3em] text-primary/70 uppercase mb-3">Sacred Items</p>
+            <h2 className="font-heading text-3xl md:text-4xl tracking-widest uppercase">
               <span className="text-foreground">Choose Your </span>
               <span className="text-primary">Offering</span>
             </h2>
@@ -323,20 +323,20 @@ const ChadhawaDetail = () => {
                       viewport={{ once: true }}
                       transition={{ duration: 0.4 }}
                       className={`glass-card rounded-2xl p-4 flex gap-4 items-start border transition-all ${
-                        q > 0 ? 'border-primary/40 shadow-[0_0_24px_rgba(188,106,77,0.10)]' : 'border-border/20'
+                        q > 0 ? 'border-primary/40 shadow-[0_0_24px_rgba(138,109,53,0.10)]' : 'border-border/20'
                       }`}
                     >
                       {/* Emoji icon */}
                       <div
                         className="w-16 h-16 rounded-xl flex items-center justify-center text-3xl flex-shrink-0 border border-primary/20"
-                        style={{ background: 'rgba(188,106,77,0.07)' }}
+                        style={{ background: 'rgba(138,109,53,0.07)' }}
                       >
                         {offering.emoji ?? '🪔'}
                       </div>
 
                       <div className="flex-1 min-w-0">
                         <div className="flex items-start justify-between gap-2 mb-1">
-                          <h3 className="font-display text-sm uppercase tracking-wide text-foreground leading-tight">
+                          <h3 className="font-heading text-sm uppercase tracking-wide text-foreground leading-tight">
                             {offering.name}
                           </h3>
                           <span className="font-bold text-primary text-sm flex-shrink-0">₹{offering.price}</span>
@@ -387,7 +387,7 @@ const ChadhawaDetail = () => {
                 <div className="glass-card rounded-2xl border border-border/30 overflow-hidden">
                   <div className="bg-primary/8 border-b border-border/20 px-5 py-4 flex items-center gap-2">
                     <ShoppingBag className="w-4 h-4 text-primary" />
-                    <span className="font-display text-sm tracking-widest uppercase text-foreground">
+                    <span className="font-ui text-sm tracking-widest uppercase text-foreground">
                       Offering Summary
                     </span>
                   </div>
@@ -452,8 +452,8 @@ const ChadhawaDetail = () => {
         {/* ── CHADHAWA PROCESS TIMELINE ────────────────────────────────────── */}
         <section className="mb-16">
           <div className="text-center mb-12">
-            <p className="text-xs font-display tracking-[0.3em] text-primary/70 uppercase mb-3">Step by Step</p>
-            <h2 className="font-display text-3xl md:text-4xl tracking-widest uppercase">
+            <p className="text-xs font-ui tracking-[0.3em] text-primary/70 uppercase mb-3">Step by Step</p>
+            <h2 className="font-heading text-3xl md:text-4xl tracking-widest uppercase">
               <span className="text-foreground">Chadhawa </span>
               <span className="text-primary">Process</span>
             </h2>
@@ -538,8 +538,8 @@ const ChadhawaDetail = () => {
         {/* ── ABOUT THIS TEMPLE ─────────────────────────────────────────────── */}
         <section className="mb-16">
           <div className="text-center mb-10">
-            <p className="text-xs font-display tracking-[0.3em] text-primary/70 uppercase mb-3">Spiritual Significance</p>
-            <h2 className="font-display text-3xl md:text-4xl tracking-widest uppercase">
+            <p className="text-xs font-ui tracking-[0.3em] text-primary/70 uppercase mb-3">Spiritual Significance</p>
+            <h2 className="font-heading text-3xl md:text-4xl tracking-widest uppercase">
               <span className="text-foreground">More About </span>
               <span className="text-primary">Chadhawa</span>
             </h2>
@@ -594,8 +594,8 @@ const ChadhawaDetail = () => {
         {/* ── FAQ + ILLUSTRATION ────────────────────────────────────────────── */}
         <section className="mb-16">
           <div className="text-center mb-10">
-            <p className="text-xs font-display tracking-[0.3em] text-primary/70 uppercase mb-3">Help Centre</p>
-            <h2 className="font-display text-3xl md:text-4xl tracking-widest uppercase">
+            <p className="text-xs font-ui tracking-[0.3em] text-primary/70 uppercase mb-3">Help Centre</p>
+            <h2 className="font-heading text-3xl md:text-4xl tracking-widest uppercase">
               <span className="text-foreground">Frequently Asked </span>
               <span className="text-primary">Questions</span>
             </h2>
@@ -642,8 +642,8 @@ const ChadhawaDetail = () => {
                 <div
                   className="absolute inset-0 rounded-full"
                   style={{
-                    background: 'radial-gradient(circle at 50% 50%, rgba(188,106,77,0.12) 0%, rgba(188,106,77,0.04) 55%, transparent 75%)',
-                    boxShadow: '0 0 80px rgba(188,106,77,0.15)',
+                    background: 'radial-gradient(circle at 50% 50%, rgba(138,109,53,0.12) 0%, rgba(138,109,53,0.04) 55%, transparent 75%)',
+                    boxShadow: '0 0 80px rgba(138,109,53,0.15)',
                   }}
                 />
                 {/* Concentric rings */}
@@ -662,8 +662,8 @@ const ChadhawaDetail = () => {
                 ))}
                 {/* Center deity emoji */}
                 <div className="absolute inset-0 flex flex-col items-center justify-center">
-                  <span className="text-7xl mb-2" style={{ filter: 'drop-shadow(0 0 24px rgba(188,106,77,0.5))' }}>🪷</span>
-                  <p className="font-display text-xs tracking-[0.3em] uppercase text-primary/60">Sacred Offering</p>
+                  <span className="text-7xl mb-2" style={{ filter: 'drop-shadow(0 0 24px rgba(138,109,53,0.5))' }}>🪷</span>
+                  <p className="font-ui text-xs tracking-[0.3em] uppercase text-primary/60">Sacred Offering</p>
                 </div>
                 {/* Petal dots */}
                 {Array.from({ length: 8 }).map((_, i) => {
@@ -688,10 +688,10 @@ const ChadhawaDetail = () => {
         {/* ── NEWSLETTER ────────────────────────────────────────────────────── */}
         <section className="mb-16">
           <div className="glass-card rounded-3xl p-8 md:p-12 text-center border border-primary/15"
-            style={{ background: 'linear-gradient(135deg, rgba(188,106,77,0.06) 0%, rgba(255,252,248,0.7) 100%)' }}
+            style={{ background: 'linear-gradient(135deg, rgba(138,109,53,0.06) 0%, rgba(255,252,248,0.7) 100%)' }}
           >
-            <p className="text-xs font-display tracking-[0.3em] text-primary/70 uppercase mb-3">Our Newsletter</p>
-            <h2 className="font-display text-2xl md:text-3xl tracking-widest uppercase text-foreground mb-3">
+            <p className="text-xs font-ui tracking-[0.3em] text-primary/70 uppercase mb-3">Our Newsletter</p>
+            <h2 className="font-heading text-2xl md:text-3xl tracking-widest uppercase text-foreground mb-3">
               Sign Up Our Mailbox
             </h2>
             <p className="text-sm text-muted-foreground max-w-sm mx-auto mb-8 leading-relaxed">
@@ -721,7 +721,7 @@ const ChadhawaDetail = () => {
         {/* ── RELATED TEMPLES ───────────────────────────────────────────────── */}
         <section>
           <div className="text-center mb-8">
-            <h2 className="font-display text-2xl md:text-3xl tracking-widest uppercase">
+            <h2 className="font-heading text-2xl md:text-3xl tracking-widest uppercase">
               <span className="text-foreground">More </span>
               <span className="text-primary">Chadhawas</span>
             </h2>
@@ -746,7 +746,7 @@ const ChadhawaDetail = () => {
                 </div>
                 <div className="p-5 flex items-center justify-between">
                   <div>
-                    <p className="font-display text-sm tracking-wider uppercase text-foreground group-hover:text-primary transition-colors line-clamp-1 mb-1">
+                    <p className="font-ui text-sm tracking-wider uppercase text-foreground group-hover:text-primary transition-colors line-clamp-1 mb-1">
                       {t.name}
                     </p>
                     <p className="text-xs text-muted-foreground">{t.location}</p>

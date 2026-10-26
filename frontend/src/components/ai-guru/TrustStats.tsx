@@ -17,12 +17,12 @@ const TrustStats = () => (
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, delay: i * 0.06 }}
         whileHover={{ y: -3 }}
-        className="flex flex-col items-center gap-1.5 rounded-[20px] border border-white/[0.08] bg-[#17181F] px-4 py-5 text-center shadow-[0_0_0_rgba(255,157,77,0)] transition-shadow hover:shadow-[0_0_28px_rgba(255,157,77,0.12)]"
+        className="flex flex-col items-center gap-1.5 rounded-[20px] border border-white/[0.08] bg-[#17181F] px-4 py-5 text-center shadow-[0_0_0_rgba(199,164,106,0)] transition-shadow hover:shadow-[0_0_28px_rgba(199,164,106,0.12)]"
       >
-        <Icon className="h-5 w-5 text-[#F5C76E]" />
-        <div className="font-['Cormorant_Garamond'] text-2xl font-semibold text-white">{value}</div>
+        <Icon className="h-5 w-5 text-[#C7A46A]" />
+        <div className="font-heading text-2xl font-semibold text-white">{value}</div>
         <div className="text-[11px] uppercase tracking-wide text-[#6B7280]">{label}</div>
-        {extra && <div className="text-xs leading-none text-[#F5C76E]">{extra}</div>}
+        {extra && <div className="text-xs leading-none text-[#C7A46A]">{extra}</div>}
       </motion.div>
     ))}
   </div>

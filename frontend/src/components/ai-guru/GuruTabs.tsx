@@ -26,25 +26,25 @@ const GuruTabs = ({ activeTab, onChange, reportReady, reportGenerating }: GuruTa
         onClick={() => onChange(key)}
         className={cn(
           "relative flex shrink-0 items-center gap-2 px-4 py-3.5 text-sm font-medium text-[#6B7280] transition-colors hover:text-[#A3A3B2]",
-          activeTab === key && "text-[#FF9D4D]",
+          activeTab === key && "text-[#C7A46A]",
         )}
       >
         <Icon className="h-4 w-4" />
         {label}
         {key === "report" && reportReady && (
-          <span className="rounded-full border border-[#FF9D4D]/35 bg-[#FF9D4D]/15 px-2 py-0.5 text-[10px] text-[#FF9D4D]">
+          <span className="rounded-full border border-[#C7A46A]/35 bg-[#C7A46A]/15 px-2 py-0.5 text-[10px] text-[#C7A46A]">
             Ready
           </span>
         )}
         {key === "report" && reportGenerating && (
-          <span className="rounded-full border border-[#FF9D4D]/35 bg-[#FF9D4D]/15 px-2 py-0.5 text-[10px] text-[#FF9D4D]">
+          <span className="rounded-full border border-[#C7A46A]/35 bg-[#C7A46A]/15 px-2 py-0.5 text-[10px] text-[#C7A46A]">
             Generating…
           </span>
         )}
         {activeTab === key && (
           <motion.div
             layoutId="guru-tab-underline"
-            className="absolute inset-x-2 -bottom-px h-[2px] rounded-full bg-[#FF9D4D] shadow-[0_0_8px_rgba(255,157,77,0.7)]"
+            className="absolute inset-x-2 -bottom-px h-[2px] rounded-full bg-[#C7A46A] shadow-[0_0_8px_rgba(199,164,106,0.7)]"
             transition={{ type: "spring", stiffness: 400, damping: 32 }}
           />
         )}

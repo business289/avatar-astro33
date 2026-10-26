@@ -27,7 +27,7 @@ export function AdminHeader({ title, onMenuClick }: AdminHeaderProps) {
         >
           <Menu className="h-5 w-5" />
         </Button>
-        <h1 className="font-display text-lg tracking-wide text-white sm:text-xl">
+        <h1 className="font-heading text-lg tracking-wide text-white sm:text-xl">
           {title}
         </h1>
       </div>

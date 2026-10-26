@@ -49,7 +49,7 @@ const Contact = () => {
       <div className="container mx-auto px-4">
         {/* Header */}
         <div className="text-center mb-12">
-          <h1 className="page-title font-display text-4xl md:text-5xl lg:text-6xl text-glow text-primary mb-4">
+          <h1 className="page-title font-heading text-4xl md:text-5xl lg:text-6xl text-glow text-primary mb-4">
             Contact Us
           </h1>
           <p className="text-muted-foreground max-w-2xl mx-auto">
@@ -60,14 +60,14 @@ const Contact = () => {
         <div className="grid lg:grid-cols-2 gap-8 max-w-5xl mx-auto">
           {/* Form */}
           <div className="contact-form glass-card rounded-2xl p-6 md:p-8">
-            <h2 className="font-display text-xl text-foreground mb-6">Send a Message</h2>
+            <h2 className="font-heading text-xl text-foreground mb-6">Send a Message</h2>
             
             {isSubmitted ? (
               <div className="text-center py-12">
                 <div className="w-16 h-16 bg-primary/20 rounded-full flex items-center justify-center mx-auto mb-4">
                   <Check className="w-8 h-8 text-primary" />
                 </div>
-                <h3 className="font-display text-xl text-foreground mb-2">Message Sent!</h3>
+                <h3 className="font-heading text-xl text-foreground mb-2">Message Sent!</h3>
                 <p className="text-muted-foreground">We'll  get back to you as soon as the stars align.</p>
               </div>
             ) : (
@@ -137,7 +137,7 @@ const Contact = () => {
           {/* Info */}
           <div className="contact-info space-y-6">
             <div className="glass-card rounded-2xl p-6 md:p-8">
-              <h2 className="font-display text-xl text-foreground mb-6">Get in Touch</h2>
+              <h2 className="font-heading text-xl text-foreground mb-6">Get in Touch</h2>
               <div className="space-y-6">
                 {contactInfo.map((item) => (
                   <div key={item.label} className="flex items-start gap-4">
@@ -146,7 +146,7 @@ const Contact = () => {
                     </div>
                     <div>
                       <p className="text-sm text-muted-foreground">{item.label}</p>
-                      <p className="font-display text-foreground">{item.value}</p>
+                      <p className="font-ui text-foreground">{item.value}</p>
                     </div>
                   </div>
                 ))}
@@ -154,7 +154,7 @@ const Contact = () => {
             </div>
 
             <div className="glass-card rounded-2xl p-6 md:p-8">
-              <h3 className="font-display text-lg text-foreground mb-4">Office Hours</h3>
+              <h3 className="font-heading text-lg text-foreground mb-4">Office Hours</h3>
               <div className="space-y-2 text-muted-foreground text-sm">
                 <p>Monday - Friday: 9am - 6pm PST</p>
                 <p>Saturday: 10am - 4pm PST</p>

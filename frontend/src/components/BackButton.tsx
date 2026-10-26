@@ -71,20 +71,20 @@ const BackButton = () => {
             // glass surface
             'bg-[rgba(8,10,18,0.62)] backdrop-blur-md',
             // border — dim terracotta that brightens on hover
-            'border border-[rgba(188,106,77,0.16)]',
-            'hover:border-[rgba(188,106,77,0.44)]',
+            'border border-[rgba(199,164,106,0.16)]',
+            'hover:border-[rgba(199,164,106,0.44)]',
             // text — dim terracotta → full terracotta
-            'text-[rgba(188,106,77,0.50)]',
-            'hover:text-[#BC6A4D]',
+            'text-[rgba(199,164,106,0.50)]',
+            'hover:text-[#C7A46A]',
             // glow on hover
             'hover:bg-[rgba(8,10,18,0.82)]',
-            'hover:shadow-[0_0_18px_rgba(188,106,77,0.10)]',
+            'hover:shadow-[0_0_18px_rgba(199,164,106,0.10)]',
             // transitions
             'transition-all duration-300 ease-out',
             // accessibility
             'cursor-pointer select-none',
             'focus:outline-none',
-            'focus-visible:ring-2 focus-visible:ring-[rgba(188,106,77,0.48)]',
+            'focus-visible:ring-2 focus-visible:ring-[rgba(199,164,106,0.48)]',
             'focus-visible:ring-offset-2 focus-visible:ring-offset-transparent',
             // minimum touch target
             'min-h-[44px] min-w-[44px]',
@@ -99,7 +99,7 @@ const BackButton = () => {
           {/* Label */}
           <span
             className="text-[10px] tracking-[3px] uppercase leading-none"
-            style={{ fontFamily: "'Astra','Iceland',sans-serif" }}
+            style={{ fontFamily: "'DM Sans', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif" }}
           >
             Back
           </span>

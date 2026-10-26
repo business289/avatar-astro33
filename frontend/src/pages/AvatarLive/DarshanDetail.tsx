@@ -35,12 +35,12 @@ const PrayerWall = ({ templeId }: { templeId: string }) => {
   return (
     <div style={{
       background: '#FFF', borderRadius: 20,
-      border: '1.5px solid rgba(188,106,77,0.13)',
+      border: '1.5px solid rgba(138,109,53,0.13)',
       boxShadow: '0 4px 20px rgba(120,60,20,0.07)',
       overflow: 'hidden',
     }}>
-      <div style={{ padding: '20px 24px 0', borderBottom: '1px solid rgba(188,106,77,0.12)' }}>
-        <h3 className="font-display uppercase tracking-wide" style={{ fontSize: 19, color: '#2C1810', marginBottom: 16 }}>
+      <div style={{ padding: '20px 24px 0', borderBottom: '1px solid rgba(138,109,53,0.12)' }}>
+        <h3 className="font-heading uppercase tracking-wide" style={{ fontSize: 19, color: '#2C1810', marginBottom: 16 }}>
           Prayer Wall
         </h3>
 
@@ -53,7 +53,7 @@ const PrayerWall = ({ templeId }: { templeId: string }) => {
             style={{
               width: '100%', marginBottom: 10, height: 40, padding: '0 14px',
               fontSize: 13, color: '#2C1810', background: 'rgba(248,242,232,0.6)',
-              border: '1px solid rgba(188,106,77,0.18)', borderRadius: 10, outline: 'none',
+              border: '1px solid rgba(138,109,53,0.18)', borderRadius: 10, outline: 'none',
             }}
           />
           <div style={{ display: 'flex', gap: 10 }}>
@@ -65,14 +65,14 @@ const PrayerWall = ({ templeId }: { templeId: string }) => {
               style={{
                 flex: 1, height: 44, padding: '0 14px',
                 fontSize: 13, color: '#2C1810', background: 'rgba(248,242,232,0.6)',
-                border: '1px solid rgba(188,106,77,0.18)', borderRadius: 10, outline: 'none',
+                border: '1px solid rgba(138,109,53,0.18)', borderRadius: 10, outline: 'none',
               }}
             />
             <button
               onClick={submit}
               style={{
                 width: 44, height: 44, borderRadius: 10, border: 'none', cursor: 'pointer',
-                background: 'linear-gradient(135deg, #BC6A4D 0%, #BC6A4D 100%)',
+                background: 'linear-gradient(135deg, #8A6D35 0%, #8A6D35 100%)',
                 color: '#FFF', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
               }}
             >
@@ -91,7 +91,7 @@ const PrayerWall = ({ templeId }: { templeId: string }) => {
               initial={{ opacity: 0, y: -12 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0 }}
-              style={{ padding: '10px 24px', display: 'flex', gap: 10, alignItems: 'flex-start', borderBottom: '1px solid rgba(188,106,77,0.07)' }}
+              style={{ padding: '10px 24px', display: 'flex', gap: 10, alignItems: 'flex-start', borderBottom: '1px solid rgba(138,109,53,0.07)' }}
             >
               <span style={{ fontSize: 20, flexShrink: 0, lineHeight: 1 }}>{p.emoji}</span>
               <div style={{ flex: 1, minWidth: 0 }}>
@@ -122,7 +122,7 @@ const OfflineDarshanState = ({ temple }: { temple: (typeof liveTemples)[0] }) =>
       textAlign: 'center', padding: '32px 24px',
     }}>
       <Radio style={{ width: 34, height: 34, color: 'rgba(255,255,255,0.85)', marginBottom: 14 }} />
-      <h2 className="font-display uppercase tracking-wide" style={{ fontSize: 28, fontWeight: 800, color: '#FFF', marginBottom: 8 }}>
+      <h2 className="font-heading uppercase tracking-wide" style={{ fontSize: 28, fontWeight: 700, color: '#FFF', marginBottom: 8 }}>
         Live Darshan is Currently Offline
       </h2>
       <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.8)', marginBottom: 20 }}>
@@ -149,11 +149,11 @@ const OfflineDarshanState = ({ temple }: { temple: (typeof liveTemples)[0] }) =>
         disabled={notifyRequested}
         style={{
           display: 'inline-flex', alignItems: 'center', gap: 8,
-          background: notifyRequested ? 'rgba(255,255,255,0.15)' : 'linear-gradient(135deg, #BC6A4D 0%, #BC6A4D 100%)',
+          background: notifyRequested ? 'rgba(255,255,255,0.15)' : 'linear-gradient(135deg, #8A6D35 0%, #8A6D35 100%)',
           color: '#FFF', fontSize: 14, fontWeight: 700, letterSpacing: '0.08em',
           padding: '13px 26px', borderRadius: 12, border: 'none',
           cursor: notifyRequested ? 'default' : 'pointer',
-          fontFamily: 'Iceland, sans-serif',
+          fontFamily: "'DM Sans', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif",
         }}
       >
         <BellRing style={{ width: 15, height: 15 }} />
@@ -334,10 +334,10 @@ const LiveEmbedPlayer = ({ videoId }: { videoId: string }) => {
             rel="noopener noreferrer"
             style={{
               display: 'inline-flex', alignItems: 'center', gap: 8,
-              background: 'linear-gradient(135deg, #BC6A4D 0%, #BC6A4D 100%)',
+              background: 'linear-gradient(135deg, #8A6D35 0%, #8A6D35 100%)',
               color: '#FFF', fontSize: 13, fontWeight: 700, letterSpacing: '0.08em',
               padding: '13px 26px', borderRadius: 12, textDecoration: 'none',
-              fontFamily: 'Iceland, sans-serif',
+              fontFamily: "'DM Sans', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif",
             }}
           >
             Watch on YouTube
@@ -355,16 +355,16 @@ const DonationCard = ({ templeName }: { templeName: string }) => {
 
   return (
     <div style={{
-      background: 'linear-gradient(135deg, rgba(188,106,77,0.08) 0%, rgba(188,106,77,0.05) 100%)',
-      borderRadius: 20, border: '1.5px solid rgba(188,106,77,0.20)',
+      background: 'linear-gradient(135deg, rgba(138,109,53,0.08) 0%, rgba(138,109,53,0.05) 100%)',
+      borderRadius: 20, border: '1.5px solid rgba(138,109,53,0.20)',
       boxShadow: '0 4px 20px rgba(120,60,20,0.06)',
       overflow: 'hidden',
     }}>
-      <div style={{ background: 'linear-gradient(135deg, #BC6A4D 0%, #BC6A4D 100%)', padding: '20px 24px' }}>
+      <div style={{ background: 'linear-gradient(135deg, #8A6D35 0%, #8A6D35 100%)', padding: '20px 24px' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
           <span style={{ fontSize: 24 }}>🪔</span>
           <div>
-            <h3 className="font-display uppercase tracking-wide" style={{ fontSize: 17, color: '#FFF', fontWeight: 700 }}>
+            <h3 className="font-heading uppercase tracking-wide" style={{ fontSize: 17, color: '#FFF', fontWeight: 700 }}>
               Make a Donation
             </h3>
             <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.75)' }}>Contribute to {templeName}</p>
@@ -381,9 +381,9 @@ const DonationCard = ({ templeName }: { templeName: string }) => {
               onClick={() => setAmount(p)}
               style={{
                 padding: '9px 4px', borderRadius: 10, cursor: 'pointer', fontSize: 14, fontWeight: 600,
-                border: amount === p ? '1.5px solid #BC6A4D' : '1.5px solid rgba(188,106,77,0.22)',
-                background: amount === p ? 'rgba(188,106,77,0.1)' : 'transparent',
-                color: amount === p ? '#BC6A4D' : '#7A5C42',
+                border: amount === p ? '1.5px solid #8A6D35' : '1.5px solid rgba(138,109,53,0.22)',
+                background: amount === p ? 'rgba(138,109,53,0.1)' : 'transparent',
+                color: amount === p ? '#8A6D35' : '#7A5C42',
               }}
             >
               ₹{p}
@@ -400,7 +400,7 @@ const DonationCard = ({ templeName }: { templeName: string }) => {
           style={{
             width: '100%', height: 44, padding: '0 16px', marginBottom: 16,
             fontSize: 14, color: '#2C1810', background: '#FFF',
-            border: '1.5px solid rgba(188,106,77,0.22)', borderRadius: 12, outline: 'none',
+            border: '1.5px solid rgba(138,109,53,0.22)', borderRadius: 12, outline: 'none',
           }}
         />
 
@@ -408,10 +408,10 @@ const DonationCard = ({ templeName }: { templeName: string }) => {
           onClick={() => {}}
           style={{
             width: '100%', padding: '14px', borderRadius: 12, border: 'none', cursor: 'pointer',
-            background: amount ? 'linear-gradient(135deg, #BC6A4D 0%, #BC6A4D 100%)' : 'rgba(188,106,77,0.15)',
-            color: amount ? '#FFF' : 'rgba(188,106,77,0.5)',
+            background: amount ? 'linear-gradient(135deg, #8A6D35 0%, #8A6D35 100%)' : 'rgba(138,109,53,0.15)',
+            color: amount ? '#FFF' : 'rgba(138,109,53,0.5)',
             fontSize: 15, fontWeight: 700, letterSpacing: '0.08em',
-            fontFamily: 'Iceland, sans-serif', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+            fontFamily: "'DM Sans', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif", display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
             transition: 'all 0.25s',
           }}
         >
@@ -495,8 +495,8 @@ const DarshanDetail = () => {
       <DevotionLayout>
         <div style={{ paddingTop: 80, minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           <div style={{ textAlign: 'center' }}>
-            <p className="font-display" style={{ fontSize: 28, color: '#9C7B62', letterSpacing: '0.1em' }}>Temple not found</p>
-            <Link to="/avatar-live/darshan" style={{ color: '#BC6A4D', textDecoration: 'none', fontWeight: 600, fontSize: 14, marginTop: 16, display: 'block' }}>
+            <p className="font-heading" style={{ fontSize: 28, color: '#9C7B62', letterSpacing: '0.1em' }}>Temple not found</p>
+            <Link to="/avatar-live/darshan" style={{ color: '#8A6D35', textDecoration: 'none', fontWeight: 600, fontSize: 14, marginTop: 16, display: 'block' }}>
               ← Back to Darshan
             </Link>
           </div>
@@ -512,9 +512,9 @@ const DarshanDetail = () => {
         {/* ── BREADCRUMB ──────────────────────────────────────────────── */}
         <div style={{ maxWidth: 1280, margin: '0 auto', padding: '24px 48px 0' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, color: '#9C7B62' }}>
-            <Link to="/avatar-live" style={{ color: '#BC6A4D', textDecoration: 'none' }}>Live</Link>
+            <Link to="/avatar-live" style={{ color: '#8A6D35', textDecoration: 'none' }}>Live</Link>
             <span>/</span>
-            <Link to="/avatar-live/darshan" style={{ color: '#BC6A4D', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 4 }}>
+            <Link to="/avatar-live/darshan" style={{ color: '#8A6D35', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 4 }}>
               <ArrowLeft style={{ width: 12, height: 12 }} /> Live Darshan
             </Link>
             <span>/</span>
@@ -574,20 +574,20 @@ const DarshanDetail = () => {
                   onClick={() => setLiked(l => !l)}
                   style={{
                     display: 'flex', alignItems: 'center', gap: 6, padding: '9px 16px',
-                    borderRadius: 10, border: '1.5px solid rgba(188,106,77,0.22)',
-                    background: liked ? 'rgba(188,106,77,0.1)' : 'transparent',
-                    color: liked ? '#BC6A4D' : '#7A5C42',
+                    borderRadius: 10, border: '1.5px solid rgba(138,109,53,0.22)',
+                    background: liked ? 'rgba(138,109,53,0.1)' : 'transparent',
+                    color: liked ? '#8A6D35' : '#7A5C42',
                     fontSize: 13, fontWeight: 600, cursor: 'pointer',
                   }}
                 >
-                  <Heart style={{ width: 14, height: 14, fill: liked ? '#BC6A4D' : 'none' }} />
+                  <Heart style={{ width: 14, height: 14, fill: liked ? '#8A6D35' : 'none' }} />
                   {liked ? 'Saved' : 'Save'}
                 </button>
                 {temple.website && (
                   <a href={temple.website} target="_blank" rel="noopener noreferrer" style={{
                     display: 'flex', alignItems: 'center', gap: 6, padding: '9px 16px',
-                    borderRadius: 10, border: '1.5px solid rgba(188,106,77,0.22)',
-                    background: 'transparent', color: '#BC6A4D', fontSize: 13, fontWeight: 600,
+                    borderRadius: 10, border: '1.5px solid rgba(138,109,53,0.22)',
+                    background: 'transparent', color: '#8A6D35', fontSize: 13, fontWeight: 600,
                     textDecoration: 'none',
                   }}>
                     <ExternalLink style={{ width: 13, height: 13 }} /> Website
@@ -606,13 +606,13 @@ const DarshanDetail = () => {
             <div>
               {/* Header */}
               <div style={{ marginBottom: 24 }}>
-                <h1 className="font-display uppercase tracking-wide leading-tight"
-                  style={{ fontSize: 'clamp(34px, 4vw, 50px)', fontWeight: 800, color: '#2C1810', marginBottom: 8 }}>
+                <h1 className="font-heading uppercase tracking-wide leading-tight"
+                  style={{ fontSize: 'clamp(34px, 4vw, 50px)', fontWeight: 700, color: '#2C1810', marginBottom: 8 }}>
                   {temple.name}
                 </h1>
-                <p style={{ fontSize: 17, color: '#BC6A4D', fontWeight: 600, marginBottom: 8 }}>{temple.deity}</p>
+                <p style={{ fontSize: 17, color: '#8A6D35', fontWeight: 600, marginBottom: 8 }}>{temple.deity}</p>
                 <p style={{ fontSize: 15, color: '#6B4E3D', display: 'flex', alignItems: 'center', gap: 6 }}>
-                  <MapPin style={{ width: 15, height: 15, color: '#BC6A4D' }} />
+                  <MapPin style={{ width: 15, height: 15, color: '#8A6D35' }} />
                   {temple.city}, {temple.state}
                 </p>
               </div>
@@ -620,7 +620,7 @@ const DarshanDetail = () => {
               {/* Description */}
               <div style={{
                 background: '#FFF', borderRadius: 16,
-                border: '1.5px solid rgba(188,106,77,0.10)',
+                border: '1.5px solid rgba(138,109,53,0.10)',
                 padding: '20px 24px', marginBottom: 20,
               }}>
                 <p style={{ fontSize: 14, color: 'rgba(44,24,16,0.65)', lineHeight: 1.8 }}>
@@ -633,21 +633,21 @@ const DarshanDetail = () => {
                 display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14,
                 marginBottom: 24,
               }}>
-                <div style={{ background: '#FFF', borderRadius: 14, border: '1.5px solid rgba(188,106,77,0.10)', padding: '16px 18px' }}>
+                <div style={{ background: '#FFF', borderRadius: 14, border: '1.5px solid rgba(138,109,53,0.10)', padding: '16px 18px' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
-                    <Clock style={{ width: 14, height: 14, color: '#BC6A4D' }} />
-                    <p style={{ fontSize: 12, fontWeight: 700, color: '#BC6A4D', letterSpacing: '0.12em', textTransform: 'uppercase' }}>Darshan</p>
+                    <Clock style={{ width: 14, height: 14, color: '#8A6D35' }} />
+                    <p style={{ fontSize: 12, fontWeight: 700, color: '#8A6D35', letterSpacing: '0.12em', textTransform: 'uppercase' }}>Darshan</p>
                   </div>
                   <p style={{ fontSize: 15, color: '#2C1810', fontWeight: 600 }}>{temple.darshanTimings}</p>
                 </div>
-                <div style={{ background: '#FFF', borderRadius: 14, border: '1.5px solid rgba(188,106,77,0.10)', padding: '16px 18px' }}>
+                <div style={{ background: '#FFF', borderRadius: 14, border: '1.5px solid rgba(138,109,53,0.10)', padding: '16px 18px' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
                     <span style={{ fontSize: 14 }}>🪔</span>
-                    <p style={{ fontSize: 12, fontWeight: 700, color: '#BC6A4D', letterSpacing: '0.12em', textTransform: 'uppercase' }}>Aarti Times</p>
+                    <p style={{ fontSize: 12, fontWeight: 700, color: '#8A6D35', letterSpacing: '0.12em', textTransform: 'uppercase' }}>Aarti Times</p>
                   </div>
                   <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5 }}>
                     {temple.aartTimings.map(t => (
-                      <span key={t} style={{ fontSize: 13, color: '#2C1810', background: 'rgba(188,106,77,0.08)', padding: '3px 8px', borderRadius: 6 }}>{t}</span>
+                      <span key={t} style={{ fontSize: 13, color: '#2C1810', background: 'rgba(138,109,53,0.08)', padding: '3px 8px', borderRadius: 6 }}>{t}</span>
                     ))}
                   </div>
                 </div>
@@ -656,7 +656,7 @@ const DarshanDetail = () => {
               {/* YouTube channel link */}
               {temple.youtubeChannelName && (
                 <div style={{
-                  background: '#FFF', borderRadius: 14, border: '1.5px solid rgba(188,106,77,0.10)',
+                  background: '#FFF', borderRadius: 14, border: '1.5px solid rgba(138,109,53,0.10)',
                   padding: '14px 18px', marginBottom: 24,
                   display: 'flex', alignItems: 'center', gap: 12,
                 }}>
@@ -681,11 +681,11 @@ const DarshanDetail = () => {
               {/* Quick info */}
               <div style={{
                 background: '#FFF', borderRadius: 20,
-                border: '1.5px solid rgba(188,106,77,0.13)',
+                border: '1.5px solid rgba(138,109,53,0.13)',
                 boxShadow: '0 4px 20px rgba(120,60,20,0.07)',
                 padding: '20px 24px',
               }}>
-                <h3 className="font-display uppercase tracking-wide" style={{ fontSize: 17, color: '#2C1810', marginBottom: 14 }}>Quick Info</h3>
+                <h3 className="font-heading uppercase tracking-wide" style={{ fontSize: 17, color: '#2C1810', marginBottom: 14 }}>Quick Info</h3>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
                   {[
                     { label: 'Category', value: temple.category },
@@ -704,7 +704,7 @@ const DarshanDetail = () => {
               <Link to="/avatar-live/darshan" style={{
                 display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
                 padding: '14px', borderRadius: 12, textDecoration: 'none',
-                border: '1.5px solid rgba(188,106,77,0.22)', color: '#BC6A4D',
+                border: '1.5px solid rgba(138,109,53,0.22)', color: '#8A6D35',
                 fontSize: 14, fontWeight: 600, background: 'transparent',
                 transition: 'background 0.2s',
               }}>
@@ -721,7 +721,7 @@ const DarshanDetail = () => {
           return (
             <section style={{ padding: '0 48px 64px' }}>
               <div style={{ maxWidth: 1280, margin: '0 auto' }}>
-                <h2 className="font-display font-bold tracking-wide uppercase" style={{ fontSize: 23, color: '#2C1810', marginBottom: 20 }}>
+                <h2 className="font-heading font-bold tracking-wide uppercase" style={{ fontSize: 23, color: '#2C1810', marginBottom: 20 }}>
                   Also Live Now
                 </h2>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 20 }}>
@@ -729,7 +729,7 @@ const DarshanDetail = () => {
                     <Link key={t.id} to={`/avatar-live/darshan/${t.slug}`} style={{ textDecoration: 'none' }}>
                       <div style={{
                         background: '#FFF', borderRadius: 16,
-                        border: '1.5px solid rgba(188,106,77,0.13)',
+                        border: '1.5px solid rgba(138,109,53,0.13)',
                         overflow: 'hidden', display: 'flex', gap: 14, padding: 16, alignItems: 'center',
                         transition: 'box-shadow 0.2s',
                       }}

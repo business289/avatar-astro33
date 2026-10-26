@@ -26,7 +26,7 @@ const NotFound = () => {
         <div className="not-found-symbol text-8xl md:text-9xl mb-6 text-glow">
           <Sparkles className="w-24 h-24 md:w-32 md:h-32 text-primary mx-auto" />
         </div>
-        <h1 className="not-found-text font-display text-5xl md:text-7xl text-foreground mb-4">404</h1>
+        <h1 className="not-found-text font-heading text-5xl md:text-7xl text-foreground mb-4">404</h1>
         <p className="not-found-text text-xl md:text-2xl text-muted-foreground mb-2">
           Lost in the Cosmos
         </p>

@@ -81,7 +81,7 @@ const StarField = () => {
       // Draw constellation lines
       constellationLinesRef.current.forEach((line) => {
         ctx.beginPath();
-        ctx.strokeStyle = `rgba(188, 106, 77, ${line.opacity})`;
+        ctx.strokeStyle = `rgba(199, 164, 106, ${line.opacity})`;
         ctx.lineWidth = 0.5;
         ctx.setLineDash([4, 8]);
         ctx.moveTo(line.x1, line.y1);
@@ -109,9 +109,9 @@ const StarField = () => {
             star.x + parallaxX, star.y + parallaxY, 0,
             star.x + parallaxX, star.y + parallaxY, star.size * 3
           );
-          gradient.addColorStop(0, `rgba(188, 106, 77, ${opacity})`);
-          gradient.addColorStop(0.5, `rgba(188, 106, 77, ${opacity * 0.3})`);
-          gradient.addColorStop(1, 'rgba(188, 106, 77, 0)');
+          gradient.addColorStop(0, `rgba(199, 164, 106, ${opacity})`);
+          gradient.addColorStop(0.5, `rgba(199, 164, 106, ${opacity * 0.3})`);
+          gradient.addColorStop(1, 'rgba(199, 164, 106, 0)');
           ctx.fillStyle = gradient;
           ctx.arc(star.x + parallaxX, star.y + parallaxY, star.size * 3, 0, Math.PI * 2);
         } else {

@@ -57,7 +57,7 @@ class SceneBoundary extends React.Component<
     if (this.state.crashed) {
       return (
         <div className="absolute inset-0 flex items-center justify-center">
-          <span className="text-sm text-muted-foreground font-display tracking-wider">
+          <span className="text-sm text-muted-foreground font-ui tracking-wider">
             Scene unavailable — reload to retry
           </span>
         </div>
@@ -71,7 +71,7 @@ const SceneLoader = memo(() => (
   <div className="absolute inset-0 flex items-center justify-center">
     <div className="flex flex-col items-center gap-4">
       <div className="w-12 h-12 rounded-full border-2 border-primary border-t-transparent animate-spin" />
-      <span className="text-sm text-muted-foreground font-display tracking-wider">
+      <span className="text-sm text-muted-foreground font-ui tracking-wider">
         Loading cosmos...
       </span>
     </div>
@@ -156,14 +156,14 @@ export const ScrollytellingHero = () => {
             <h1
               className="text-center select-none uppercase mx-auto mb-6 flex flex-col justify-between w-full max-w-[1438px] lg:h-[200px] text-[48px] md:text-[68px] lg:text-[88px] leading-[58px] md:leading-[82px] lg:leading-[104px] tracking-[2.4px] md:tracking-[3.6px] lg:tracking-[4.8px] font-bold"
               style={{
-                fontFamily: "'Astra', 'Iceland', sans-serif",
+                fontFamily: "'Cinzel', 'Cormorant Garamond', Georgia, 'Times New Roman', serif",
               }}
             >
               <span className="text-[#D16B3C] block">Journey Through</span>
               <span className="text-white block">The Cosmos</span>
             </h1>
 
-            <p className="text-base md:text-lg text-foreground/90 font-astra font-normal max-w-xl mx-auto tracking-wider mb-6">
+            <p className="text-base md:text-lg text-foreground/90 font-ui font-normal max-w-xl mx-auto tracking-wider mb-6">
               Discover daily planetary wisdom aligned with your zodiac sign
             </p>
           </motion.div>
@@ -178,7 +178,7 @@ export const ScrollytellingHero = () => {
           className="absolute bottom-6 left-1/2 -translate-x-1/2 z-20 pointer-events-none flex flex-col items-center gap-3 text-center px-4"
         >
           <p
-            className="text-sm font-display tracking-[0.22em] uppercase whitespace-nowrap"
+            className="text-sm font-ui tracking-[0.22em] uppercase whitespace-nowrap"
             style={{
               color: "rgba(255,255,255,0.7)",
               textShadow: "0 0 24px rgba(255,200,80,0.5)",
@@ -187,7 +187,7 @@ export const ScrollytellingHero = () => {
             ✦ Click a planet to discover today's cosmic influence ✦
           </p>
           <div className="flex flex-col items-center gap-2">
-            <span className="text-xs text-muted-foreground font-display tracking-widest uppercase">
+            <span className="text-xs text-muted-foreground font-ui tracking-widest uppercase">
               Scroll Downward
             </span>
             <motion.div

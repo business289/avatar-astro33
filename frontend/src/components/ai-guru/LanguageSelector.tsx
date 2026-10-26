@@ -32,7 +32,7 @@ function LanguageSelector<T extends string>({ label, value, options, onChange }:
         onClick={() => setOpen((o) => !o)}
         aria-haspopup="listbox"
         aria-expanded={open}
-        className="flex items-center gap-1.5 rounded-full border border-white/[0.08] bg-[#17181F] px-3 py-1.5 text-xs text-[#A3A3B2] transition-colors hover:border-[#FF9D4D]/30 hover:text-white"
+        className="flex items-center gap-1.5 rounded-full border border-white/[0.08] bg-[#17181F] px-3 py-1.5 text-xs text-[#A3A3B2] transition-colors hover:border-[#C7A46A]/30 hover:text-white"
       >
         <span className="text-[#6B7280]">{label}:</span>
         <span className="font-medium text-white">{current.label}</span>
@@ -61,7 +61,7 @@ function LanguageSelector<T extends string>({ label, value, options, onChange }:
                 }}
                 className={`flex w-full items-center rounded-lg px-3 py-2 text-left text-xs transition-colors ${
                   opt.code === value
-                    ? "bg-[#FF9D4D]/12 text-[#FF9D4D]"
+                    ? "bg-[#C7A46A]/12 text-[#C7A46A]"
                     : "text-[#A3A3B2] hover:bg-white/[0.06] hover:text-white"
                 }`}
               >

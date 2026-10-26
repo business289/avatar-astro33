@@ -104,7 +104,7 @@ export function PujaFormDialog({
     <Dialog open={open} onOpenChange={(next) => !isSubmitting && onOpenChange(next)}>
       <DialogContent className="max-h-[90vh] overflow-y-auto border-white/10 bg-[#0a1628] text-white sm:max-w-lg">
         <DialogHeader>
-          <DialogTitle className="font-display text-lg tracking-wide text-white">
+          <DialogTitle className="font-heading text-lg tracking-wide text-white">
             {isEdit ? "Edit Puja" : "Add Puja"}
           </DialogTitle>
           <DialogDescription className="text-white/60">
@@ -117,7 +117,7 @@ export function PujaFormDialog({
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-1.5">
             <Label className="text-sm text-white/80">
-              Puja Name<span className="ml-0.5 text-[#BC6A4D]">*</span>
+              Puja Name<span className="ml-0.5 text-[#C7A46A]">*</span>
             </Label>
             <Input
               value={name}
@@ -131,7 +131,7 @@ export function PujaFormDialog({
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="space-y-1.5">
               <Label className="text-sm text-white/80">
-                Price (₹)<span className="ml-0.5 text-[#BC6A4D]">*</span>
+                Price (₹)<span className="ml-0.5 text-[#C7A46A]">*</span>
               </Label>
               <Input
                 type="number"
@@ -147,7 +147,7 @@ export function PujaFormDialog({
 
             <div className="space-y-1.5">
               <Label className="text-sm text-white/80">
-                Duration<span className="ml-0.5 text-[#BC6A4D]">*</span>
+                Duration<span className="ml-0.5 text-[#C7A46A]">*</span>
               </Label>
               <Input
                 value={duration}
@@ -163,7 +163,7 @@ export function PujaFormDialog({
 
           <div className="space-y-2">
             <Label className="text-sm text-white/80">
-              Benefits<span className="ml-0.5 text-[#BC6A4D]">*</span>
+              Benefits<span className="ml-0.5 text-[#C7A46A]">*</span>
             </Label>
 
             <div className="space-y-2">
@@ -218,7 +218,7 @@ export function PujaFormDialog({
             <Button
               type="submit"
               disabled={isSubmitting}
-              className="bg-[#BC6A4D] text-white hover:bg-[#BC6A4D]/90"
+              className="bg-[#C7A46A] text-white hover:bg-[#C7A46A]/90"
             >
               {isSubmitting && <Loader2 className="h-4 w-4 animate-spin" />}
               {isEdit ? "Save Changes" : "Add Puja"}

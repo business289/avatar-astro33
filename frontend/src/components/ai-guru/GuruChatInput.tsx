@@ -20,13 +20,13 @@ const GuruChatInput = forwardRef<HTMLTextAreaElement, GuruChatInputProps>(
       <motion.div
         animate={
           glowPulse
-            ? { boxShadow: "0 0 0 3px rgba(255,157,77,0.35)", borderColor: "rgba(255,157,77,0.5)" }
-            : { boxShadow: "0 0 0 0px rgba(255,157,77,0)", borderColor: "rgba(255,255,255,0.08)" }
+            ? { boxShadow: "0 0 0 3px rgba(199,164,106,0.35)", borderColor: "rgba(199,164,106,0.5)" }
+            : { boxShadow: "0 0 0 0px rgba(199,164,106,0)", borderColor: "rgba(255,255,255,0.08)" }
         }
         transition={{ duration: 0.28, ease: "easeInOut" }}
-        className="flex w-full items-center gap-3 rounded-2xl border bg-[#17181F] px-4 py-2.5 focus-within:border-[#FF9D4D]/40 focus-within:shadow-[0_0_0_3px_rgba(255,157,77,0.12)]"
+        className="flex w-full items-center gap-3 rounded-2xl border bg-[#17181F] px-4 py-2.5 focus-within:border-[#C7A46A]/40 focus-within:shadow-[0_0_0_3px_rgba(199,164,106,0.12)]"
       >
-        <Sparkles className="h-4 w-4 shrink-0 text-[#FF9D4D]" />
+        <Sparkles className="h-4 w-4 shrink-0 text-[#C7A46A]" />
         <textarea
           ref={ref}
           rows={1}
@@ -51,7 +51,7 @@ const GuruChatInput = forwardRef<HTMLTextAreaElement, GuruChatInputProps>(
             aria-label={listening ? "Stop voice input" : "Start voice input"}
             className={`flex h-9 w-9 items-center justify-center rounded-full transition-colors ${
               listening
-                ? "bg-[#FF9D4D]/20 text-[#FF9D4D]"
+                ? "bg-[#C7A46A]/20 text-[#C7A46A]"
                 : "text-[#A3A3B2] hover:bg-white/5 hover:text-white"
             }`}
           >
@@ -80,7 +80,7 @@ const GuruChatInput = forwardRef<HTMLTextAreaElement, GuruChatInputProps>(
             whileHover={value.trim() && !loading ? { scale: 1.08 } : undefined}
             whileTap={value.trim() && !loading ? { scale: 0.94 } : undefined}
             aria-label="Send message"
-            className="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-[#FF9D4D] to-[#E88B3D] text-[#1A0F08] shadow-[0_0_16px_rgba(255,157,77,0.4)] transition-opacity disabled:opacity-30 disabled:shadow-none"
+            className="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-[#C7A46A] to-[#C7A46A] text-[#1A0F08] shadow-[0_0_16px_rgba(199,164,106,0.4)] transition-opacity disabled:opacity-30 disabled:shadow-none"
           >
             <Send className="h-4 w-4" />
           </motion.button>
